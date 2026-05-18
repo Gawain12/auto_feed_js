@@ -181,7 +181,7 @@ export class Unit3DEngine extends BaseEngine {
         };
 
         // --- Title ---
-        const title = meta.title || '';
+        const title = meta.targetTitle || meta.title || '';
         const titleInputs = [
             cfg.nameInput || '',
             'input[name="name"]',

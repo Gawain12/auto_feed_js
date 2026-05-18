@@ -426,6 +426,23 @@ export class EmbedService {
             return { kind: 'after-tr', afterTr: asTr, colSpan: getColSpanForRow(asTr), layout: 'full-width' };
         }
 
+        // SC often opens a group page without torrentid. Legacy still mounts the transfer block under
+        // the first concrete torrent row so the page can be used as a source immediately.
+        if (adapter.siteName === 'SC') {
+            const rows = Array.from(document.querySelectorAll('#torrent_details tr, table.torrent_table tr, tr[id^="torrent"]')) as HTMLTableRowElement[];
+            const row = rows.find((tr) => {
+                const id = tr.id || '';
+                return (/torrent[_-]?\d+/i.test(id) || tr.querySelector('a[href*="download"], a[href*="torrentid="]')) &&
+                    !!tr.querySelector('a[href*="download"], a[href*="torrentid="]');
+            });
+            if (row) return { kind: 'after-tr', afterTr: row, colSpan: getColSpanForRow(row), layout: 'full-width' };
+            const tbody = document.querySelector('#torrent_details tbody, table.torrent_table tbody') as HTMLTableSectionElement | null;
+            if (tbody) {
+                const first = tbody.querySelector('tr') as HTMLTableRowElement | null;
+                return { kind: 'table-body', tableBody: tbody, layout: 'full-width', colSpan: first ? getColSpanForRow(first) : 1 };
+            }
+        }
+
         // Any site with torrentid=...: try to locate the matching torrent row and inject BELOW it.
         // Legacy parity for gazelle/group layouts (RED/OPS/BTN/MTV/TVV/etc).
         try {

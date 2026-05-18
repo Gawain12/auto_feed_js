@@ -373,12 +373,16 @@ export class SiteManager {
         if (adapter.siteName === 'PTP') {
             return this.isExactPage(path, 'torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
         }
-        // Gazelle movie/music details (GPW/RED/OPS/DIC/SC/etc): torrents.php?id=...&torrentid=...
-        if (['GPW', 'RED', 'OPS', 'DIC', 'SC'].includes(adapter.siteName)) {
+        // SC group pages commonly omit torrentid; use the first/selected torrent row like legacy.
+        if (adapter.siteName === 'SC') {
+            return this.isExactPage(path, 'torrents.php') && /id=\d+/i.test(qs);
+        }
+        // Gazelle movie/music details (GPW/RED/OPS/DIC/etc): torrents.php?id=...&torrentid=...
+        if (['GPW', 'RED', 'OPS', 'DIC'].includes(adapter.siteName)) {
             return this.isExactPage(path, 'torrents.php') && /torrentid=\d+/i.test(qs);
         }
         if (adapter.siteName === 'HDT') {
-            return this.isExactPage(path, 'torrents.php') && /id=\d+/i.test(qs);
+            return (this.isExactPage(path, 'torrents.php') || this.isExactPage(path, 'details.php')) && /id=\d+/i.test(qs);
         }
         // HDB / CHDBits: details.php?id=...
         if (adapter.siteName === 'HDB' || adapter.siteName === 'CHDBits') {
@@ -421,6 +425,17 @@ export class SiteManager {
             'textarea[name="description"]',
             'textarea[name="info"]',
             'input[name="filename"]',
+            'input[name="file_input"]',
+            'input#catalogue_number',
+            'input#cataloguenumber',
+            'textarea[name="release_desc"]',
+            'textarea#album_desc',
+            'input[name="infosite"]',
+            'input#ename',
+            'input#cname',
+            'input[name="external_url"]',
+            'input#external_url',
+            'select[name="browsecat"]',
             'input[name="torrentfile"]',
             'input[type="file"]#torrent',
             'input[name="torrent"]',

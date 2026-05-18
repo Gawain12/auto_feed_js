@@ -89,7 +89,7 @@ export class TJUPTEngine extends NexusPHPEngine {
         try { (window as any).getcategory?.('class2', 'browsecat'); } catch {}
 
         const fillDependent = () => {
-            setValue('#ename', (meta.title || '').replace(/\s+/g, '.'));
+            setValue('#ename', (meta.targetTitle || meta.title || '').replace(/\s+/g, '.'));
             const source = `${meta.description || ''}\n${meta.synopsis || ''}`.replace(/\[\/?.+?\]/g, '');
             const cname =
                 source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.trim() ||

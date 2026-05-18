@@ -6,24 +6,28 @@ import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getLabel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
-import { dispatchFormEvents } from '../common/dom/form';
+import { dispatchFormEvents, setAllFormValues, setFirstFormValue } from '../common/dom/form';
 
 const HDT_ANNOUNCE = 'https://hdts-announce.ru/announce.php';
 
 function setField(selector: string, value?: string) {
-    if (!value) return;
-    const el = document.querySelector(selector) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
-    if (!el) return;
-    el.value = value;
-    dispatchFormEvents(el);
+    setAllFormValues(selector, value);
 }
 
 function detailsValue(label: string): string {
-    const labels = $('.detailsleft').toArray();
+    const wanted = label.toLowerCase();
+    const labels = $('.detailsleft, .rowhead, .label, td, th').toArray();
     for (const el of labels) {
         const key = (el.textContent || '').replace(/:/g, '').trim();
-        if (key.toLowerCase() !== label.toLowerCase()) continue;
-        return ($(el).next('td').text() || '').replace(/\s+/g, ' ').trim();
+        if (key.toLowerCase() !== wanted) continue;
+        const next = $(el).next('td, th');
+        if (next.length) return (next.text() || '').replace(/\s+/g, ' ').trim();
+        const parent = $(el).parent();
+        const cells = parent.children('td, th');
+        const idx = cells.index(el);
+        if (idx >= 0 && idx + 1 < cells.length) {
+            return ($(cells[idx + 1]).text() || '').replace(/\s+/g, ' ').trim();
+        }
     }
     return '';
 }
@@ -88,7 +92,10 @@ export class HDTEngine extends BaseEngine {
     }
 
     async parse(): Promise<TorrentMeta> {
-        const rawTitle = document.title.replace(/HD-Torrents\.org\s*-/gi, '').trim();
+        const rawTitle = (document.querySelector('h1, .torrentname, .title')?.textContent || document.title)
+            .replace(/HD-Torrents\.org\s*-/gi, '')
+            .replace(/\s*-\s*HD-Torrents\.org\s*/gi, '')
+            .trim();
         const category = detailsValue('Category');
         const genre = detailsValue('Genre');
         const sizeText = detailsValue('Size');
@@ -98,7 +105,7 @@ export class HDTEngine extends BaseEngine {
         const imdbUrl = imdbBox.find('>a[href*="imdb.com/title/tt"], a[href*="imdb.com/title/tt"]').first().attr('href') || '';
         const imdbId = extractImdbId(imdbUrl);
 
-        const descrEl = document.querySelector('#technicalInfoHideShowTR') as HTMLElement | null;
+        const descrEl = document.querySelector('#technicalInfoHideShowTR, #technicalInfo, #torrent_info, #detailsInfoHideShowTR, .technicalInfo') as HTMLElement | null;
         let description = descrEl ? htmlToBBCode(descrEl) : '';
         description = cleanHdtDescription(description);
 
@@ -140,11 +147,19 @@ export class HDTEngine extends BaseEngine {
     }
 
     async fill(meta: TorrentMeta): Promise<void> {
-        setField('input[name="filename"]', (meta.title || '').replace(/DDP/i, 'DD+').replace(/Remux/i, 'Remux'));
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '');
         const imdbUrl = meta.imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : '');
-        setField('input[name="infosite"]', imdbUrl ? imdbUrl.replace('http:', 'https:').replace(/(tt\d+[^/]$)/, '$1/') : '');
-        setField('select[name="category"]', hdtCategory(meta));
+        const filename = (meta.targetTitle || meta.title || '').replace(/DDP/i, 'DD+').replace(/Remux/i, 'Remux');
+        const infoSite = imdbUrl ? imdbUrl.replace('http:', 'https:').replace(/(tt\d+[^/]$)/, '$1/') : '';
+        const category = hdtCategory(meta);
+
+        const applyHeaderFields = () => {
+            setField('input[name="filename"]', filename);
+            setField('input[name="infosite"]', infoSite);
+            setField('select[name="category"]', category);
+        };
+        applyHeaderFields();
+        [300, 900, 1800].forEach((ms) => window.setTimeout(applyHeaderFields, ms));
 
         if ((meta.title || '').match(/[^T]S\d+[^E]|complete/i)) {
             setField('select[name="season"]', 'true');
@@ -161,7 +176,9 @@ export class HDTEngine extends BaseEngine {
         const mediainfo = (meta.fullMediaInfo || info.mediainfo || '').trim();
         const picInfo = (info.picInfo || '').replace(/\n/g, '').replace(/(\[\/img\])(\[img\])/g, '$1 $2').replace(/(\[\/url\])(\[url)/g, '$1 $2');
         const formatted = `[font=consolas]${mediainfo}[/font]\n\n${picInfo}`.trim();
-        setField('textarea[name="info"]', formatted || meta.description);
+        const applyInfo = () => setFirstFormValue('textarea[name="info"], textarea#info, textarea[name="description"]', formatted || meta.description, { force: true });
+        applyInfo();
+        [300, 900, 1800].forEach((ms) => window.setTimeout(applyInfo, ms));
 
         const labels = meta.labelInfo || getLabel(rawDescr);
         const checks: Record<string, boolean> = {

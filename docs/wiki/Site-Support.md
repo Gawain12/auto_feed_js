@@ -8,7 +8,7 @@
 - Unit3D/Classic：BHD、BLU、Tik、KG、Monika
 
 补充：Monika（MDU）已按上游源码规则对齐修复上传路径与关键表单映射。
-补充：SC、TJUPT、HDT 已补齐为可识别源站/目标站，并按 legacy 规则加入专属 tracker；HDT 归入 special 站点清单，避免误放进 Nexus/Gazelle/Unit3D 分类。
+补充：SC、TJUPT、HDT 已补齐为可识别源站/目标站，并按 legacy 规则加入专属 tracker；HDT 归入 special 站点清单，避免误放进 Nexus/Gazelle/Unit3D 分类。2026-05-18 回归修复了三站上传页表单等待、SC group-only 源页注入、HDT details/torrents 源页兼容、TJUPT 专用字段与通用标题抢写等问题。
 
 ## 音乐站点（持续补齐）
 - RED

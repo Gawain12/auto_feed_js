@@ -103,7 +103,7 @@ export const NexusSites: SiteConfig[] = [
         selectors: {
             title: ['#top', 'h1#top', 'h1'],
             description: ['#kdescr', '#description'],
-            nameInput: 'input[name="name"], input#ename',
+            nameInput: 'input[name="name"]',
             smallDescrInput: 'input[name="small_descr"]',
             descrInput: 'textarea#descr',
             imdbInput: 'input[name="url"][type="text"]',

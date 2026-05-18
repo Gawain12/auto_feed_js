@@ -4,14 +4,36 @@ import { TorrentMeta } from '../types/TorrentMeta';
 import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
-import { dispatchFormEvents } from '../common/dom/form';
+import { setAllFormValues, setFirstFormValue } from '../common/dom/form';
 
-function setField(selector: string, value?: string) {
-    if (!value) return;
-    const el = document.querySelector(selector) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
-    if (!el) return;
-    el.value = value;
-    dispatchFormEvents(el);
+function getScTorrentId(currentUrl: string): string {
+    try {
+        const u = new URL(currentUrl);
+        const fromUrl = u.searchParams.get('torrentid') || '';
+        if (fromUrl) return fromUrl;
+    } catch {}
+    const download = $('a[href*="action=download"][href*="id="], a[href*="download.php"][href*="id="], a[href*="download&id="]').first().attr('href') || '';
+    const fromDownload = download.match(/[?&]id=(\d+)/i)?.[1] || '';
+    if (fromDownload) return fromDownload;
+
+    const row = $('#torrent_details tr[id*="torrent"], tr[id^="torrent_"], tr[id^="torrent"]').toArray().find((el) => {
+        const id = (el as HTMLElement).id || '';
+        return /torrent[_-]?\d+/i.test(id) && $(el).find('a[href*="download"]').length > 0;
+    }) as HTMLElement | undefined;
+    return row?.id?.match(/torrent[_-]?(\d+)/i)?.[1] || '';
+}
+
+function getScTorrentBox(torrentId: string): JQuery<HTMLElement> {
+    if (torrentId) {
+        const exact = $(`#torrent${torrentId}, #torrent_${torrentId}, #torrent_detail_${torrentId}`).first();
+        if (exact.length) return exact as JQuery<HTMLElement>;
+        const byLink = $(`a[href*="torrentid=${torrentId}"], a[href*="download&id=${torrentId}"], a[href*="download.php?id=${torrentId}"]`).first().closest('tr');
+        if (byLink.length) return byLink as JQuery<HTMLElement>;
+    }
+    const withDownload = $('#torrent_details tr, table.torrent_table tr').filter((_, el) => {
+        return $(el).find('a[href*="download"], a[href*="torrentid="]').length > 0;
+    }).first();
+    return withDownload as JQuery<HTMLElement>;
 }
 
 function normalizeMediaValue(meta: TorrentMeta): string {
@@ -28,18 +50,18 @@ function normalizeMediaValue(meta: TorrentMeta): string {
 export class SCEngine extends GazelleEngine {
     async parse(): Promise<TorrentMeta> {
         const meta = await super.parse();
-        const torrentId = this.currentUrl.match(/torrentid=(\d+)/i)?.[1] || this.currentUrl.match(/[?&]id=(\d+)/i)?.[1] || '';
+        const torrentId = getScTorrentId(this.currentUrl);
 
         meta.type = '电影';
         if (torrentId) {
-            const row = $(`#torrent${torrentId}, #torrent_${torrentId}`).first();
+            const row = getScTorrentBox(torrentId);
             const imdbHref = row.find('a[href*="imdb.com/title/tt"], a:contains("IMDB")').first().attr('href') || '';
             if (imdbHref) {
                 meta.imdbUrl = imdbHref;
                 meta.imdbId = extractImdbId(imdbHref);
             }
 
-            const torrentBox = $(`#torrent_${torrentId}, #torrent${torrentId}`).first();
+            const torrentBox = row;
             const quote = torrentBox.find('blockquote').has('blockquote').last();
             if (quote.length) {
                 const innerQuote = quote.find('blockquote').first();
@@ -62,7 +84,10 @@ export class SCEngine extends GazelleEngine {
             const name = meta.description.match(/complete.*?name.*?:\s*(.*)/i)?.[1]?.trim();
             if (name) meta.title = name;
 
-            const download = $(`a[href*="download&id=${torrentId}"], a[href*="download.php?id=${torrentId}"], a[href*="download.php"][href*="${torrentId}"]`).first().attr('href') || '';
+            const download =
+                row.find(`a[href*="download&id=${torrentId}"], a[href*="download.php?id=${torrentId}"], a[href*="download.php"][href*="${torrentId}"], a[href*="action=download"][href*="${torrentId}"]`).first().attr('href') ||
+                $(`a[href*="download&id=${torrentId}"], a[href*="download.php?id=${torrentId}"], a[href*="download.php"][href*="${torrentId}"], a[href*="action=download"][href*="${torrentId}"]`).first().attr('href') ||
+                '';
             if (download) {
                 meta.torrentUrl = new URL(download, this.currentUrl).href;
             }
@@ -80,24 +105,30 @@ export class SCEngine extends GazelleEngine {
         await super.fill(meta);
 
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '');
-        setField('#catalogue_number, #cataloguenumber', imdbId);
+        setAllFormValues('#catalogue_number, #cataloguenumber, input[name="catalogue_number"], input[name="cataloguenumber"]', imdbId);
         const imdbAuto = document.querySelector('#imdb_autofill') as HTMLButtonElement | HTMLInputElement | null;
         try { imdbAuto?.click(); } catch {}
 
-        setField('#media, select[name="media"]', normalizeMediaValue(meta));
+        setAllFormValues('#media, select[name="media"]', normalizeMediaValue(meta));
         const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ''}\n${meta.description || ''}`, { mediumSel: meta.mediumSel });
         const screenshots = (info.picInfo || '')
             .match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/gi)
             ?.slice(0, 3)
             .join('') || '';
         const mediainfo = meta.fullMediaInfo || info.mediainfo || '';
-        const releaseDesc = [screenshots, mediainfo ? `[hide=MediaInfo]${mediainfo}[/hide]` : '']
+        const image = meta.images?.[0] || meta.description.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
+        const posterTag = image ? `[img]${image}[/img]` : '';
+        const releaseDesc = [posterTag, screenshots, mediainfo ? `[hide=MediaInfo]${mediainfo}[/hide]` : '']
             .filter(Boolean)
             .join('\n\n');
-        setField('#release_desc, textarea[name="release_desc"], textarea[name="description"]', releaseDesc || meta.description);
+        const applyScFields = (forceDescription = true) => {
+            setFirstFormValue('#release_desc, textarea[name="release_desc"], textarea[name="description"]', releaseDesc || meta.description, { force: forceDescription });
+            setFirstFormValue('#album_desc, textarea[name="album_desc"]', meta.synopsis || meta.description || '', { force: false });
+            setFirstFormValue('input[name="image"], input#image', image, { force: false });
+        };
+        applyScFields(true);
+        [300, 900, 1800, 3500].forEach((ms) => window.setTimeout(() => applyScFields(false), ms));
 
-        const image = meta.images?.[0] || meta.description.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
-        setField('input[name="image"], input#image', image);
 
         try {
             const { TorrentService } = await import('../services/TorrentService');

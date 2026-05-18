@@ -42,7 +42,8 @@ const CHINESE_NEXUS_SITES = new Set([
     'HDHome',
     'OurBits',
     'OpenCD',
-    'Audiences'
+    'Audiences',
+    'TJUPT'
 ]);
 
 export function isChineseNexusSite(siteName: string): boolean {

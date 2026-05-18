@@ -347,7 +347,7 @@ export class TorrentService {
         }
 
         if (forwardSite === 'HDT') {
-            const input = document.querySelector('input[name="torrent"], input[type="file"]#torrent') as HTMLInputElement | null;
+            const input = document.querySelector('input[name="torrent"], input[name="file"], input[name="torrentfile"], input[type="file"]#torrent, input[type="file"]') as HTMLInputElement | null;
             if (input) {
                 this.injectFileIntoInput(input, file);
                 return true;

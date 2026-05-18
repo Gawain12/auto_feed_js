@@ -11,7 +11,7 @@ npm run build
 ```
 
 默认本地安装入口：
-- `file:///Users/gawaintan/workSpace/Tools/auto_feed_js/dist/auto-feed-refactor.user.js`
+- `file://<repo>/dist/auto-feed-refactor.user.js`
 
 `npm run build` 会同时生成：
 - `dist/auto_feed.user.js`：完整脚本。
