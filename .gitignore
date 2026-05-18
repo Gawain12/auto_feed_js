@@ -32,3 +32,4 @@ legacy_extract/out/
 # Local reverse-engineering/reference material (keep local only)
 archive/
 legacy_extract/
+agent.md
