@@ -625,23 +625,41 @@ export class TikEngine extends Unit3DClassicEngine {
                 else if (standard) format = standard;
             }
 
-            let codecTag = 'AVC';
+            let codecTag = standard === '4K' || medium === 'UHD' || format === '2160p' ? 'HEVC' : 'AVC';
             if (codec === 'MPEG-2') codecTag = 'MPEG-2';
             else if (codec === 'VC-1') codecTag = 'VC-1';
             else if (codec === 'H265') codecTag = 'HEVC';
 
-            const searchName = getSearchName(meta.title || '').trim();
+            const sourceTitle = (meta.title || '').trim();
+            const searchName = getSearchName(sourceTitle).trim();
             let torrentName = searchName;
             if (year) torrentName += ` (${year})`;
-            if (format) torrentName += ` ${format}`;
             if (source) torrentName += ` ${source}`;
+            if (format) torrentName += ` ${format}`;
             if (!/DVD/i.test(medium)) torrentName += ` ${codecTag}`;
             torrentName = torrentName.replace(/\s+/g, ' ').trim();
 
-            if (titleInput && torrentName) {
+            const normalizeTitleValue = (value: string) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+            const sourceTitleValue = normalizeTitleValue(sourceTitle);
+            let preservedTikTitle = '';
+            const applyTikFallbackTitle = () => {
+                if (!titleInput || !torrentName) return;
+                const current = (titleInput.value || '').trim();
+                const currentValue = normalizeTitleValue(current);
+                if (current && currentValue !== sourceTitleValue) {
+                    preservedTikTitle = current;
+                    return;
+                }
+                if (preservedTikTitle) {
+                    titleInput.value = preservedTikTitle;
+                    fire(titleInput);
+                    return;
+                }
                 titleInput.value = torrentName;
                 fire(titleInput);
-            }
+            };
+            applyTikFallbackTitle();
+            [350, 1100, 2400, 4200, 6500].forEach((ms) => window.setTimeout(applyTikFallbackTitle, ms));
 
             const cachedImdbAspect = !/DVD/i.test(medium) ? await ImdbAspectRatioService.getCachedAspectRatio(imdbId) : '';
             const mediaAspect = !/DVD/i.test(medium) ? normalizeAspectRatioText(parseAspectRatioFallback(rawDescr) || '') : '';
