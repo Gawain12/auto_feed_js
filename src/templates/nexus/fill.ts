@@ -17,7 +17,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
 
     const overrides = config.selectors || {};
 
-    const titleVal = meta.title || '';
+    const titleVal = meta.targetTitle || meta.title || '';
     const smallDescrVal = meta.subtitle || meta.smallDescr || '';
     const descrVal = meta.description || '';
     const nameInputSelector = overrides.nameInput || formSelectors.name;

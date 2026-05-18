@@ -1,6 +1,7 @@
 export interface TorrentMeta {
     // Basic Info
     title: string;
+    targetTitle?: string; // Optional site-specific display title used only when filling target forms
     subtitle?: string;
     smallDescr?: string; // Legacy small description (副标题)
     description: string; // BBCode

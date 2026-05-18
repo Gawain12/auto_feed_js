@@ -1,4 +1,5 @@
 import { HtmlFetchService } from './HtmlFetchService';
+import { GMAdapter } from './GMAdapter';
 import { extractDoubanId } from '../common/rules/links';
 
 export interface DoubanInfo {
@@ -31,6 +32,8 @@ type DoubanFetchOptions = {
 };
 
 export class DoubanService {
+    private static posterDataUrlCache = new Map<string, Promise<string>>();
+
     static async getByImdb(imdbId: string, options?: DoubanFetchOptions): Promise<DoubanInfo | null> {
         const searchUrl = `https://m.douban.com/search/?query=${encodeURIComponent(imdbId)}&type=movie`;
         const doc = await HtmlFetchService.getDocument(searchUrl, this.buildFetchOptions(options));
@@ -48,6 +51,21 @@ export class DoubanService {
         return this.parseDoubanDoc(doc, id);
     }
 
+    static async resolvePosterDisplayUrl(url: string, mode: 'raw' | 'inline' = 'raw'): Promise<string> {
+        const normalized = String(url || '').trim();
+        if (!normalized) return '';
+        if (mode !== 'inline') return normalized;
+        if (!/doubanio\.com/i.test(normalized)) return normalized;
+
+        if (!this.posterDataUrlCache.has(normalized)) {
+            this.posterDataUrlCache.set(
+                normalized,
+                this.fetchPosterDataUrl(normalized).catch(() => normalized)
+            );
+        }
+        return await this.posterDataUrlCache.get(normalized)!;
+    }
+
     private static parseDoubanDoc(doc: Document, id: string): DoubanInfo {
         const title = (doc.querySelector('title')?.textContent || '').replace('(豆瓣)', '').trim();
 
@@ -56,7 +74,7 @@ export class DoubanService {
         if (img?.src) {
             const match = img.src.match(/(p\d+).+$/);
             if (match?.[1]) {
-                image = `https://img9.doubanio.com/view/photo/l_ratio_poster/public/${match[1]}.jpg`;
+                image = `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${match[1]}.jpg`;
             } else {
                 image = img.src;
             }
@@ -149,6 +167,44 @@ export class DoubanService {
         if (options?.cookie) headers['cookie'] = options.cookie;
         // Keep it simple: most of the time withCredentials is enough if the user is logged in to Douban.
         return { headers: Object.keys(headers).length ? headers : undefined, withCredentials: options?.withCredentials ?? true };
+    }
+
+    private static async fetchPosterDataUrl(url: string): Promise<string> {
+        const response = await GMAdapter.xmlHttpRequest({
+            method: 'GET',
+            url,
+            responseType: 'arraybuffer',
+            anonymous: true,
+            headers: {
+                Referer: 'https://movie.douban.com/',
+                Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                'User-Agent':
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
+            }
+        });
+
+        const body = response?.response;
+        if (!(body instanceof ArrayBuffer) || !body.byteLength) {
+            throw new Error('Empty Douban poster response');
+        }
+
+        const mime =
+            String(response?.responseHeaders || '')
+                .match(/content-type:\s*([^\s;]+)/i)?.[1]
+                ?.trim() || 'image/jpeg';
+
+        return `data:${mime};base64,${this.arrayBufferToBase64(body)}`;
+    }
+
+    private static arrayBufferToBase64(buffer: ArrayBuffer): string {
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 0x8000;
+        let binary = '';
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+            const chunk = bytes.subarray(index, index + chunkSize);
+            binary += String.fromCharCode(...chunk);
+        }
+        return btoa(binary);
     }
 
     static async getLetterboxdRatingByImdb(imdbId: string): Promise<LetterboxdRating | null> {

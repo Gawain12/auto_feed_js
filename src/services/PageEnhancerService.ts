@@ -320,10 +320,11 @@ export class PageEnhancerService {
             data.director = data.director.split('/').slice(0, 8).join('/');
         }
 
-        const poster = (data.image || '').replace(
+        const rawPoster = (data.image || '').replace(
             /^.+(p\d+).+$/i,
-            (_m, p1) => `https://img9.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`
+            (_m, p1) => `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`
         );
+        const poster = await DoubanService.resolvePosterDisplayUrl(rawPoster, 'inline');
 
         const label = hideByDefault ? '+ ' : '- ';
         const status = hideByDefault ? 'none' : 'block';
@@ -619,7 +620,7 @@ export class QuickSearchService {
         }
 
         const posterImg = $('#mainpic img').first().attr('src') || '';
-        const poster = posterImg.replace(/^.+(p\d+).+$/, (_, p1) => `https://img9.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`);
+        const poster = posterImg.replace(/^.+(p\d+).+$/, (_, p1) => `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`);
 
         $('#mainpic').append(`<br><a href="#" id="autofeed-rehost-poster">海报转存</a>`);
         $('#autofeed-rehost-poster').on('click', async (e) => {
