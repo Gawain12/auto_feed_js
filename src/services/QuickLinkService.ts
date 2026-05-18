@@ -99,15 +99,15 @@ export class QuickLinkService {
             imgbox: 'IMGBOX',
             hostik: 'Hostik',
             free: 'FREEIMAGE',
-            gifyu: 'GIFYU',
+            imgbb: 'IMGBB',
             needPtpKey: '未设置 PTPIMG API Key',
             needFreeKey: '未设置 Freeimage API Key',
-            needGifyuKey: '未设置 Gifyu API Key',
+            needImgbbKey: '未设置 ImgBB API Key',
             okFull: '已转换为原图链接',
             okPtp: '已转存至 PTPIMG',
             okPix: '已转存至 Pixhost',
             okFree: '已转存至 Freeimage',
-            okGifyu: '已转存至 Gifyu'
+            okImgbb: '已转存至 ImgBB'
         } : {
             section: 'Images: ',
             toolbox: 'Image Tools',
@@ -118,15 +118,15 @@ export class QuickLinkService {
             imgbox: 'IMGBOX',
             hostik: 'Hostik',
             free: 'FREEIMAGE',
-            gifyu: 'GIFYU',
+            imgbb: 'IMGBB',
             needPtpKey: 'PTPIMG API Key not set',
             needFreeKey: 'Freeimage API Key not set',
-            needGifyuKey: 'Gifyu API Key not set',
+            needImgbbKey: 'ImgBB API Key not set',
             okFull: 'Converted to full-size links',
             okPtp: 'Rehosted to PTPIMG',
             okPix: 'Rehosted to Pixhost',
             okFree: 'Rehosted to Freeimage',
-            okGifyu: 'Rehosted to Gifyu'
+            okImgbb: 'Rehosted to ImgBB'
         };
 
         const toolsDiv = $('<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-top:1px dashed #ddd; padding-top:8px; margin-top:6px;"></div>');
@@ -237,22 +237,22 @@ export class QuickLinkService {
             alert(t.okFree);
         });
 
-        const gifyu = makeTool(t.gifyu);
-        gifyu.on('click', async (e) => {
+        const imgbb = makeTool(t.imgbb);
+        imgbb.on('click', async (e) => {
             e.preventDefault();
             const before = meta.description || '';
             const settings = await SettingsService.load();
-            if (!settings.gifyuApiKey) {
-                alert(t.needGifyuKey);
+            if (!settings.imgbbApiKey) {
+                alert(t.needImgbbKey);
                 return;
             }
-            meta.description = await ImageHostService.rehostDescriptionToGifyu(meta.description || '', settings.gifyuApiKey);
+            meta.description = await ImageHostService.rehostDescriptionToImgbb(meta.description || '', settings.imgbbApiKey);
             await StorageService.save(meta);
-            showLinks(lang === 'zh' ? 'GIFYU 结果' : 'GIFYU Result', before, meta.description || '');
-            alert(t.okGifyu);
+            showLinks(lang === 'zh' ? 'IMGBB 结果' : 'IMGBB Result', before, meta.description || '');
+            alert(t.okImgbb);
         });
 
-        toolsDiv.append(toolbox, fullSize, ptp, pix, imgbox, hdb, hostik, freeimage, gifyu);
+        toolsDiv.append(toolbox, fullSize, ptp, pix, imgbox, hdb, hostik, freeimage, imgbb);
         container.append(toolsDiv);
     }
 

@@ -332,37 +332,36 @@ export class PageEnhancerService {
             <tr id="autofeed-hdb-douban"><td>
                 <div id="l20201117" class="label collapsable" onclick="showHideEl(20201117)"><span class="plusminus">${label}</span>关于本片 (豆瓣信息)</div>
                 <div id="c20201117" class="hideablecontent" style="display: ${status};">
-                    <div style="display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;">
-                        <div style="flex: 0 0 250px; max-width: 250px;">
-                            <img src="${poster}" referrerpolicy="no-referrer" style="width: 250px; max-width: 250px; height: auto; border: 0;" alt="">
+                    <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:nowrap;">
+                        <div style="flex:0 0 210px; max-width:210px;">
+                            <img src="${poster}" referrerpolicy="no-referrer" style="width:210px; max-width:210px; height:auto; border:0;" alt="">
                         </div>
-                        <div style="flex: 1 1 520px; min-width: 280px;">
-                            <h1 style="margin: 0; font-size: 20px; line-height: 1.2;">
+                        <div style="flex:1 1 auto; min-width:0;">
+                            <h1 style="margin:0; font-size:18px; line-height:1.2;">
                                 <a href="https://movie.douban.com/subject/${data.id}" target="_blank" rel="noreferrer">${data.title}</a>
-                                <span style="opacity: .85;">(${data.year || ''})</span>
+                                <span style="opacity:.85;">(${data.year || ''})</span>
                             </h1>
-                            <div style="margin: 6px 0 10px 0; font-weight: normal; opacity: .9; white-space: normal; overflow-wrap: anywhere; word-break: break-word;">
+                            <div style="margin:4px 0 8px 0; font-size:12px; opacity:.9; white-space:normal; overflow-wrap:anywhere; word-break:break-word;">
                                 ${data.aka || ''}
                             </div>
-
-                            <div style="display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;">
-                                <div style="flex: 0 0 360px; min-width: 280px;">
-                                    <table class="content" cellspacing="0" id="imdbinfo" style="width: 100%; table-layout: fixed;">
-                                        <tbody style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">
-                                            <tr><th style="width: 80px;">评分</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${data.average || '暂无评分'} (${data.votes || 0}人评价)</td></tr>
-                                            <tr><th>类型</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${data.genre || ''}</td></tr>
-                                            <tr><th>国家/地区</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${data.region || ''}</td></tr>
-                                            <tr><th>导演</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${(data.director || '').replace(/\//g, '<br>')}</td></tr>
-                                            <tr><th>语言</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${data.language || ''}</td></tr>
-                                            <tr><th>上映日期</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${(data.releaseDate || '').replace(/\//g, '<br>')}</td></tr>
-                                            <tr><th>片长</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${data.runtime || ''}</td></tr>
-                                            <tr><th>演员</th><td style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">${(data.cast || '').replace(/\//g, '<br>')}</td></tr>
+                            <div style="display:grid; grid-template-columns:minmax(260px,340px) minmax(0,1fr); gap:12px; align-items:start;">
+                                <div style="min-width:0;">
+                                    <table class="content" cellspacing="0" id="imdbinfo" style="width:100%; table-layout:fixed; font-size:12px;">
+                                        <tbody style="white-space:normal; overflow-wrap:anywhere; word-break:break-word;">
+                                            <tr><th style="width:80px;">评分</th><td>${data.average || '暂无评分'} (${data.votes || 0}人评价)</td></tr>
+                                            <tr><th>类型</th><td>${data.genre || ''}</td></tr>
+                                            <tr><th>国家/地区</th><td>${data.region || ''}</td></tr>
+                                            <tr><th>导演</th><td>${(data.director || '').replace(/\//g, '<br>')}</td></tr>
+                                            <tr><th>语言</th><td>${data.language || ''}</td></tr>
+                                            <tr><th>上映日期</th><td>${(data.releaseDate || '').replace(/\//g, '<br>')}</td></tr>
+                                            <tr><th>片长</th><td>${data.runtime || ''}</td></tr>
+                                            <tr><th>演员</th><td>${(data.cast || '').replace(/\//g, '<br>')}</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div style="flex: 1 1 380px; min-width: 280px;">
-                                    <div style="font-weight: bold; margin: 2px 0 6px 0;">简介</div>
-                                    <div style="white-space: normal; overflow-wrap: anywhere; word-break: break-word;">
+                                <div style="min-width:0;">
+                                    <div style="font-weight:bold; margin:1px 0 6px 0;">简介</div>
+                                    <div style="font-size:12px; line-height:1.5; white-space:normal; overflow-wrap:anywhere; word-break:break-word;">
                                         ${data.summary ? '　　' + data.summary.replace(/ 　　/g, '<br>　　') : '本片暂无简介'}
                                     </div>
                                 </div>
@@ -445,8 +444,14 @@ export class QuickSearchService {
             this.injectDoubanTools(settings);
         }
 
-        if (url.match(/^https?:\/\/www\.imdb\.com\/title\/tt\d+/i) && settings.showQuickSearchOnImdb) {
+        if (/imdb\.com$/i.test(window.location.hostname) && extractImdbId(url) && settings.showQuickSearchOnImdb) {
             this.injectImdbTools(settings);
+            if (document.body.dataset.autofeedImdbRetry !== '1') {
+                document.body.dataset.autofeedImdbRetry = '1';
+                [500, 1500, 3200].forEach((ms) => {
+                    setTimeout(() => this.injectImdbTools(settings), ms);
+                });
+            }
         }
     }
 
@@ -568,6 +573,27 @@ export class QuickSearchService {
             });
         }
 
+        if (url.match(/^https:\/\/(www\.)?(hd-torrents\.org|hdts\.ru)\/torrents/i) && settings.showSearchOnList?.HDT) {
+            const rows = $('.mainblockcontenttt tr, .hdblock:eq(1) tr').toArray();
+            rows.forEach((row) => {
+                const $row = $(row);
+                const candidates = [$row.find('td:eq(2)'), $row.find('td:eq(1)')].filter((cell) => cell.length);
+                for (const $td of candidates) {
+                    const name = $td.find('a').first().text().trim();
+                    if (!name) continue;
+                    const imdbId = extractImdbId($td.html() || '');
+                    if (!imdbId) continue;
+                    let title = this.normalizeListSearchName(name);
+                    const season = name.match(/S(\d+)/i)?.[1] || '';
+                    if (season && !/Season\s+\d+/i.test(title)) {
+                        title = `${title} Season ${parseInt(season, 10)}`;
+                    }
+                    injectSearch($td, { title, imdbId }).catch(() => {});
+                    break;
+                }
+            });
+        }
+
     }
 
     private static injectDoubanTools(settings?: Awaited<ReturnType<typeof SettingsService.load>>) {
@@ -606,8 +632,8 @@ export class QuickSearchService {
                     result = await ImageHostService.uploadToPtpImg([poster], settings.ptpImgApiKey);
                 } else if (settings.freeimageApiKey) {
                     result = await ImageHostService.uploadToFreeimage([poster], settings.freeimageApiKey);
-                } else if (settings.gifyuApiKey) {
-                    result = await ImageHostService.uploadToGifyu([poster], settings.gifyuApiKey);
+                } else if (settings.imgbbApiKey) {
+                    result = await ImageHostService.uploadToImgbb([poster], settings.imgbbApiKey);
                 } else {
                     // No API key mode fallback: Pixhost remote upload does not require user API key.
                     result = await ImageHostService.uploadToPixhost([poster]);
@@ -644,7 +670,7 @@ export class QuickSearchService {
     }
 
     private static injectImdbTools(settings?: Awaited<ReturnType<typeof SettingsService.load>>) {
-        if (document.body.dataset.autofeedImdb === '1') return;
+        if (document.querySelector('.autofeed-search-links--imdb')) return;
         const imdbId = extractImdbId(window.location.href);
         const searchName = $('title')
             .text()
@@ -670,7 +696,7 @@ export class QuickSearchService {
                     linkColor: 'yellow'
                 }
             ).catch(() => {});
+            document.body.dataset.autofeedImdb = '1';
         }
-        document.body.dataset.autofeedImdb = '1';
     }
 }

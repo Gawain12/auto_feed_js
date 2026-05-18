@@ -105,12 +105,21 @@ export class RemoteDownloadService {
     }
 
     private static isDetailPage(url: string): boolean {
+        let parsed: URL;
+        try {
+            parsed = new URL(url, window.location.origin);
+        } catch {
+            return false;
+        }
+        const path = parsed.pathname || '';
+        const qs = parsed.search || '';
+
         return (
-            /details?\.php\?id=\d+/i.test(url) ||
-            /torrents\.php\?[^#]*\btorrentid=\d+/i.test(url) ||
-            /\/torrents\/\d+/i.test(url) ||
-            /\/detail\/\d+/i.test(url) ||
-            /\/t\/\d+/i.test(url)
+            ((this.isExactPage(path, 'details.php') || this.isExactPage(path, 'detail.php')) && /id=\d+/i.test(qs)) ||
+            (this.isExactPage(path, 'torrents.php') && /\btorrentid=\d+/i.test(qs)) ||
+            /\/torrents\/\d+(?:\/|$)/i.test(path) ||
+            /\/detail\/\d+(?:\/|$)/i.test(path) ||
+            /\/t\/\d+(?:\/|$)/i.test(path)
         );
     }
 
@@ -125,21 +134,28 @@ export class RemoteDownloadService {
         const qs = parsed.search || '';
 
         if (siteName === 'TTG') {
-            return /\/t\/\d+/i.test(path) || (/details\.php/i.test(path) && /id=\d+/i.test(qs));
+            return /\/t\/\d+(?:\/|$)/i.test(path) || (this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs));
         }
         if (siteName === 'PTP' || ['GPW', 'RED', 'OPS', 'DIC'].includes(siteName)) {
             if (siteName === 'PTP') {
-                return path.includes('torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
+                return this.isExactPage(path, 'torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
             }
-            return path.includes('torrents.php') && /torrentid=\d+/i.test(qs);
+            return this.isExactPage(path, 'torrents.php') && /torrentid=\d+/i.test(qs);
         }
         if (siteName === 'HDB' || siteName === 'CHDBits' || siteName === 'OpenCD') {
-            return /details\.php/i.test(path) && /id=\d+/i.test(qs);
+            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
+        }
+        if (siteName === 'KG') {
+            return (this.isExactPage(path, 'details.php') || this.isExactPage(path, 'reqdetails.php')) && /id=\d+/i.test(qs);
         }
         if (siteName === 'BHD') {
             return /\/torrents\/.+/i.test(path) || /\/library\/title\/.+/i.test(path);
         }
         return this.isDetailPage(url);
+    }
+
+    private static isExactPage(path: string, pageName: string): boolean {
+        return (path || '').split('/').pop()?.toLowerCase() === pageName.toLowerCase();
     }
 
     private static extractTorrentId(url: string): string {

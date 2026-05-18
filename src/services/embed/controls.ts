@@ -120,6 +120,10 @@ import {
                         targetUrl = StorageService.attachHandoffToken(baseUploadUrl, token);
                         await StorageService.saveHandoff(metaToSave, token);
                         await StorageService.save(metaToSave);
+                        await StorageService.savePendingForward(site.name);
+                        try {
+                            if (win) win.name = StorageService.buildWindowForwardMarker(site.name, token);
+                        } catch {}
                         if (site.name === 'KG') {
                             const { GMAdapter } = await import('../GMAdapter');
                             await GMAdapter.setValue('kg_info', JSON.stringify(buildKgLegacyInfo(metaToSave)));

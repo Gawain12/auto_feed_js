@@ -7,6 +7,7 @@ import { extractImdbId } from '../common/rules/links';
 import { SettingsService, getEffectiveTmdbApiKey } from '../services/SettingsService';
 import { GMAdapter } from '../services/GMAdapter';
 import { ImageHostService } from '../services/ImageHostService';
+import { ImdbAspectRatioService } from '../services/ImdbAspectRatioService';
 
 const TIK_BASE_CONTENT = `
 [center][img]{poster}[/img]
@@ -222,10 +223,7 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
     try {
         const resp = await GMAdapter.xmlHttpRequest({
             method: 'GET',
-            url,
-            headers: {
-                'accept-language': 'en-US,en;q=0.9'
-            }
+            url
         });
         const html = resp?.responseText || '';
         if (!html) return {};
@@ -372,7 +370,11 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
         }
         if (!aspect_ratio) {
             try {
-                aspect_ratio = normalizeAspectRatioText(html.match(/"aspectRatio"\s*:\s*"([^"]+)"/i)?.[1]?.trim() || '');
+                aspect_ratio = normalizeAspectRatioText(
+                    html.match(/Aspect ratio[\s\S]{0,120}?([0-9.]+\s*:\s*[0-9.]+)/i)?.[1]?.trim() ||
+                    html.match(/"aspectRatio"\s*:\s*"([^"]+)"/i)?.[1]?.trim() ||
+                    ''
+                );
             } catch {}
         }
 
@@ -474,8 +476,7 @@ async function fetchImdbTechnicalAspectRatio(imdbId: string, imdbUrl?: string): 
     try {
         const resp = await GMAdapter.xmlHttpRequest({
             method: 'GET',
-            url: techUrl,
-            headers: { 'accept-language': 'en-US,en;q=0.9' }
+            url: techUrl
         });
         const html = resp?.responseText || '';
         if (!html) return '';
@@ -642,16 +643,17 @@ export class TikEngine extends Unit3DClassicEngine {
                 fire(titleInput);
             }
 
-            const imdbTechAspect = (!imdbBasics.aspect_ratio && !tmdbBasics.aspect_ratio)
-                ? await fetchImdbTechnicalAspectRatio(imdbId, imdbUrl)
+            const cachedImdbAspect = !/DVD/i.test(medium) ? await ImdbAspectRatioService.getCachedAspectRatio(imdbId) : '';
+            const mediaAspect = !/DVD/i.test(medium) ? normalizeAspectRatioText(parseAspectRatioFallback(rawDescr) || '') : '';
+            const imdbTechAspect = !/DVD/i.test(medium) && !cachedImdbAspect && !imdbBasics.aspect_ratio
+                ? await ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl) || await fetchImdbTechnicalAspectRatio(imdbId, imdbUrl)
                 : '';
-            const aspect_ratio = normalizeAspectRatioText(
-                imdbBasics.aspect_ratio ||
-                tmdbBasics.aspect_ratio ||
-                imdbTechAspect ||
-                parseAspectRatioFallback(rawDescr) ||
-                ''
-            );
+            const waitedImdbAspect = !/DVD/i.test(medium) && !cachedImdbAspect && !imdbBasics.aspect_ratio && !imdbTechAspect
+                ? await ImdbAspectRatioService.waitForCachedAspectRatio(imdbId, 8000)
+                : '';
+            const aspect_ratio = /DVD/i.test(medium)
+                ? normalizeAspectRatioText(parseAspectRatioFallback(rawDescr) || '')
+                : normalizeAspectRatioText(mediaAspect || cachedImdbAspect || imdbBasics.aspect_ratio || imdbTechAspect || waitedImdbAspect || '');
             const bitrate = parseBitrateFallback(rawDescr) || '';
 
             const tpl = tikTemplateFormat(TIK_BASE_CONTENT, {

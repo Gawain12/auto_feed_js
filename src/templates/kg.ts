@@ -76,6 +76,21 @@ function formatTpl(tpl: string, kv: Record<string, string>): string {
     return out;
 }
 
+function normalizeYearText(v: string): string {
+    const text = String(v || '').trim();
+    const m = text.match(/\b(19|20)\d{2}\b/);
+    return m ? m[0] : '';
+}
+
+function sanitizeKgIntroYear(text: string, fallbackYear: string): string {
+    const safeYear = normalizeYearText(fallbackYear);
+    let out = String(text || '');
+    out = out.replace(/Year:\s*-1\b/g, safeYear ? `Year: ${safeYear}` : 'Year:');
+    if (!safeYear) return out;
+    out = out.replace(/Year:\s*$/m, `Year: ${safeYear}`);
+    return out;
+}
+
 function ensureTrailingSlash(url: string): string {
     if (!url) return url;
     return url.endsWith('/') ? url : `${url}/`;
@@ -894,6 +909,9 @@ async function fillKgStep2(workingMeta: TorrentMeta, title: string, baseImdbUrl:
     const linkInput =
         (document.querySelector('input[name="link"]') as HTMLInputElement | null) ||
         (document.querySelector('input[name="internet"]') as HTMLInputElement | null);
+    const yearInput =
+        (document.querySelector('input[name="year"]') as HTMLInputElement | null) ||
+        (document.querySelector('input#year') as HTMLInputElement | null);
     const countrySelect =
         (document.querySelector('select[name="country_id"]') as HTMLSelectElement | null) ||
         (document.querySelector('select[name*="country"], select[id*="country"]') as HTMLSelectElement | null);
@@ -934,7 +952,7 @@ async function fillKgStep2(workingMeta: TorrentMeta, title: string, baseImdbUrl:
     const imdbGenres = imdb.genres.length ? imdb.genres : omdb.genres;
     const imdbCountries = imdb.countries.length ? imdb.countries : omdb.countries;
     const imdbTitle = imdb.title || omdb.title;
-    const imdbYear = imdb.year || omdb.year;
+    const imdbYear = normalizeYearText(imdb.year || omdb.year);
     const imdbDate = imdb.date || omdb.date;
     const imdbScore = imdb.score || omdb.score;
     const imdbDirector = imdb.director || omdb.director;
@@ -942,6 +960,10 @@ async function fillKgStep2(workingMeta: TorrentMeta, title: string, baseImdbUrl:
     const imdbCast = imdb.cast || omdb.cast;
     const imdbEnDescr = imdb.enDescr || omdb.enDescr || extractSynopsisFromSource(mergedSource);
     const imdbPoster = imdb.poster || omdb.poster;
+    const displayYear =
+        imdbYear ||
+        normalizeYearText(tmdb.year) ||
+        normalizeYearText((workingMeta.title || '').match(/\b(19|20)\d{2}\b/)?.[0] || '');
     const mediaLang = uniq([
         ...parseLangListFromMedia(mergedSource, 'audio'),
         ...parseLangListFromMedia(mergedSource, 'sub')
@@ -963,15 +985,21 @@ async function fillKgStep2(workingMeta: TorrentMeta, title: string, baseImdbUrl:
 
     const directorValue = imdbDirector || (titleInput?.value?.trim() || title || 'Unknown');
     directorInputs.forEach((input) => setFormValue(input, directorValue, { force: false }));
+    if (yearInput && displayYear) {
+        setFormValue(yearInput, displayYear);
+        KG_REAPPLY_DELAYS.forEach((ms) => window.setTimeout(() => {
+            setFormValue(yearInput, displayYear);
+        }, ms));
+    }
     if (langInput) setFormValue(langInput, languageText);
 
     if (descrBox) {
         const shots = getScreenshotsFullSizeFromDescr(mergedDescr, workingMeta.mediumSel);
         const poster = imdbPoster || workingMeta.images?.[0] || '';
-        setFormValue(descrBox, formatTpl(KG_INTRO_BASE_CONTENT, {
+        const intro = sanitizeKgIntroYear(formatTpl(KG_INTRO_BASE_CONTENT, {
             poster,
             title: imdbTitle || title,
-            year: imdbYear || tmdb.year || ((workingMeta.title || '').match(/\b(19|20)\d{2}\b/)?.[0] || ''),
+            year: displayYear,
             genres: imdbGenres.join(', '),
             date: imdbDate,
             score: imdbScore,
@@ -983,7 +1011,11 @@ async function fillKgStep2(workingMeta: TorrentMeta, title: string, baseImdbUrl:
             cast: imdbCast,
             en_descr: imdbEnDescr,
             screenshots: shots
-        }).trim());
+        }).trim(), displayYear);
+        setFormValue(descrBox, intro);
+        KG_REAPPLY_DELAYS.forEach((ms) => window.setTimeout(() => {
+            setFormValue(descrBox, sanitizeKgIntroYear(String(descrBox.value || intro), displayYear));
+        }, ms));
     }
     if (subsInput && !subsInput.value.trim()) setFormValue(subsInput, 'None');
 

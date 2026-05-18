@@ -90,7 +90,7 @@ export class DoubanService {
         const summaryEl =
             (doc.querySelector('#link-report-intra [property="v:summary"]') as HTMLElement | null) ||
             (doc.querySelector('#link-report-intra span.all.hidden') as HTMLElement | null);
-        const summary = summaryEl?.textContent?.trim() || '';
+        const summary = this.getSummary(summaryEl);
 
         return {
             id,
@@ -111,12 +111,37 @@ export class DoubanService {
         };
     }
 
+    private static getSummary(summaryEl: HTMLElement | null): string {
+        if (!summaryEl) return '';
+        const directText = Array.from(summaryEl.childNodes)
+            .filter((node) => node.nodeType === Node.TEXT_NODE)
+            .map((node) => node.textContent?.trim() || '')
+            .filter(Boolean)
+            .join('\n')
+            .trim();
+        return directText || summaryEl.textContent?.trim() || '';
+    }
+
     private static getInfoByLabel(doc: Document, label: string): string {
         const spans = Array.from(doc.querySelectorAll('#info span.pl')) as HTMLSpanElement[];
         const span = spans.find((s) => (s.textContent || '').includes(label));
-        if (!span || !span.parentElement) return '';
-        const text = span.parentElement.textContent || '';
-        return text.replace(span.textContent || '', '').replace(':', '').trim();
+        if (!span) return '';
+
+        const chunks: string[] = [];
+        let node = span.nextSibling;
+        while (node) {
+            if (node.nodeName === 'BR') break;
+            const text = node.textContent || '';
+            if (text.trim()) chunks.push(text.trim());
+            node = node.nextSibling;
+        }
+
+        return chunks
+            .join(' ')
+            .replace(/^[：:\s]+/, '')
+            .replace(/\s*\/\s*/g, '/')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
     }
 
     private static buildFetchOptions(options?: DoubanFetchOptions) {

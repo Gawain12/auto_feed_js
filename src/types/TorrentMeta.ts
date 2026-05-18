@@ -11,6 +11,7 @@ export interface TorrentMeta {
     audioCodec?: string;
     processing?: string; // HDR, DoVi, etc.
     medium?: 'Blu-ray' | 'Encode' | 'WEB-DL' | 'Remux' | 'DVD' | 'HDTV';
+    aspectRatio?: string;
 
     // Legacy/Derived Fields (keep for parity with old script)
     type?: string; // 电影/剧集/纪录/综艺/动漫/音乐/体育/MV/学习/软件/游戏/书籍

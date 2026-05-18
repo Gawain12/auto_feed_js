@@ -10,6 +10,7 @@ import { ImageHostService } from '../services/ImageHostService';
 import { UploadMetaFetchService, AutoDownloadAfterUploadService } from '../services/UploadMetaFetchService';
 import { EmbedService } from '../services/EmbedService';
 import { extractImdbId } from '../common/rules/links';
+import { ImdbAspectRatioService } from '../services/ImdbAspectRatioService';
 
 export class SiteManager {
     private activeEngine: BaseEngine | null = null;
@@ -34,6 +35,12 @@ export class SiteManager {
     }
 
     async run() {
+        try {
+            await ImdbAspectRatioService.tryHandleCurrentPage();
+        } catch (e) {
+            console.error('[Auto-Feed] IMDb Aspect Cache Error:', e);
+        }
+
         // Page-level enhancers (PTP/HDB ratings etc.)
         try {
             await PageEnhancerService.tryEnhance();
@@ -80,6 +87,15 @@ export class SiteManager {
         const uploadLikePage = this.isUploadLikePage(window.location.href);
         if (!uploadLikePage && adapter.siteName === 'KG') {
             try { sessionStorage.removeItem(this.KG_CONTINUE_KEY); } catch {}
+            try {
+                const { GMAdapter } = await import('../services/GMAdapter');
+                await GMAdapter.deleteValue('kg_info');
+            } catch {}
+        }
+        if (!uploadLikePage) {
+            try {
+                await StorageService.clearPendingForward();
+            } catch {}
         }
         if (uploadLikePage) {
             try {
@@ -105,29 +121,36 @@ export class SiteManager {
         // 2. CHECK FOR FORWARD HANDOFF (Target Mode)
         try {
             if (uploadLikePage) {
-                if (adapter.siteName === 'KG') {
-                    try {
-                        const { GMAdapter } = await import('../services/GMAdapter');
-                        const raw = await GMAdapter.getValue<string | null>('kg_info', null);
-                        if (raw) {
-                            const parsed = JSON.parse(raw);
-                            const legacyMeta = this.convertKgLegacyInfo(parsed);
-                            if (legacyMeta) {
-                                this.injectFillButton(adapter, legacyMeta);
-                                return;
-                            }
-                        }
-                    } catch {}
-                }
-
                 const hasToken = !!StorageService.getHandoffTokenFromUrl();
                 const handoffMeta = await StorageService.consumeHandoffFromCurrentUrl();
-                if (handoffMeta) {
+                const markerToken = handoffMeta ? null : StorageService.consumeWindowForwardToken(adapter.siteName);
+                const markerMeta = markerToken ? await StorageService.consumeHandoff(markerToken) : null;
+                if (handoffMeta || markerMeta) {
+                    const resolvedMeta = handoffMeta || markerMeta;
+                    await StorageService.clearPendingForward();
                     if (adapter.siteName === 'KG') this.markKgContinue();
-                    this.injectFillButton(adapter, handoffMeta);
+                    this.injectFillButton(adapter, resolvedMeta);
+                } else if (await StorageService.consumePendingForward(adapter.siteName)) {
+                    const cached = await StorageService.load();
+                    if (cached) {
+                        if (adapter.siteName === 'KG') this.markKgContinue();
+                        this.injectFillButton(adapter, cached);
+                    }
                 } else if (adapter.siteName === 'KG' && this.shouldContinueKg()) {
                     const cached = await StorageService.load();
-                    if (cached) this.injectFillButton(adapter, cached);
+                    if (cached) {
+                        this.injectFillButton(adapter, cached);
+                    } else {
+                        try {
+                            const { GMAdapter } = await import('../services/GMAdapter');
+                            const raw = await GMAdapter.getValue<string | null>('kg_info', null);
+                            if (raw) {
+                                const parsed = JSON.parse(raw);
+                                const legacyMeta = this.convertKgLegacyInfo(parsed);
+                                if (legacyMeta) this.injectFillButton(adapter, legacyMeta);
+                            }
+                        } catch {}
+                    }
                 } else if (hasToken) {
                     this.showStatusToast('转发缓存已过期，请返回源站重新点击转发链接。');
                 }
@@ -344,30 +367,48 @@ export class SiteManager {
 
         // TTG legacy detail path: /t/{id}
         if (adapter.siteName === 'TTG') {
-            return /\/t\/\d+/i.test(path) || (/details\.php/i.test(path) && /id=\d+/i.test(qs));
+            return /\/t\/\d+(?:\/|$)/i.test(path) || (this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs));
         }
         // PTP: only when a specific torrent is targeted (torrentid present).
         if (adapter.siteName === 'PTP') {
-            return (path.includes('torrents.php') && /torrentid=\d+/i.test(qs)) || (path.includes('torrents.php') && /id=\d+/i.test(qs));
+            return this.isExactPage(path, 'torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
         }
         // Gazelle movie/music details (GPW/RED/OPS/DIC/SC/etc): torrents.php?id=...&torrentid=...
-        if (['GPW', 'RED', 'OPS', 'DIC'].includes(adapter.siteName)) {
-            return path.includes('torrents.php') && /torrentid=\d+/i.test(qs);
+        if (['GPW', 'RED', 'OPS', 'DIC', 'SC'].includes(adapter.siteName)) {
+            return this.isExactPage(path, 'torrents.php') && /torrentid=\d+/i.test(qs);
+        }
+        if (adapter.siteName === 'HDT') {
+            return this.isExactPage(path, 'torrents.php') && /id=\d+/i.test(qs);
         }
         // HDB / CHDBits: details.php?id=...
         if (adapter.siteName === 'HDB' || adapter.siteName === 'CHDBits') {
-            return /details\.php/i.test(path) && /id=\d+/i.test(qs);
+            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
         }
         // OpenCD source detail pages (new + old layouts)
         if (adapter.siteName === 'OpenCD') {
-            return /details\.php/i.test(path) && /id=\d+/i.test(qs);
+            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
+        }
+        // KG has both torrent details and request details; avoid matching userdetails.php.
+        if (adapter.siteName === 'KG') {
+            return (this.isExactPage(path, 'details.php') || this.isExactPage(path, 'reqdetails.php')) && /id=\d+/i.test(qs);
         }
         // BHD details can be on classic torrent page or library title route.
         if (adapter.siteName === 'BHD') {
             return /\/torrents\/.+/i.test(path) || /\/library\/title\/.+/i.test(path);
         }
         // Default fallback
-        return !!url.match(/details?(\.php)?|threads|topics|torrents\/\d+|detail\/\d+|detail\//i);
+        return (
+            this.isExactPage(path, 'details.php') ||
+            this.isExactPage(path, 'detail.php') ||
+            /\/(?:threads|topics)(?:\/|$)/i.test(path) ||
+            /\/torrents\/\d+(?:\/|$)/i.test(path) ||
+            /\/detail\/\d+(?:\/|$)/i.test(path) ||
+            /\/detail\//i.test(path)
+        );
+    }
+
+    private isExactPage(path: string, pageName: string): boolean {
+        return (path || '').split('/').pop()?.toLowerCase() === pageName.toLowerCase();
     }
 
     private async waitForForm(): Promise<boolean> {
@@ -378,6 +419,8 @@ export class SiteManager {
             'input[name="title"]',
             'textarea[name="descr"]',
             'textarea[name="description"]',
+            'textarea[name="info"]',
+            'input[name="filename"]',
             'input[name="torrentfile"]',
             'input[type="file"]#torrent',
             'input[name="torrent"]',

@@ -63,9 +63,7 @@ export class TTGEngine extends NexusPHPEngine {
 
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const subtitle = (meta.smallDescr || meta.subtitle || '').trim();
-        const ttgName = (meta.title || '')
-            .replace(/(5\.1|2\.0|7\.1|1\.0)/g, (m) => m.replace('.', '{@}'))
-            .replace(/h\.(26(5|4))/gi, 'H{@}$1');
+        const ttgName = (meta.title || '').trim();
         const rawType = meta.type || '';
         const type = (() => {
             if (/电影|電影|movie/i.test(rawType)) return '电影';

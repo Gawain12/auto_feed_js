@@ -42,7 +42,10 @@ function walkDOM(node: Node): string {
             const href = el.getAttribute('href');
             return href ? `[url=${href}]${content}[/url]` : content;
         case 'blockquote':
+        case 'fieldset':
             return `[quote]${content}[/quote]`;
+        case 'legend':
+            return '';
         case 'code':
         case 'pre':
             return `[code]${content}[/code]`;

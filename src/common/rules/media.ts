@@ -86,6 +86,7 @@ export function getMediainfoPictureFromDescr(
     }
     mediainfo = mediainfo.replace(/\[\/quote\]/i, '');
     mediainfo = mediainfo.replace(/\[\/?(font|size|quote|color).{0,80}?\]/gi, '');
+    mediainfo = mediainfo.replace(/^引用.{0,5}\n?/i, '').trim();
 
     let imgs = descr.split(/\[\/quote\]/).pop() || '';
     const imgMatches = imgs.match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/g);

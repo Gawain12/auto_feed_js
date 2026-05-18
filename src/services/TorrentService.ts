@@ -328,7 +328,7 @@ export class TorrentService {
             }
         }
 
-        if (['GPW', 'RED', 'OPS', 'DIC'].includes(forwardSite)) {
+        if (['GPW', 'RED', 'OPS', 'DIC', 'SC'].includes(forwardSite)) {
             const input =
                 (document.querySelector('input[name="file_input"]') as HTMLInputElement | null) ||
                 (document.querySelector('input[name="file"]') as HTMLInputElement | null) ||
@@ -342,6 +342,14 @@ export class TorrentService {
                     fileEl.dispatchEvent(new Event('change', { bubbles: true }));
                     fileEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
+                return true;
+            }
+        }
+
+        if (forwardSite === 'HDT') {
+            const input = document.querySelector('input[name="torrent"], input[type="file"]#torrent') as HTMLInputElement | null;
+            if (input) {
+                this.injectFileIntoInput(input, file);
                 return true;
             }
         }
