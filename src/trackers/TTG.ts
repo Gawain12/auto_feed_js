@@ -61,8 +61,7 @@ export class TTGEngine extends NexusPHPEngine {
 
     async fill(meta: TorrentMeta): Promise<void> {
         this.log('Filling TTG form...');
-        const ttgName = formatTtgTitle((meta.title || '').trim());
-        await super.fill({ ...meta, targetTitle: ttgName });
+        await super.fill(meta);
 
         // TTG target has dedicated fields:
         // - subtitle: input[name="subtitle"]
@@ -74,6 +73,7 @@ export class TTGEngine extends NexusPHPEngine {
 
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const subtitle = (meta.smallDescr || meta.subtitle || '').trim();
+        const ttgName = formatTtgTitle((meta.title || '').trim());
         const rawType = meta.type || '';
         const type = (() => {
             if (/电影|電影|movie/i.test(rawType)) return '电影';
@@ -172,12 +172,36 @@ export class TTGEngine extends NexusPHPEngine {
             } catch { }
         };
 
-        const apply = () => {
+        const normalizeValue = (value: string) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        const initialTitleValue = normalizeValue(ttgName);
+        let preservedTtgTitle = '';
+
+        const applyTitle = () => {
             const titleInput = document.querySelector('input[name="name"], input#name') as HTMLInputElement | null;
-            if (titleInput && ttgName) {
-                titleInput.value = ttgName;
+            if (!titleInput || !ttgName) return;
+            const current = (titleInput.value || '').trim();
+            const currentValue = normalizeValue(current);
+            if (current && currentValue !== initialTitleValue) {
+                preservedTtgTitle = current;
+                return;
             }
-            
+            if (preservedTtgTitle) {
+                titleInput.value = preservedTtgTitle;
+                try {
+                    titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    titleInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch { }
+                return;
+            }
+            titleInput.value = ttgName;
+            try {
+                titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+                titleInput.dispatchEvent(new Event('change', { bubbles: true }));
+            } catch { }
+        };
+
+        const apply = () => {
+            applyTitle();
             setInput('input[name="subtitle"]', subtitle, true);
             setInput('input[name="imdb_c"]', imdbId, true);
             setSelect('select[name="type"], #type', ttgTypeVal);
