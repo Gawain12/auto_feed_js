@@ -124,12 +124,17 @@ export class SettingsService {
         const rename = (v: string) => (v === 'pterclub' ? 'PTer' : v);
         const supported = new Set(SiteCatalogService.getSupportedSiteNames());
         const enabledSet = new Set((settings.enabledSites || []).map(rename).filter((x) => supported.has(x)));
-        // Legacy parity: KG is a commonly used forwarding target and should be available by default.
-        if (supported.has('KG')) enabledSet.add('KG');
+        // Keep newly restored high-priority legacy sites enabled for users with older saved settings.
+        // Otherwise they are present in code but never appear in the source-page forwarding row.
+        ['KG', 'SC', 'TJUPT', 'HDT'].forEach((name) => {
+            if (supported.has(name)) enabledSet.add(name);
+        });
         const enabledSites = Array.from(enabledSet);
 
         const favoriteSet = new Set((settings.favoriteSites || []).map(rename).filter((x) => enabledSet.has(x)));
-        if (enabledSet.has('KG')) favoriteSet.add('KG');
+        ['KG', 'SC', 'TJUPT', 'HDT'].forEach((name) => {
+            if (enabledSet.has(name)) favoriteSet.add(name);
+        });
         const favoriteSites = Array.from(favoriteSet);
         const listQuickSearch = settings.showSearchOnList as any;
         const showSearchOnList = {

@@ -5,6 +5,7 @@ import { SiteConfig, SiteType } from '../types/SiteConfig';
 import { extractDoubanId, extractImdbId, extractTmdbId, matchLink } from '../common/rules/links';
 import { getSearchName } from '../common/rules/search';
 import { ImdbAspectRatioService } from './ImdbAspectRatioService';
+import { GMAdapter } from './GMAdapter';
 
 export interface ForwardLinkOptions {
     chdBaseUrl?: string;
@@ -111,6 +112,43 @@ const buildSearchUrl = (site: SiteConfig, meta: TorrentMeta, options?: ForwardLi
     return joinUrl(base, `torrents.php?search=${imdbId || searchName}`);
 };
 
+const extractGroupIdFromHtml = (html: string, siteName: string): string => {
+    if (!html) return '';
+    try {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        if (siteName === 'SC') {
+            const link = doc.querySelector('div.torrent_card_container a[href*="id="], a[href*="torrents.php?id="]') as HTMLAnchorElement | null;
+            return link?.href?.match(/[?&]id=(\d+)/i)?.[1] || '';
+        }
+        if (siteName === 'PTP') {
+            const link = doc.querySelector('a[href*="torrents.php?id="], a.basic-movie-list__movie__cover-link[href*="id="]') as HTMLAnchorElement | null;
+            return link?.href?.match(/[?&]id=(\d+)/i)?.[1] || '';
+        }
+    } catch {}
+    return html.match(/torrents\.php\?id=(\d+)/i)?.[1] || html.match(/[?&]id=(\d+)/i)?.[1] || '';
+};
+
+const resolveGazelleMovieUploadUrl = async (
+    site: SiteConfig,
+    meta: TorrentMeta,
+    options?: ForwardLinkOptions
+): Promise<string> => {
+    const base = resolveBaseUrl(site, options);
+    const baseUpload = joinUrl(base, 'upload.php');
+    const searchUrl = buildSearchUrl(site, meta, options);
+    try {
+        const res = await GMAdapter.xmlHttpRequest({ method: 'GET', url: searchUrl });
+        const finalUrl = String(res?.finalUrl || res?.responseURL || '');
+        const finalGroupId = finalUrl.match(/[?&]id=(\d+)/i)?.[1] || '';
+        const htmlGroupId = extractGroupIdFromHtml(String(res?.responseText || ''), site.name);
+        const groupId = finalGroupId || htmlGroupId;
+        return groupId ? `${baseUpload}?groupid=${encodeURIComponent(groupId)}` : baseUpload;
+    } catch (e) {
+        console.warn(`[Auto-Feed][${site.name}] group upload lookup failed, using plain upload.php`, e);
+        return baseUpload;
+    }
+};
+
 export class ForwardLinkService {
     static getUploadUrl(site: SiteConfig, options?: ForwardLinkOptions): string {
         return buildUploadUrl(site, options);
@@ -118,6 +156,13 @@ export class ForwardLinkService {
 
     static getSearchUrl(site: SiteConfig, meta: TorrentMeta, options?: ForwardLinkOptions): string {
         return buildSearchUrl(site, meta, options);
+    }
+
+    static async resolveUploadUrl(site: SiteConfig, meta: TorrentMeta, options?: ForwardLinkOptions): Promise<string> {
+        if (site.name === 'PTP' || site.name === 'SC') {
+            return resolveGazelleMovieUploadUrl(site, meta, options);
+        }
+        return buildUploadUrl(site, options);
     }
 
     static injectForwardLinks(

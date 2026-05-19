@@ -58,3 +58,4 @@
 
 ## 近期进度
 - 2026-05-18：SC / HDT / TJUPT 完成第二轮稳定性修复。重点包括上传页等待选择器补齐、SC group-only 源页注入、HDT details/torrents 源页兼容、TJUPT 通用 name 与专用 ename/cname 填充分离，以及 Unit3D/Gazelle 统一使用 `targetTitle` 防止标题被通用逻辑覆盖。
+- 2026-05-19：修复旧设置未自动启用 SC / TJUPT / HDT 的迁移问题；PTP / SC 发布跳转按 legacy 先检索并附加 `groupid`；SC 目标页改为直接调用 `/imdb.php?code=` 填充 group 字段；HDT / TJUPT 源页增加稳定挂载点。

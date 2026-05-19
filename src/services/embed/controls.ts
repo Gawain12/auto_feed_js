@@ -96,8 +96,8 @@ import {
                     if (!ok) return;
                 }
 
-                const baseUploadUrl = a.dataset.uploadHref || a.href;
-                let targetUrl = baseUploadUrl;
+                const fallbackUploadUrl = a.dataset.uploadHref || a.href;
+                let targetUrl = fallbackUploadUrl;
                 const win = window.open('about:blank', '_blank');
                 const go = () => {
                     try {
@@ -110,6 +110,11 @@ import {
 
                 (async () => {
                     try {
+                        const baseUploadUrl = await ForwardLinkService.resolveUploadUrl(site, meta, {
+                            chdBaseUrl: settings.chdBaseUrl,
+                            tlBaseUrl: settings.tlBaseUrl,
+                            lang: settings.uiLanguage
+                        });
                         const metaToSave: any = { ...meta };
                         if (metaToSave.torrentUrl && !metaToSave.torrentBase64) {
                             const { TorrentService } = await import('../TorrentService');

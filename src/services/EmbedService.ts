@@ -364,6 +364,63 @@ export class EmbedService {
             return { kind: 'table-body', tableBody: tbody, leftClass };
         }
 
+        // HDT does not always expose a Nexus-style Action row. Provide a stable host near the
+        // torrent header so source pages still get forwarding links and tools.
+        if (adapter.siteName === 'HDT') {
+            const existing = document.getElementById('autofeed-hdt-host') as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const mount =
+                (document.querySelector('img.torrents')?.parentElement as HTMLElement | null) ||
+                (document.querySelector('#content, .content, #main, .main') as HTMLElement | null) ||
+                document.body;
+            if (mount) {
+                const host = document.createElement('div');
+                host.id = 'autofeed-hdt-host';
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '12px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                if (mount === document.body) mount.insertBefore(host, mount.firstChild);
+                else mount.insertAdjacentElement('afterend', host);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            }
+        }
+
+        // TJUPT can render detail pages without a reliable "Action" label row. Anchor around
+        // the main description block, matching the legacy behavior of inserting inside details.
+        if (adapter.siteName === 'TJUPT') {
+            const descr = document.getElementById('kdescr') || document.getElementById('description');
+            const tr = descr?.closest('tr') as HTMLTableRowElement | null;
+            if (tr) return { kind: 'after-tr', afterTr: tr, colSpan: getColSpanForRow(tr) };
+            const existing = document.getElementById('autofeed-tjupt-host') as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const title = document.getElementById('top') || document.querySelector('h1#top, h1') as HTMLElement | null;
+            if (title?.parentElement) {
+                const host = document.createElement('div');
+                host.id = 'autofeed-tjupt-host';
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '12px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                title.insertAdjacentElement('afterend', host);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            }
+        }
+
         // PTP: insert after the specific torrent row.
         if (adapter.siteName === 'PTP') {
             const u = new URL(window.location.href);

@@ -5,6 +5,7 @@ import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
 import { setAllFormValues, setFirstFormValue } from '../common/dom/form';
+import { GMAdapter } from '../services/GMAdapter';
 
 function getScTorrentId(currentUrl: string): string {
     try {
@@ -45,6 +46,30 @@ function normalizeMediaValue(meta: TorrentMeta): string {
     if (/1080/i.test(standard)) return '1080p';
     if (/720/i.test(standard)) return '720p';
     return 'SD';
+}
+
+async function populateScFromImdb(imdbId: string, meta: TorrentMeta) {
+    if (!imdbId) return;
+    try {
+        const res = await GMAdapter.xmlHttpRequest({
+            method: 'GET',
+            url: new URL(`/imdb.php?code=${encodeURIComponent(imdbId)}`, window.location.origin).href
+        });
+        const data = JSON.parse(String(res?.responseText || '{}'));
+        if (!data || data.err) return;
+        setFirstFormValue('input#title, input[name="title"]', data.title, { force: false });
+        setFirstFormValue('input#alternate_title, input[name="alternate_title"]', data.alt_title, { force: false });
+        setFirstFormValue('input#year, input[name="year"]', String(data.year || ''), { force: false });
+        setFirstFormValue('input#country, input[name="country"]', data.country, { force: false });
+        setFirstFormValue('input#language, input[name="language"]', data.language, { force: false });
+        setFirstFormValue('input#runtime, input[name="runtime"]', String(data.runtime || ''), { force: false });
+        setFirstFormValue('input#tags, input[name="tags"]', data.taglist, { force: false });
+        setFirstFormValue('textarea#album_desc, textarea[name="album_desc"]', data.group_desc || meta.synopsis || meta.description || '', { force: false });
+        const image = meta.images?.[0] || meta.description?.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
+        setFirstFormValue('input[name="image"], input#image', image, { force: false });
+    } catch (e) {
+        console.warn('[Auto-Feed][SC] IMDb populate failed:', e);
+    }
 }
 
 export class SCEngine extends GazelleEngine {
@@ -108,6 +133,7 @@ export class SCEngine extends GazelleEngine {
         setAllFormValues('#catalogue_number, #cataloguenumber, input[name="catalogue_number"], input[name="cataloguenumber"]', imdbId);
         const imdbAuto = document.querySelector('#imdb_autofill') as HTMLButtonElement | HTMLInputElement | null;
         try { imdbAuto?.click(); } catch {}
+        await populateScFromImdb(imdbId, meta);
 
         setAllFormValues('#media, select[name="media"]', normalizeMediaValue(meta));
         const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ''}\n${meta.description || ''}`, { mediumSel: meta.mediumSel });
