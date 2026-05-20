@@ -367,6 +367,17 @@ export class EmbedService {
         // HDT does not always expose a Nexus-style Action row. Provide a stable host near the
         // torrent header so source pages still get forwarding links and tools.
         if (adapter.siteName === 'HDT') {
+            const detailsTable = document.querySelector('table.listadetails') as HTMLTableElement | null;
+            if (detailsTable) {
+                const rows = Array.from(detailsTable.querySelectorAll('tr')) as HTMLTableRowElement[];
+                const anchor =
+                    rows.find((tr) => /^(Tools?|Actions?)\s*:?$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows.find((tr) => /download\.php|bookmark|thanks|report/i.test(tr.innerHTML || '')) ||
+                    rows.find((tr) => /^(Torrent|Info Hash|Category)\s*:?$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    null;
+                if (anchor) return { kind: 'after-tr', afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+            }
+
             const existing = document.getElementById('autofeed-hdt-host') as HTMLElement | null;
             if (existing) {
                 const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
@@ -396,6 +407,16 @@ export class EmbedService {
         // TJUPT can render detail pages without a reliable "Action" label row. Anchor around
         // the main description block, matching the legacy behavior of inserting inside details.
         if (adapter.siteName === 'TJUPT') {
+            const dlTable = findNexusDetailsTableByDownloadLink();
+            const anchor = dlTable ? findNexusAnchorRow(dlTable) : null;
+            if (anchor) return { kind: 'after-tr', afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+
+            const actionRow = Array.from(document.querySelectorAll('tr')).find((tr) => {
+                const first = tr.querySelector('td, th') as HTMLElement | null;
+                return /^(行为|行為|操作|Action|Actions)\b/i.test((first?.textContent || '').trim());
+            }) as HTMLTableRowElement | undefined;
+            if (actionRow) return { kind: 'after-tr', afterTr: actionRow, colSpan: getColSpanForRow(actionRow) };
+
             const descr = document.getElementById('kdescr') || document.getElementById('description');
             const tr = descr?.closest('tr') as HTMLTableRowElement | null;
             if (tr) return { kind: 'after-tr', afterTr: tr, colSpan: getColSpanForRow(tr) };

@@ -14,6 +14,64 @@ export class HDBEngine extends BaseEngine {
         super(config, url);
     }
 
+    private cleanHdbMediaInfo(raw: string): string {
+        let text = String(raw || '').replace(/\r/g, '').trim();
+        if (!text) return '';
+        try {
+            const doc = new DOMParser().parseFromString(text, 'text/html');
+            const picked =
+                (doc.querySelector('pre, code, textarea') as HTMLElement | null)?.textContent ||
+                doc.body?.textContent ||
+                '';
+            if (picked && picked.trim().length > 40) text = picked;
+        } catch {}
+        text = text
+            .replace(/\u00a0/g, ' ')
+            .replace(/^Mediainfo log\s*/i, '')
+            .replace(/^Quote\s*/i, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        return /(General|Unique ID|Complete name|Video|Audio|Text|Format\s*:|Bit rate\s*:|Duration\s*:)/i.test(text)
+            ? text
+            : '';
+    }
+
+    private async fetchHdbMediaInfo(details: HTMLElement | null): Promise<string> {
+        try {
+            const href =
+                (details?.querySelector('a[href*="/details/mediainfo"]') as HTMLAnchorElement | null)?.href ||
+                (document.querySelector('a[href*="/details/mediainfo"]') as HTMLAnchorElement | null)?.href ||
+                '';
+            if (!href) return '';
+            const url = new URL(href, this.currentUrl).href;
+            const raw = await HtmlFetchService.getText(url, { withCredentials: true });
+            return this.cleanHdbMediaInfo(raw);
+        } catch (e) {
+            console.warn('[Auto-Feed][HDB] Mediainfo log fetch failed:', e);
+            return '';
+        }
+    }
+
+    private extractHdbTechnicalSummary(details: HTMLElement | null): string {
+        if (!details) return '';
+        const label = Array.from(details.querySelectorAll('div.label')).find((el) =>
+            /Technical Information/i.test(el.textContent || '')
+        ) as HTMLElement | undefined;
+        const block = label?.nextElementSibling as HTMLElement | null;
+        if (!block) return '';
+        const rows = Array.from(block.querySelectorAll('tr'));
+        const lines: string[] = [];
+        rows.forEach((row) => {
+            const th = row.querySelector('th');
+            const td = row.querySelector('td');
+            const key = (th?.textContent || '').replace(/\s+/g, ' ').trim();
+            const value = (td?.textContent || '').replace(/\s+/g, ' ').trim();
+            if (key && value) lines.push(`${key}: ${value}`);
+        });
+        if (!lines.length) return '';
+        return ['HDB Technical Information', ...lines].join('\n');
+    }
+
     async parse(): Promise<TorrentMeta> {
         this.log('Parsing HDB page...');
 
@@ -144,6 +202,9 @@ export class HDBEngine extends BaseEngine {
             }
         }
 
+        const fetchedMediaInfo = await this.fetchHdbMediaInfo(details);
+        const technicalSummary = fetchedMediaInfo ? '' : this.extractHdbTechnicalSummary(details);
+
         const meta: TorrentMeta = {
             title,
             description,
@@ -151,6 +212,9 @@ export class HDBEngine extends BaseEngine {
             sourceUrl: this.currentUrl,
             images: []
         };
+        if (fetchedMediaInfo || technicalSummary) {
+            meta.fullMediaInfo = fetchedMediaInfo || technicalSummary;
+        }
 
         if (imdbUrl) {
             meta.imdbUrl = imdbUrl;
@@ -264,6 +328,9 @@ export class HDBEngine extends BaseEngine {
                 if (rebuilt) {
                     meta.description = rebuilt;
                 }
+            } else if (meta.fullMediaInfo) {
+                const picInfo = info.picInfo || '';
+                meta.description = `${meta.fullMediaInfo ? `[quote]${meta.fullMediaInfo}[/quote]\n\n` : ''}${picInfo || description || ''}`.trim();
             } else {
                 meta.description = description;
             }
