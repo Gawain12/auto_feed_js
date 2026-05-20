@@ -112,13 +112,43 @@ const buildSearchUrl = (site: SiteConfig, meta: TorrentMeta, options?: ForwardLi
     return joinUrl(base, `torrents.php?search=${imdbId || searchName}`);
 };
 
-const extractGroupIdFromHtml = (html: string, siteName: string): string => {
+const normalizeMovieKey = (value: string) => String(value || '')
+    .toLowerCase()
+    .replace(/&amp;/g, '&')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const extractYear = (meta: TorrentMeta): string => {
+    const text = `${meta.title || ''} ${meta.subtitle || ''} ${meta.smallDescr || ''} ${meta.description || ''}`;
+    return text.match(/\b(19\d{2}|20\d{2})\b/)?.[1] || '';
+};
+
+const extractGroupIdFromHtml = (html: string, siteName: string, meta?: TorrentMeta): string => {
     if (!html) return '';
     try {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         if (siteName === 'SC') {
-            const link = doc.querySelector('div.torrent_card_container a[href*="id="], a[href*="torrents.php?id="]') as HTMLAnchorElement | null;
-            return link?.href?.match(/[?&]id=(\d+)/i)?.[1] || '';
+            const imdbId = meta ? (meta.imdbId || extractImdbId(meta.imdbUrl || '') || '') : '';
+            const imdbNo = imdbId.replace(/^tt/i, '');
+            const titleKey = meta ? normalizeMovieKey(getSearchName(meta.title || '', meta.type) || meta.title || '') : '';
+            const year = meta ? extractYear(meta) : '';
+            const candidates = Array.from(doc.querySelectorAll(
+                'div.torrent_card_container, div.torrent_card, .group, table.torrent_table tr, tr'
+            )) as HTMLElement[];
+
+            for (const candidate of candidates) {
+                const link = candidate.querySelector('a[href*="torrents.php?id="], a[href*="?id="]') as HTMLAnchorElement | null;
+                const id = link?.href?.match(/[?&]id=(\d+)/i)?.[1] || '';
+                if (!id) continue;
+
+                const blob = `${candidate.textContent || ''} ${candidate.innerHTML || ''}`;
+                const blobKey = normalizeMovieKey(blob);
+                const exactImdb = imdbId && (blob.includes(imdbId) || (!!imdbNo && blob.includes(imdbNo)));
+                const exactTitle = titleKey && blobKey.includes(titleKey) && (!year || blobKey.includes(year));
+                if (exactImdb || exactTitle) return id;
+            }
+            return '';
         }
         if (siteName === 'PTP') {
             const link = doc.querySelector('a[href*="torrents.php?id="], a.basic-movie-list__movie__cover-link[href*="id="]') as HTMLAnchorElement | null;
@@ -137,10 +167,10 @@ const resolveGazelleMovieUploadUrl = async (
     const baseUpload = joinUrl(base, 'upload.php');
     const searchUrl = buildSearchUrl(site, meta, options);
     try {
-        const res = await GMAdapter.xmlHttpRequest({ method: 'GET', url: searchUrl });
+        const res = await GMAdapter.xmlHttpRequest({ method: 'GET', url: searchUrl, timeout: 12000 });
         const finalUrl = String(res?.finalUrl || res?.responseURL || '');
         const finalGroupId = finalUrl.match(/[?&]id=(\d+)/i)?.[1] || '';
-        const htmlGroupId = extractGroupIdFromHtml(String(res?.responseText || ''), site.name);
+        const htmlGroupId = extractGroupIdFromHtml(String(res?.responseText || ''), site.name, meta);
         const groupId = finalGroupId || htmlGroupId;
         return groupId ? `${baseUpload}?groupid=${encodeURIComponent(groupId)}` : baseUpload;
     } catch (e) {

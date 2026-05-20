@@ -71,6 +71,13 @@ export class HDBEngine extends BaseEngine {
                             synopsis = (next.textContent || '').trim();
                             if (synopsis) break;
                         }
+                        const row = cell.parentElement as HTMLTableRowElement | null;
+                        const nextRow = row?.nextElementSibling as HTMLTableRowElement | null;
+                        const nextRowCell = nextRow?.querySelector('td, th') as HTMLElement | null;
+                        if (nextRowCell) {
+                            synopsis = (nextRowCell.textContent || '').trim();
+                            if (synopsis) break;
+                        }
                     }
                 }
             }
@@ -252,6 +259,7 @@ export class HDBEngine extends BaseEngine {
         try {
             const info = getMediainfoPictureFromDescr(description);
             if (info.mediainfo) {
+                meta.fullMediaInfo = info.mediainfo;
                 const rebuilt = `${info.mediainfo ? `[quote]${info.mediainfo}[/quote]\n\n` : ''}${info.picInfo || ''}`.trim();
                 if (rebuilt) {
                     meta.description = rebuilt;

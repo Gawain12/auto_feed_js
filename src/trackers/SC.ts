@@ -137,20 +137,21 @@ export class SCEngine extends GazelleEngine {
 
         setAllFormValues('#media, select[name="media"]', normalizeMediaValue(meta));
         const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ''}\n${meta.description || ''}`, { mediumSel: meta.mediumSel });
-        const screenshots = (info.picInfo || '')
+        const screenshotTags = (info.picInfo || '')
             .match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/gi)
-            ?.slice(0, 3)
-            .join('') || '';
+            ?.slice(0, 3) || [];
+        const screenshots = screenshotTags.join('\n');
         const mediainfo = meta.fullMediaInfo || info.mediainfo || '';
-        const image = meta.images?.[0] || meta.description.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
-        const posterTag = image ? `[img]${image}[/img]` : '';
+        const poster = meta.images?.[0] || '';
+        const fallbackImage = poster || meta.description.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
+        const posterTag = poster && !screenshots.includes(poster) ? `[img]${poster}[/img]` : '';
         const releaseDesc = [posterTag, screenshots, mediainfo ? `[hide=MediaInfo]${mediainfo}[/hide]` : '']
             .filter(Boolean)
             .join('\n\n');
         const applyScFields = (forceDescription = true) => {
             setFirstFormValue('#release_desc, textarea[name="release_desc"], textarea[name="description"]', releaseDesc || meta.description, { force: forceDescription });
             setFirstFormValue('#album_desc, textarea[name="album_desc"]', meta.synopsis || meta.description || '', { force: false });
-            setFirstFormValue('input[name="image"], input#image', image, { force: false });
+            setFirstFormValue('input[name="image"], input#image', fallbackImage, { force: false });
         };
         applyScFields(true);
         [300, 900, 1800, 3500].forEach((ms) => window.setTimeout(() => applyScFields(false), ms));
