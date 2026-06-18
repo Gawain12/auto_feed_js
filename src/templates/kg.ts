@@ -4,7 +4,7 @@ import { SiteConfig } from '../types/SiteConfig';
 import { extractImdbId } from '../common/rules/links';
 import { getMediumSel } from '../common/rules/text';
 import { getSizeFromDescr } from '../common/rules/helpers';
-import { getMediainfoPictureFromDescr } from '../common/rules/media';
+import { cleanMediaInfoText, getMediainfoPictureFromDescr } from '../common/rules/media';
 import { full_bdinfo2summary } from '../utils/mediaInfo';
 import { HtmlFetchService } from '../services/HtmlFetchService';
 import { ImageHostService } from '../services/ImageHostService';
@@ -685,6 +685,35 @@ function sanitizeKgRipSpecs(value: string): string {
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function extractKgMediaInfoText(root: HTMLElement): string {
+    const mediaRe = /(General|Unique ID|Complete name|Format\s*:|Duration\s*:|DISC INFO:|Disc Title|Disc Label|\.MPLS|Video Codec|RELEASE\.NAME|RESOLUTiON|Bitrate)/i;
+    const mediaStartRe = /^(General|DISC INFO:|Disc Title|Disc Label|RELEASE\.NAME|Video Codec)\b/i;
+    const candidates: string[] = [];
+
+    const push = (value: string) => {
+        const cleaned = cleanMediaInfoText(value);
+        if (cleaned && mediaRe.test(cleaned)) candidates.push(cleaned);
+    };
+
+    try {
+        root.querySelectorAll('.mediainfo, pre, code, textarea, .codemain, .code, .quote, .bbcode').forEach((el) => {
+            push((el.textContent || '').trim());
+        });
+    } catch {}
+
+    const text = (root.textContent || '').trim();
+    try {
+        const wrapped = text.match(/\[(?:code|mediainfo|bdinfo|quote|hide)(?:=[^\]]*)?\][\s\S]*?\[\/(?:code|mediainfo|bdinfo|quote|hide)\]/gi) || [];
+        wrapped.forEach(push);
+    } catch {}
+    push(text);
+
+    if (!candidates.length) return '';
+    const prioritized = candidates.filter((item) => mediaStartRe.test(item));
+    const pool = prioritized.length ? prioritized : candidates;
+    return pool.reduce((best, cur) => (cur.length > best.length ? cur : best), pool[0]).trim();
+}
+
 function buildKgRipspecs(meta: TorrentMeta): { ripspecs: string; subs: string; forceDvdr: boolean; forceHdrip3: boolean } {
     const descr = `${meta.fullMediaInfo || ''}\n${meta.description || ''}`.trim();
     const medium = resolveKgMedium(meta);
@@ -1148,14 +1177,20 @@ export async function parseKG(_config: SiteConfig, currentUrl: string): Promise<
                     const a = next.getElementsByTagName('a')[0];
                     const t = (a?.textContent || '').trim();
                     if (t) meta.title = t;
-                    const mi = next.getElementsByClassName('mediainfo')[0] as HTMLElement | undefined;
-                    const text = (mi?.textContent || next.textContent || '').trim();
-                    if (text) meta.description = `[quote]${text}[/quote]\n\n${imgsStr}`;
+                    const text = extractKgMediaInfoText(next) || (next.textContent || '').trim();
+                    const mediaText = cleanMediaInfoText(text);
+                    if (mediaText) {
+                        meta.fullMediaInfo = mediaText;
+                        meta.description = `[quote]${mediaText}[/quote]\n\n${imgsStr}`;
+                    }
                 } catch {
                     const h = $('h1').first().text().trim();
                     if (h.includes('-')) meta.title = h.split('-').pop()?.trim() || meta.title;
-                    const text = (next.textContent || '').trim();
-                    if (text) meta.description = `[quote]${text}[/quote]\n\n${imgsStr}`;
+                    const text = cleanMediaInfoText((next.textContent || '').trim());
+                    if (text) {
+                        meta.fullMediaInfo = text;
+                        meta.description = `[quote]${text}[/quote]\n\n${imgsStr}`;
+                    }
                 }
             } else if (key === 'Source') {
                 const v = (next.textContent || '').trim();

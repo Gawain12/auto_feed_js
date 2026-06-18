@@ -5,7 +5,7 @@ import { SiteConfig } from '../types/SiteConfig';
 import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId, extractTmdbId, matchLink } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
-import { getMediainfoPictureFromDescr } from '../common/rules/media';
+import { cleanMediaInfoText, getMediainfoPictureFromDescr } from '../common/rules/media';
 import { HtmlFetchService } from '../services/HtmlFetchService';
 import { StorageService } from '../services/StorageService';
 
@@ -25,15 +25,83 @@ export class HDBEngine extends BaseEngine {
                 '';
             if (picked && picked.trim().length > 40) text = picked;
         } catch {}
-        text = text
-            .replace(/\u00a0/g, ' ')
-            .replace(/^Mediainfo log\s*/i, '')
-            .replace(/^Quote\s*/i, '')
-            .replace(/\n{3,}/g, '\n\n')
-            .trim();
+        text = cleanMediaInfoText(text);
         return /(General|Unique ID|Complete name|Video|Audio|Text|Format\s*:|Bit rate\s*:|Duration\s*:)/i.test(text)
             ? text
             : '';
+    }
+
+    private getHdbReleaseNameFromMediaInfo(raw: string): string {
+        const text = cleanMediaInfoText(raw);
+        if (!text) return '';
+
+        const release =
+            text.match(/RELEASE\.?NAME\s*:\s*([^\r\n]+)/i)?.[1] ||
+            text.match(/Complete\s+name\s*:\s*([^\r\n]+)/i)?.[1] ||
+            '';
+        if (!release) return '';
+
+        let name = release
+            .split(/[\\/]/)
+            .filter(Boolean)
+            .pop() || release;
+        name = name
+            .replace(/\.(?:mkv|mp4|avi|m2ts|ts|iso|vob|ifo)$/i, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        return name;
+    }
+
+    private getHdbNamesFromDownload(downloadLink: string, downloadText: string): { completeName: string; releaseName: string } {
+        let filename = String(downloadText || '').trim();
+        if (!filename && downloadLink) {
+            try {
+                const path = new URL(downloadLink, this.currentUrl).pathname;
+                filename = decodeURIComponent(path.split('/').filter(Boolean).pop() || '');
+            } catch {
+                filename = decodeURIComponent(String(downloadLink || '').split('?')[0].split('/').pop() || '');
+            }
+        }
+        filename = filename
+            .replace(/[\\/:*?"<>|]/g, (ch) => (ch === '/' || ch === '\\' ? '.' : ''))
+            .replace(/\s+/g, ' ')
+            .trim();
+        if (!filename) return { completeName: '', releaseName: '' };
+
+        const completeName = filename.replace(/\.torrent$/i, '').trim();
+        const releaseName = completeName
+            .replace(/\.(?:mkv|mp4|avi|m2ts|ts|iso|vob|ifo)$/i, '')
+            .trim();
+        return { completeName, releaseName };
+    }
+
+    private buildHdbFallbackMediaInfo(completeName: string, technicalSummary: string): string {
+        const tech = cleanMediaInfoText(technicalSummary)
+            .replace(/^HDB Technical Information\s*/i, '')
+            .trim();
+        if (!completeName) return tech ? `HDB Technical Information\n${tech}` : '';
+
+        const lines = ['General', `Complete name : ${completeName}`];
+        if (/\.mkv$/i.test(completeName)) lines.push('Format : Matroska');
+        else if (/\.mp4$/i.test(completeName)) lines.push('Format : MPEG-4');
+        else if (/\.avi$/i.test(completeName)) lines.push('Format : AVI');
+        else if (/\.m2ts$/i.test(completeName)) lines.push('Format : BDAV');
+        else if (/\.ts$/i.test(completeName)) lines.push('Format : MPEG-TS');
+
+        if (tech) {
+            lines.push('', 'HDB Technical Information', tech);
+        }
+        return lines.join('\n').trim();
+    }
+
+    private ensureHdbCompleteName(mediaInfo: string, completeName: string): string {
+        const clean = cleanMediaInfoText(mediaInfo);
+        if (!clean || !completeName || /Complete\s+name\s*:/i.test(clean)) return clean;
+        if (/^General\s*$/im.test(clean)) {
+            return clean.replace(/^General\s*$/im, `General\nComplete name : ${completeName}`);
+        }
+        return `General\nComplete name : ${completeName}\n\n${clean}`.trim();
     }
 
     private async fetchHdbMediaInfo(details: HTMLElement | null): Promise<string> {
@@ -188,10 +256,13 @@ export class HDBEngine extends BaseEngine {
             if (imdbId) imdbUrl = `https://www.imdb.com/title/${imdbId}/`;
         }
 
+        const downloadAnchor = $('a[href*="download.php"]').first()[0] as HTMLAnchorElement | undefined;
+        const fallbackDownloadAnchor = $('a[href*="download"]').first()[0] as HTMLAnchorElement | undefined;
         const downloadLink =
-            $('a[href*="download.php"]').first().attr('href') ||
-            $('a[href*="download"]').first().attr('href') ||
+            downloadAnchor?.getAttribute('href') ||
+            fallbackDownloadAnchor?.getAttribute('href') ||
             '';
+        const downloadText = (downloadAnchor?.textContent || fallbackDownloadAnchor?.textContent || '').trim();
 
         let torrentUrl = '';
         if (downloadLink) {
@@ -202,8 +273,18 @@ export class HDBEngine extends BaseEngine {
             }
         }
 
+        const downloadNames = this.getHdbNamesFromDownload(downloadLink, downloadText);
         const fetchedMediaInfo = await this.fetchHdbMediaInfo(details);
         const technicalSummary = fetchedMediaInfo ? '' : this.extractHdbTechnicalSummary(details);
+        const releaseNameFromMedia = this.getHdbReleaseNameFromMediaInfo(fetchedMediaInfo);
+        const releaseNameFromDownload = downloadNames.releaseName;
+        if (releaseNameFromMedia || releaseNameFromDownload) {
+            title = releaseNameFromMedia || releaseNameFromDownload;
+        }
+        const mediaInfoForMeta =
+            this.ensureHdbCompleteName(fetchedMediaInfo, downloadNames.completeName) ||
+            this.buildHdbFallbackMediaInfo(downloadNames.completeName, technicalSummary) ||
+            technicalSummary;
 
         const meta: TorrentMeta = {
             title,
@@ -212,8 +293,8 @@ export class HDBEngine extends BaseEngine {
             sourceUrl: this.currentUrl,
             images: []
         };
-        if (fetchedMediaInfo || technicalSummary) {
-            meta.fullMediaInfo = fetchedMediaInfo || technicalSummary;
+        if (mediaInfoForMeta) {
+            meta.fullMediaInfo = mediaInfoForMeta;
         }
 
         if (imdbUrl) {

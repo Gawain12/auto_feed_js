@@ -4,7 +4,7 @@ import { TorrentMeta } from '../types/TorrentMeta';
 import { SiteConfig } from '../types/SiteConfig';
 import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
-import { getMediainfoPictureFromDescr } from '../common/rules/media';
+import { cleanMediaInfoText, getMediainfoPictureFromDescr } from '../common/rules/media';
 import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { rebuildReleaseTitleFromMedia } from '../common/rules/titleRebuild';
 import { getSizeFromDescr } from '../common/rules/helpers';
@@ -576,7 +576,7 @@ export class PTPEngine extends BaseEngine {
         let releaseDesc = '';
         try {
             const info = getMediainfoPictureFromDescr(meta.description || '', { mediumSel: meta.mediumSel });
-            const miText = (meta.fullMediaInfo || info.mediainfo || '').trim();
+            const miText = cleanMediaInfoText(meta.fullMediaInfo || info.mediainfo || '').trim();
             const miWrapped = miText ? `[mediainfo]\n${miText}\n[/mediainfo]` : '';
             releaseDesc = `${miWrapped}${miWrapped && info.picInfo ? '\n\n' : ''}${info.picInfo || ''}`.trim();
         } catch {
