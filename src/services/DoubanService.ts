@@ -35,12 +35,27 @@ export class DoubanService {
     private static posterDataUrlCache = new Map<string, Promise<string>>();
 
     static async getByImdb(imdbId: string, options?: DoubanFetchOptions): Promise<DoubanInfo | null> {
-        const searchUrl = `https://m.douban.com/search/?query=${encodeURIComponent(imdbId)}&type=movie`;
-        const doc = await HtmlFetchService.getDocument(searchUrl, this.buildFetchOptions(options));
-        const link = doc.querySelector('ul.search_results_subjects a');
-        if (!link) return null;
-        const href = link.getAttribute('href') || '';
-        const id = extractDoubanId(href);
+        const query = encodeURIComponent(String(imdbId || '').trim());
+        if (!query) return null;
+
+        // Douban occasionally returns an empty search shell from the mobile
+        // endpoint. Keep it as the first choice, then fall back to the small
+        // subject-suggest endpoint when the shell has no usable link.
+        let id = '';
+        try {
+            const searchUrl = `https://m.douban.com/search/?query=${query}&type=movie`;
+            const doc = await HtmlFetchService.getDocument(searchUrl, this.buildFetchOptions(options));
+            id = this.findDoubanId(doc);
+        } catch {}
+
+        if (!id) {
+            try {
+                const suggestUrl = `https://movie.douban.com/j/subject_suggest?q=${query}`;
+                const text = await HtmlFetchService.getText(suggestUrl, this.buildFetchOptions(options));
+                id = extractDoubanId(text) || text.match(/(?:subject\/|"id"\s*:\s*")([0-9]{5,})/i)?.[1] || '';
+            } catch {}
+        }
+
         if (!id || id === '35580200') return null;
         return this.getById(id, options);
     }
@@ -49,6 +64,16 @@ export class DoubanService {
         const url = `https://movie.douban.com/subject/${id}/`;
         const doc = await HtmlFetchService.getDocument(url, this.buildFetchOptions(options));
         return this.parseDoubanDoc(doc, id);
+    }
+
+    private static findDoubanId(doc: Document): string {
+        const links = Array.from(doc.querySelectorAll('a[href]')) as HTMLAnchorElement[];
+        for (const link of links) {
+            const id = extractDoubanId(link.getAttribute('href') || '');
+            if (id) return id;
+        }
+        const html = doc.documentElement?.outerHTML || '';
+        return html.match(/(?:douban\.com\/subject\/|subject\/)(\d{5,})/i)?.[1] || '';
     }
 
     static async resolvePosterDisplayUrl(url: string, mode: 'raw' | 'inline' = 'raw'): Promise<string> {

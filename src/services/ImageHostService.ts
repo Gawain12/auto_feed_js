@@ -310,7 +310,13 @@ export class ImageHostService {
     static getFullSizeUrl(url: string): string {
         let newUrl = url;
 
-        if (url.match(/imgbox/)) {
+        if (url.match(/(?:^|https?:\/\/)[ti]\.hdbits\.org\//i)) {
+            // HDB blocks hotlinking from the public thumbnail host. Match the
+            // legacy flow by pointing the local downloader at the original CDN.
+            newUrl = newUrl
+                .replace(/https?:\/\/t\.hdbits\.org\//i, 'https://i.hdbits.org/')
+                .replace(/\.jpg(\?[^\s\]]*)?$/i, '.png$1');
+        } else if (url.match(/imgbox/)) {
             // Legacy: thumbs2 -> images2, *_t.ext -> *_o.ext (jpg/png/gif)
             newUrl = url.replace('thumbs2', 'images2');
             newUrl = newUrl.replace(/_t\.(png|jpg|jpeg|gif)(\?|$)/i, (_m, ext, tail) => `_o.${ext}${tail || ''}`);
@@ -326,6 +332,15 @@ export class ImageHostService {
         }
 
         return newUrl;
+    }
+
+    static isHdbImageUrl(url: string): boolean {
+        return /(?:^|https?:\/\/)[ti]\.hdbits\.org\//i.test(String(url || '').trim());
+    }
+
+    static hasHdbImageSource(urls: string[] | string): boolean {
+        const values = Array.isArray(urls) ? urls : [urls];
+        return values.some((url) => this.isHdbImageUrl(url));
     }
 
     static extractImageUrlsFromBBCode(description: string): string[] {
@@ -644,7 +659,45 @@ export class ImageHostService {
         }));
     }
 
-    private static async loadHostikPending(): Promise<{ urls: string[]; gallery?: string } | null> {
+    /**
+     * Resolve the source release title used by Hostik albums.
+     * Prefer the title parsed from the source tracker, then fall back to a
+     * release name embedded in media information or the torrent filename. Hostik albums historically use
+     * dots between words, so keep that convention here.
+     */
+    static getHostikAlbumName(meta: Partial<TorrentMeta>): string {
+        const sourceText = [meta.fullMediaInfo, meta.description]
+            .map((value) => String(value || ''))
+            .filter(Boolean)
+            .join('\n');
+        const releasePatterns = [
+            /Disc Title\s*[:：]\s*([^\r\n\]]+)/i,
+            /Complete name\s*[:：]\s*([^\r\n\]]+)/i,
+            /RELEASE\.NAME\s*[:：]\s*([^\r\n\]]+)/i,
+            /Release name\s*[:：]\s*([^\r\n\]]+)/i
+        ];
+        let raw = String(meta.title || '').trim();
+        if (!raw) {
+            for (const pattern of releasePatterns) {
+                const match = sourceText.match(pattern);
+                if (match?.[1]?.trim()) {
+                    raw = match[1].trim();
+                    break;
+                }
+            }
+        }
+        if (!raw) raw = String(meta.torrentFilename || meta.torrentName || '').trim();
+
+        return raw
+            .replace(/\[\/?[^\]]+\]/g, '')
+            .replace(/\.torrent$/i, '')
+            .replace(/\s+/g, '.')
+            .replace(/\.{2,}/g, '.')
+            .replace(/^[.\s]+|[.\s]+$/g, '')
+            .slice(0, 255);
+    }
+
+    private static async loadHostikPending(): Promise<{ urls: string[]; gallery?: string; createdAt?: number } | null> {
         const raw = await GMAdapter.getValue<string | null>(this.HOSTIK_PENDING_KEY, null);
         if (!raw) return null;
         try {
@@ -652,10 +705,122 @@ export class ImageHostService {
             if (!parsed || !Array.isArray(parsed.urls)) return null;
             return {
                 urls: parsed.urls.map((item: any) => String(item || '').trim()).filter(Boolean),
-                gallery: String(parsed.gallery || '').trim() || undefined
+                gallery: String(parsed.gallery || '').trim() || undefined,
+                createdAt: Number(parsed.createdAt || 0) || undefined
             };
         } catch {
             return null;
+        }
+    }
+
+    private static async createHostikAlbum(parentId: string, albumName: string): Promise<string> {
+        const response = await GMAdapter.xmlHttpRequest({
+            method: 'POST',
+            url: new URL('/ws.php?format=json', window.location.origin).toString(),
+            headers: {
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            data: new URLSearchParams({
+                method: 'pwg.categories.add',
+                parent: parentId,
+                name: albumName
+            }).toString(),
+            responseType: 'text',
+            anonymous: false,
+            withCredentials: true,
+            timeout: 15000
+        });
+
+        if (response?.status && response.status >= 400) {
+            throw new Error(`Hostik album request failed: HTTP ${response.status}`);
+        }
+
+        let payload: any = response?.response;
+        if (typeof payload === 'string') {
+            try { payload = JSON.parse(payload); } catch {}
+        }
+        if (!payload && response?.responseText) {
+            try { payload = JSON.parse(response.responseText); } catch {}
+        }
+        if (payload?.error) {
+            const message = payload.error.message || payload.error.code || 'unknown error';
+            throw new Error(`Hostik album creation failed: ${message}`);
+        }
+
+        const id = payload?.result?.id;
+        if (id === undefined || id === null || id === '') {
+            throw new Error('Hostik album creation returned no album id');
+        }
+        return String(id);
+    }
+
+    private static async ensureHostikAlbum(albumName?: string) {
+        const target = String(albumName || '').trim();
+        if (!target) return;
+
+        const canonical = (value: string) => String(value || '')
+            .trim()
+            .replace(/\s*\/\s*/g, '/')
+            .replace(/\s+/g, '.')
+            .toLowerCase();
+        const targetCanonical = canonical(target);
+        for (let attempt = 0; attempt < 40; attempt++) {
+            const albumSelect = document.querySelector('#albumSelect') as HTMLSelectElement | null;
+            if (!albumSelect || !albumSelect.options.length) {
+                await new Promise((resolve) => window.setTimeout(resolve, 250));
+                continue;
+            }
+
+            const existing = Array.from(albumSelect.options).find((option) => {
+                const label = String(option.textContent || '').trim();
+                return canonical(label) === targetCanonical || canonical(label).endsWith(`/${targetCanonical}`);
+            });
+            if (existing) {
+                if (albumSelect.value !== existing.value) {
+                    albumSelect.value = existing.value;
+                    albumSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                return;
+            }
+
+            const parent = Array.from(albumSelect.options).find((option) => {
+                const label = String(option.textContent || '').trim();
+                return label === 'Hostik / gawain' || !label.includes(' / ');
+            }) || albumSelect.options[0];
+            if (!parent?.value) return;
+
+            // Hostik uses Piwigo's native dialog, whose Create button sends a
+            // same-origin POST to ws.php. Calling that API directly avoids the
+            // modal and, importantly, avoids turning the upload route into a
+            // plain query-string URL that redirects to the home page.
+            const albumId = await this.createHostikAlbum(parent.value, target);
+            const parentLabel = String(parent.textContent || '').trim();
+            const fullLabel = parentLabel ? `${parentLabel} / ${target}` : target;
+            const selectize = (albumSelect as HTMLSelectElement & {
+                selectize?: {
+                    addOption?: (option: Record<string, any>) => void;
+                    setValue?: (value: string) => void;
+                };
+            }).selectize;
+
+            if (selectize?.addOption && selectize.setValue) {
+                selectize.addOption({
+                    id: albumId,
+                    value: albumId,
+                    name: target,
+                    fullname: fullLabel,
+                    text: fullLabel
+                });
+                selectize.setValue(albumId);
+            } else {
+                const option = new Option(fullLabel, albumId, true, true);
+                albumSelect.add(option);
+                albumSelect.value = albumId;
+                albumSelect.dispatchEvent(new Event('input', { bubbles: true }));
+                albumSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            return;
         }
     }
 
@@ -691,7 +856,9 @@ export class ImageHostService {
             return;
         }
 
-        const gallery = (meta.title || '').trim().replace(/\s+/g, '.');
+        const gallery = host === 'hostik'
+            ? this.getHostikAlbumName(meta)
+            : (meta.title || '').trim().replace(/\s+/g, '.');
         await this.queueImages(normalized, gallery || undefined);
         if (host === 'hostik') {
             await this.saveHostikPending(normalized, gallery || undefined);
@@ -712,12 +879,13 @@ export class ImageHostService {
         const host = window.location.host.toLowerCase();
         const isHostik = host.includes('hostik.cinematik.net');
 
+        let hostikPending: { urls: string[]; gallery?: string; createdAt?: number } | null = null;
         if (isHostik) {
             const hostikPageSig = `${window.location.pathname}${window.location.search}`;
             if (document.body.dataset.autofeedHostikComposerSig !== hostikPageSig) {
                 document.body.dataset.autofeedHostikComposerSig = hostikPageSig;
-                const pending = await this.loadHostikPending();
-                this.installHostikComposer(pending || null).catch((err) => console.error('[Auto-Feed] Hostik composer error:', err));
+                hostikPending = await this.loadHostikPending();
+                this.installHostikComposer(hostikPending || null).catch((err) => console.error('[Auto-Feed] Hostik composer error:', err));
             }
         }
 
@@ -727,6 +895,11 @@ export class ImageHostService {
 
         const queue = await this.loadImageQueue();
         if (!queue || !queue.urls.length) return;
+
+        if (isHostik) {
+            const albumName = queue.gallery || hostikPending?.gallery;
+            this.ensureHostikAlbum(albumName).catch((err) => console.error('[Auto-Feed] Hostik album error:', err));
+        }
 
         const button = document.createElement('button');
         button.textContent = `一键拉取 (${queue.urls.length})`;
@@ -852,7 +1025,7 @@ export class ImageHostService {
         try {
             const parsed = new URL(raw, window.location.href);
             const full = `${parsed.pathname}${parsed.search}`;
-            if (full.includes('/i.php?/upload/') || full.includes('/_data/i/upload/')) {
+            if (this.isHostikUploadUrl(parsed.toString())) {
                 let normalized = full
                     .replace('/i.php?', '')
                     .replace('/_data/i/upload/', '/upload/')
@@ -866,6 +1039,10 @@ export class ImageHostService {
         } catch {
             return raw;
         }
+    }
+
+    private static isHostikUploadUrl(url: string): boolean {
+        return /hostik\.cinematik\.net\/(?:i\.php\?\/upload\/|_data\/i\/upload\/|upload\/)/i.test(String(url || ''));
     }
 
     private static buildHostikImageTags(thumbUrls: string[]): string[] {
@@ -1020,11 +1197,11 @@ export class ImageHostService {
         document.body.appendChild(overlay);
     }
 
-    private static async installHostikComposer(pending: { urls: string[]; gallery?: string } | null) {
+    private static async installHostikComposer(pending: { urls: string[]; gallery?: string; createdAt?: number } | null) {
         const expected = pending?.urls?.length || 0;
         const readUploadProgress = () => {
             const text = document.body?.innerText || '';
-            const match = text.match(/Uploaded\s+(\d+)\s*\/\s*(\d+)\s+files/i);
+            const match = text.match(/Uploaded\s*:?\s*(\d+)\s*(?:\/|of)\s*(\d+)\s+files/i);
             if (!match) return null;
             return {
                 uploaded: Number(match[1] || 0),
@@ -1044,9 +1221,24 @@ export class ImageHostService {
                 .filter((value) => value.includes('hostik.cinematik.net') && value.includes('[img'));
             let best: Array<{ full: string; thumb: string }> = [];
             textareas.forEach((value) => {
-                const pairs = this.parseHostikLinkedImageTags(value).filter((pair) => /(?:-th\.|\/_data\/i\/upload\/|\/i\.php\?\/upload\/)/i.test(pair.thumb));
-                if (pairs.length > best.length) {
-                    best = pairs;
+                const pairs = this.parseHostikLinkedImageTags(value)
+                    .filter((pair) => this.isHostikUploadUrl(pair.thumb));
+                const standalone: Array<{ full: string; thumb: string }> = [];
+                const standaloneRe = /\[img(?:=[^\]]+)?\](https?:\/\/hostik\.cinematik\.net\/[^\[\s]+)\[\/img\]/gi;
+                let match: RegExpExecArray | null;
+                while ((match = standaloneRe.exec(value))) {
+                    const prefix = value.slice(0, match.index);
+                    // Do not treat the inner [img] of a [url=...][img]...
+                    // [/img][/url] pair as a second standalone image.
+                    if (/\[url=[^\]]+\]\s*$/i.test(prefix)) continue;
+                    const url = String(match[1] || '').trim();
+                    if (url && this.isHostikUploadUrl(url)) standalone.push({ full: url, thumb: url });
+                }
+                const merged = [...standalone, ...pairs].filter((item, index, items) =>
+                    items.findIndex((candidate) => candidate.full === item.full && candidate.thumb === item.thumb) === index
+                );
+                if (merged.length > best.length) {
+                    best = merged;
                 }
             });
             return best;
@@ -1055,7 +1247,7 @@ export class ImageHostService {
             .map((node) => node as HTMLImageElement)
             .filter((img) => {
                 const src = String(img.currentSrc || img.src || '').trim();
-                return /hostik\.cinematik\.net\/(?:i\.php\?\/upload\/|_data\/i\/upload\/)/i.test(src);
+                return this.isHostikUploadUrl(src);
             });
         const attemptBuild = async () => {
             if (isUploadStillRunning()) return null;
@@ -1139,13 +1331,16 @@ export class ImageHostService {
             btn.onclick = () => this.renderHostikResultModal(payload.imageBlock);
             document.body.appendChild(btn);
 
-            if (sessionStorage.getItem(this.HOSTIK_RESULT_SIG_KEY) !== payload.signature) {
-                sessionStorage.setItem(this.HOSTIK_RESULT_SIG_KEY, payload.signature);
-                this.renderHostikResultModal(payload.imageBlock);
-            }
+            // A new upload may legitimately produce the same URLs as an earlier
+            // upload in this tab. Do not let a stale sessionStorage signature
+            // suppress the result popup.
+            try { sessionStorage.setItem(this.HOSTIK_RESULT_SIG_KEY, payload.signature); } catch {}
+            this.renderHostikResultModal(payload.imageBlock);
         };
 
-        for (let i = 0; i < 60; i++) {
+        // Hostik may finish large batches after a minute. Keep the lightweight
+        // watcher alive long enough to catch the final code block.
+        for (let i = 0; i < 300; i++) {
             const payload = await attemptBuild();
             if (payload) {
                 mountButton(payload);
@@ -1158,7 +1353,7 @@ export class ImageHostService {
     private static normalizeImageFetchUrl(url: string): string {
         let target = this.getFullSizeUrl(url);
         if (target.match(/t\.hdbits\.org/i)) {
-            target = target.replace('t.hdbits.org', 'i.hdbits.org').replace(/\.jpg(\?|$)/i, '.png$1');
+            target = target.replace(/t\.hdbits\.org/ig, 'i.hdbits.org').replace(/\.jpg(\?|$)/i, '.png$1');
         }
         return target;
     }
@@ -1189,17 +1384,41 @@ export class ImageHostService {
 
     private static async fetchImageAsBlob(url: string, fallbackFilename: string): Promise<Blob> {
         const guessed = this.guessImageMime(fallbackFilename);
+        const isHdb = this.isHdbImageUrl(url);
+        const baseHeaders: Record<string, string> = {};
+        if (url.includes('images2.imgbox.com')) baseHeaders.Referer = 'https://imgbox.com/';
+        if (isHdb) {
+            baseHeaders.Referer = 'https://hdbits.org/';
+            baseHeaders.Accept = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8';
+        }
+
+        // Legacy getImage() downloads protected HDB images into a File first;
+        // the destination host never receives the original hotlink URL.
+        if (isHdb) {
+            try {
+                const blobResp = await GMAdapter.xmlHttpRequest({
+                    method: 'GET',
+                    url,
+                    responseType: 'blob',
+                    headers: baseHeaders,
+                    anonymous: false,
+                    withCredentials: true
+                });
+                if (blobResp?.status && blobResp.status >= 400) throw new Error(`HTTP ${blobResp.status}`);
+                if (blobResp?.response instanceof Blob && blobResp.response.size > 0) {
+                    return blobResp.response.type ? blobResp.response : new Blob([blobResp.response], { type: guessed });
+                }
+            } catch {}
+        }
 
         try {
-            const headers: Record<string, string> = {};
-            if (url.includes('images2.imgbox.com')) headers.Referer = 'https://imgbox.com/';
             const abResp = await GMAdapter.xmlHttpRequest({
                 method: 'GET',
                 url,
                 responseType: 'arraybuffer',
-                headers,
-                anonymous: true,
-                withCredentials: false
+                headers: baseHeaders,
+                anonymous: !isHdb,
+                withCredentials: isHdb
             });
             if (abResp?.status && abResp.status >= 400) {
                 throw new Error(`HTTP ${abResp.status}`);
@@ -1213,13 +1432,11 @@ export class ImageHostService {
         } catch {}
 
         try {
-            const headers: Record<string, string> = {};
-            if (url.includes('images2.imgbox.com')) headers.Referer = 'https://imgbox.com/';
             const abResp = await GMAdapter.xmlHttpRequest({
                 method: 'GET',
                 url,
                 responseType: 'arraybuffer',
-                headers,
+                headers: baseHeaders,
                 anonymous: false,
                 withCredentials: true
             });

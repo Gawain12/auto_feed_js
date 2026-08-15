@@ -635,6 +635,8 @@ export class RemoteDownloadService {
         }
     }
 
+    private static delugeSessionId = '';
+    private static qbSessionId = '';
     private static delugeMsgId = 0;
     private static normalizeDelugeEndpoint(url: string): string {
         const host = this.normalizeHost(url);
@@ -645,14 +647,25 @@ export class RemoteDownloadService {
 
     private static async delugeRequest(endpoint: string, method: string, params: any[] = []) {
         const id = this.delugeMsgId++;
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (this.delugeSessionId) {
+            headers['Cookie'] = `_session_id=${this.delugeSessionId}`;
+        }
         const res = await GMAdapter.xmlHttpRequest({
             method: 'POST',
             url: endpoint,
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             withCredentials: true,
             anonymous: false,
-            data: JSON.stringify({ id, method, params })
+            data: JSON.stringify({ id, method, params }),
+            ...(this.delugeSessionId ? { cookie: `_session_id=${this.delugeSessionId}` } : {})
         });
+
+        const match = (res.responseHeaders || '').match(/set-cookie:\s*_session_id=([^;]+)/i);
+        if (match?.[1]) {
+            this.delugeSessionId = match[1].trim();
+        }
+
         const text = res.responseText || '';
         const json = text ? JSON.parse(text) : null;
         if (!json) throw new Error('Deluge: empty response');
@@ -757,6 +770,9 @@ export class RemoteDownloadService {
     private static async qbRequest(host: string, path: string, parameters: any) {
         const endpoint = 'api/v2';
         const headers: Record<string, string> = {};
+        if (this.qbSessionId) {
+            headers['Cookie'] = `SID=${this.qbSessionId}`;
+        }
         let data: any = null;
         if (path === '/auth/login') {
             headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -765,12 +781,22 @@ export class RemoteDownloadService {
             data = parameters;
         }
 
-        return GMAdapter.xmlHttpRequest({
+        const res = await GMAdapter.xmlHttpRequest({
             method: 'POST',
             url: `${host}${endpoint}${path}`,
             data,
-            headers
+            headers,
+            withCredentials: true,
+            anonymous: false,
+            ...(this.qbSessionId ? { cookie: `SID=${this.qbSessionId}` } : {})
         });
+
+        const match = (res.responseHeaders || '').match(/set-cookie:\s*SID=([^;]+)/i);
+        if (match?.[1]) {
+            this.qbSessionId = match[1].trim();
+        }
+
+        return res;
     }
 
     static async testQbittorrent(server: { url: string; username: string; password: string }): Promise<RemoteTestResult> {
@@ -863,15 +889,27 @@ export class RemoteDownloadService {
         if (!host) return { ok: false, message: 'URL 为空' };
         if (!host.match(/\/json\/?$/i)) host = host.replace(/\/$/, '') + '/json';
 
+        let testSessionId = '';
         const request = async (id: number, method: string, params: any[] = []) => {
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (testSessionId) {
+                headers['Cookie'] = `_session_id=${testSessionId}`;
+            }
             const res = await GMAdapter.xmlHttpRequest({
                 method: 'POST',
                 url: host,
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 withCredentials: true,
                 anonymous: false,
-                data: JSON.stringify({ id, method, params })
+                data: JSON.stringify({ id, method, params }),
+                ...(testSessionId ? { cookie: `_session_id=${testSessionId}` } : {})
             });
+
+            const match = (res.responseHeaders || '').match(/set-cookie:\s*_session_id=([^;]+)/i);
+            if (match?.[1]) {
+                testSessionId = match[1].trim();
+            }
+
             const text = res.responseText || '';
             let json: any = null;
             try {

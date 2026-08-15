@@ -7,7 +7,6 @@ import { extractImdbId, extractTmdbId, matchLink } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { cleanMediaInfoText, getMediainfoPictureFromDescr } from '../common/rules/media';
 import { HtmlFetchService } from '../services/HtmlFetchService';
-import { StorageService } from '../services/StorageService';
 
 export class HDBEngine extends BaseEngine {
     constructor(config: SiteConfig, url: string) {
@@ -168,14 +167,6 @@ export class HDBEngine extends BaseEngine {
         if (tagDescr) {
             descrEl = tagDescr;
         }
-        // HDB screenshot picker (legacy parity): allow clicking `t.hdbits.org/*.jpg` thumbs to select which
-        // images get forwarded (converted to `i.hdbits.org/*.png`).
-        try {
-            if (descrEl && document.body.dataset.autofeedHdbImgPick !== '1') {
-                this.setupHdbSelectableImages(descrEl);
-                document.body.dataset.autofeedHdbImgPick = '1';
-            }
-        } catch { }
         if (details) {
             const cells = Array.from(details.querySelectorAll('td, th'));
             for (const cell of cells) {
@@ -433,108 +424,17 @@ export class HDBEngine extends BaseEngine {
             }
             const picMatches = (meta.description || '').match(/\[img\](.*?)\[\/img\]/g);
             if (picMatches) {
-                // Legacy parity: when the source provides lots of internal thumbs (HDB),
-                // users typically select which ones to rehost. Start with empty `meta.images`
-                // and let the click-picker populate it; rehosting falls back to parsing `description`.
-                if ((meta.description || '').match(/i\.hdbits\.org\/.*\.png/i)) {
-                    meta.images = [];
-                } else {
-                    meta.images = picMatches
-                        .map((item) => item.match(/\[img\](.*?)\[\/img\]/)?.[1])
-                        .filter((v): v is string => !!v);
-                }
+                // Keep source URLs untouched for normal page viewing. The
+                // image-host bridge converts HDB thumbs to authenticated PNG
+                // downloads only when a rehost operation actually needs files.
+                meta.images = picMatches
+                    .map((item) => item.match(/\[img\](.*?)\[\/img\]/)?.[1])
+                    .filter((v): v is string => !!v);
             }
         } catch { }
 
         this.log(`Parsed: ${meta.title}`);
         return meta;
-    }
-
-    private setupHdbSelectableImages(descrEl: HTMLElement) {
-        const styleId = 'autofeed-hdb-imgpick-style';
-        if (!document.getElementById(styleId)) {
-            const st = document.createElement('style');
-            st.id = styleId;
-            st.textContent = `
-                .autofeed-hdb-imgpick { cursor: pointer; position: relative; display: inline-block; }
-                .autofeed-hdb-imgpick img { outline: 2px solid transparent; outline-offset: 2px; }
-                .autofeed-hdb-imgpick.autofeed-hdb-imgpick-on img { outline-color: #2ecc71; }
-                .autofeed-hdb-imgpick.autofeed-hdb-imgpick-on::after {
-                    content: "SELECTED";
-                    position: absolute;
-                    top: 6px;
-                    left: 6px;
-                    background: rgba(46, 204, 113, 0.9);
-                    color: #fff;
-                    font-size: 11px;
-                    padding: 2px 6px;
-                    border-radius: 3px;
-                    pointer-events: none;
-                }
-            `.trim();
-            document.head.appendChild(st);
-        }
-
-        const imgs = Array.from(descrEl.querySelectorAll('img')) as HTMLImageElement[];
-        const pickable = imgs.filter((img) => {
-            const src = img.getAttribute('src') || img.getAttribute('data-src') || img.src || '';
-            return /https:\/\/t\.hdbits\.org\/.*\.jpg(\?|$)/i.test(src);
-        });
-        if (!pickable.length) return;
-
-        const toFull = (thumb: string) => {
-            let u = (thumb || '').trim();
-            if (!u) return '';
-            u = u.replace(/^https:\/\/t\.hdbits\.org\//i, 'https://i.hdbits.org/');
-            u = u.replace(/\.jpg(\?.*)?$/i, '.png');
-            return u;
-        };
-
-        const updateStoredImages = async (fullUrl: string, on: boolean) => {
-            if (!fullUrl) return;
-            const cur = (await StorageService.load()) || null;
-            if (!cur) return;
-            const next = { ...cur };
-            const list = Array.isArray(next.images) ? next.images.slice() : [];
-            const idx = list.indexOf(fullUrl);
-            if (on) {
-                if (idx < 0) list.push(fullUrl);
-            } else {
-                if (idx >= 0) list.splice(idx, 1);
-            }
-            next.images = list;
-            await StorageService.save(next);
-        };
-
-        pickable.forEach((img) => {
-            const thumb = img.getAttribute('src') || img.getAttribute('data-src') || img.src || '';
-            const full = toFull(thumb);
-            const wrap = document.createElement('span');
-            wrap.className = 'autofeed-hdb-imgpick';
-
-            // Wrap the image to allow overlay and click.
-            const parent = img.parentElement;
-            if (!parent) return;
-            parent.insertBefore(wrap, img);
-            wrap.appendChild(img);
-
-            // Prevent navigation when the image sits inside an <a>.
-            const anchor = wrap.closest('a') as HTMLAnchorElement | null;
-            if (anchor) {
-                anchor.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            }
-
-            wrap.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const on = !wrap.classList.contains('autofeed-hdb-imgpick-on');
-                wrap.classList.toggle('autofeed-hdb-imgpick-on', on);
-                await updateStoredImages(full, on);
-            });
-        });
     }
 
     async fill(meta: TorrentMeta): Promise<void> {

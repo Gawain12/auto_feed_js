@@ -151,6 +151,28 @@ export class SiteManager {
                             }
                         } catch {}
                     }
+                } else if (adapter.siteName === 'KG') {
+                    const cached = await StorageService.load();
+                    if (cached && cached.sourceSite && cached.sourceSite !== 'KG' && (cached.torrentBase64 || cached.torrentUrl)) {
+                        this.markKgContinue();
+                        this.injectFillButton(adapter, cached);
+                    } else {
+                        try {
+                            const hasFinalTorrentInput = !!document.querySelector('form[action*="takeupload"] input[type="file"], input[type="file"][name="file"]');
+                            if (hasFinalTorrentInput) {
+                                const { GMAdapter } = await import('../services/GMAdapter');
+                                const raw = await GMAdapter.getValue<string | null>('kg_info', null);
+                                if (raw) {
+                                    const parsed = JSON.parse(raw);
+                                    const legacyMeta = this.convertKgLegacyInfo(parsed);
+                                    if (legacyMeta) {
+                                        this.markKgContinue();
+                                        this.injectFillButton(adapter, legacyMeta);
+                                    }
+                                }
+                            }
+                        } catch {}
+                    }
                 } else if (hasToken) {
                     this.showStatusToast('转发缓存已过期，请返回源站重新点击转发链接。');
                 }
@@ -334,6 +356,7 @@ export class SiteManager {
             imdbUrl,
             imdbId: extractImdbId(imdbUrl) || undefined,
             torrentUrl: String(raw.torrent_url || '').trim(),
+            torrentBase64: String(raw.torrent_base64 || raw.torrentBase64 || '').trim(),
             torrentFilename: String(raw.torrent_name || '').trim(),
             torrentName: String(raw.torrent_name || '').trim(),
             mediumSel: String(raw.medium_sel || '').trim(),

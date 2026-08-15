@@ -25,6 +25,17 @@ export class PageEnhancerService {
             if (url.match(/torrents\.php\?id=\d+/i) && settings.ptpShowDouban) {
                 try {
                     await this.injectPTPDouban();
+                    // PTP can finish hydrating the movie header after the first
+                    // enhancer pass. Give a transient Douban/network miss one
+                    // later recovery attempt without creating a retry loop.
+                    if (!document.getElementById('autofeed-ptp-douban') && document.body.dataset.autofeedPtpDoubanRetry !== '1') {
+                        document.body.dataset.autofeedPtpDoubanRetry = '1';
+                        window.setTimeout(() => {
+                            if (!document.getElementById('autofeed-ptp-douban')) {
+                                this.injectPTPDouban().catch((err) => console.error('[Auto-Feed][PTP] Douban retry error:', err));
+                            }
+                        }, 2500);
+                    }
                 } catch (err) {
                     console.error('[Auto-Feed][PTP] Douban inject error:', err);
                 }
@@ -177,14 +188,18 @@ export class PageEnhancerService {
     }
 
     private static async injectPTPDouban() {
-        if ($('#autofeed-ptp-douban').length) return;
+        if ($('#autofeed-ptp-douban').length && $('[data-autofeed-douban-rating="1"]').length) return;
 
-        const imdbLink =
-            ($('#imdb-title-link').attr('href') || $('a:contains("IMDB")').attr('href') || '').toString();
-        const imdbId = extractImdbId(imdbLink);
+        const imdbId = await this.waitForPTPImdbId();
         if (!imdbId) return;
 
-        const data = await DoubanService.getByImdb(imdbId);
+        let data: Awaited<ReturnType<typeof DoubanService.getByImdb>> = null;
+        for (let attempt = 0; attempt < 3 && !data; attempt += 1) {
+            try {
+                data = await DoubanService.getByImdb(imdbId);
+            } catch {}
+            if (!data && attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+        }
         if (!data) return;
 
         const isChinese = /[\u4e00-\u9fa5]+/.test(data.title || '');
@@ -194,7 +209,7 @@ export class PageEnhancerService {
             );
         }
 
-        if (data.summary) {
+        if (!$('#autofeed-ptp-douban').length && data.summary) {
             const lines = data.summary.split('   ').map((s) => s.trim()).filter(Boolean).map((s) => `\t${s}`);
             const summary = lines.join('\n');
             $('#movieinfo').before(`
@@ -203,15 +218,18 @@ export class PageEnhancerService {
                     <div class="panel__body" id="intro">&nbsp&nbsp&nbsp&nbsp${summary}</div>
                 </div>
             `);
-        } else {
+        } else if (!$('#autofeed-ptp-douban').length) {
             $('#movieinfo').before(`<div class="panel" id="autofeed-ptp-douban"></div>`);
         }
 
-        $('#torrent-table').parent().prepend($('#movie-ratings-table').parent());
+        if ($('#torrent-table').length && $('#movie-ratings-table').length) {
+            $('#torrent-table').parent().prepend($('#movie-ratings-table').parent());
+        }
 
         try {
-            $('#movieinfo').before(`
-                <div class="panel">
+            if (!$('#autofeed-ptp-douban-info').length) {
+                $('#movieinfo').before(`
+                <div class="panel" id="autofeed-ptp-douban-info">
                     <div class="panel__heading"><span class="panel__heading__title">电影信息</span></div>
                     <div class="panel__body">
                         <div><strong>导演:</strong> ${data.director || ''}</div>
@@ -224,6 +242,7 @@ export class PageEnhancerService {
                     </div>
                 </div>
             `);
+            }
         } catch {}
 
         const total = data.average ? 10 : '';
@@ -231,8 +250,12 @@ export class PageEnhancerService {
         const votes = data.votes || 0;
         const average = data.average || '暂无评分';
 
-        $('#movie-ratings-table tr').prepend(`
-            <td colspan="1" style="width: 110px;">
+        const addDoubanRating = () => {
+            const row = $('#movie-ratings-table tr').first();
+            if (!row.length) return false;
+            if (row.find('[data-autofeed-douban-rating="1"]').length) return true;
+            row.prepend(`
+            <td colspan="1" style="width: 110px;" data-autofeed-douban-rating="1">
                 <center>
                 <a target="_blank" class="rating" href="https://movie.douban.com/subject/${data.id}" rel="noreferrer">
                     <div style="font-size: 0;min-width: 105px;">
@@ -269,6 +292,24 @@ export class PageEnhancerService {
                 <br>(${votes} votes)
             </td>
         `);
+            return true;
+        };
+
+        let ratingReady = addDoubanRating();
+        for (let attempt = 0; !ratingReady && attempt < 20; attempt += 1) {
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            ratingReady = addDoubanRating();
+        }
+        if (!ratingReady && document.body) {
+            const MutationObserverCtor = window.MutationObserver || (window as any).WebKitMutationObserver;
+            if (MutationObserverCtor) {
+                const observer = new MutationObserverCtor(() => {
+                    if (addDoubanRating()) observer.disconnect();
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                window.setTimeout(() => observer.disconnect(), 30_000);
+            }
+        }
 
         try {
             const lb = await DoubanService.getLetterboxdRatingByImdb(imdbId);
@@ -295,6 +336,18 @@ export class PageEnhancerService {
                 `);
             }
         } catch {}
+    }
+
+    private static async waitForPTPImdbId(timeoutMs = 8000): Promise<string> {
+        const startedAt = Date.now();
+        while (Date.now() - startedAt < timeoutMs) {
+            const imdbLink =
+                ($('#imdb-title-link').attr('href') || $('a:contains("IMDB")').attr('href') || '').toString();
+            const imdbId = extractImdbId(imdbLink);
+            if (imdbId) return imdbId;
+            await new Promise((resolve) => setTimeout(resolve, 300));
+        }
+        return '';
     }
 
     private static async injectHDBDouban(hideByDefault: boolean) {
