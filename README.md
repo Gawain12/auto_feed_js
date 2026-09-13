@@ -44,6 +44,7 @@ This is the refactored version evolved from the original **Auto-Feed** project. 
 ## 安装与版本
 1. 安装 Tampermonkey。
 2. 安装脚本：
+   - GreasyFork 新版项目：<https://greasyfork.org/scripts/595185>
    - 快速开发验证版（`refactor-dev`，更新更快，可能包含待验证改动）
      <https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js>
    - 发布版（打 Tag `v*` 后）

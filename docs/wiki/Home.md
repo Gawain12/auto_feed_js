@@ -19,6 +19,7 @@
 - 重构适配教程：[`Refactor-Adaptation-Tutorial.md`](Refactor-Adaptation-Tutorial.md)
 
 ## 常用链接
+- GreasyFork 新版项目：<https://greasyfork.org/scripts/595185>
 - 快速开发验证包：<https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js>
 - 新版主线：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
 - 旧版 legacy：<https://github.com/tomorrow505/auto_feed_js/tree/main>
