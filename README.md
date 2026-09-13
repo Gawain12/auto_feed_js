@@ -9,10 +9,13 @@
 
 This is a refactored version of the original **Auto-Feed** script by **tomorrow505**, currently maintained by **gawaint**. It is currently in feature migration and compatibility adaptation, gradually bringing the original site support, form filling, image handling, and remote pushing features into the new implementation. It is intended to be used alongside the original script for now.
 
-## 当前进度（2026-03-22）
-- 非音乐站点主链路（解析 -> 缓存 -> 预填）已基本稳定。
-- 音乐站点（RED / OPS / DIC / OpenCD）已接入，但仍在持续完善。
+## 当前进度（2026-09-13）
+- 重构版已进入 `v5.0.0`，当前开发发布以 `refactor-dev` 为准；近期提交主要集中在兼容性和稳定性修复，而不是增加新的大功能。
+- 非音乐站点主链路（解析 -> 缓存 -> 预填）已基本稳定，Tik 的标题、编码和目标站填充逻辑也已按实际流程持续修正。
+- HDB / PTP 的媒体信息、海报和源信息位置已补齐多种页面场景；SC / HDT / TJUPT 已补充源站与目标站链路，但仍需要更多站点实测。
 - Monika（MDU）转发链路已按上游源码规则对齐修复（上传路径、搜索参数、关键表单映射）。
+- 图片托管与远程推送持续完善，已覆盖 Hostik / hdbimg 等桥接场景，以及 qBittorrent / Transmission / Deluge 推送。
+- 音乐站点（RED / OPS / DIC / OpenCD）已接入，但仍在持续补齐双向转发字段和边缘规则；部分小站和历史功能仍处于迁移或待回归阶段。
 - 快速搜索已按 `archive/auto_feed.legacy.user.js` 对齐（含 `nzbs.in`、字幕站等独立搜索站点）。
 - 详细状态见：[`docs/wiki/FEATURE_PARITY.md`](docs/wiki/FEATURE_PARITY.md)
 
