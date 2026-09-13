@@ -1,7 +1,7 @@
 {
   "name": "auto-feed-refactor",
   "private": true,
-  "author": "tomorrow505, gawaint",
+  "author": "tomorrow505, Gawain",
   "version": "5.0.0",
   "type": "module",
   "scripts": {

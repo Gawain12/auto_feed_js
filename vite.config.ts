@@ -96,7 +96,7 @@ export default defineConfig({
                     '': '原版 Auto-Feed（tomorrow505）的重构版。支持跨站一键转种、自动填写标题与简介、媒体信息和图片处理，并支持快速搜索与远程推送。',
                     en: 'A refactored version of the original Auto-Feed by tomorrow505. Supports cross-site torrent forwarding, automatic form filling, media information and image handling, quick search, and remote pushing.'
                 },
-                author: 'tomorrow505, gawaint',
+                author: 'tomorrow505, Gawain',
                 license: 'GPL-3.0 License',
                 homepageURL: 'https://github.com/tomorrow505/auto_feed_js/tree/dev',
                 supportURL: 'https://greasyfork.org/zh-CN/scripts/424132-auto-feed/feedback',
