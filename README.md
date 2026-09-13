@@ -1,4 +1,4 @@
-# Auto-Feed Refactored｜PT一键转种助手
+# Auto-Feed 重构版｜PT一键转种助手
 
 仓库地址：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
 
@@ -6,8 +6,13 @@
 
 This is the refactored version evolved from the original **Auto-Feed** project. Current work focuses on reorganizing site adapters, metadata extraction, form filling, image handling, and remote pushing into clearer, more maintainable modules. The original script is mainly used as a reference for existing behavior and compatibility. Contributions to the refactored version are welcome.
 
+## 分支关系
+- 原项目 `main`：旧版 legacy，主要作为行为和兼容规则的参考。
+- 原项目 `dev`：新版主线，相对稳定；经过验证的修复和适配再向这里提交 PR。
+- `refactor-dev`：更快的开发与验证分支，先在这里完成适配、测试和问题修复。
+
 ## 当前进度（2026-09-13）
-- 重构版已进入 `v5.0.0`，当前开发发布以 `refactor-dev` 为准；近期提交主要集中在兼容性和稳定性修复，而不是增加新的大功能。
+- 新版主线以原项目 `dev` 为准，`refactor-dev` 主要用于更快验证近期改动；近期提交主要集中在兼容性和稳定性修复，而不是增加新的大功能。
 - 非音乐站点主链路（解析 -> 缓存 -> 预填）已基本稳定，Tik 的标题、编码和目标站填充逻辑也已按实际流程持续修正。
 - HDB / PTP 的媒体信息、海报和源信息位置已补齐多种页面场景；SC / HDT / TJUPT 已补充源站与目标站链路，但仍需要更多站点实测。
 - Monika（MDU）转发链路已按上游源码规则对齐修复（上传路径、搜索参数、关键表单映射）。
@@ -36,38 +41,19 @@ This is the refactored version evolved from the original **Auto-Feed** project. 
 ### 图片处理工具
 ![图片处理工具](docs/images/image_tools.png)
 
-## 安装（Release）
+## 安装与版本
 1. 安装 Tampermonkey。
 2. 安装脚本：
-   - Dev（随本项目 `refactor-dev` 分支自动更新）
+   - 快速开发验证版（`refactor-dev`，更新更快，可能包含待验证改动）
      <https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js>
-   - Stable（打 Tag `v*` 后）  
+   - 发布版（打 Tag `v*` 后）
      <https://github.com/Gawain12/auto_feed_js/releases/latest/download/auto_feed.user.js>
+   - 新版主线源码（原项目 `dev`）
+     <https://github.com/tomorrow505/auto_feed_js/tree/dev>
 
-## GreasyFork 自动同步（重构版新脚本）
+## 参与开发
 
-可以自动同步，但 GreasyFork 不是通过 Token/API 接收发布：GreasyFork 官方提供的是“从 GitHub 同步脚本 + Webhook 触发更新”。本项目已有 `Dev Release (refactor-dev)` Actions：每次推送 `refactor-dev` 后，会构建并更新 `dev` 预发布包。
-
-这次重构版使用独立的 `@namespace`，会作为新的 GreasyFork 脚本发布，与原作者的旧版 `auto_feed`（脚本 424132）并行使用。
-
-首次启用时：
-
-1. 在 GreasyFork 脚本的 `管理 / 同步` 中设置 GitHub Release 地址：
-   `https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js`
-   介绍同步地址填写：
-   `https://raw.githubusercontent.com/Gawain12/auto_feed_js/refactor-dev/docs/GreasyFork.md`
-   英文介绍在 GreasyFork 管理页添加一个 `English (en)` 的本地化同步项，地址填写：
-   `https://raw.githubusercontent.com/Gawain12/auto_feed_js/refactor-dev/docs/GreasyFork.en.md`
-2. 打开 GreasyFork 的 Webhook 设置页，复制它生成的 Payload URL 和 Secret。
-3. 在 GitHub 仓库 `Settings → Webhooks → Add webhook` 中填写 Payload URL，Content type 选 `application/json`，填入 Secret；事件选择 `Releases`，不要勾选 `Pushes`。
-
-重构版版本从 `5.0.0` 开始独立维护，不跟随原脚本版本号。`refactor-dev` 的每次 Actions 构建会自动追加递增的构建号（如 `5.0.0.123`），保证代码有变化时 GreasyFork 和脚本管理器都能识别为新版本。GreasyFork 会接管脚本最终的 `@downloadURL/@updateURL`，不需要把 GreasyFork Token 放进 GitHub Actions。
-
-## 邀请共同管理者
-
-- 管理 GreasyFork 脚本：进入脚本 `管理 → Authors/作者`，填写对方的 GreasyFork 个人主页完整 URL（形如 `https://greasyfork.org/users/123456`）并发送邀请；对方接受后即可共同管理脚本。
-
-本次重构版只新增 GreasyFork 共同管理者；GitHub 合作权限不在本次发布配置中修改。
+新版欢迎 contributor 参与站点适配、问题修复和功能完善。建议先在 `refactor-dev` 完成开发与真实站点回归，确认稳定后再向原项目 `dev` 提交 PR。
 
 ## 使用引导
 1. 打开支持站点的种子详情页。
@@ -96,7 +82,7 @@ npm run dev
 - `npm run dev` 会监听 `src/` 和构建配置，自动重新构建。
 - 调试入口是独立的 `[Local Debug]` 脚本，会通过本地 loader 加载完整 bundle，不会覆盖正式版。
 - `dist/auto_feed.user.js` 和 `dist/auto-feed-refactor.user.js` 都是构建产物，不要再分别安装成第三个长期版本。
-- `npm run build` 只用于发布前构建检查；正式使用统一安装 GreasyFork 版本。
+- `npm run build` 只用于发布前构建检查；日常使用安装已发布的 GreasyFork 脚本，需要验证最新改动时使用动态调试入口。
 
 发布前不需要额外拷贝一份全量测试版。需要验证最终构建时，先运行 `npm run build`，再用动态调试入口测试；如果必须同时对比正式版，请使用另一个浏览器配置文件。
 

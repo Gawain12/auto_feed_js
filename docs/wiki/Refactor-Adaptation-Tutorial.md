@@ -144,6 +144,8 @@ git commit -m "feat: add <site> support"
 git push origin feature/<site>-support
 ```
 
+先在 `refactor-dev` 完成真实站点验证和同架构回归；确认稳定后，再将整理好的修复或适配提交到原项目 `dev` 主线。
+
 PR 描述建议包含：
 1. 改动站点与架构类型
 2. 对齐的 legacy 规则片段（关键词即可）
