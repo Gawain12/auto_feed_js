@@ -18,7 +18,7 @@ npm run dev
 ```
 
 本地安装脚本入口：
-- `http://127.0.0.1:5174/auto-feed.user.js`
+- `http://127.0.0.1:5174/auto-feed-refactor.user.js`
 
 构建检查：
 
