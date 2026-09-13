@@ -1,13 +1,10 @@
 # Auto-Feed Refactored｜PT一键转种助手
 
-原作者：**tomorrow505**  
-当前维护：**gawaint**
+仓库地址：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
 
-仓库地址：<https://github.com/Gawain12/auto_feed_js/tree/refactor-dev>
+这是从原版 **Auto-Feed** 演进而来的新版重构项目。当前开发重点是重新整理站点适配、信息提取、自动填表、图片处理和远程推送等模块，让结构更清晰、功能更容易维护和扩展；原版脚本主要作为现有功能和兼容行为的参考。欢迎更多开发者一起参与新版的站点适配和功能完善。
 
-这是原版 **Auto-Feed**（tomorrow505）的重构版本，目前由 **gawaint** 维护。当前处于功能迁移和兼容适配阶段，正在逐步迁移原版的站点支持、自动填表、图片处理与远程推送能力；现阶段与原版并行使用。
-
-This is a refactored version of the original **Auto-Feed** script by **tomorrow505**, currently maintained by **gawaint**. It is currently in feature migration and compatibility adaptation, gradually bringing the original site support, form filling, image handling, and remote pushing features into the new implementation. It is intended to be used alongside the original script for now.
+This is the refactored version evolved from the original **Auto-Feed** project. Current work focuses on reorganizing site adapters, metadata extraction, form filling, image handling, and remote pushing into clearer, more maintainable modules. The original script is mainly used as a reference for existing behavior and compatibility. Contributions to the refactored version are welcome.
 
 ## 当前进度（2026-09-13）
 - 重构版已进入 `v5.0.0`，当前开发发布以 `refactor-dev` 为准；近期提交主要集中在兼容性和稳定性修复，而不是增加新的大功能。
