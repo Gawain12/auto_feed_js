@@ -56,6 +56,8 @@ This is a refactored version of the original **Auto-Feed** script by **tomorrow5
    `https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js`
    介绍同步地址填写：
    `https://raw.githubusercontent.com/Gawain12/auto_feed_js/refactor-dev/docs/GreasyFork.md`
+   英文介绍在 GreasyFork 管理页添加一个 `English (en)` 的本地化同步项，地址填写：
+   `https://raw.githubusercontent.com/Gawain12/auto_feed_js/refactor-dev/docs/GreasyFork.en.md`
 2. 打开 GreasyFork 的 Webhook 设置页，复制它生成的 Payload URL 和 Secret。
 3. 在 GitHub 仓库 `Settings → Webhooks → Add webhook` 中填写 Payload URL，Content type 选 `application/json`，填入 Secret；事件选择 `Releases`，不要勾选 `Pushes`。
 

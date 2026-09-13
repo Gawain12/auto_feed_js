@@ -1,6 +1,10 @@
 # Auto-Feed｜PT一键转种助手（重构版）
 
-这是从原版 Auto-Feed 演进而来的重构版本。我们保留原版熟悉的一键转种流程，重新整理站点适配、信息提取、自动填表、图片处理和远程推送，让功能更容易扩展，跨站转种更稳定。
+项目地址：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
+
+这是从原版 Auto-Feed 演进而来的重构版本。我们保留原版熟悉的一键转种流程，把站点适配、信息提取、自动填表、图片处理和远程推送整理成更清晰、可解耦的功能模块，让后续维护和扩展更容易。
+
+目前仍有部分小站、站点细节和边缘流程在迁移适配中，功能会持续补齐。需要适配其他站点时，可以参考仓库现有源码和适配方式提交 PR。
 
 ## 已实现功能
 
@@ -19,33 +23,3 @@
 ![站点选择](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/sites.png)
 
 ![图片处理工具](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/image_tools.png)
-
-完整项目地址、开发进度和问题反馈：
-<https://github.com/tomorrow505/auto_feed_js/tree/dev>
-
----
-
-# Auto-Feed｜PT Cross-Site Torrent Assistant (Refactored)
-
-This is a refactored version evolved from the original Auto-Feed. We keep the familiar one-click torrent forwarding workflow while reorganizing site adapters, metadata extraction, automatic form filling, image handling, and remote pushing to make the project easier to extend and cross-site forwarding more reliable.
-
-## Implemented features
-
-- One-click forwarding from a source torrent page to a target upload page
-- Automatic filling for titles, descriptions, media information, and images
-- Metadata enrichment with IMDb, Douban, PTGen, and more
-- Quick search and page enhancements
-- Image transfer and hosting tools, including PTPIMG, Pixhost, Freeimage, ImgBB, Hostik, and hdbimg
-- Remote pushing to qBittorrent, Transmission, Deluge, and more
-- Torrent metadata cleanup and common field handling
-
-## Screenshots
-
-![Settings](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/settings.png)
-
-![Site selection](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/sites.png)
-
-![Image tools](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/image_tools.png)
-
-Project, development progress, and feedback:
-<https://github.com/tomorrow505/auto_feed_js/tree/dev>
