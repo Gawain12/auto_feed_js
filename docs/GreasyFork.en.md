@@ -18,8 +18,8 @@ Some smaller sites, site-specific details, and edge-case workflows are still bei
 
 ## Screenshots
 
-![Settings](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/settings.png)
+![Settings](https://raw.githubusercontent.com/Gawain12/auto_feed_js/codex/english-screenshots/docs/images/settings.en.jpg)
 
-![Site selection](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/sites.png)
+![Site selection](https://raw.githubusercontent.com/Gawain12/auto_feed_js/codex/english-screenshots/docs/images/sites.en.jpg)
 
-![Image tools](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/image_tools.png)
+![Image tools](https://raw.githubusercontent.com/Gawain12/auto_feed_js/codex/english-screenshots/docs/images/image_tools.en.jpg)
