@@ -110,7 +110,7 @@ const outMd = `# Auto-Feed Refactor 功能/站点对照表
 本文件用于追踪重构版与原版的功能对齐进度。
 
 对照来源：
-- 原版脚本（权威行为参考）：\`archive/auto_feed.legacy.user.js\`
+- 原版脚本（权威行为参考）：\`.legacy/auto_feed.user.js\`（\`npm run legacy:fetch\`）
 - 原版 Wiki 站点列表（权威站点清单）：\`${WIKI_PATH}\`
 
 说明：

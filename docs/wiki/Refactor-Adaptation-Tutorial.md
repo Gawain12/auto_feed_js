@@ -4,7 +4,7 @@
 目标是让你用最短路径完成一条可提交、可复现、可回归验证的适配链路。
 
 核心原则：
-1. 先对齐 `archive/auto_feed.legacy.user.js` 的已验证行为。
+1. 先对齐 `.legacy/auto_feed.user.js`（上游 master，`npm run legacy:fetch` 拉取） 的已验证行为。
 2. 不要只改 DOM 选择器。真正要打通的是 `parse -> normalize -> storage -> fill -> forward`。
 3. 站点特例必须放在站点独立文件，避免把站点逻辑塞回模板。
 
@@ -39,11 +39,11 @@ npm run build
 
 ### 3.1 先找 legacy 对应片段
 
-所有适配以 `archive/auto_feed.legacy.user.js` 为基线。  
+所有适配以 `.legacy/auto_feed.user.js`（上游 master，`npm run legacy:fetch` 拉取） 为基线。  
 推荐先用 `rg` 定位，再局部阅读：
 
 ```bash
-rg -n "站点名|set_jump_href|default_search_list|add_search_urls|autotype|autores|browsecat|source_sel" archive/auto_feed.legacy.user.js
+rg -n "站点名|set_jump_href|default_search_list|add_search_urls|autotype|autores|browsecat|source_sel" .legacy/auto_feed.user.js
 ```
 
 你需要确认 4 类规则：
@@ -55,16 +55,16 @@ rg -n "站点名|set_jump_href|default_search_list|add_search_urls|autotype|auto
 ### 3.2 如何从 legacy 反推新架构落点
 
 把 legacy 中的规则映射到当前项目：
-1. 站点识别与调度：`src/config/*` + `src/core/SiteRegistry.ts`
-2. 通用模板逻辑：`src/templates/*`
-3. 站点特例逻辑：`src/trackers/<Site>.ts`
-4. 转发链接：`src/services/ForwardLinkService.ts`
+1. 站点识别：`src/config/sites_*.ts` 的 `keywords`（按 hostname 匹配）
+2. 上传 URL / 查重 URL：同一配置里的 `uploadPath` / `search`（不写则用 `src/config/frameworks.ts` 的框架默认值）
+3. 通用模板逻辑：`src/templates/*`
+4. 站点特例逻辑：`src/trackers/<Site>.ts`（详情页判定 `isSourcePage`、填表完成判定 `isFillComplete` 也在这里）
 5. 快速搜索：`src/common/quickSearch.ts`
 
 ### 3.3 快速定位常见关键词
 
 按问题类型搜关键词：
-1. 转发 URL 问题：`rg -n "buildUploadUrl|buildSearchUrl|specialMap" src/services`
+1. 转发 URL 问题：`rg -n "uploadPath|search:" src/config`（快照见 `tests/fixtures/forward-links.snapshot.txt`）
 2. 预填字段问题：`rg -n "nameInput|descrInput|imdbInput|torrent" src`
 3. 站点识别问题：`rg -n "keywords|match|siteEngineMap" src/config src/core`
 4. 快搜问题：`rg -n "DEFAULT_QUICK_SEARCH_TEMPLATES|buildQuickSearchItems" src/common`
@@ -79,10 +79,22 @@ rg -n "站点名|set_jump_href|default_search_list|add_search_urls|autotype|auto
 3. 模板只保留通用能力，不写 `if (siteName === ...)` 的站点分支
 
 最小实施步骤：
-1. 在 `src/config/sites_*.ts` 增加或更新站点配置
-2. 新增 `src/trackers/<Site>.ts`
-3. 在 `src/core/SiteRegistry.ts` 注册该站点引擎
-4. 把站点特有逻辑写到该 tracker（必要时覆写 parse/fill 钩子）
+1. 在 `src/config/sites_*.ts` 增加或更新站点配置：`keywords`、`baseUrl`，以及和框架默认值不同的 `uploadPath` / `search`
+2. 只有配置不够时才新增 `src/trackers/<Site>.ts`，并在 `src/core/SiteRegistry.ts` 的 `siteEngineMap` 注册
+3. 把站点特有逻辑写到该 tracker：parse/fill 钩子；详情页 URL 特殊时覆写 `isSourcePage`；上传页要等特定字段时覆写 `isFillComplete`
+4. 运行 `npm test`，确认 `forward-links` 快照只出现该站点的新增行，然后 `UPDATE_SNAPSHOTS=1 npm test -- forward-links` 刷新
+
+示例（只靠配置接入的 Unit3D 站）：
+
+```ts
+{
+    name: 'Example',
+    type: SiteType.Unit3DClassic,
+    keywords: ['example.cc'],
+    baseUrl: 'https://example.cc/',
+    search: { imdb: 'torrents?imdbId={imdb}', name: 'torrents?name={name}' }
+}
+```
 
 ### 4.2 parse 端建议
 
@@ -112,11 +124,15 @@ fill 端优先保证：
 
 ## 5. 本地编译与实测
 
-### 5.1 编译检查
+### 5.1 编译与自动测试
 
 ```bash
+npm run legacy:fetch   # 第一次运行时
+npm run check
 npm run build
 ```
+
+`npm run check` 里的 legacy 对比测试会检查公共规则（媒介、编码、标签等）有没有偏离上游脚本，没有站点账号也能跑。
 
 ### 5.2 端到端实测（必须）
 

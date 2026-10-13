@@ -3,7 +3,8 @@
 本文件用于统一协作约束，避免重复回归。
 
 ## 目标
-- 第一优先级：行为对齐 `archive/auto_feed.legacy.user.js` 已验证逻辑。
+- 第一优先级：行为对齐上游 legacy 脚本（`.legacy/auto_feed.user.js`，版本固定在 `scripts/legacy.lock.json`，`npm run legacy:fetch` 拉取）。
+  - 注意：本地 `archive/auto_feed.legacy.user.js` 实际是重构版 4.0.3 的构建产物，不是 legacy，不要再用它做对照。
 - 第二优先级：在不破坏现有功能前提下简化结构，减少重复逻辑。
 
 ## 当前共识
@@ -13,16 +14,22 @@
 - 本地命令习惯： shell 命令统一通过 `rtk` 前缀执行。
 
 ## 代码组织（当前）
-- `src/trackers/*`：站点单独实现（站点差异优先放这里；一站一文件）
-- `src/templates/*`：站点框架通用实现
-- `src/common/rules/*`：可复用纯逻辑（无副作用）
-- `src/services/*`：运行时副作用（DOM/网络/缓存/UI 注入）
-- `src/core/*`：站点识别、生命周期调度
-- `src/config/*`：站点配置清单
+- `src/config/sites_*.ts`：站点配置清单。能用数据表达的站点差异写在这里：`uploadPath`、`search`（查重 URL 模板）、`baseUrlSetting`、`preferCurrentHost`、`groupUpload`、表单 `selectors`。
+- `src/config/frameworks.ts`：各框架（Nexus / Unit3D / Gazelle）的默认上传路径与查重模板。
+- `src/trackers/*`：站点单独实现（一站一文件）。需要代码的站点差异通过 engine 钩子覆写：
+  - `parse` / `fill`（Nexus 系另有 `afterParse` / `beforeFill` / `afterFill`）
+  - `isSourcePage(url)`：哪些 URL 是详情页（转发 UI、远程推送侧栏都用它）
+  - `isFillComplete()`：上传表单是否已填好（未完成时 SiteManager 会重试 fill）
+  - `onForwardReceived()` / `recoverForwardMeta()` / `onNonUploadPage()`：多步上传流程（参考 KG）
+- `src/templates/*`：站点框架通用实现，不写 `siteName === 'X'` 分支
+- `src/common/rules/*`：可复用纯逻辑（无副作用），由 legacy 对比测试覆盖
+- `src/common/dom/*`：DOM 小工具（`repeat`、`readFieldValue`、表单赋值）
+- `src/services/*`：运行时副作用（DOM/网络/缓存/UI 注入），不写站点分支；需要站点信息时读 config 或调 engine 钩子
+- `src/core/*`：站点识别（按 hostname 匹配 `keywords`）、生命周期调度
 
 ## 源码对齐适配方法（强制）
 1. 先找“上游真规则”
-- 先查 `archive/auto_feed.legacy.user.js`。
+- 先查 `.legacy/auto_feed.user.js`（上游 master，`npm run legacy:fetch` 拉取）。
 - 不先写新逻辑，先定位：该站 `uploadPath`、`search` 参数、关键表单 selector、字段映射（category/type/resolution）。
 
 2. 先抄稳定规则，再做最小改造
@@ -52,7 +59,10 @@
 4. 目标站 fill 是否被页面二次渲染覆盖。
 
 ## 验收清单
+- `npm run check` 通过（typecheck + 全部测试；先 `npm run legacy:fetch`，否则 legacy 对比测试会被跳过）。
 - `npm run build` 通过。
+- 改了站点 URL 规则时，`tests/fixtures/forward-links.snapshot.txt` 的 diff 只包含预期变化（`UPDATE_SNAPSHOTS=1 npm test -- forward-links` 刷新）。
+- 修了规则类 bug 时，把触发样本加进 `tests/fixtures/rules-corpus.ts` 或 `tests/rules.test.ts`。
 - 至少做 1 条源站 -> 目标站端到端验证（包含标题、简介、媒介字段、关键 ID、torrent 注入）。
 - 若改动站点逻辑，同步更新 `docs/wiki/FEATURE_PARITY.md` 状态说明。
 

@@ -18,7 +18,7 @@ This is the refactored version evolved from the original **Auto-Feed** project. 
 - Monika（MDU）转发链路已按上游源码规则对齐修复（上传路径、搜索参数、关键表单映射）。
 - 图片托管与远程推送持续完善，已覆盖 Hostik / hdbimg 等桥接场景，以及 qBittorrent / Transmission / Deluge 推送。
 - 音乐站点（RED / OPS / DIC / OpenCD）已接入，但仍在持续补齐双向转发字段和边缘规则；部分小站和历史功能仍处于迁移或待回归阶段。
-- 快速搜索已按 `archive/auto_feed.legacy.user.js` 对齐（含 `nzbs.in`、字幕站等独立搜索站点）。
+- 快速搜索已按上游 legacy 脚本对齐（含 `nzbs.in`、字幕站等独立搜索站点）。
 - 详细状态见：[`docs/wiki/FEATURE_PARITY.md`](docs/wiki/FEATURE_PARITY.md)
 
 ## 核心功能

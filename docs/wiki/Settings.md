@@ -26,4 +26,4 @@
 ## 说明
 - 所有配置持久化在油猴存储（`auto_feed_settings`）。
 - 站点启用状态受 `src/config/*` 与 `SiteCatalogService` 控制。
-- 快搜默认预设来自 `archive/auto_feed.legacy.user.js`（含 `nzbs.in`、字幕站等独立搜索站点）。
+- 快搜默认预设来自上游 legacy 脚本（含 `nzbs.in`、字幕站等独立搜索站点）。

@@ -3,7 +3,7 @@
 ## 当前状态（2026-09-13）
 - 非音乐站点：主流程基本可用，日常转发可稳定使用。
 - 音乐站点：仍在补齐字段与双向转发细节。
-- 维护基准：`archive/auto_feed.legacy.user.js`。
+- 维护基准：`.legacy/auto_feed.user.js`（上游 master，`npm run legacy:fetch` 拉取）。
 
 ## 分支关系
 - 原项目 `main`：旧版 legacy，作为行为和兼容规则参考。
