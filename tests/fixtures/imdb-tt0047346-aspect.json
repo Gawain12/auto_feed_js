@@ -1,0 +1,25 @@
+{
+  "props": {
+    "pageProps": {
+      "contentData": {
+        "data": {
+          "title": {
+            "id": "tt0047346",
+            "technicalSpecifications": {
+              "aspectRatios": {
+                "items": [
+                  {
+                    "aspectRatio": "1.37 : 1",
+                    "attributes": [],
+                    "__typename": "AspectRatio"
+                  }
+                ],
+                "__typename": "AspectRatios"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -10,7 +10,8 @@
     "dev:screen:stop": "bash scripts/dev-full-screen.sh stop",
     "dev:screen:attach": "bash scripts/dev-full-screen.sh attach",
     "dev:screen:status": "bash scripts/dev-full-screen.sh status",
-    "build": "tsc && node scripts/vite.mjs build && node scripts/postbuild-userscripts.mjs"
+    "build": "tsc && node scripts/vite.mjs build && node scripts/postbuild-userscripts.mjs",
+    "test:tik": "node scripts/verify-tik.mjs"
   },
   "dependencies": {
     "preact": "^10.0.0",

@@ -38,6 +38,9 @@ jobs:
           AUTOFEED_USERSCRIPT_URL: https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js
           AUTOFEED_USERSCRIPT_VERSION: ${{ steps.pkg.outputs.version }}
 
+      - name: Tik upload regressions
+        run: npm run test:tik
+
       - name: Update dev tag
         run: |
           git config user.name "github-actions[bot]"

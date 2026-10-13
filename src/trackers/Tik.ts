@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import { Unit3DClassicEngine } from '../templates/unit3d_classic';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { getSizeFromDescr } from '../common/rules/helpers';
@@ -10,10 +11,6 @@ import { ImageHostService } from '../services/ImageHostService';
 import { ImdbAspectRatioService } from '../services/ImdbAspectRatioService';
 
 const TIK_BASE_CONTENT = `
-[center][img]{poster}[/img]
-{screenshots}
-[/center]
-
 [b][color=blue]SYNOPSIS:[/color][/b]
 {en_descr}
 
@@ -156,23 +153,22 @@ function normalizeAspectRatioValue(v: unknown): string {
     return `${r}:1`;
 }
 
-function normalizeAspectRatioText(v: string): string {
-    const raw = String(v || '').replace(/\s+/g, ' ').trim();
-    if (!raw) return '';
-    const ratio = raw.match(/(\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?)/)?.[1] || '';
-    if (ratio) return ratio.replace(/\s+/g, '');
-    const dec = raw.match(/\b(\d(?:\.\d{1,3})?)\b/)?.[1] || '';
-    if (dec) {
-        const n = parseFloat(dec);
-        if (Number.isFinite(n) && n > 1) return `${Number(n.toFixed(2))}:1`;
-    }
-    return raw;
+function normalizeAspectRatioText(value: string): string {
+    return ImdbAspectRatioService.normalizeAspectRatio(value);
 }
 
-function extractPixhostImageUrlFromTag(tag: string): string {
-    const img = tag.match(/\[img\](.*?)\[\/img\]/i)?.[1] || '';
-    if (!img) return '';
-    return ImageHostService.getFullSizeUrl(img);
+// Film aspect ratio is independent of the encoded video's display aspect ratio.
+export function stripTikImages(description: string): string {
+    return description
+        .replace(/\[url(?:=[^\]]+)?\]\s*\[img(?:=[^\]]+)?\][\s\S]*?\[\/img\]\s*\[\/url\]/gi, '')
+        .replace(/\[img(?:=[^\]]+)?\][\s\S]*?\[\/img\]/gi, '')
+        .replace(/<img\b[^>]*>/gi, '');
+}
+
+export function updateTikFilmAspectRatio(description: string, ratio: string): string {
+    const normalized = ImdbAspectRatioService.normalizeAspectRatio(ratio);
+    if (!normalized) return description;
+    return description.replace(/^Film Aspect Ratio\.*\s*:[^\r\n]*/m, 'Film Aspect Ratio..: ' + normalized);
 }
 
 function parseLangListFromMedia(text: string, kind: 'audio' | 'sub'): string[] {
@@ -225,7 +221,8 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
     try {
         const resp = await GMAdapter.xmlHttpRequest({
             method: 'GET',
-            url
+            url,
+            timeout: 10000
         });
         const html = resp?.responseText || '';
         if (!html) return {};
@@ -306,20 +303,7 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
             }
         } catch {}
 
-        let aspect_ratio = '';
-        try {
-            if (json?.aspectRatio) {
-                aspect_ratio = normalizeAspectRatioText(String(json.aspectRatio).trim());
-            }
-        } catch {}
-        try {
-            const li = Array.from(doc.querySelectorAll('li.ipc-metadata-list__item')).find((e) =>
-                (e.textContent || '').includes('Aspect ratio')
-            );
-            if (li) {
-                aspect_ratio = normalizeAspectRatioText((li.textContent || '').replace('Aspect ratio', '').trim());
-            }
-        } catch {}
+        const aspect_ratio = ImdbAspectRatioService.extractFromDocument(doc);
 
         try {
             const rows = Array.from(doc.querySelectorAll('li.ipc-metadata-list__item'));
@@ -338,15 +322,6 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
                             .trim();
                         if (text) country = mapCountryName(text.split(/\s{2,}|\n/)[0].trim());
                     }
-                }
-            }
-            if (!aspect_ratio) {
-                const li = rows.find((e) => /Aspect ratio/i.test(e.textContent || ''));
-                if (li) {
-                    aspect_ratio = normalizeAspectRatioText((li.textContent || '')
-                        .replace(/Aspect ratio/i, '')
-                        .replace(/\s+/g, ' ')
-                        .trim());
                 }
             }
         } catch {}
@@ -370,16 +345,6 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
                 if (names.length) country = uniqKeepOrder(names).join(', ');
             } catch {}
         }
-        if (!aspect_ratio) {
-            try {
-                aspect_ratio = normalizeAspectRatioText(
-                    html.match(/Aspect ratio[\s\S]{0,120}?([0-9.]+\s*:\s*[0-9.]+)/i)?.[1]?.trim() ||
-                    html.match(/"aspectRatio"\s*:\s*"([^"]+)"/i)?.[1]?.trim() ||
-                    ''
-                );
-            } catch {}
-        }
-
         return {
             poster: poster || undefined,
             en_descr: en_descr || undefined,
@@ -410,7 +375,8 @@ async function fetchTmdbBasicsByImdb(imdbId: string): Promise<{
             const resp = await GMAdapter.xmlHttpRequest({
                 method: 'GET',
                 url,
-                headers: { accept: 'application/json' }
+                headers: { accept: 'application/json' },
+                timeout: 10000
             });
             const text = resp?.responseText || '{}';
             return JSON.parse(text);
@@ -471,36 +437,6 @@ async function fetchTmdbBasicsByImdb(imdbId: string): Promise<{
     return {};
 }
 
-async function fetchImdbTechnicalAspectRatio(imdbId: string, imdbUrl?: string): Promise<string> {
-    const id = extractImdbId(String(imdbId || '')) || extractImdbId(String(imdbUrl || '')) || '';
-    if (!id) return '';
-    const techUrl = `https://www.imdb.com/title/${id}/technical/?ref_=tt_spec_sm`;
-    try {
-        const resp = await GMAdapter.xmlHttpRequest({
-            method: 'GET',
-            url: techUrl
-        });
-        const html = resp?.responseText || '';
-        if (!html) return '';
-
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const rows = Array.from(doc.querySelectorAll('tr, li, div'));
-        for (const row of rows) {
-            const text = (row.textContent || '').replace(/\s+/g, ' ').trim();
-            if (!/Aspect ratio/i.test(text)) continue;
-            const m = text.match(/Aspect ratio\s*[:：]?\s*([0-9.]+\s*:\s*[0-9.]+)/i);
-            if (m?.[1]) return normalizeAspectRatioText(m[1]);
-        }
-
-        const m2 =
-            html.match(/Aspect ratio[\s\S]{0,220}?([0-9.]+\s*:\s*[0-9.]+)/i) ||
-            html.match(/"aspectRatio"\s*:\s*"([^"]+)"/i);
-        return normalizeAspectRatioText(m2?.[1] || '');
-    } catch {
-        return '';
-    }
-}
-
 export class TikEngine extends Unit3DClassicEngine {
     async parse(): Promise<TorrentMeta> {
         const meta = await super.parse();
@@ -533,7 +469,12 @@ export class TikEngine extends Unit3DClassicEngine {
     async fill(meta: TorrentMeta): Promise<void> {
         const rawDescrForTitle = `${meta.fullMediaInfo || ''}\n${meta.description || ''}`.trim();
         const expectedTikTitle = this.buildTikTargetTitle(meta, rawDescrForTitle);
-        await super.fill({ ...meta, targetTitle: expectedTikTitle || meta.title || '' });
+        const selector = 'textarea#bbcode-description, textarea[name="description"], textarea#upload-form-description, textarea#description';
+        const previous = document.querySelector(selector) as HTMLTextAreaElement | null;
+        if (previous) previous.value = '';
+        const mediaInfo = getMediainfoPictureFromDescr(rawDescrForTitle, { mediumSel: meta.mediumSel }).mediainfo;
+        // The base adapter must not briefly insert source image links while metadata loads.
+        await super.fill({ ...meta, targetTitle: expectedTikTitle || meta.title || '', description: '', images: [], fullMediaInfo: meta.fullMediaInfo || mediaInfo });
 
         try {
             const title = meta.title || '';
@@ -567,11 +508,10 @@ export class TikEngine extends Unit3DClassicEngine {
                 try { el.dispatchEvent(new Event('change', { bubbles: true })); } catch {}
             };
 
-            const bbcode = document.querySelector('textarea#bbcode-description, textarea[name="description"], textarea#upload-form-description, textarea#description') as HTMLTextAreaElement | null;
+            const bbcode = document.querySelector(selector) as HTMLTextAreaElement | null;
+            const initialDescription = bbcode?.value || '';
 
             const rawDescr = rawDescrForTitle;
-            const infos = getMediainfoPictureFromDescr(rawDescr, { mediumSel: meta.mediumSel });
-            const screenshots = (infos.picInfo || '').trim();
 
             const year = (meta.title || '').match(/(19|20)\d{2}/g)?.pop() || '';
             const imdbId = extractImdbId(meta.imdbId || '') || extractImdbId(meta.imdbUrl || '') || '';
@@ -579,15 +519,7 @@ export class TikEngine extends Unit3DClassicEngine {
 
             const imdbBasics = imdbUrl ? await fetchImdbBasics(imdbUrl) : {};
             const tmdbBasics = imdbId ? await fetchTmdbBasicsByImdb(imdbId) : {};
-            let poster = imdbBasics.poster || tmdbBasics.poster || meta.images?.[0] || '';
-            if (poster && !poster.match(/pixhost\.to\/images\//i)) {
-                try {
-                    const tags = await ImageHostService.uploadToPixhost([poster]);
-                    const pixhostImage = extractPixhostImageUrlFromTag(tags?.[0] || '');
-                    if (pixhostImage) poster = pixhostImage;
-                } catch {}
-            }
-            const en_descr = imdbBasics.en_descr || tmdbBasics.en_descr || meta.synopsis || '';
+            const en_descr = stripTikImages(imdbBasics.en_descr || tmdbBasics.en_descr || meta.synopsis || '');
             const country = imdbBasics.country || tmdbBasics.country || parseCountryFallback(rawDescr) || mapCountryName(meta.sourceSel || '') || '';
 
             const runtime =
@@ -659,22 +591,15 @@ export class TikEngine extends Unit3DClassicEngine {
             applyTikFallbackTitle();
             TITLE_REAPPLY_DELAYS.forEach((ms) => window.setTimeout(applyTikFallbackTitle, ms));
 
-            const cachedImdbAspect = !/DVD/i.test(medium) ? await ImdbAspectRatioService.getCachedAspectRatio(imdbId) : '';
-            const mediaAspect = !/DVD/i.test(medium) ? normalizeAspectRatioText(parseAspectRatioFallback(rawDescr) || '') : '';
-            const imdbTechAspect = !/DVD/i.test(medium) && !cachedImdbAspect && !imdbBasics.aspect_ratio
-                ? await ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl) || await fetchImdbTechnicalAspectRatio(imdbId, imdbUrl)
-                : '';
-            const waitedImdbAspect = !/DVD/i.test(medium) && !cachedImdbAspect && !imdbBasics.aspect_ratio && !imdbTechAspect
-                ? await ImdbAspectRatioService.waitForCachedAspectRatio(imdbId, 8000)
-                : '';
-            const aspect_ratio = /DVD/i.test(medium)
-                ? normalizeAspectRatioText(parseAspectRatioFallback(rawDescr) || '')
-                : normalizeAspectRatioText(mediaAspect || cachedImdbAspect || imdbBasics.aspect_ratio || imdbTechAspect || waitedImdbAspect || '');
+            const cachedImdbAspect = await ImdbAspectRatioService.getCachedAspectRatio(imdbId);
+            const aspect_ratio = imdbBasics.aspect_ratio || cachedImdbAspect ||
+                await ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl);
+            if (aspect_ratio && aspect_ratio !== cachedImdbAspect) {
+                await ImdbAspectRatioService.saveCachedAspectRatio(imdbId, aspect_ratio, imdbUrl);
+            }
             const bitrate = parseBitrateFallback(rawDescr) || '';
 
             const tpl = tikTemplateFormat(TIK_BASE_CONTENT, {
-                poster: poster || '{poster}',
-                screenshots: screenshots || '',
                 en_descr: en_descr || '',
                 imdbid: imdbId || '',
                 year: year || '',
@@ -690,12 +615,76 @@ export class TikEngine extends Unit3DClassicEngine {
             }).trim();
 
             if (bbcode && tpl) {
-                bbcode.value = tpl;
-                fire(bbcode);
+                // Preserve any edits made while external metadata was being fetched.
+                if (bbcode.value === initialDescription) {
+                    bbcode.value = tpl;
+                    fire(bbcode);
+                }
+                await this.renderUploadHelp(bbcode, meta, imdbId, aspect_ratio);
             }
         } catch (e) {
             console.warn('[Auto-Feed][Tik] Template fill skipped:', e);
         }
+    }
+
+    private async renderUploadHelp(textarea: HTMLTextAreaElement, meta: TorrentMeta, imdbId: string, ratio: string) {
+        document.getElementById('autofeed-tik-upload-help')?.remove();
+        const text = getUiText((await SettingsService.load()).uiLanguage);
+        const help = document.createElement('div');
+        help.id = 'autofeed-tik-upload-help';
+        help.style.cssText = 'margin:10px 0;padding:12px;border:1px solid #9aa4b2;border-radius:6px;font-size:13px;line-height:1.6;';
+        const note = document.createElement('div');
+        note.textContent = text('Tik 不预填海报或截图链接。请先将图片转存到 Hostik，再将生成的 BBCode 粘贴到简介开头。', 'Posters and screenshots are left out of Tik autofill. Rehost them to Hostik, then paste the generated BBCode at the start of the description.');
+        const tools = document.createElement('div');
+        tools.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;';
+        const rehost = document.createElement('button');
+        rehost.type = 'button';
+        rehost.textContent = text('转存图片到 Hostik', 'Rehost images to Hostik');
+        const status = document.createElement('span');
+        status.setAttribute('role', 'status');
+        const showRatio = (value: string) => {
+            status.textContent = value
+                ? text('IMDb 电影画幅比：', 'IMDb film aspect ratio: ') + value
+                : text('暂未获取 IMDb 电影画幅比，请打开技术规格页后重新读取；不会使用视频显示比例代替。', 'IMDb film aspect ratio is unavailable. Open its technical specs, then refresh the ratio. Video display aspect ratio is not used as a substitute.');
+        };
+        showRatio(ratio);
+        rehost.onclick = async () => {
+            rehost.disabled = true;
+            try { await ImageHostService.prepareAndOpen(meta, 'hostik'); }
+            catch { status.textContent = text('图片转存准备失败，请通过图片工具重试。', 'Could not prepare images. Try the image toolbox.'); }
+            finally { rehost.disabled = false; }
+        };
+        tools.append(rehost);
+        if (imdbId) {
+            const open = document.createElement('button');
+            open.type = 'button';
+            open.textContent = text('打开 IMDb 技术规格', 'Open IMDb technical specs');
+            open.onclick = () => ImdbAspectRatioService.primeFromImdbUrl(imdbId);
+            const refresh = document.createElement('button');
+            refresh.type = 'button';
+            refresh.textContent = text('重新读取画幅比', 'Refresh ratio');
+            refresh.onclick = async () => {
+                refresh.disabled = true;
+                status.textContent = text('正在读取 IMDb...', 'Checking IMDb...');
+                try {
+                    const value = await ImdbAspectRatioService.getCachedAspectRatio(imdbId) ||
+                        await ImdbAspectRatioService.fetchAspectRatio(imdbId);
+                    if (value) {
+                        const updated = updateTikFilmAspectRatio(textarea.value, value);
+                        if (updated !== textarea.value) {
+                            textarea.value = updated;
+                            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
+                    showRatio(value);
+                } catch { showRatio(''); }
+                finally { refresh.disabled = false; }
+            };
+            tools.append(open, refresh);
+        }
+        help.append(note, tools, status);
+        (textarea.closest('label') || textarea).insertAdjacentElement('beforebegin', help);
     }
 
     private buildTikTargetTitle(meta: TorrentMeta, rawDescr: string): string {

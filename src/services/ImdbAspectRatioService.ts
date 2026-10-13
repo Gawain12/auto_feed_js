@@ -16,36 +16,31 @@ export class ImdbAspectRatioService {
         return `${this.CACHE_PREFIX}${extractImdbId(imdbId)}`;
     }
 
-    static normalizeAspectRatio(value: string): string {
-        const raw = String(value || '').replace(/\s+/g, ' ').trim();
-        if (!raw) return '';
-        const ratio = raw.match(/(\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?)/)?.[1] || '';
-        if (ratio) return ratio.replace(/\s+/g, '');
-        const dec = raw.match(/\b(\d(?:\.\d{1,3})?)\b/)?.[1] || '';
-        if (dec) {
-            const n = parseFloat(dec);
-            if (Number.isFinite(n) && n > 1) return `${Number(n.toFixed(2))}:1`;
+    static normalizeAspectRatio(value: unknown): string {
+        if (typeof value !== 'string' && typeof value !== 'number') return '';
+        const raw = String(value).replace(/\s+/g, ' ').trim();
+        const ratio = raw.match(/(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)/);
+        if (ratio) {
+            const width = Number(ratio[1]);
+            const height = Number(ratio[2]);
+            return width > 0 && height > 0 ? width + ':' + height : '';
         }
-        return raw;
+        // Accept a bare ratio, not arbitrary text, object strings or dates.
+        if (!/^\d+(?:\.\d+)?$/.test(raw)) return '';
+        const decimal = Number(raw);
+        return decimal > 0 && decimal < 10 ? Number(decimal.toFixed(3)) + ':1' : '';
     }
 
     static extractFromText(text: string): string {
         const source = String(text || '');
-        if (!source.trim()) return '';
         const ratio =
-            source.match(/Aspect ratio[\s\S]{0,120}?([0-9.]+\s*:\s*[0-9.]+)/i)?.[1] ||
-            source.match(/Aspect ratio\s*[:：]?\s*([0-9.]+\s*:\s*[0-9.]+)/i)?.[1] ||
-            source.match(/AspectRatio[\s\S]{0,120}?([0-9.]+\s*:\s*[0-9.]+)/i)?.[1] ||
-            source.match(/"aspectRatio"\s*:\s*"([^"]+)"/i)?.[1] ||
-            source.match(/aspectRatio&quot;:\s*&quot;([^&]+)&quot;/i)?.[1] ||
-            source.match(/aspectRatio\\?":\\?"([^"\\]+)\\?"/i)?.[1] ||
-            '';
+            source.match(/Aspect\s*ratio[\s\S]{0,120}?([0-9.]+\s*:\s*[0-9.]+)/i)?.[1] ||
+            source.match(/"aspectRatio"\s*:\s*"([^"\n]+)"/i)?.[1] || '';
         return this.normalizeAspectRatio(ratio);
     }
 
-    private static pickAspectRatioFromJson(obj: any): string {
-        if (!obj) return '';
-        if (typeof obj === 'string') return this.extractFromText(obj);
+    private static pickAspectRatioFromJson(obj: unknown): string {
+        if (!obj || typeof obj !== 'object') return '';
         if (Array.isArray(obj)) {
             for (const item of obj) {
                 const hit = this.pickAspectRatioFromJson(item);
@@ -53,58 +48,69 @@ export class ImdbAspectRatioService {
             }
             return '';
         }
-        if (typeof obj !== 'object') return '';
-        const direct = this.normalizeAspectRatio(String(obj.aspectRatio || obj.aspect_ratio || '').trim());
+        const record = obj as Record<string, unknown>;
+        const direct = this.normalizeAspectRatio(record.aspectRatio ?? record.aspect_ratio);
         if (direct) return direct;
-        for (const v of Object.values(obj)) {
-            const hit = this.pickAspectRatioFromJson(v);
+        for (const value of Object.values(record)) {
+            const hit = this.pickAspectRatioFromJson(value);
+            if (hit) return hit;
+        }
+        return '';
+    }
+
+    static extractFromPageData(page: any): string {
+        const title = page?.contentData?.data?.title;
+        const candidates = [
+            title?.technicalSpecifications?.aspectRatios,
+            title?.aspectRatios,
+            page?.mainColumnData?.technicalSpecifications?.aspectRatios,
+            page?.mainColumnData?.aspectRatios,
+            page?.aboveTheFoldData?.aspectRatios
+        ];
+        for (const candidate of candidates) {
+            const hit = this.pickAspectRatioFromJson(candidate);
             if (hit) return hit;
         }
         return '';
     }
 
     static extractFromDocument(doc: Document = document): string {
-        try {
-            const selectors = [
-                'li.ipc-metadata-list__item',
-                '[data-testid="hero__pageTitle"] ~ ul li',
-                '[data-testid="Details"] li',
-                '[data-testid="title-techspec_aspectratio"]',
-                'section[data-testid="TechSpecs"] li',
-                'tr',
-                'div'
-            ];
-            for (const selector of selectors) {
-                const nodes = Array.from(doc.querySelectorAll(selector));
+        // The technical page has a stable field marker even when its label is localized.
+        for (const node of Array.from(doc.querySelectorAll(
+            '[data-testid="title-techspec_aspectratio"], [data-testid="title-techspecs_aspectratio"], #aspectratio'
+        ))) {
+            const content = node.querySelector('.ipc-metadata-list-item__content-container') || node;
+            const hit = this.normalizeAspectRatio(content.textContent || '');
+            if (hit) return hit;
+        }
+
+        // Read only this title's data. Other titles in recommendation widgets may have different ratios.
+        for (const script of Array.from(doc.querySelectorAll('script#__NEXT_DATA__'))) {
+            try {
+                const page = JSON.parse(script.textContent || '{}')?.props?.pageProps;
+                const hit = this.extractFromPageData(page);
+                if (hit) return hit;
+            } catch {}
+        }
+        for (const script of Array.from(doc.querySelectorAll('script[type="application/ld+json"]'))) {
+            try {
+                const json = JSON.parse(script.textContent || '{}');
+                const nodes = Array.isArray(json) ? json : json['@graph'] || [json];
                 for (const node of nodes) {
-                    const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
-                    if (!/Aspect ratio/i.test(text)) continue;
-                    const hit = this.extractFromText(text);
+                    if (!/^(Movie|TVSeries|TVMiniSeries)$/i.test(String(node?.['@type'] || ''))) continue;
+                    const hit = this.normalizeAspectRatio(node.aspectRatio) ||
+                        this.pickAspectRatioFromJson(node.technicalSpecifications?.aspectRatios || node.aspectRatios);
                     if (hit) return hit;
                 }
-            }
-        } catch {}
-
-        try {
-            const ld = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'));
-            for (const script of ld) {
-                const text = script.textContent || '';
-                let hit = this.extractFromText(text);
-                if (!hit) {
-                    try {
-                        hit = this.pickAspectRatioFromJson(JSON.parse(text));
-                    } catch {}
-                }
-                if (hit) return hit;
-            }
-        } catch {}
-
-        try {
-            const html = doc.documentElement?.outerHTML || '';
-            return this.extractFromText(html);
-        } catch {
-            return '';
+            } catch {}
         }
+        for (const node of Array.from(doc.querySelectorAll('li.ipc-metadata-list__item, tr'))) {
+            const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+            if (!/^Aspect\s*ratio/i.test(text)) continue;
+            const hit = this.extractFromText(text);
+            if (hit) return hit;
+        }
+        return '';
     }
 
     static async fetchAspectRatio(imdbIdOrUrl: string): Promise<string> {
@@ -122,20 +128,17 @@ export class ImdbAspectRatioService {
                     headers: {
                         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                         'accept-language': 'en-US,en;q=0.9'
-                    }
+                    },
+                    timeout: 10000
                 });
-                const html = resp?.responseText || '';
+                if (resp?.status !== 200) continue;
+                const html = resp.responseText || '';
                 if (!html) continue;
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const fromDoc = this.extractFromDocument(doc);
                 if (fromDoc) {
                     await this.saveCachedAspectRatio(id, fromDoc, url);
                     return fromDoc;
-                }
-                const fromText = this.extractFromText(html);
-                if (fromText) {
-                    await this.saveCachedAspectRatio(id, fromText, url);
-                    return fromText;
                 }
             } catch {}
         }
