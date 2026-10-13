@@ -14,7 +14,7 @@ export function getMediumSel(text: string, title?: string): string {
         result = 'Remux';
     } else if (result.match(/(Blu-ray|.MPLS|Bluray原盘)/i) && !result.match(/Encode/i)) {
         result = 'Blu-ray';
-    } else if (result.match(/(UHD|UltraHD)/i) && !result.match(/Encode/i)) {
+    } else if (result.match(/(UHD|UltraHD)/i) && !result.match(/Encode|BDRIP|webrip|BluRay/i) && !result.match(/(x|H).?(264|265)/i)) {
         result = 'UHD';
     } else if (result.match(/(Encode|BDRIP|webrip|BluRay)/i) || result.match(/(x|H).?(264|265)/i)) {
         result = 'Encode';

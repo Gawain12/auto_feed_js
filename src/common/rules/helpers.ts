@@ -27,44 +27,41 @@ export function numToChinese(num: number): string {
     return chnstr;
 }
 
-export function getSmallDescrFromDescr(descr: string, name: string): string {
+/**
+ * Builds a small description (副标题) from PTGen/Douban text: Chinese name + season/episode + genre.
+ * Legacy parity (upstream `get_small_descr_from_descr`): `preferOriginalName` mirrors `api_chosen == 0`,
+ * which prefers 片名 over 译名; either way a name containing Chinese wins over one without.
+ */
+export function getSmallDescrFromDescr(descr: string, name: string, preferOriginalName = false): string {
     let smallDescr = '';
-    let videoname = '';
     let subStr = '';
-    let typeStr = '';
+    const hasChinese = (value: string | null) => !!value && /[\u4e00-\u9fa5]/.test(value);
+    const getMatch = (pattern: RegExp) => descr.match(pattern)?.[1]?.trim() || null;
 
-    if (descr.match(/译.{0,5}名[^\r\n]+/)) {
-        videoname = descr.match(/译.*?名([^\r\n]+)/)?.[1] || '';
-        if (!/.*[\u4e00-\u9fa5]+.*/.test(videoname) || videoname.trim() === '') {
-            try {
-                videoname = descr.match(/片.*?名([^\r\n]+)/)?.[1] || '';
-            } catch {}
-        }
-        videoname = videoname.trim();
-        if (name.match(/S\d{2}E\d{2}/i)) {
-            const match = name.match(/S(\d{2})E(\d{2})/i);
-            if (match) {
-                subStr = ` *第${numToChinese(parseInt(match[1], 10))}季 第${parseInt(match[2], 10)}集*`;
+    if (descr) {
+        const yiming = getMatch(/译.{0,5}名[ \t]*[:：]?([^\r\n]+)/);
+        const pianming = getMatch(/片.{0,5}名[ \t]*[:：]?([^\r\n]+)/);
+        let videoname = (preferOriginalName ? pianming || yiming : yiming || pianming) || '';
+        const backup = preferOriginalName ? yiming : pianming;
+        if (videoname && !hasChinese(videoname) && hasChinese(backup)) videoname = backup || videoname;
+
+        if (videoname) {
+            const episode = name.match(/S(\d{2})E(\d{2})/i);
+            const season = name.match(/S(\d{2})/i);
+            if (episode) {
+                subStr = ` *第${numToChinese(parseInt(episode[1], 10))}季 第${parseInt(episode[2], 10)}集*`;
+            } else if (season) {
+                subStr = ` *第${numToChinese(parseInt(season[1], 10))}季`;
+                const episodeCount = descr.match(/◎集.{1,10}数.*?(\d+)/);
+                subStr += episodeCount ? ` 全${parseInt(episodeCount[1], 10)}集*` : '*';
             }
-        } else if (name.match(/S\d{2}/)) {
-            const match = name.match(/S(\d{2})/i);
-            if (match) {
-                subStr = ` *第${numToChinese(parseInt(match[1], 10))}季`;
-                if (descr.match(/◎集.{1,10}数.*?(\d+)/)) {
-                    subStr += ` 全${parseInt(descr.match(/◎集.{1,10}数.*?(\d+)/)?.[1] || '0', 10)}集*`;
-                } else {
-                    subStr += '*';
-                }
-            }
+            smallDescr = videoname + subStr;
         }
-        smallDescr = videoname + subStr;
     }
 
     if (descr.match(/类.{0,5}别[^\r\n]+/)) {
-        typeStr = descr.match(/类.*别([^\r\n]+)/)?.[1] || '';
-        typeStr = typeStr.trim();
-        typeStr = typeStr.replace(/\//g, '');
-        smallDescr = smallDescr + ' | 类别：' + typeStr;
+        const typeStr = (descr.match(/类.*别([^\r\n]+)/)?.[1] || '').trim().replace(/\//g, '');
+        smallDescr = `${smallDescr ? `${smallDescr} | ` : ''}类别：${typeStr}`;
     }
 
     return smallDescr.trim();
