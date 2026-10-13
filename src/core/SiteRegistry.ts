@@ -117,9 +117,16 @@ export class SiteRegistry {
     }
 
     private static matchConfig(url: string): SiteConfig | null {
+        // Keywords are domains: match them against the hostname only, so a tracker domain that
+        // appears in a query string or path (`?ref=hdbits.org`) does not activate that engine.
+        let host = '';
+        try {
+            host = new URL(url).hostname.toLowerCase();
+        } catch {
+            return null;
+        }
         for (const config of siteConfigs) {
-            // Check keywords/domains first (fast)
-            if (config.keywords.some(k => url.includes(k))) {
+            if (config.keywords.some(k => host.includes(k))) {
                 return config;
             }
             // Check regex if defined

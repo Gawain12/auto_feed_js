@@ -3,10 +3,15 @@ import { NexusPHPEngine } from './NexusPHP';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { SiteConfig } from '../types/SiteConfig';
 import { getLabel } from '../common/rules/text';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 export class CHDBitsEngine extends NexusPHPEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'details.php') && hasIdQuery(url);
     }
 
     async fill(meta: TorrentMeta): Promise<void> {

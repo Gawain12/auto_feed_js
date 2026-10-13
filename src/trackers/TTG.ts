@@ -3,6 +3,7 @@ import { TorrentMeta } from '../types/TorrentMeta';
 import { SiteConfig } from '../types/SiteConfig';
 import { NexusPHPEngine } from './NexusPHP';
 import { extractImdbId, matchLink } from '../common/rules/links';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 const TTG_REAPPLY_DELAYS = [0, 220, 520, 1000, 1800, 2800, 3600, 5000] as const;
 
@@ -19,6 +20,11 @@ const formatTtgTitle = (title: string): string => {
 export class TTGEngine extends NexusPHPEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    // TTG detail pages: /t/{id} or details.php?id=
+    isSourcePage(url: URL): boolean {
+        return /\/t\/\d+(?:\/|$)/i.test(url.pathname) || (isPage(url, 'details.php') && hasIdQuery(url));
     }
 
     async parse(): Promise<TorrentMeta> {

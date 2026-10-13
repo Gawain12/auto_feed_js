@@ -6,7 +6,8 @@ import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getLabel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
-import { dispatchFormEvents, setAllFormValues, setFirstFormValue } from '../common/dom/form';
+import { dispatchFormEvents, setAllFormValues, setFirstFormValue, readFieldValue } from '../common/dom/form';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 const HDT_ANNOUNCE = 'https://hdts-announce.ru/announce.php';
 
@@ -89,6 +90,17 @@ function cleanHdtDescription(raw: string): string {
 export class HDTEngine extends BaseEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'torrents.php', 'details.php') && hasIdQuery(url);
+    }
+
+    isFillComplete(): boolean {
+        const filename = readFieldValue(['input[name="filename"]']);
+        const infosite = readFieldValue(['input[name="infosite"]']);
+        const releaseDesc = readFieldValue(['textarea[name="release_desc"]', '#release_desc', 'textarea[name="info"]', '#info']);
+        return !!filename && !!infosite && releaseDesc.length > 60;
     }
 
     async parse(): Promise<TorrentMeta> {

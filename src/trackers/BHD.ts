@@ -13,6 +13,11 @@ export class BHDEngine extends Unit3DEngine {
         super(config, url);
     }
 
+    // Classic torrent page or library title route.
+    isSourcePage(url: URL): boolean {
+        return /\/torrents\/.+/i.test(url.pathname) || /\/library\/title\/.+/i.test(url.pathname);
+    }
+
     async parse(): Promise<TorrentMeta> {
         this.log('Parsing BHD page...');
 

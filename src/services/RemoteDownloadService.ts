@@ -89,8 +89,8 @@ export class RemoteDownloadService {
         const engine = SiteRegistry.getEngine(window.location.href);
         if (!engine) return;
 
-        // Keep parity with embedded forward area: only show on strict source-detail pages.
-        if (!this.isForwardSourcePage(engine?.siteName || '', window.location.href)) return;
+        // Same pages as the embedded forward area (each engine defines its detail URLs).
+        if (!engine.isSourcePage(new URL(window.location.href))) return;
         // For torrentid-based sites, ensure current page and parsed torrent point to the same torrent id.
         const canBind = await this.canBindCurrentTorrent(engine, window.location.href);
         if (!canBind) return;
@@ -101,60 +101,6 @@ export class RemoteDownloadService {
             opacity: Math.min(1, Math.max(0.3, Number(settings.remoteSidebarOpacity ?? 0.92))),
             lang: settings.uiLanguage
         });
-    }
-
-    private static isDetailPage(url: string): boolean {
-        let parsed: URL;
-        try {
-            parsed = new URL(url, window.location.origin);
-        } catch {
-            return false;
-        }
-        const path = parsed.pathname || '';
-        const qs = parsed.search || '';
-
-        return (
-            ((this.isExactPage(path, 'details.php') || this.isExactPage(path, 'detail.php')) && /id=\d+/i.test(qs)) ||
-            (this.isExactPage(path, 'torrents.php') && /\btorrentid=\d+/i.test(qs)) ||
-            /\/torrents\/\d+(?:\/|$)/i.test(path) ||
-            /\/detail\/\d+(?:\/|$)/i.test(path) ||
-            /\/t\/\d+(?:\/|$)/i.test(path)
-        );
-    }
-
-    private static isForwardSourcePage(siteName: string, url: string): boolean {
-        let parsed: URL;
-        try {
-            parsed = new URL(url, window.location.origin);
-        } catch {
-            return false;
-        }
-        const path = parsed.pathname || '';
-        const qs = parsed.search || '';
-
-        if (siteName === 'TTG') {
-            return /\/t\/\d+(?:\/|$)/i.test(path) || (this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs));
-        }
-        if (siteName === 'PTP' || ['GPW', 'RED', 'OPS', 'DIC'].includes(siteName)) {
-            if (siteName === 'PTP') {
-                return this.isExactPage(path, 'torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
-            }
-            return this.isExactPage(path, 'torrents.php') && /torrentid=\d+/i.test(qs);
-        }
-        if (siteName === 'HDB' || siteName === 'CHDBits' || siteName === 'OpenCD') {
-            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
-        }
-        if (siteName === 'KG') {
-            return (this.isExactPage(path, 'details.php') || this.isExactPage(path, 'reqdetails.php')) && /id=\d+/i.test(qs);
-        }
-        if (siteName === 'BHD') {
-            return /\/torrents\/.+/i.test(path) || /\/library\/title\/.+/i.test(path);
-        }
-        return this.isDetailPage(url);
-    }
-
-    private static isExactPage(path: string, pageName: string): boolean {
-        return (path || '').split('/').pop()?.toLowerCase() === pageName.toLowerCase();
     }
 
     private static extractTorrentId(url: string): string {

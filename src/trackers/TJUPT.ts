@@ -2,7 +2,7 @@ import $ from 'jquery';
 import { NexusPHPEngine } from './NexusPHP';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { extractDoubanId, extractImdbId } from '../common/rules/links';
-import { dispatchFormEvents } from '../common/dom/form';
+import { dispatchFormEvents, readFieldValue } from '../common/dom/form';
 
 function setValue(selector: string, value?: string) {
     if (!value) return;
@@ -34,6 +34,15 @@ function convertMediaInfoQuotes(description: string, fullMediaInfo?: string): st
 }
 
 export class TJUPTEngine extends NexusPHPEngine {
+    isFillComplete(): boolean {
+        const browsecat = readFieldValue(['select[name="browsecat"]', '#browsecat']);
+        const ename = readFieldValue(['#ename', 'input[name="ename"]']);
+        const cname = readFieldValue(['#cname', 'input[name="cname"]']);
+        const external = readFieldValue(['#external_url', 'input[name="external_url"]']);
+        const descr = readFieldValue(['textarea[name="descr"]', '#descr', 'textarea[name="description"]']);
+        return !!browsecat && (!!ename || !!cname) && (!!external || descr.length > 40);
+    }
+
     protected async afterParse(meta: TorrentMeta): Promise<TorrentMeta> {
         try {
             const detailsHtml = $('td:contains("详细信息")').filter((_, el) => (el.textContent || '').trim() === '详细信息').next('td').html() || '';

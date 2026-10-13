@@ -82,3 +82,13 @@ export function selectFirstNonEmptyOption(select: HTMLSelectElement | null | und
     dispatchFormEvents(select);
     return true;
 }
+
+/** First non-empty trimmed value among `selectors` (input / textarea / select). */
+export function readFieldValue(selectors: string[]): string {
+    for (const selector of selectors) {
+        const el = document.querySelector(selector) as FormValueElement | null;
+        const value = (el?.value || '').trim();
+        if (value) return value;
+    }
+    return '';
+}

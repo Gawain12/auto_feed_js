@@ -9,6 +9,8 @@ import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel, getType } 
 import { rebuildReleaseTitleFromMedia } from '../common/rules/titleRebuild';
 import { getSizeFromDescr } from '../common/rules/helpers';
 import { HtmlFetchService } from '../services/HtmlFetchService';
+import { hasIdQuery, isPage } from '../common/rules/pages';
+import { readFieldValue } from '../common/dom/form';
 
 const cleanTitle = (name: string) => name.replace(/\[|\]|\(|\)|mkv$|mp4$/gi, '').trim();
 
@@ -160,6 +162,18 @@ const getBlurayNameFromDescr = (descr: string, name: string, currentName?: strin
 export class PTPEngine extends BaseEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    // Group pages (`?id=`) and single torrents (`?torrentid=`) are both forwardable.
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'torrents.php') && hasIdQuery(url);
+    }
+
+    isFillComplete(): boolean {
+        const name = readFieldValue(['input[name="name"]', '#name', 'input[name="title"]', '#title']);
+        const releaseDesc = readFieldValue(['textarea[name="release_desc"]', '#release_desc', 'textarea[name="info"]', '#info']);
+        const source = readFieldValue(['#source', 'select[name="source"]']);
+        return !!name && releaseDesc.length > 60 && !!source;
     }
 
     async parse(): Promise<TorrentMeta> {

@@ -7,10 +7,15 @@ import { extractImdbId, extractTmdbId, matchLink } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { cleanMediaInfoText, getMediainfoPictureFromDescr } from '../common/rules/media';
 import { HtmlFetchService } from '../services/HtmlFetchService';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 export class HDBEngine extends BaseEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'details.php') && hasIdQuery(url);
     }
 
     private cleanHdbMediaInfo(raw: string): string {

@@ -3,11 +3,17 @@ import { TorrentMeta } from '../types/TorrentMeta';
 import { SiteConfig } from '../types/SiteConfig';
 import { NexusPHPEngine } from './NexusPHP';
 import { TorrentService } from '../services/TorrentService';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 // Dedicated engine entry for OpenCD (plugin_upload form quirks).
 export class OpenCDEngine extends NexusPHPEngine {
     constructor(config: SiteConfig, url: string) {
         super(config, url);
+    }
+
+    // New and old detail layouts both live on details.php?id=
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'details.php') && hasIdQuery(url);
     }
 
     async parse(): Promise<TorrentMeta> {

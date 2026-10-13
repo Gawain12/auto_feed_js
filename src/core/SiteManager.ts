@@ -10,13 +10,11 @@ import { RemoteDownloadService } from '../services/RemoteDownloadService';
 import { ImageHostService } from '../services/ImageHostService';
 import { UploadMetaFetchService, AutoDownloadAfterUploadService } from '../services/UploadMetaFetchService';
 import { EmbedService } from '../services/EmbedService';
-import { extractImdbId } from '../common/rules/links';
 import { ImdbAspectRatioService } from '../services/ImdbAspectRatioService';
+import { isUploadLikeUrl } from '../common/rules/pages';
 
 export class SiteManager {
     private activeEngine: BaseEngine | null = null;
-    private readonly KG_CONTINUE_KEY = 'autofeed_kg_continue';
-    private readonly KG_CONTINUE_TTL_MS = 40 * 60 * 1000;
 
     constructor() {
         this.detectSite();
@@ -82,18 +80,12 @@ export class SiteManager {
         const adapter = this.activeEngine; // Alias for legacy code mindset
         // If we just uploaded via Auto-Feed, auto-download the newly created torrent on detail pages.
         try {
-            AutoDownloadAfterUploadService.tryAutoDownload(adapter, this.isUploadLikePage(window.location.href)).catch(() => {});
+            AutoDownloadAfterUploadService.tryAutoDownload(adapter, isUploadLikeUrl(window.location.href)).catch(() => {});
         } catch {}
 
-        const uploadLikePage = this.isUploadLikePage(window.location.href);
-        if (!uploadLikePage && adapter.siteName === 'KG') {
-            try { sessionStorage.removeItem(this.KG_CONTINUE_KEY); } catch {}
-            try {
-                const { GMAdapter } = await import('../services/GMAdapter');
-                await GMAdapter.deleteValue('kg_info');
-            } catch {}
-        }
+        const uploadLikePage = isUploadLikeUrl(window.location.href);
         if (!uploadLikePage) {
+            try { await adapter.onNonUploadPage(); } catch {}
             try {
                 await StorageService.clearPendingForward();
             } catch {}
@@ -108,7 +100,7 @@ export class SiteManager {
 
         // 1. INJECT UI IMMEDIATELY (Non-blocking)
         // Source Mode: Only show on "real" detail pages (legacy parity: don't show on list/home/etc.)
-        if (this.isForwardSourcePage(adapter, window.location.href)) {
+        if (adapter.isSourcePage(new URL(window.location.href))) {
             // Embedded transfer/search UI injection on source detail pages.
             this.injectEmbeddedUI(adapter).catch(err => console.error('[Auto-Feed] Injection Error:', err));
             // Some BHD pages hydrate details after document-end; run one delayed retry.
@@ -126,54 +118,19 @@ export class SiteManager {
                 const handoffMeta = await StorageService.consumeHandoffFromCurrentUrl();
                 const markerToken = handoffMeta ? null : StorageService.consumeWindowForwardToken(adapter.siteName);
                 const markerMeta = markerToken ? await StorageService.consumeHandoff(markerToken) : null;
+                let forwardMeta: any = null;
                 if (handoffMeta || markerMeta) {
-                    const resolvedMeta = handoffMeta || markerMeta;
+                    forwardMeta = handoffMeta || markerMeta;
                     await StorageService.clearPendingForward();
-                    if (adapter.siteName === 'KG') this.markKgContinue();
-                    this.injectFillButton(adapter, resolvedMeta);
+                    adapter.onForwardReceived();
                 } else if (await StorageService.consumePendingForward(adapter.siteName)) {
-                    const cached = await StorageService.load();
-                    if (cached) {
-                        if (adapter.siteName === 'KG') this.markKgContinue();
-                        this.injectFillButton(adapter, cached);
-                    }
-                } else if (adapter.siteName === 'KG' && this.shouldContinueKg()) {
-                    const cached = await StorageService.load();
-                    if (cached) {
-                        this.injectFillButton(adapter, cached);
-                    } else {
-                        try {
-                            const { GMAdapter } = await import('../services/GMAdapter');
-                            const raw = await GMAdapter.getValue<string | null>('kg_info', null);
-                            if (raw) {
-                                const parsed = JSON.parse(raw);
-                                const legacyMeta = this.convertKgLegacyInfo(parsed);
-                                if (legacyMeta) this.injectFillButton(adapter, legacyMeta);
-                            }
-                        } catch {}
-                    }
-                } else if (adapter.siteName === 'KG') {
-                    const cached = await StorageService.load();
-                    if (cached && cached.sourceSite && cached.sourceSite !== 'KG' && (cached.torrentBase64 || cached.torrentUrl)) {
-                        this.markKgContinue();
-                        this.injectFillButton(adapter, cached);
-                    } else {
-                        try {
-                            const hasFinalTorrentInput = !!document.querySelector('form[action*="takeupload"] input[type="file"], input[type="file"][name="file"]');
-                            if (hasFinalTorrentInput) {
-                                const { GMAdapter } = await import('../services/GMAdapter');
-                                const raw = await GMAdapter.getValue<string | null>('kg_info', null);
-                                if (raw) {
-                                    const parsed = JSON.parse(raw);
-                                    const legacyMeta = this.convertKgLegacyInfo(parsed);
-                                    if (legacyMeta) {
-                                        this.markKgContinue();
-                                        this.injectFillButton(adapter, legacyMeta);
-                                    }
-                                }
-                            }
-                        } catch {}
-                    }
+                    forwardMeta = await StorageService.load();
+                    if (forwardMeta) adapter.onForwardReceived();
+                } else {
+                    forwardMeta = await adapter.recoverForwardMeta();
+                }
+                if (forwardMeta) {
+                    this.injectFillButton(adapter, forwardMeta);
                 } else if (hasToken) {
                     const { SettingsService } = await import('../services/SettingsService');
                     const text = getUiText((await SettingsService.load()).uiLanguage);
@@ -264,13 +221,13 @@ export class SiteManager {
 
         const runFill = async (reason: string, force = false) => {
             if (fillInFlight) return;
-            if (!force && this.isTargetFillComplete(adapter.siteName)) return;
+            if (!force && adapter.isFillComplete()) return;
             fillInFlight = true;
             try {
                 console.log(`[Auto-Feed][${adapter.siteName}] Autofill attempt: ${reason}`);
                 await adapter.fill(normalized);
                 await afterFill();
-                if (this.isTargetFillComplete(adapter.siteName)) {
+                if (adapter.isFillComplete()) {
                     notify.find('#autofeed-fill-btn').text(text('已自动填充', 'Form filled'));
                 }
             } catch (e) {
@@ -351,111 +308,6 @@ export class SiteManager {
         };
     }
 
-    private convertKgLegacyInfo(raw: any): any | null {
-        if (!raw || typeof raw !== 'object') return null;
-        const imdbUrl = String(raw.url || '').trim();
-        return {
-            title: String(raw.name || '').trim(),
-            description: String(raw.descr || '').trim(),
-            fullMediaInfo: String(raw.full_mediainfo || '').trim(),
-            imdbUrl,
-            imdbId: extractImdbId(imdbUrl) || undefined,
-            torrentUrl: String(raw.torrent_url || '').trim(),
-            torrentBase64: String(raw.torrent_base64 || raw.torrentBase64 || '').trim(),
-            torrentFilename: String(raw.torrent_name || '').trim(),
-            torrentName: String(raw.torrent_name || '').trim(),
-            mediumSel: String(raw.medium_sel || '').trim(),
-            standardSel: String(raw.standard_sel || '').trim(),
-            audioCodecSel: String(raw.audiocodec_sel || '').trim(),
-            sourceSel: String(raw.source_sel || '').trim(),
-            sourceSite: 'KG',
-            sourceUrl: window.location.href,
-            images: []
-        };
-    }
-
-    private markKgContinue() {
-        try {
-            sessionStorage.setItem(this.KG_CONTINUE_KEY, JSON.stringify({ at: Date.now() }));
-        } catch {}
-    }
-
-    private shouldContinueKg(): boolean {
-        try {
-            const raw = sessionStorage.getItem(this.KG_CONTINUE_KEY);
-            if (!raw) return false;
-            const data = JSON.parse(raw || '{}');
-            const at = Number(data?.at || 0);
-            if (!Number.isFinite(at) || at <= 0) return false;
-            if (Date.now() - at > this.KG_CONTINUE_TTL_MS) {
-                sessionStorage.removeItem(this.KG_CONTINUE_KEY);
-                return false;
-            }
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
-    private isUploadLikePage(url: string): boolean {
-        return !!url.match(/upload|offer|torrents\/create|torrents\/upload|torrent\/upload|torrents\/add|upload\.php|p_torrent\/video_upload|#\/torrent\/add|\/torrent\/add/i);
-    }
-
-    private isForwardSourcePage(adapter: BaseEngine, url: string): boolean {
-        const u = new URL(url, window.location.origin);
-        const path = u.pathname || '';
-        const qs = u.search || '';
-
-        // TTG legacy detail path: /t/{id}
-        if (adapter.siteName === 'TTG') {
-            return /\/t\/\d+(?:\/|$)/i.test(path) || (this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs));
-        }
-        // PTP: only when a specific torrent is targeted (torrentid present).
-        if (adapter.siteName === 'PTP') {
-            return this.isExactPage(path, 'torrents.php') && (/torrentid=\d+/i.test(qs) || /id=\d+/i.test(qs));
-        }
-        // SC group pages commonly omit torrentid; use the first/selected torrent row like legacy.
-        if (adapter.siteName === 'SC') {
-            return this.isExactPage(path, 'torrents.php') && /id=\d+/i.test(qs);
-        }
-        // Gazelle movie/music details (GPW/RED/OPS/DIC/etc): torrents.php?id=...&torrentid=...
-        if (['GPW', 'RED', 'OPS', 'DIC'].includes(adapter.siteName)) {
-            return this.isExactPage(path, 'torrents.php') && /torrentid=\d+/i.test(qs);
-        }
-        if (adapter.siteName === 'HDT') {
-            return (this.isExactPage(path, 'torrents.php') || this.isExactPage(path, 'details.php')) && /id=\d+/i.test(qs);
-        }
-        // HDB / CHDBits: details.php?id=...
-        if (adapter.siteName === 'HDB' || adapter.siteName === 'CHDBits') {
-            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
-        }
-        // OpenCD source detail pages (new + old layouts)
-        if (adapter.siteName === 'OpenCD') {
-            return this.isExactPage(path, 'details.php') && /id=\d+/i.test(qs);
-        }
-        // KG has both torrent details and request details; avoid matching userdetails.php.
-        if (adapter.siteName === 'KG') {
-            return (this.isExactPage(path, 'details.php') || this.isExactPage(path, 'reqdetails.php')) && /id=\d+/i.test(qs);
-        }
-        // BHD details can be on classic torrent page or library title route.
-        if (adapter.siteName === 'BHD') {
-            return /\/torrents\/.+/i.test(path) || /\/library\/title\/.+/i.test(path);
-        }
-        // Default fallback
-        return (
-            this.isExactPage(path, 'details.php') ||
-            this.isExactPage(path, 'detail.php') ||
-            /\/(?:threads|topics)(?:\/|$)/i.test(path) ||
-            /\/torrents\/\d+(?:\/|$)/i.test(path) ||
-            /\/detail\/\d+(?:\/|$)/i.test(path) ||
-            /\/detail\//i.test(path)
-        );
-    }
-
-    private isExactPage(path: string, pageName: string): boolean {
-        return (path || '').split('/').pop()?.toLowerCase() === pageName.toLowerCase();
-    }
-
     private async waitForForm(): Promise<boolean> {
         const selectors = [
             'input[name="name"]',
@@ -502,7 +354,7 @@ export class SiteManager {
         const retryDelays = [400, 1200, 2600, 4500, 7000, 10000];
         retryDelays.forEach((ms) => {
             window.setTimeout(() => {
-                if (!this.isTargetFillComplete(adapter.siteName)) {
+                if (!adapter.isFillComplete()) {
                     runFill(`retry-${ms}`).catch(() => {});
                 } else if (notify.find('#autofeed-fill-btn').length) {
                     notify.find('#autofeed-fill-btn').text(filledLabel);
@@ -513,7 +365,7 @@ export class SiteManager {
         if (document.readyState !== 'complete') {
             window.addEventListener('load', () => {
                 window.setTimeout(() => {
-                    if (!this.isTargetFillComplete(adapter.siteName)) {
+                    if (!adapter.isFillComplete()) {
                         runFill('window-load').catch(() => {});
                     }
                 }, 450);
@@ -525,56 +377,16 @@ export class SiteManager {
 
         let queued = 0;
         const observer = new MutationObserverCtor(() => {
-            if (this.isTargetFillComplete(adapter.siteName)) return;
+            if (adapter.isFillComplete()) return;
             window.clearTimeout(queued);
             queued = window.setTimeout(() => {
-                if (!this.isTargetFillComplete(adapter.siteName)) {
+                if (!adapter.isFillComplete()) {
                     runFill('mutation').catch(() => {});
                 }
             }, 280);
         });
         observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
         window.setTimeout(() => observer.disconnect(), 15000);
-    }
-
-    private readFieldValue(selectors: string[]): string {
-        for (const selector of selectors) {
-            const el = document.querySelector(selector) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
-            if (!el) continue;
-            const value = (el.value || '').trim();
-            if (value) return value;
-        }
-        return '';
-    }
-
-    private isTargetFillComplete(siteName: string): boolean {
-        const name = this.readFieldValue(['input[name="name"]', '#name', 'input[name="title"]', '#title']);
-        const descr = this.readFieldValue(['textarea[name="descr"]', '#descr', 'textarea[name="description"]']);
-        const releaseDesc = this.readFieldValue(['textarea[name="release_desc"]', '#release_desc', 'textarea[name="info"]', '#info']);
-
-        if (siteName === 'PTP') {
-            const source = this.readFieldValue(['#source', 'select[name="source"]']);
-            return !!name && releaseDesc.length > 60 && !!source;
-        }
-        if (siteName === 'SC') {
-            const catalogue = this.readFieldValue(['#catalogue_number', '#cataloguenumber', 'input[name="catalogue_number"]', 'input[name="cataloguenumber"]']);
-            const title = this.readFieldValue(['#title', 'input[name="title"]']);
-            const albumDesc = this.readFieldValue(['#album_desc', 'textarea[name="album_desc"]']);
-            return (!!catalogue || !!title) && (releaseDesc.length > 40 || albumDesc.length > 40);
-        }
-        if (siteName === 'TJUPT') {
-            const browsecat = this.readFieldValue(['select[name="browsecat"]', '#browsecat']);
-            const ename = this.readFieldValue(['#ename', 'input[name="ename"]']);
-            const cname = this.readFieldValue(['#cname', 'input[name="cname"]']);
-            const external = this.readFieldValue(['#external_url', 'input[name="external_url"]']);
-            return !!browsecat && (!!ename || !!cname) && (!!external || descr.length > 40);
-        }
-        if (siteName === 'HDT') {
-            const filename = this.readFieldValue(['input[name="filename"]']);
-            const infosite = this.readFieldValue(['input[name="infosite"]']);
-            return !!filename && !!infosite && releaseDesc.length > 60;
-        }
-        return !!name && (descr.length > 30 || releaseDesc.length > 30);
     }
 
     private applyDefaultAnonymousOnce(enable: boolean): { applied: boolean; verified: boolean } {

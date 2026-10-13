@@ -4,8 +4,9 @@ import { TorrentMeta } from '../types/TorrentMeta';
 import { htmlToBBCode } from '../utils/htmlToBBCode';
 import { extractImdbId } from '../common/rules/links';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
-import { setAllFormValues, setFirstFormValue } from '../common/dom/form';
+import { setAllFormValues, setFirstFormValue, readFieldValue } from '../common/dom/form';
 import { GMAdapter } from '../services/GMAdapter';
+import { hasIdQuery, isPage } from '../common/rules/pages';
 
 function getScTorrentId(currentUrl: string): string {
     try {
@@ -73,6 +74,19 @@ async function populateScFromImdb(imdbId: string, meta: TorrentMeta) {
 }
 
 export class SCEngine extends GazelleEngine {
+    // SC group pages commonly omit torrentid; the first/selected torrent row is used like legacy.
+    isSourcePage(url: URL): boolean {
+        return isPage(url, 'torrents.php') && hasIdQuery(url);
+    }
+
+    isFillComplete(): boolean {
+        const catalogue = readFieldValue(['#catalogue_number', '#cataloguenumber', 'input[name="catalogue_number"]', 'input[name="cataloguenumber"]']);
+        const title = readFieldValue(['#title', 'input[name="title"]']);
+        const albumDesc = readFieldValue(['#album_desc', 'textarea[name="album_desc"]']);
+        const releaseDesc = readFieldValue(['textarea[name="release_desc"]', '#release_desc', 'textarea[name="info"]', '#info']);
+        return (!!catalogue || !!title) && (releaseDesc.length > 40 || albumDesc.length > 40);
+    }
+
     async parse(): Promise<TorrentMeta> {
         const meta = await super.parse();
         const torrentId = getScTorrentId(this.currentUrl);
@@ -155,7 +169,6 @@ export class SCEngine extends GazelleEngine {
         };
         applyScFields(true);
         [300, 900, 1800, 3500].forEach((ms) => window.setTimeout(() => applyScFields(false), ms));
-
 
         try {
             const { TorrentService } = await import('../services/TorrentService');
