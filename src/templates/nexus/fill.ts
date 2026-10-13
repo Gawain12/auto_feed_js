@@ -1,9 +1,11 @@
 import $ from 'jquery';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { SiteConfig } from '../../types/SiteConfig';
-import { getAudioCodecSel, getCodecSel, getLabel, getMediumSel, getStandardSel } from '../../common/rules/text';
+import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel } from '../../common/rules/text';
 import { extractDoubanId, extractImdbId } from '../../common/rules/links';
 import { dispatchFormEvents } from '../../common/dom/form';
+import { repeat } from '../../common/dom/repeat';
+import { getMetaLabels } from '../../common/rules/labels';
 
 export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<void> {
     const formSelectors = {
@@ -260,8 +262,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
     // HDR / Dolby Vision / Atmos etc: best-effort checkboxes (only if the page exposes them).
     // Many Nexus variants use ids like `hdr10`, `hdr10plus`, `dovi`, etc (PTer and others).
     try {
-        const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-        const labels = meta.labelInfo || getLabel(labelText);
+        const labels = getMetaLabels(meta);
         const byId: Record<string, boolean> = {
             hdr10: !!labels.hdr10,
             hdr10plus: !!labels.hdr10plus,
@@ -306,19 +307,10 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
 
     // Common tag checkboxes for Nexus variants.
     try {
-        const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-        const labels = meta.labelInfo || getLabel(labelText);
+        const labels = getMetaLabels(meta);
         meta.labelInfo = labels;
 
-        const retry = (fn: () => void, times = 8, delayMs = 220) => {
-            let i = 0;
-            const tick = () => {
-                i++;
-                try { fn(); } catch { }
-                if (i < times) setTimeout(tick, delayMs);
-            };
-            tick();
-        };
+        const retry = (fn: () => void, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
 
         // Value/text based tag checkboxes (HDHome/PThome/HDDolby/Audiences + many NP variants).
         retry(() => {

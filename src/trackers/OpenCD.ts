@@ -4,6 +4,7 @@ import { SiteConfig } from '../types/SiteConfig';
 import { NexusPHPEngine } from './NexusPHP';
 import { TorrentService } from '../services/TorrentService';
 import { hasIdQuery, isPage } from '../common/rules/pages';
+import { repeat } from '../common/dom/repeat';
 
 // Dedicated engine entry for OpenCD (plugin_upload form quirks).
 export class OpenCDEngine extends NexusPHPEngine {
@@ -84,15 +85,7 @@ export class OpenCDEngine extends NexusPHPEngine {
             return;
         }
 
-        const retry = (fn: () => void, times = 12, delayMs = 220) => {
-            let i = 0;
-            const tick = () => {
-                i += 1;
-                try { fn(); } catch { }
-                if (i < times) setTimeout(tick, delayMs);
-            };
-            tick();
-        };
+        const retry = (fn: () => void, times = 12, delayMs = 220) => repeat(fn, times, delayMs);
 
         const norm1 = (s: string) => (s || '').replace(/\*/g, '').replace(/–/g, '-').replace(/\s+/g, ' ').trim();
         const normBlock = (s: string) =>

@@ -1,18 +1,11 @@
 import $ from 'jquery';
 import { NexusPHPEngine } from '../NexusPHP';
 import { TorrentMeta } from '../../types/TorrentMeta';
-import { getLabel } from '../../common/rules/text';
-import { buildPTerDescr } from '../../templates/nexus/helpers';
 
-const retry = (fn: () => void, times = 6, delayMs = 350) => {
-    let i = 0;
-    const tick = () => {
-        i++;
-        try { fn(); } catch { }
-        if (i < times) setTimeout(tick, delayMs);
-    };
-    tick();
-};
+import { repeat } from '../../common/dom/repeat';
+import { getMetaLabels } from '../../common/rules/labels';
+
+const retry = (fn: () => void, times = 6, delayMs = 350) => repeat(fn, times, delayMs);
 
 export class PTerEngine extends NexusPHPEngine {
     protected async beforeFill(meta: TorrentMeta): Promise<TorrentMeta> {
@@ -108,8 +101,7 @@ export class PTerEngine extends NexusPHPEngine {
         } catch { }
 
         try {
-            const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-            const labels = meta.labelInfo || getLabel(labelText);
+            const labels = getMetaLabels(meta);
             const apply = () => {
                 const setById = (id: string, on: boolean) => {
                     if (!on) return;
@@ -128,4 +120,37 @@ export class PTerEngine extends NexusPHPEngine {
             retry(apply, 10, 200);
         } catch { }
     }
+}
+
+function buildPTerDescr(meta: TorrentMeta): string {
+    let desc = meta.description || '';
+
+    // Replace embedded mediainfo quote with externally provided `fullMediaInfo` when present.
+    let full = (meta.fullMediaInfo || '').trim();
+    if (full) {
+        full = full.replace(/\[\/?quote.*?\]/gi, '').trim();
+        if (full.match(/mpls/i) && full.match(/QUICK SUMMARY:/i)) {
+            full = full.split(/QUICK SUMMARY:/i).slice(1).join('QUICK SUMMARY:').trim();
+        }
+        if (full) {
+            desc = desc.replace(/\[quote\]([\s\S]*?)\[\/quote\]/i, (m, inner) => {
+                if (String(inner || '').match(/General.{0,20}(Unique|Complete name)/i)) {
+                    return `[quote]\n${full}\n[/quote]`;
+                }
+                return m;
+            });
+        }
+    }
+
+    // Convert [quote] blocks into PTer-style [hide=...] blocks.
+    // Legacy heuristic: General/Unique/Complete name => mediainfo; Disc Title/Disc Info/MPLS => bdinfo.
+    desc = desc.replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi, (m, inner) => {
+        const body = String(inner || '').trim();
+        if (!body) return m;
+        if (body.match(/General.{0,40}\n?(Unique|Complete name)/i)) return `[hide=mediainfo]\n${body}\n[/hide]`;
+        if (body.match(/(Disc Title|DISC INFO|Disc Info|Disc Label|\\.MPLS|Playlist|Video Codec)/i)) return `[hide=bdinfo]\n${body}\n[/hide]`;
+        return m;
+    });
+
+    return desc;
 }

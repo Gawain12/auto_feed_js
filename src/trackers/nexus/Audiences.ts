@@ -1,18 +1,12 @@
 import $ from 'jquery';
 import { NexusPHPEngine } from '../NexusPHP';
 import { TorrentMeta } from '../../types/TorrentMeta';
-import { getLabel, getType } from '../../common/rules/text';
+import { getType } from '../../common/rules/text';
 import { htmlToBBCode } from '../../utils/htmlToBBCode';
+import { repeat } from '../../common/dom/repeat';
+import { getMetaLabels } from '../../common/rules/labels';
 
-const retry = (fn: () => void, times = 6, delayMs = 250) => {
-    let i = 0;
-    const tick = () => {
-        i++;
-        try { fn(); } catch { }
-        if (i < times) setTimeout(tick, delayMs);
-    };
-    tick();
-};
+const retry = (fn: () => void, times = 6, delayMs = 250) => repeat(fn, times, delayMs);
 
 export class AudiencesEngine extends NexusPHPEngine {
     protected async afterParse(meta: TorrentMeta): Promise<TorrentMeta> {
@@ -219,8 +213,7 @@ export class AudiencesEngine extends NexusPHPEngine {
             }
 
             try {
-                const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-                const labels = meta.labelInfo || getLabel(labelText);
+                const labels = getMetaLabels(meta);
                 const check = (value: string, on: boolean) => {
                     if (!on) return;
                     const el = document.querySelector(`input[name="tags[]"][value="${value}"]`) as HTMLInputElement | null;

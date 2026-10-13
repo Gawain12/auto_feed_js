@@ -1,5 +1,6 @@
 import { TorrentMeta } from '../types/TorrentMeta';
 import { TorrentService } from '../services/TorrentService';
+import { repeat } from '../common/dom/repeat';
 
 type MusicDomInfo = {
     musicName?: string;
@@ -196,15 +197,7 @@ export async function fillMusicGazelleUpload(meta: TorrentMeta, forwardSite: 'RE
         return p.length > 1 ? p[0] : '';
     })();
 
-    const retry = (fn: () => void, times = 16, delayMs = 280) => {
-        let i = 0;
-        const tick = () => {
-            i += 1;
-            try { fn(); } catch { }
-            if (i < times) setTimeout(tick, delayMs);
-        };
-        tick();
-    };
+    const retry = (fn: () => void, times = 16, delayMs = 280) => repeat(fn, times, delayMs);
 
     retry(() => {
         // Artist/title/year core

@@ -1,22 +1,15 @@
 import { NexusPHPEngine } from '../NexusPHP';
 import { TorrentMeta } from '../../types/TorrentMeta';
-import { getLabel } from '../../common/rules/text';
 
-const retry = (fn: () => void, times = 8, delayMs = 220) => {
-    let i = 0;
-    const tick = () => {
-        i++;
-        try { fn(); } catch { }
-        if (i < times) setTimeout(tick, delayMs);
-    };
-    tick();
-};
+import { repeat } from '../../common/dom/repeat';
+import { getMetaLabels } from '../../common/rules/labels';
+
+const retry = (fn: () => void, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
 
 export class HDHomeEngine extends NexusPHPEngine {
     protected async afterFill(meta: TorrentMeta): Promise<void> {
         try {
-            const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-            const labels = meta.labelInfo || getLabel(labelText);
+            const labels = getMetaLabels(meta);
             if (labels.diy || !labels.yp) return;
             retry(() => {
                 const inputs = Array.from(

@@ -11,6 +11,7 @@ import { getSizeFromDescr } from '../common/rules/helpers';
 import { HtmlFetchService } from '../services/HtmlFetchService';
 import { hasIdQuery, isPage } from '../common/rules/pages';
 import { readFieldValue } from '../common/dom/form';
+import { repeat } from '../common/dom/repeat';
 
 const cleanTitle = (name: string) => name.replace(/\[|\]|\(|\)|mkv$|mp4$/gi, '').trim();
 
@@ -636,15 +637,7 @@ export class PTPEngine extends BaseEngine {
             dispatch(el, 'change');
             dispatch(el, 'input');
         };
-        const retry = (fn: () => void, times = 18, delayMs = 350) => {
-            let i = 0;
-            const tick = () => {
-                i += 1;
-                try { fn(); } catch {}
-                if (i < times) setTimeout(tick, delayMs);
-            };
-            tick();
-        };
+        const retry = (fn: () => void, times = 18, delayMs = 350) => repeat(fn, times, delayMs);
         const imdbInputSel = '#imdb, input[name="imdb"]';
         const autofillSel = '#autofill, input#autofill, button#autofill';
 

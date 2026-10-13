@@ -5,6 +5,7 @@ import { GazelleEngine } from './Gazelle';
 import { extractImdbId, matchLink } from '../common/rules/links';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
 import { htmlToBBCode } from '../utils/htmlToBBCode';
+import { repeat } from '../common/dom/repeat';
 
 // Dedicated engine entry for GPW.
 export class GPWEngine extends GazelleEngine {
@@ -254,15 +255,7 @@ export class GPWEngine extends GazelleEngine {
             if (!el) return;
             try { el.click(); } catch { }
         };
-        const retry = (fn: () => void, times = 14, delayMs = 260) => {
-            let i = 0;
-            const tick = () => {
-                i += 1;
-                try { fn(); } catch { }
-                if (i < times) setTimeout(tick, delayMs);
-            };
-            tick();
-        };
+        const retry = (fn: () => void, times = 14, delayMs = 260) => repeat(fn, times, delayMs);
 
         retry(() => {
             if (imdbId) {

@@ -3,18 +3,12 @@ import { NexusPHPEngine } from '../NexusPHP';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { htmlToBBCode } from '../../utils/htmlToBBCode';
 import { getMediainfoPictureFromDescr } from '../../common/rules/media';
-import { getLabel } from '../../common/rules/text';
-import { getSourceSelFromDescr } from '../../common/rules/helpers';
 
-const retry = (fn: () => void, times = 8, delayMs = 220) => {
-    let i = 0;
-    const tick = () => {
-        i++;
-        try { fn(); } catch { }
-        if (i < times) setTimeout(tick, delayMs);
-    };
-    tick();
-};
+import { getSourceSelFromDescr } from '../../common/rules/helpers';
+import { repeat } from '../../common/dom/repeat';
+import { getMetaLabels } from '../../common/rules/labels';
+
+const retry = (fn: () => void, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
 
 const setById = (id: string, on: boolean) => {
     if (!on) return;
@@ -345,8 +339,7 @@ export class CMCTEngine extends NexusPHPEngine {
         });
 
         try {
-            const labelText = `${meta.smallDescr || ''}${meta.subtitle || ''}${meta.title || ''}#separator#${meta.description || ''}${meta.fullMediaInfo || ''}`;
-            const labels = meta.labelInfo || getLabel(labelText);
+            const labels = getMetaLabels(meta);
             retry(() => {
                 setById('subtitlezh', !!labels.zz);
                 if (!labels.diy && /mpls/i.test(`${meta.description || ''}${meta.fullMediaInfo || ''}`)) {
