@@ -17,6 +17,9 @@ node_modules/
 .vite/
 dist/.DS_Store
 
+# Pinned upstream legacy script (npm run legacy:fetch)
+.legacy/
+
 # Local-only reference / build outputs (avoid conflicts between legacy and refactor branches)
 auto_feed.user.js
 dist/
