@@ -2,6 +2,7 @@ import { getUiText, SupportedLang } from '../../ui/i18n';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { AppSettings } from '../SettingsService';
 import { SiteCatalogService } from '../SiteCatalogService';
+import { ForwardLinkService } from '../ForwardLinkService';
 
 export type InsertPoint =
     | { kind: 'after-tr'; afterTr: HTMLTableRowElement; colSpan: number; layout?: 'full-width' | 'two-col' }
@@ -189,16 +190,8 @@ export function findBestNexusActionRow(): HTMLTableRowElement | null {
 export function resolveFaviconUrl(siteName: string, settings: AppSettings): string {
     const site = SiteCatalogService.getSupportedSites().find((s) => s.name === siteName);
     if (!site) return '';
-    // CHDBits/TL base URL is user-configurable.
-    const base =
-        site.name === 'CHDBits'
-            ? (settings.chdBaseUrl || site.baseUrl)
-            : site.name === 'TorrentLeech' || site.name === 'TL'
-                ? (settings.tlBaseUrl || site.baseUrl)
-                : site.baseUrl;
-    if (!base) return '';
-    const normalized = base.endsWith('/') ? base : `${base}/`;
-    return `${normalized}favicon.ico`;
+    const base = ForwardLinkService.getBaseUrl(site, { chdBaseUrl: settings.chdBaseUrl, tlBaseUrl: settings.tlBaseUrl });
+    return base ? `${base}favicon.ico` : '';
 }
 
 export function getForwardWarnings(siteName: string, meta: TorrentMeta, lang: SupportedLang = 'zh'): string[] {

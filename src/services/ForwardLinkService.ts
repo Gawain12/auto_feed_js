@@ -1,10 +1,8 @@
-import $ from 'jquery';
 import { TorrentMeta } from '../types/TorrentMeta';
-import { SiteCatalogService } from './SiteCatalogService';
-import { SiteConfig, SiteType } from '../types/SiteConfig';
-import { extractDoubanId, extractImdbId, extractTmdbId, matchLink } from '../common/rules/links';
+import { SiteConfig } from '../types/SiteConfig';
+import { defaultSearch, defaultUploadPath } from '../config/frameworks';
+import { extractImdbId } from '../common/rules/links';
 import { getSearchName } from '../common/rules/search';
-import { ImdbAspectRatioService } from './ImdbAspectRatioService';
 import { GMAdapter } from './GMAdapter';
 
 export interface ForwardLinkOptions {
@@ -13,27 +11,17 @@ export interface ForwardLinkOptions {
     lang?: 'zh' | 'en';
 }
 
-const getMTeamBase = (site?: SiteConfig) => {
-    if (window.location.host.includes('m-team')) {
-        return `${window.location.protocol}//${window.location.host}/`;
-    }
-    return site?.baseUrl || 'https://kp.m-team.cc/';
-};
-
 const normalizeBaseUrl = (base?: string) => {
     if (!base) return '';
     return base.endsWith('/') ? base : `${base}/`;
 };
 
 const resolveBaseUrl = (site: SiteConfig, options?: ForwardLinkOptions) => {
-    if (site.name === 'MTeam') return getMTeamBase(site);
-    if (site.type === SiteType.CHDBits && options?.chdBaseUrl) {
-        return normalizeBaseUrl(options.chdBaseUrl);
+    if (site.preferCurrentHost && site.keywords.some((k) => window.location.host.includes(k))) {
+        return `${window.location.protocol}//${window.location.host}/`;
     }
-    if ((site.name === 'TorrentLeech' || site.name === 'TL') && options?.tlBaseUrl) {
-        return normalizeBaseUrl(options.tlBaseUrl);
-    }
-    return normalizeBaseUrl(site.baseUrl);
+    const userBase = site.baseUrlSetting ? options?.[site.baseUrlSetting] : '';
+    return normalizeBaseUrl(userBase || site.baseUrl);
 };
 
 const joinUrl = (base: string, path: string) => {
@@ -45,71 +33,20 @@ const joinUrl = (base: string, path: string) => {
 const buildUploadUrl = (site: SiteConfig, options?: ForwardLinkOptions): string => {
     const base = resolveBaseUrl(site, options);
     if (!base) return '#';
-    // Legacy parity: Monika uses `/upload/1` (not Unit3D `/torrents/create`).
-    if (site.name === 'Monika') return joinUrl(base, 'upload/1');
-    if (site.name === 'BHD') return joinUrl(base, 'upload');
-    if (site.name === 'HDB') return joinUrl(base, 'upload');
-    if (site.name === 'MTeam') return joinUrl(base, 'upload');
-    // OpenCD uses a dedicated upload plugin page.
-    if (site.name === 'OpenCD') return joinUrl(base, 'plugin_upload.php');
-    if (site.type === SiteType.Unit3D || site.type === SiteType.Unit3DClassic) return joinUrl(base, 'torrents/create');
-    if (site.type === SiteType.Gazelle) return joinUrl(base, 'upload.php');
-    if (site.type === SiteType.NexusPHP || site.type === SiteType.CHDBits) return joinUrl(base, 'upload.php');
-    return joinUrl(base, 'upload.php');
+    return joinUrl(base, site.uploadPath || defaultUploadPath(site.type));
 };
 
 const buildSearchUrl = (site: SiteConfig, meta: TorrentMeta, options?: ForwardLinkOptions): string => {
     const base = resolveBaseUrl(site, options);
     if (!base) return '#';
     const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
-    const imdbNo = imdbId.replace(/^tt/i, '');
-    const searchName = encodeURIComponent(getSearchName(meta.title || '', meta.type) || meta.title || '');
-
-    const specialMap: Record<string, () => string> = {
-        BHD: () => imdbId ? joinUrl(base, `torrents?imdb=${imdbId}`) : joinUrl(base, `torrents?search=${searchName}`),
-        BLU: () => imdbNo ? joinUrl(base, `torrents?imdbid=${imdbNo}&perPage=25&imdbId=${imdbNo}`) : joinUrl(base, `torrents?search=${searchName}`),
-        Tik: () => imdbId ? joinUrl(base, `torrents?imdbId=${imdbId}#page/1`) : joinUrl(base, `torrents?search=${searchName}`),
-        DarkLand: () => imdbId ? joinUrl(base, `torrents?imdbId=${imdbId}#page/1`) : joinUrl(base, `torrents?search=${searchName}`),
-        ACM: () => imdbNo ? joinUrl(base, `torrents?imdb=${imdbNo}#page/1`) : joinUrl(base, `torrents?search=${searchName}`),
-        // Legacy parity: Monika follows Unit3D-style imdbId search.
-        Monika: () => imdbId
-            ? joinUrl(base, `torrents?imdbId=${imdbId}#page/1`)
-            : joinUrl(base, `torrents?name=${searchName}&sortField=size`),
-        TTG: () => imdbNo ? joinUrl(base, `browse.php?search_field=imdb${imdbNo}&c=M`) : joinUrl(base, `browse.php?search_field=${searchName}`),
-        // Legacy parity: MTeam browse keyword is title-based, not IMDb id.
-        MTeam: () => joinUrl(base, `browse?keyword=${searchName}`),
-        PTP: () => imdbId ? joinUrl(base, `torrents.php?searchstr=${imdbId}`) : joinUrl(base, `torrents.php?searchstr=${searchName}`),
-        SC: () => imdbId
-            ? joinUrl(base, `torrents.php?action=advanced&searchsubmit=1&filter_cat=1&cataloguenumber=${encodeURIComponent(imdbId)}`)
-            : joinUrl(base, `torrents.php?searchstr=${searchName}`),
-        HDB: () => joinUrl(base, `browse.php?search=${imdbId || searchName}`),
-        KG: () => imdbId ? joinUrl(base, `browse.php?search=${imdbId}&search_type=imdb`) : joinUrl(base, `browse.php?search=${searchName}`),
-        TJUPT: () => imdbId
-            ? joinUrl(base, `torrents.php?incldead=0&search_area=4&search=${encodeURIComponent(imdbId)}&sort=5&type=desc`)
-            : joinUrl(base, `torrents.php?incldead=0&search_area=0&search=${searchName}&sort=5&type=desc`),
-        HDT: () => imdbId
-            ? joinUrl(base, `torrents.php?search=${encodeURIComponent(imdbId)}&options=2&order=size&by=DESC`)
-            : joinUrl(base, `torrents.php?search=${searchName}&options=3&order=size&by=DESC`)
-    };
-    if (specialMap[site.name]) return specialMap[site.name]();
-
-    if (site.type === SiteType.Unit3D || site.type === SiteType.Unit3DClassic) {
-        if (imdbId) return joinUrl(base, `torrents?imdbId=${imdbId}#page/1`);
-        return joinUrl(base, `torrents?search=${searchName}`);
-    }
-    if (site.type === SiteType.Gazelle) {
-        return joinUrl(base, `torrents.php?searchstr=${imdbId || searchName}`);
-    }
-    if (site.type === SiteType.NexusPHP || site.type === SiteType.CHDBits) {
-        // Legacy parity:
-        // - When IMDb exists, search by IMDb (search_area=4) instead of using `search=` as plain title.
-        // - Otherwise fall back to title search (search_area=0).
-        if (imdbId) {
-            return joinUrl(base, `torrents.php?incldead=0&spstate=0&inclbookmarked=0&search=${encodeURIComponent(imdbId)}&search_area=4&search_mode=0`);
-        }
-        return joinUrl(base, `torrents.php?incldead=0&spstate=0&inclbookmarked=0&search=${searchName}&search_area=0&search_mode=0`);
-    }
-    return joinUrl(base, `torrents.php?search=${imdbId || searchName}`);
+    const templates = site.search || defaultSearch(site.type);
+    const template = imdbId && templates.imdb ? templates.imdb : templates.name;
+    const path = template
+        .replace(/\{imdbNo\}/g, imdbId.replace(/^tt/i, ''))
+        .replace(/\{imdb\}/g, encodeURIComponent(imdbId))
+        .replace(/\{name\}/g, () => encodeURIComponent(getSearchName(meta.title || '', meta.type) || meta.title || ''));
+    return joinUrl(base, path);
 };
 
 const normalizeMovieKey = (value: string) => String(value || '')
@@ -188,263 +125,14 @@ export class ForwardLinkService {
         return buildSearchUrl(site, meta, options);
     }
 
+    static getBaseUrl(site: SiteConfig, options?: ForwardLinkOptions): string {
+        return resolveBaseUrl(site, options);
+    }
+
     static async resolveUploadUrl(site: SiteConfig, meta: TorrentMeta, options?: ForwardLinkOptions): Promise<string> {
-        if (site.name === 'PTP' || site.name === 'SC') {
+        if (site.groupUpload) {
             return resolveGazelleMovieUploadUrl(site, meta, options);
         }
         return buildUploadUrl(site, options);
-    }
-
-    static injectForwardLinks(
-        container: JQuery,
-        meta: TorrentMeta,
-        enabledSites?: string[],
-        favoriteSites?: string[],
-        options?: ForwardLinkOptions
-    ) {
-        const lang = options?.lang || 'zh';
-        const t = lang === 'zh' ? {
-            title: '转发站点：',
-            mode: '模式:',
-            upload: '发布',
-            search: '检索',
-            fav: '常用',
-            other: '其他',
-            sites: '站点',
-            exclusive: '[疑似禁转/禁止转载]',
-            exclusiveTo: (name: string) => `禁转至${name}`,
-            confirmExclusive: '该资源疑似禁转/禁止转载，确认仍要打开发布页面？'
-        } : {
-            title: 'Targets:',
-            mode: 'Mode:',
-            upload: 'Upload',
-            search: 'Search',
-            fav: 'Favorites',
-            other: 'Others',
-            sites: 'Sites',
-            exclusive: '[Possibly Exclusive/No-Reupload]',
-            exclusiveTo: (name: string) => `No-reupload to ${name}`,
-            confirmExclusive: 'This torrent looks exclusive/no-reupload. Still open the upload page?'
-        };
-
-        const detectExclusive = (m: TorrentMeta) => {
-            const text = `${m.title || ''} ${m.smallDescr || ''} ${m.subtitle || ''} ${m.description || ''}`
-                .replace(/\[.*?\]/g, '');
-            return !!text.match(/(拒绝转发|不允许转发|严禁转发|谢绝.*?转载|禁转|禁止转载|禁止轉載|禁止转发|謝絕.*?轉載|exclusive|独占|獨占|严禁转载|no[\s-]?reupload|do not reupload|forbid.*reupload|禁止二次转载)/i);
-        };
-        const isExclusive = detectExclusive(meta);
-
-        const allSites = SiteCatalogService.getSupportedSites().filter((s) => s.baseUrl);
-        // If settings provides an array (even empty), treat it as the source of truth.
-        // Empty means "show nothing" rather than "show all".
-        const enabledSet = Array.isArray(enabledSites) ? new Set(enabledSites) : null;
-        const sites = enabledSet ? allSites.filter((s) => enabledSet.has(s.name)) : allSites;
-
-        if (!sites.length) return;
-
-        const row = $('<div class="autofeed-forward-links" style="margin: 10px 0; padding: 10px; border-top: 1px solid #eee; font-size: 13px;"></div>');
-        const header = $('<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"></div>');
-        header.append(`<div style="color:#2c3e50; font-weight:bold;">${t.title}</div>`);
-        if (isExclusive) {
-            header.append(`<div style="color:#c0392b; font-weight:bold;">${t.exclusive}</div>`);
-        }
-
-        const tabWrap = $(`
-            <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-                <span style="color:#666; font-weight:bold;">${t.mode}</span>
-            </div>
-        `);
-        const seg = $('<div role="tablist" style="display:inline-flex; border:1px solid #cfd6dc; border-radius:999px; overflow:hidden; background:#f0f2f4;"></div>');
-        const tabUpload = $(`<button role="tab" aria-pressed="true" style="padding:3px 10px; border:none; background:#2c3e50; color:#fff; cursor:pointer; font-weight:bold;">${t.upload}</button>`);
-        const tabSearch = $(`<button role="tab" aria-pressed="false" style="padding:3px 10px; border:none; background:transparent; color:#2c3e50; cursor:pointer; font-weight:bold;">${t.search}</button>`);
-        seg.append(tabUpload, tabSearch);
-        tabWrap.append(seg);
-        header.append(tabWrap);
-        row.append(header);
-
-        const uploadDiv = $('<div style="display:flex; flex-direction:column; gap:6px;"></div>');
-        const searchDiv = $('<div style="display:none; flex-direction:column; gap:6px;"></div>');
-
-        const favoritesSet = new Set(favoriteSites || []);
-        const favSites = sites.filter((s) => favoritesSet.has(s.name));
-        const otherSites = sites.filter((s) => !favoritesSet.has(s.name));
-
-        const buildRow = (label: string, siteList: SiteConfig[], mode: 'upload' | 'search') => {
-            if (!siteList.length) return null;
-            const rowWrap = $('<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;"></div>');
-            rowWrap.append(`<span style="color:#666; font-weight:bold;">${label}:</span>`);
-            siteList.forEach((site) => {
-                const base = resolveBaseUrl(site, options);
-                const icon = base ? `${base}favicon.ico` : '';
-                const url = mode === 'upload' ? buildUploadUrl(site, options) : buildSearchUrl(site, meta, options);
-                const name = site.name;
-                const link = $(`
-                    <a href="${url}" target="_blank" title="${name}" style="text-decoration:none; color:#333; display:flex; align-items:center; gap:4px;">
-                        ${icon ? `<img src="${icon}" style="width:16px; height:16px; border-radius:2px;">` : ''}
-                        <span>${name}</span>
-                    </a>
-                `);
-                if (isExclusive && mode === 'upload') {
-                    link.css({ color: '#999' });
-                    link.find('span').text(t.exclusiveTo(name));
-                    link.on('click', (e) => {
-                        const ok = window.confirm(t.confirmExclusive);
-                        if (!ok) e.preventDefault();
-                    });
-                }
-
-                // Lazy torrent download: only when user actually clicks a target upload link.
-                // "Forward" click should only open the popup and never download.
-                if (mode === 'upload') {
-                    link.on('click', (e) => {
-                        // Keep exclusive confirm behavior: if canceled, stop here.
-                        if (isExclusive) {
-                            const ok = window.confirm(t.confirmExclusive);
-                            if (!ok) {
-                                e.preventDefault();
-                                return;
-                            }
-                        }
-
-                        // Always handle ourselves so we can persist latest meta before navigation.
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        let targetUrl = url;
-                        const win = window.open('about:blank', '_blank');
-                        const go = () => {
-                            try {
-                                if (win) win.location.href = targetUrl;
-                                else window.open(targetUrl, '_blank');
-                            } catch {
-                                window.open(targetUrl, '_blank');
-                            }
-                        };
-
-                        const span = link.find('span');
-                        const originalText = span.text();
-                        span.text(lang === 'zh' ? '准备中...' : 'Preparing...');
-
-                        (async () => {
-                            try {
-                                const metaToSave: any = { ...meta };
-
-                                // Legacy parity: users may paste IMDb/Douban/TMDB into the embedded input box.
-                                // Persist it so the forward target (Unit3D/Nexus/etc.) can fill IDs/links.
-                                try {
-                                    const input = document.querySelector('#input_box') as HTMLInputElement | null;
-                                    const v = (input?.value || '').trim();
-                                    if (v) {
-                                        const imdbUrl = matchLink('imdb', v);
-                                        const imdbId = extractImdbId(v);
-                                        if (imdbUrl) {
-                                            metaToSave.imdbUrl = imdbUrl;
-                                            metaToSave.imdbId = extractImdbId(imdbUrl) || metaToSave.imdbId;
-                                        } else if (imdbId) {
-                                            metaToSave.imdbId = metaToSave.imdbId || imdbId;
-                                            metaToSave.imdbUrl = metaToSave.imdbUrl || `https://www.imdb.com/title/${metaToSave.imdbId}/`;
-                                        }
-
-                                        const doubanUrl = matchLink('douban', v);
-                                        const doubanId = extractDoubanId(v);
-                                        if (doubanUrl) {
-                                            metaToSave.doubanUrl = doubanUrl;
-                                            metaToSave.doubanId = extractDoubanId(doubanUrl) || metaToSave.doubanId;
-                                        } else if (doubanId) {
-                                            metaToSave.doubanId = metaToSave.doubanId || doubanId;
-                                            metaToSave.doubanUrl = metaToSave.doubanUrl || `https://movie.douban.com/subject/${metaToSave.doubanId}/`;
-                                        }
-
-                                        const tmdbUrl = matchLink('tmdb', v);
-                                        const tmdbId = extractTmdbId(v);
-                                        if (tmdbUrl) {
-                                            metaToSave.tmdbUrl = tmdbUrl.endsWith('/') ? tmdbUrl : `${tmdbUrl}/`;
-                                            metaToSave.tmdbId = tmdbId || metaToSave.tmdbId;
-                                        } else if (tmdbId) {
-                                            metaToSave.tmdbId = metaToSave.tmdbId || tmdbId;
-                                            // Cannot infer tv/movie reliably from id alone; leave tmdbUrl empty.
-                                        }
-                                    }
-                                } catch {}
-
-                                // Download torrent only if we have a URL and no cached base64 yet.
-                                if (metaToSave.torrentUrl && !metaToSave.torrentBase64) {
-                                    span.text(lang === 'zh' ? '下载种子...' : 'Downloading...');
-                                    const { TorrentService } = await import('./TorrentService');
-                                    const base64 = await TorrentService.download(metaToSave.torrentUrl);
-                                    metaToSave.torrentBase64 = base64;
-                                    if (!metaToSave.torrentFilename) {
-                                        const safeName = String(metaToSave.title || 'autofeed').replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 100);
-                                        metaToSave.torrentFilename = `${safeName}.torrent`;
-                                    }
-                                }
-
-                                try {
-                                    const imdbId = extractImdbId(metaToSave.imdbId || metaToSave.imdbUrl || '');
-                                    const cachedAspect = imdbId ? await ImdbAspectRatioService.getCachedAspectRatio(imdbId) : '';
-                                    if (cachedAspect) {
-                                        metaToSave.aspectRatio = cachedAspect;
-                                    } else if (metaToSave.imdbUrl) {
-                                        ImdbAspectRatioService.primeFromImdbUrl(metaToSave.imdbUrl);
-                                    }
-                                } catch {}
-
-                                const { StorageService } = await import('./StorageService');
-                                const token = StorageService.generateHandoffToken();
-                                targetUrl = StorageService.attachHandoffToken(url, token);
-                                await StorageService.saveHandoff(metaToSave, token);
-                                await StorageService.save(metaToSave);
-                            } catch {
-                                // best-effort; still navigate
-                            } finally {
-                                span.text(originalText);
-                                go();
-                            }
-                        })();
-                    });
-                }
-                rowWrap.append(link);
-            });
-            return rowWrap;
-        };
-
-        if (favSites.length) {
-            const uploadFavRow = buildRow(t.fav, favSites, 'upload');
-            const uploadOtherRow = buildRow(t.other, otherSites, 'upload');
-            if (uploadFavRow) uploadDiv.append(uploadFavRow);
-            if (uploadOtherRow) uploadDiv.append(uploadOtherRow);
-
-            const searchFavRow = buildRow(t.fav, favSites, 'search');
-            const searchOtherRow = buildRow(t.other, otherSites, 'search');
-            if (searchFavRow) searchDiv.append(searchFavRow);
-            if (searchOtherRow) searchDiv.append(searchOtherRow);
-        } else {
-            const uploadAllRow = buildRow(t.sites, sites, 'upload');
-            const searchAllRow = buildRow(t.sites, sites, 'search');
-            if (uploadAllRow) uploadDiv.append(uploadAllRow);
-            if (searchAllRow) searchDiv.append(searchAllRow);
-        }
-
-        tabUpload.on('click', () => {
-            tabUpload.attr('aria-pressed', 'true');
-            tabSearch.attr('aria-pressed', 'false');
-            tabUpload.css({ background: '#2c3e50', color: '#fff' });
-            tabSearch.css({ background: 'transparent', color: '#2c3e50' });
-            uploadDiv.show();
-            searchDiv.hide();
-        });
-        tabSearch.on('click', () => {
-            tabUpload.attr('aria-pressed', 'false');
-            tabSearch.attr('aria-pressed', 'true');
-            tabSearch.css({ background: '#2c3e50', color: '#fff' });
-            tabUpload.css({ background: 'transparent', color: '#2c3e50' });
-            uploadDiv.hide();
-            searchDiv.show();
-        });
-
-        row.append(uploadDiv);
-        row.append(searchDiv);
-
-        container.append(row);
     }
 }

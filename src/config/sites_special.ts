@@ -8,6 +8,8 @@ export const SpecialSites: SiteConfig[] = [
         type: SiteType.HDB,
         keywords: ['hdbits.org'],
         baseUrl: 'https://hdbits.org/',
+        uploadPath: 'upload',
+        search: { imdb: 'browse.php?search={imdb}', name: 'browse.php?search={name}' },
         description: 'HDBits'
     },
     {
@@ -15,6 +17,7 @@ export const SpecialSites: SiteConfig[] = [
         type: SiteType.KG,
         keywords: ['karagarga.in'],
         baseUrl: 'https://karagarga.in/',
+        search: { imdb: 'browse.php?search={imdb}&search_type=imdb', name: 'browse.php?search={name}' },
         description: 'Karagarga'
     },
     {
@@ -22,6 +25,10 @@ export const SpecialSites: SiteConfig[] = [
         type: SiteType.HDT,
         keywords: ['hd-torrents.org', 'hdts.ru'],
         baseUrl: 'https://hd-torrents.org/',
+        search: {
+            imdb: 'torrents.php?search={imdb}&options=2&order=size&by=DESC',
+            name: 'torrents.php?search={name}&options=3&order=size&by=DESC'
+        },
         mirrorUrl: 'https://hdts.ru/',
         description: 'HD-Torrents'
     }

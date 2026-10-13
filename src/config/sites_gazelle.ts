@@ -14,6 +14,11 @@ export const GazelleSites: SiteConfig[] = [
         type: SiteType.Gazelle,
         keywords: ['secret-cinema.pw'],
         baseUrl: 'https://secret-cinema.pw/',
+        search: {
+            imdb: 'torrents.php?action=advanced&searchsubmit=1&filter_cat=1&cataloguenumber={imdb}',
+            name: 'torrents.php?searchstr={name}'
+        },
+        groupUpload: true,
         description: 'Secret Cinema'
     },
     {
@@ -23,6 +28,8 @@ export const GazelleSites: SiteConfig[] = [
         type: SiteType.PTP,
         keywords: ['passthepopcorn.me'],
         baseUrl: 'https://passthepopcorn.me/',
+        search: { imdb: 'torrents.php?searchstr={imdb}', name: 'torrents.php?searchstr={name}' },
+        groupUpload: true,
         description: 'PassThePopcorn'
     },
     {

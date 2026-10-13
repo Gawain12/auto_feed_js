@@ -7,6 +7,7 @@ export const NexusSites: SiteConfig[] = [
         type: SiteType.NexusPHP,
         keywords: ['open.cd'],
         baseUrl: 'https://open.cd/',
+        uploadPath: 'plugin_upload.php',
         description: 'OpenCD'
     },
     {
@@ -21,6 +22,10 @@ export const NexusSites: SiteConfig[] = [
         type: SiteType.MTeam,
         keywords: ['m-team.cc', 'm-team.io'],
         baseUrl: 'https://kp.m-team.cc/',
+        uploadPath: 'upload',
+        // Legacy parity: browse keyword is title-based, not IMDb id.
+        search: { name: 'browse?keyword={name}' },
+        preferCurrentHost: true,
         description: 'M-Team TP (New AntD Layout)',
         features: {
             imdbSearch: true,
@@ -72,6 +77,10 @@ export const NexusSites: SiteConfig[] = [
         type: SiteType.NexusPHP,
         keywords: ['totheglory.im', 'totheglory.me', 'totheglory.', 'bwtorrents.tv'],
         baseUrl: 'https://totheglory.im/',
+        search: {
+            imdb: 'browse.php?search_field=imdb{imdbNo}&c=M',
+            name: 'browse.php?search_field={name}'
+        },
         description: 'TTG (Nexus-like parsing)',
         // TTG detail pages use a different description container (`#kt_d`) and sometimes lack a structured subtitle row.
         // Rely on legacy normalization (`getSmallDescrFromDescr`) after parsing the raw description.
@@ -99,6 +108,10 @@ export const NexusSites: SiteConfig[] = [
         type: SiteType.NexusPHP,
         keywords: ['tjupt.org'],
         baseUrl: 'https://www.tjupt.org/',
+        search: {
+            imdb: 'torrents.php?incldead=0&search_area=4&search={imdb}&sort=5&type=desc',
+            name: 'torrents.php?incldead=0&search_area=0&search={name}&sort=5&type=desc'
+        },
         description: '北洋园 PT',
         selectors: {
             title: ['#top', 'h1#top', 'h1'],
@@ -123,6 +136,7 @@ export const NexusSites: SiteConfig[] = [
         type: SiteType.CHDBits,
         keywords: ['chdbits.co', 'ptchdbits.co', 'ptchdbits.org', 'chddiy.xyz', 'chdbits'],
         baseUrl: 'https://chdbits.co/',
+        baseUrlSetting: 'chdBaseUrl',
         description: 'CHDBits',
         features: {
             imdbSearch: true
