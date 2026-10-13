@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import $ from 'jquery';
 import { SettingsService } from './SettingsService';
 import { DoubanService } from './DoubanService';
@@ -188,6 +189,7 @@ export class PageEnhancerService {
     }
 
     private static async injectPTPDouban() {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         if ($('#autofeed-ptp-douban').length && $('[data-autofeed-douban-rating="1"]').length) return;
 
         const imdbId = await this.waitForPTPImdbId();
@@ -214,7 +216,7 @@ export class PageEnhancerService {
             const summary = lines.join('\n');
             $('#movieinfo').before(`
                 <div class="panel" id="autofeed-ptp-douban">
-                    <div class="panel__heading"><span class="panel__heading__title">简介</span></div>
+                    <div class="panel__heading"><span class="panel__heading__title">${uiText("简介", "Synopsis")}</span></div>
                     <div class="panel__body" id="intro">&nbsp&nbsp&nbsp&nbsp${summary}</div>
                 </div>
             `);
@@ -230,15 +232,15 @@ export class PageEnhancerService {
             if (!$('#autofeed-ptp-douban-info').length) {
                 $('#movieinfo').before(`
                 <div class="panel" id="autofeed-ptp-douban-info">
-                    <div class="panel__heading"><span class="panel__heading__title">电影信息</span></div>
+                    <div class="panel__heading"><span class="panel__heading__title">${uiText("电影信息", "Douban details")}</span></div>
                     <div class="panel__body">
-                        <div><strong>导演:</strong> ${data.director || ''}</div>
-                        <div><strong>演员:</strong> ${data.cast || ''}</div>
-                        <div><strong>类型:</strong> ${data.genre || ''}</div>
-                        <div><strong>制片国家/地区:</strong> ${data.region || ''}</div>
-                        <div><strong>语言:</strong> ${data.language || ''}</div>
-                        <div><strong>时长:</strong> ${data.runtime || ''}</div>
-                        <div><strong>又名:</strong> ${data.aka || ''}</div>
+                        <div><strong>${uiText("导演", "Director")}:</strong> ${data.director || ''}</div>
+                        <div><strong>${uiText("演员", "Cast")}:</strong> ${data.cast || ''}</div>
+                        <div><strong>${uiText("类型", "Genres")}:</strong> ${data.genre || ''}</div>
+                        <div><strong>${uiText("制片国家/地区", "Country / region")}:</strong> ${data.region || ''}</div>
+                        <div><strong>${uiText("语言", "Languages")}:</strong> ${data.language || ''}</div>
+                        <div><strong>${uiText("时长", "Runtime")}:</strong> ${data.runtime || ''}</div>
+                        <div><strong>${uiText("又名", "Also known as")}:</strong> ${data.aka || ''}</div>
                     </div>
                 </div>
             `);
@@ -248,7 +250,7 @@ export class PageEnhancerService {
         const total = data.average ? 10 : '';
         const split = data.average ? '/' : '';
         const votes = data.votes || 0;
-        const average = data.average || '暂无评分';
+        const average = data.average || uiText("暂无评分", "Not rated");
 
         const addDoubanRating = () => {
             const row = $('#movie-ratings-table tr').first();
@@ -280,7 +282,7 @@ export class PageEnhancerService {
                         border-bottom-right-radius: 4px;
                         width: 69px;
                         height: 24px;
-                        line-height: 24px;">豆瓣评分</span>
+                        line-height: 24px;">${uiText("豆瓣评分", "Douban rating")}</span>
                     </div>
                 </a>
                 </center>
@@ -351,6 +353,7 @@ export class PageEnhancerService {
     }
 
     private static async injectHDBDouban(hideByDefault: boolean) {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         if ($('#autofeed-hdb-douban').length) return;
 
         let links = $('table.contentlayout').find('a[href^="https://www.imdb.com/title/"]');
@@ -384,7 +387,7 @@ export class PageEnhancerService {
 
         const html = `
             <tr id="autofeed-hdb-douban"><td>
-                <div id="l20201117" class="label collapsable" onclick="showHideEl(20201117)"><span class="plusminus">${label}</span>关于本片 (豆瓣信息)</div>
+                <div id="l20201117" class="label collapsable" onclick="showHideEl(20201117)"><span class="plusminus">${label}</span>${uiText("关于本片 (豆瓣信息)", "About this film (Douban)")}</div>
                 <div id="c20201117" class="hideablecontent" style="display: ${status};">
                     <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:nowrap;">
                         <div style="flex:0 0 210px; max-width:210px;">
@@ -402,21 +405,21 @@ export class PageEnhancerService {
                                 <div style="min-width:0;">
                                     <table class="content" cellspacing="0" id="imdbinfo" style="width:100%; table-layout:fixed; font-size:12px;">
                                         <tbody style="white-space:normal; overflow-wrap:anywhere; word-break:break-word;">
-                                            <tr><th style="width:80px;">评分</th><td>${data.average || '暂无评分'} (${data.votes || 0}人评价)</td></tr>
-                                            <tr><th>类型</th><td>${data.genre || ''}</td></tr>
-                                            <tr><th>国家/地区</th><td>${data.region || ''}</td></tr>
-                                            <tr><th>导演</th><td>${(data.director || '').replace(/\//g, '<br>')}</td></tr>
-                                            <tr><th>语言</th><td>${data.language || ''}</td></tr>
-                                            <tr><th>上映日期</th><td>${(data.releaseDate || '').replace(/\//g, '<br>')}</td></tr>
-                                            <tr><th>片长</th><td>${data.runtime || ''}</td></tr>
-                                            <tr><th>演员</th><td>${(data.cast || '').replace(/\//g, '<br>')}</td></tr>
+                                            <tr><th style="width:80px;">${uiText("评分", "Rating")}</th><td>${data.average || uiText("暂无评分", "Not rated")} (${data.votes || 0} ${uiText("人评价", "votes")})</td></tr>
+                                            <tr><th>${uiText("类型", "Genres")}</th><td>${data.genre || ''}</td></tr>
+                                            <tr><th>${uiText("国家/地区", "Country / region")}</th><td>${data.region || ''}</td></tr>
+                                            <tr><th>${uiText("导演", "Director")}</th><td>${(data.director || '').replace(/\//g, '<br>')}</td></tr>
+                                            <tr><th>${uiText("语言", "Languages")}</th><td>${data.language || ''}</td></tr>
+                                            <tr><th>${uiText("上映日期", "Release date")}</th><td>${(data.releaseDate || '').replace(/\//g, '<br>')}</td></tr>
+                                            <tr><th>${uiText("片长", "Runtime")}</th><td>${data.runtime || ''}</td></tr>
+                                            <tr><th>${uiText("演员", "Cast")}</th><td>${(data.cast || '').replace(/\//g, '<br>')}</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div style="min-width:0;">
-                                    <div style="font-weight:bold; margin:1px 0 6px 0;">简介</div>
+                                    <div style="font-weight:bold; margin:1px 0 6px 0;">${uiText("简介", "Synopsis")}</div>
                                     <div style="font-size:12px; line-height:1.5; white-space:normal; overflow-wrap:anywhere; word-break:break-word;">
-                                        ${data.summary ? '　　' + data.summary.replace(/ 　　/g, '<br>　　') : '本片暂无简介'}
+                                        ${data.summary ? '　　' + data.summary.replace(/ 　　/g, '<br>　　') : uiText("本片暂无简介", "No synopsis available")}
                                     </div>
                                 </div>
                             </div>
@@ -651,6 +654,7 @@ export class QuickSearchService {
     }
 
     private static injectDoubanTools(settings?: Awaited<ReturnType<typeof SettingsService.load>>) {
+        const uiText = getUiText(settings?.uiLanguage);
         if (document.body.dataset.autofeedDouban === '1') return;
         const $info = $('#info');
         const $title = $('h1').first();
@@ -675,7 +679,7 @@ export class QuickSearchService {
         const posterImg = $('#mainpic img').first().attr('src') || '';
         const poster = posterImg.replace(/^.+(p\d+).+$/, (_, p1) => `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`);
 
-        $('#mainpic').append(`<br><a href="#" id="autofeed-rehost-poster">海报转存</a>`);
+        $('#mainpic').append(`<br><a href="#" id="autofeed-rehost-poster">${uiText("海报转存", "Rehost poster")}</a>`);
         $('#autofeed-rehost-poster').on('click', async (e) => {
             e.preventDefault();
             if (!poster) return;
@@ -694,11 +698,11 @@ export class QuickSearchService {
                 }
                 if (result.length) {
                     await GMAdapter.setClipboard(result[0]);
-                    alert('海报已转存并复制到剪贴板');
+                    alert(uiText("海报已转存并复制到剪贴板", "Poster rehosted and copied to the clipboard."));
                 }
             } catch (err) {
                 console.error(err);
-                alert('海报转存失败');
+                alert(uiText("海报转存失败", "Could not rehost the poster."));
             }
         });
 

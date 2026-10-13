@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import $ from 'jquery';
 import { BaseEngine } from '../core/BaseEngine';
 import { TorrentMeta } from '../types/TorrentMeta';
@@ -50,6 +51,7 @@ export class EmbedService {
     }
 
     static async inject(adapter: BaseEngine, meta: TorrentMeta, settings: AppSettings) {
+        const text = getUiText(settings.uiLanguage);
         this.ensureInjectedStyle();
 
         const scopeKey = this.getScopeKey(adapter);
@@ -112,8 +114,8 @@ export class EmbedService {
                 tr.append(tdLabel, tdContent);
                 return { tr, tdContent };
             };
-            const r1 = mkRow('转发种子', 'forward_r');
-            const r2 = mkRow('豆瓣信息', 'box_right');
+            const r1 = mkRow(text("转发种子", "Forward torrent"), 'forward_r');
+            const r2 = mkRow(text("豆瓣信息", "Metadata tools"), 'box_right');
             rootMark(r1.tr);
             rootMark(r2.tr);
             // Insert near the top of the details.
@@ -153,8 +155,8 @@ export class EmbedService {
                 return;
             }
 
-            const rowForward = makeTwoColTr('转发种子', leftClass, 'forward_r');
-            const rowTools = makeTwoColTr('豆瓣信息', leftClass, 'box_right');
+            const rowForward = makeTwoColTr(text("转发种子", "Forward torrent"), leftClass, 'forward_r');
+            const rowTools = makeTwoColTr(text("豆瓣信息", "Metadata tools"), leftClass, 'box_right');
             rootMark(rowForward.tr);
             rootMark(rowTools.tr);
             if (rowClass) {
@@ -237,8 +239,8 @@ export class EmbedService {
 
         const leftClass = detectNexusLeftCellClass(hostTable);
 
-        const rowForward = makeTwoColTr('转发种子', leftClass, 'forward_r');
-        const rowTools = makeTwoColTr('豆瓣信息', leftClass, 'box_right');
+        const rowForward = makeTwoColTr(text("转发种子", "Forward torrent"), leftClass, 'forward_r');
+        const rowTools = makeTwoColTr(text("豆瓣信息", "Metadata tools"), leftClass, 'box_right');
 
         rootMark(rowForward.tr);
         rootMark(rowTools.tr);

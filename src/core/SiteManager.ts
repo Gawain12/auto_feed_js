@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import { SiteRegistry } from './SiteRegistry';
 import { BaseEngine } from './BaseEngine';
 import $ from 'jquery';
@@ -174,7 +175,9 @@ export class SiteManager {
                         } catch {}
                     }
                 } else if (hasToken) {
-                    this.showStatusToast('转发缓存已过期，请返回源站重新点击转发链接。');
+                    const { SettingsService } = await import('../services/SettingsService');
+                    const text = getUiText((await SettingsService.load()).uiLanguage);
+                    this.showStatusToast(text('转发缓存已过期，请返回源站重新点击转发链接。', 'The forwarding data has expired. Open the source page and forward again.'));
                 }
             }
         } catch (e) {
@@ -230,15 +233,17 @@ export class SiteManager {
         $('#autofeed-founddata-toast').remove();
 
         let toastOpacity = 0.95;
+        let text = getUiText();
         try {
             const settings = await import('../services/SettingsService').then(m => m.SettingsService.load());
             toastOpacity = Math.min(1, Math.max(0.3, Number(settings.toastOpacity ?? 0.95)));
+            text = getUiText(settings.uiLanguage);
         } catch { }
 
         const notify = $(`<div id="autofeed-founddata-toast" style="position:fixed; bottom:10px; right:10px; z-index:99997; padding: 12px 14px; background: #4CAF50; color: white; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 520px; pointer-events: auto; opacity:${toastOpacity};">
-        <span style="font-size: 12px;">Found Data: <strong>${meta.title}</strong></span>
-        <button id="autofeed-fill-btn" style="background: white; color: #4CAF50; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-weight: bold;">重新填充</button>
-        <button id="autofeed-close-btn" style="background: transparent; color: white; border: 1px solid white; padding: 4px 8px; border-radius: 3px; cursor: pointer;">Close</button>
+        <span style="font-size: 12px;">${text("转发数据", "Forwarding data")}: <strong>${meta.title}</strong></span>
+        <button id="autofeed-fill-btn" style="background: white; color: #4CAF50; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-weight: bold;">${text("重新填充", "Fill again")}</button>
+        <button id="autofeed-close-btn" style="background: transparent; color: white; border: 1px solid white; padding: 4px 8px; border-radius: 3px; cursor: pointer;">${text("关闭", "Close")}</button>
       </div>`);
 
         $('body').append(notify);
@@ -266,7 +271,7 @@ export class SiteManager {
                 await adapter.fill(normalized);
                 await afterFill();
                 if (this.isTargetFillComplete(adapter.siteName)) {
-                    notify.find('#autofeed-fill-btn').text('已自动填充');
+                    notify.find('#autofeed-fill-btn').text(text('已自动填充', 'Form filled'));
                 }
             } catch (e) {
                 console.error(`[Auto-Feed] Auto Fill Error (${reason}):`, e);
@@ -280,16 +285,16 @@ export class SiteManager {
             const ready = await this.waitForForm();
             if (ready) {
                 await runFill('initial', true);
-                this.scheduleFillRecovery(adapter, normalized, notify, runFill);
+                this.scheduleFillRecovery(adapter, normalized, notify, runFill, text('已自动填充', 'Form filled'));
             }
         } catch (e) {
             console.error('[Auto-Feed] Auto Fill Error:', e);
         }
 
         notify.find('#autofeed-fill-btn').on('click', async () => {
-            notify.find('#autofeed-fill-btn').text('Filling...');
+            notify.find('#autofeed-fill-btn').text(text('填充中...', 'Filling...'));
             await runFill('manual', true);
-            notify.find('#autofeed-fill-btn').text('Done!');
+            notify.find('#autofeed-fill-btn').text(text('已填充', 'Form filled'));
             setTimeout(() => notify.fadeOut(), 2000);
         });
 
@@ -491,7 +496,8 @@ export class SiteManager {
         adapter: BaseEngine,
         meta: any,
         notify: JQuery<HTMLElement>,
-        runFill: (reason: string, force?: boolean) => Promise<void>
+        runFill: (reason: string, force?: boolean) => Promise<void>,
+        filledLabel: string
     ) {
         const retryDelays = [400, 1200, 2600, 4500, 7000, 10000];
         retryDelays.forEach((ms) => {
@@ -499,7 +505,7 @@ export class SiteManager {
                 if (!this.isTargetFillComplete(adapter.siteName)) {
                     runFill(`retry-${ms}`).catch(() => {});
                 } else if (notify.find('#autofeed-fill-btn').length) {
-                    notify.find('#autofeed-fill-btn').text('已自动填充');
+                    notify.find('#autofeed-fill-btn').text(filledLabel);
                 }
             }, ms);
         });

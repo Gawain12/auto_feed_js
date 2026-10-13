@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import $ from 'jquery';
 import { BaseEngine } from '../core/BaseEngine';
 import { SettingsService } from './SettingsService';
@@ -16,11 +17,12 @@ export class UploadMetaFetchService {
 
         const $descr = $('textarea[name="descr"], textarea[name="description"], #descr, #description').first();
         if (!$descr.length) return;
+        const text = getUiText((await SettingsService.load()).uiLanguage);
 
         const bar = $(`
             <div id="autofeed-upload-fetch" style="margin: 6px 0; display: inline-flex; gap: 8px; align-items: center;">
-                <button style="background: #2c3e50; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">点击获取</button>
-                <span style="font-size: 12px; color: #666;">(外站豆瓣/ptgen)</span>
+                <button style="background: #2c3e50; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">${text("点击获取", "Fetch metadata")}</button>
+                <span style="font-size: 12px; color: #666;">${text("(外站豆瓣/ptgen)", "(Douban / PTGen metadata)")}</span>
             </div>
         `);
 
@@ -28,13 +30,13 @@ export class UploadMetaFetchService {
         const optWrap = $(`
             <span style="display:inline-flex; gap:8px; align-items:center; margin-left: 6px; font-size: 12px; color: #444;">
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
-                    <input type="checkbox" data-k="mergeDescription" checked />简介
+                    <input type="checkbox" data-k="mergeDescription" checked />${text("简介", "Description")}
                 </label>
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
-                    <input type="checkbox" data-k="updateSubtitle" checked />副标题
+                    <input type="checkbox" data-k="updateSubtitle" checked />${text("副标题", "Subtitle")}
                 </label>
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
-                    <input type="checkbox" data-k="updateRegion" checked />地区
+                    <input type="checkbox" data-k="updateRegion" checked />${text("地区", "Region")}
                 </label>
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
                     <input type="checkbox" data-k="updateIds" checked />ID
@@ -45,7 +47,7 @@ export class UploadMetaFetchService {
 
         const btn = bar.find('button');
         btn.on('click', async () => {
-            btn.text('获取中...');
+            btn.text(text("获取中...", "Fetching..."));
             btn.prop('disabled', true);
             try {
                 const settings = await SettingsService.load();
@@ -85,14 +87,14 @@ export class UploadMetaFetchService {
                 const { normalizeMeta } = await import('../common/rules/normalize');
                 const normalized = normalizeMeta(updated, adapter.siteName);
                 await adapter.fill(normalized);
-                btn.text('已更新');
+                btn.text(text("已更新", "Metadata updated"));
             } catch (err) {
                 console.error('[Auto-Feed] Upload fetch error:', err);
-                btn.text('未获取到');
+                btn.text(text("未获取到", "No metadata found"));
             } finally {
                 setTimeout(() => {
                     btn.prop('disabled', false);
-                    btn.text('点击获取');
+                    btn.text(text("点击获取", "Fetch metadata"));
                 }, 1500);
             }
         });
@@ -203,6 +205,7 @@ export class AutoDownloadAfterUploadService {
 
     static async tryAutoDownload(adapter: BaseEngine, isUploadLikePage: boolean) {
         const settings = await SettingsService.load();
+        const text = getUiText(settings.uiLanguage);
         if (!settings.autoDownloadAfterUpload) return;
         if (isUploadLikePage) return;
 
@@ -257,12 +260,12 @@ export class AutoDownloadAfterUploadService {
         try {
             await this.downloadTorrent(downloadUrl, filename);
             await GMAdapter.deleteValue(this.KEY);
-            this.toast('已自动下载种子', 'ok');
+            this.toast(text("已自动下载种子", "Torrent file downloaded"), 'ok');
         } catch (e) {
             pending.tries = tries + 1;
             pending.lastTriedAt = now;
             await GMAdapter.setValue(this.KEY, JSON.stringify(pending));
-            this.toast('自动下载失败（稍后可刷新重试）', 'err');
+            this.toast(text("自动下载失败（稍后可刷新重试）", "Torrent download failed. Refresh the page to try again."), 'err');
         }
     }
 

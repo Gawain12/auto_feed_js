@@ -512,6 +512,10 @@ export const App = () => {
                     {/* Settings - Reordered as requested */}
                     {activeTab === 'settings' && (
                         <div>
+                            <div className="af-card" style={{ padding: '14px 16px', color: '#4b5563', fontSize: '12px', lineHeight: '1.6' }}>
+                                <div>{t.languageHelp}</div>
+                                <div>{t.optionalEnhancementsHelp}</div>
+                            </div>
                             {/* 1. Page Features (Most frequent) */}
                             <div className="af-card">
                                 <div className="af-card-header">{t.pageFeatures}</div>
@@ -561,6 +565,7 @@ export const App = () => {
                                 </div>
                             </div>
 
+                            <div style={{ padding: '0 4px 16px', color: '#6b7280', fontSize: '12px', lineHeight: '1.6' }}>{t.autoDownloadHelp}</div>
                             {/* 2. External Sources */}
                             <div className="af-card">
                                 <div className="af-card-header">{t.externalSources}</div>
@@ -720,6 +725,7 @@ export const App = () => {
                     {/* Remote */}
                     {activeTab === 'remote' && (
                         <div>
+                            <div className="af-card" style={{ padding: '14px 16px', color: '#4b5563', fontSize: '12px', lineHeight: '1.6' }}>{t.remoteHelp}</div>
                             <div className="af-card">
                                 <div className="af-card-header">{t.globalSettings}</div>
                                 <CheckboxRow label={t.enableSidebar} checked={!!settings.enableRemoteSidebar} onChange={() => setAndPersist({ ...settings, enableRemoteSidebar: !settings.enableRemoteSidebar })} />

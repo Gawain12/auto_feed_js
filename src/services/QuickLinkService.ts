@@ -1,3 +1,4 @@
+import { getUiText } from '../ui/i18n';
 import $ from 'jquery';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { SettingsService } from './SettingsService';
@@ -10,7 +11,8 @@ export class QuickLinkService {
         return Math.min(max, Math.max(min, n));
     }
 
-    private static renderLinkModal(title: string, sourceLinks: string[], targetLinks: string[], targetTags: string[]) {
+    private static renderLinkModal(title: string, sourceLinks: string[], targetLinks: string[], targetTags: string[], lang: 'zh' | 'en' = 'zh') {
+        const text = getUiText(lang);
         const existing = document.getElementById('autofeed-link-modal');
         if (existing) existing.remove();
 
@@ -70,9 +72,9 @@ export class QuickLinkService {
             return box;
         };
 
-        const sourceBox = buildBox('原图直链', sourceLinks.join('\n'));
-        const targetBox = buildBox('新图直链', targetLinks.join('\n'));
-        const tagBox = buildBox('新图 BBCode', targetTags.join('\n'));
+        const sourceBox = buildBox(text("原图直链", "Original image URLs"), sourceLinks.join('\n'));
+        const targetBox = buildBox(text("新图直链", "New image URLs"), targetLinks.join('\n'));
+        const tagBox = buildBox(text("新图 BBCode", "New image BBCode"), targetTags.join('\n'));
 
         body.appendChild(sourceBox);
         body.appendChild(targetBox);
@@ -166,7 +168,7 @@ export class QuickLinkService {
             const beforeUrls = ImageHostService.extractImageUrlsFromBBCode(before);
             const afterUrls = ImageHostService.extractImageUrlsFromBBCode(after);
             const afterTags = ImageHostService.extractImageTagsFromBBCode(after);
-            this.renderLinkModal(title, beforeUrls, afterUrls, afterTags);
+            this.renderLinkModal(title, beforeUrls, afterUrls, afterTags, lang);
         };
 
         const fullSize = makeTool(t.full);
@@ -622,7 +624,7 @@ export class QuickLinkService {
             }
             const newTags = await ImageHostService.uploadToPixhost(urls);
             result.value = newTags.join('\n');
-            alert('转存成功！');
+            alert(lang === 'en' ? 'Images rehosted successfully.' : '转存成功！');
         });
 
         const btnImgbox = mkBtn(t.imgbox, async () => {

@@ -1,3 +1,4 @@
+import { getUiText, SupportedLang } from '../ui/i18n';
 import $ from 'jquery';
 import { SettingsService, RemoteServerConfig } from './SettingsService';
 import { SiteRegistry } from '../core/SiteRegistry';
@@ -97,7 +98,8 @@ export class RemoteDownloadService {
         this.injectSidebar(settings.remoteServer, engine, {
             skipDefault: !!settings.remoteSkipCheckingDefault,
             askConfirm: !!settings.remoteAskSkipConfirm,
-            opacity: Math.min(1, Math.max(0.3, Number(settings.remoteSidebarOpacity ?? 0.92)))
+            opacity: Math.min(1, Math.max(0.3, Number(settings.remoteSidebarOpacity ?? 0.92))),
+            lang: settings.uiLanguage
         });
     }
 
@@ -187,15 +189,16 @@ export class RemoteDownloadService {
     private static injectSidebar(
         config: RemoteServerConfig,
         engine: any,
-        opts: { skipDefault: boolean; askConfirm: boolean; opacity: number }
+        opts: { skipDefault: boolean; askConfirm: boolean; opacity: number; lang?: SupportedLang }
     ) {
+        const uiText = getUiText(opts.lang);
         GMAdapter.xmlHttpRequest; // ensure GM granted
         this.injectStyles();
 
         $('body').append(`
             <div id="autofeed-remote-sidebar">
                 <div class="af-remote-sidebar-header">
-                    <span>远程推送</span>
+                    <span>${uiText("远程推送", "Send to client")}</span>
                     <div class="af-remote-download-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="20" viewBox="0,0,256,256">
                             <g transform=""><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="none" stroke-linecap="butt" stroke-linejoin="none" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path transform="scale(5.12,5.12)" d="M50,32c0,4.96484 -4.03516,9 -9,9h-30c-6.06641,0 -11,-4.93359 -11,-11c0,-4.97266 3.32422,-9.30469 8.01563,-10.59375c0.30859,-6.34375 5.56641,-11.40625 11.98438,-11.40625c4.01953,0 7.79688,2.05469 10.03516,5.40625c0.96875,-0.27344 1.94531,-0.40625 2.96484,-0.40625c5.91016,0 10.75,4.6875 10.98828,10.54297c3.52734,1.19141 6.01172,4.625 6.01172,8.45703z" id="strokeMainSVG" fill="#2c3e50" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"></path><g transform="scale(5.12,5.12)" fill="#ffffff" stroke="none" stroke-width="1" stroke-linejoin="miter"><path d="M43.98828,23.54297c-0.23828,-5.85547 -5.07812,-10.54297 -10.98828,-10.54297c-1.01953,0 -1.99609,0.13281 -2.96484,0.40625c-2.23828,-3.35156 -6.01562,-5.40625 -10.03516,-5.40625c-6.41797,0 -11.67578,5.0625 -11.98437,11.40625c-4.69141,1.28906 -8.01562,5.62109 -8.01562,10.59375c0,6.06641 4.93359,11 11,11h30c4.96484,0 9,-4.03516 9,-9c0,-3.83203 -2.48437,-7.26562 -6.01172,-8.45703zM25,35.41406l-6.70703,-6.70703l1.41406,-1.41406l4.29297,4.29297v-11.58594h2v11.58594l4.29297,-4.29297l1.41406,1.41406z"></path></g></g></g>
@@ -219,15 +222,15 @@ export class RemoteDownloadService {
             <div id="autofeed-remote-dialog" class="af-remote-dialog">
                 <div class="af-remote-dialog-box">
                     <div class="af-remote-dialog-header">
-                        <span class="af-remote-dialog-title">是否跳过检验？</span>
-                        <button class="af-remote-close-btn" type="button" aria-label="关闭"></button>
+                        <span class="af-remote-dialog-title">${uiText("是否跳过检验？", "Skip file verification?")}</span>
+                        <button class="af-remote-close-btn" type="button" aria-label="${uiText("关闭", "Close")}"></button>
                     </div>
                     <div class="af-remote-dialog-body">
-                        <span class="af-remote-dialog-message">请谨慎选择，如果因为跳检造成做假种或者下载量增加后果自负！！</span>
+                        <span class="af-remote-dialog-message">${uiText("仅在所选目录已包含完整且匹配的文件时跳过校验；不确定时请先校验，再开始做种。", "Skip verification only if the complete matching files already exist in the selected directory. Otherwise verify files before seeding.")}</span>
                     </div>
                     <div class="af-remote-dialog-footer">
-                        <input type="button" class="af-remote-dialog-btn" id="autofeed-confirm" value="跳过检验" />
-                        <input type="button" class="af-remote-dialog-btn af-remote-dialog-cancel" id="autofeed-cancel" value="直接下载" />
+                        <input type="button" class="af-remote-dialog-btn" id="autofeed-confirm" value="${uiText("跳过检验", "Skip verification")}" />
+                        <input type="button" class="af-remote-dialog-btn af-remote-dialog-cancel" id="autofeed-cancel" value="${uiText("直接下载", "Verify / download")}" />
                     </div>
                 </div>
             </div>
@@ -235,7 +238,7 @@ export class RemoteDownloadService {
 
         $('body').append(`
             <div id="autofeed-remote-toast" style="display:none;">
-                <p style="margin:8px 12px">种子添加成功~~</p>
+                <p style="margin:8px 12px">${uiText("种子添加成功~~", "Torrent added to client")}</p>
             </div>
         `);
 
@@ -307,7 +310,7 @@ export class RemoteDownloadService {
             const server = qb[serverName];
             if (!server) return;
             const run = (skip: boolean) => {
-                setStatus(`正在推送(QB): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
+                setStatus(`${uiText("正在推送", "Sending")} (QB): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
                 this.pushToQb(engine, server, path, label, skip, setStatus);
             };
             if (opts.askConfirm) dialogBox(() => run(true), () => run(false));
@@ -323,7 +326,7 @@ export class RemoteDownloadService {
             const server = tr[serverName];
             if (!server) return;
             const run = (skip: boolean) => {
-                setStatus(`正在推送(TR): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
+                setStatus(`${uiText("正在推送", "Sending")} (TR): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
                 this.pushToTransmission(engine, server, path, label, skip, setStatus);
             };
             if (opts.askConfirm) dialogBox(() => run(true), () => run(false));
@@ -339,7 +342,7 @@ export class RemoteDownloadService {
             const server = de[serverName];
             if (!server) return;
             const run = (skip: boolean) => {
-                setStatus(`正在推送(DE): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
+                setStatus(`${uiText("正在推送", "Sending")} (DE): ${serverName} / ${label}${path ? ` → ${path}` : ''}...`, 'info');
                 this.pushToDeluge(engine, server, path, label, skip, setStatus);
             };
             if (opts.askConfirm) dialogBox(() => run(true), () => run(false));
@@ -584,17 +587,18 @@ export class RemoteDownloadService {
         skipChecking: boolean,
         onStatus?: (text: string, kind?: 'info' | 'ok' | 'err', hideAfterMs?: number) => void
     ) {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         const meta = await this.getMeta(engine, window.location.href);
         if (!meta?.torrentUrl) {
-            alert('未找到种子下载链接');
-            onStatus?.('推送失败: 未找到种子链接', 'err', 3000);
+            alert(uiText("未找到种子下载链接", "No torrent download link was found."));
+            onStatus?.(uiText("推送失败: 未找到种子链接", "Could not send: no torrent download link."), 'err', 3000);
             return;
         }
 
-        onStatus?.('下载种子中...', 'info');
+        onStatus?.(uiText("下载种子中...", "Downloading torrent file..."), 'info');
         const blob = await this.downloadTorrentBlob(meta.torrentUrl);
         if (!blob) {
-            onStatus?.('推送失败: 种子下载失败', 'err', 3000);
+            onStatus?.(uiText("推送失败: 种子下载失败", "Could not send: torrent file download failed."), 'err', 3000);
             return;
         }
 
@@ -614,19 +618,19 @@ export class RemoteDownloadService {
 
         const host = this.normalizeHost(server.url);
         try {
-            onStatus?.('登录 qBittorrent...', 'info');
+            onStatus?.(uiText("登录 qBittorrent...", "Signing in to qBittorrent..."), 'info');
             await this.qbRequest(host, '/auth/login', {
                 username: server.username,
                 password: server.password
             });
-            onStatus?.('推送中...', 'info');
+            onStatus?.(uiText("推送中...", "Sending to client..."), 'info');
             await this.qbRequest(host, '/torrents/add', formData);
             this.showToast();
-            onStatus?.('推送完成', 'ok', 3000);
+            onStatus?.(uiText("推送完成", "Torrent sent to client"), 'ok', 3000);
         } catch (err) {
             console.error(err);
-            alert('远程推送失败，请检查 QB 状态和配置');
-            onStatus?.('推送失败', 'err', 5000);
+            alert(uiText("远程推送失败，请检查 QB 状态和配置", "Could not send to qBittorrent. Check the client connection and settings."));
+            onStatus?.(uiText("推送失败", "Could not send torrent"), 'err', 5000);
         }
     }
 
@@ -638,23 +642,24 @@ export class RemoteDownloadService {
         skipChecking: boolean,
         onStatus?: (text: string, kind?: 'info' | 'ok' | 'err', hideAfterMs?: number) => void
     ) {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         const meta = await this.getMeta(engine, window.location.href);
         if (!meta?.torrentUrl) {
-            alert('未找到种子下载链接');
-            onStatus?.('推送失败: 未找到种子链接', 'err', 3000);
+            alert(uiText("未找到种子下载链接", "No torrent download link was found."));
+            onStatus?.(uiText("推送失败: 未找到种子链接", "Could not send: no torrent download link."), 'err', 3000);
             return;
         }
 
-        onStatus?.('下载种子中...', 'info');
+        onStatus?.(uiText("下载种子中...", "Downloading torrent file..."), 'info');
         const base64 = await this.downloadTorrentBase64(meta.torrentUrl);
         if (!base64) {
-            onStatus?.('推送失败: 种子下载失败', 'err', 3000);
+            onStatus?.(uiText("推送失败: 种子下载失败", "Could not send: torrent file download failed."), 'err', 3000);
             return;
         }
 
         const host = this.normalizeHost(server.url);
         try {
-            onStatus?.('推送中...', 'info');
+            onStatus?.(uiText("推送中...", "Sending to client..."), 'info');
             await this.transmissionRequest(
                 `${host}transmission/rpc`,
                 server.username,
@@ -665,11 +670,11 @@ export class RemoteDownloadService {
                 skipChecking
             );
             this.showToast();
-            onStatus?.('推送完成', 'ok', 3000);
+            onStatus?.(uiText("推送完成", "Torrent sent to client"), 'ok', 3000);
         } catch (err) {
             console.error(err);
-            alert('远程推送失败，请检查 Transmission 状态和配置');
-            onStatus?.('推送失败', 'err', 5000);
+            alert(uiText("远程推送失败，请检查 Transmission 状态和配置", "Could not send to Transmission. Check the client connection and settings."));
+            onStatus?.(uiText("推送失败", "Could not send torrent"), 'err', 5000);
         }
     }
 
@@ -719,23 +724,24 @@ export class RemoteDownloadService {
         skipChecking: boolean,
         onStatus?: (text: string, kind?: 'info' | 'ok' | 'err', hideAfterMs?: number) => void
     ) {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         const meta = await this.getMeta(engine, window.location.href);
         if (!meta?.torrentUrl) {
-            alert('未找到种子下载链接');
-            onStatus?.('推送失败: 未找到种子链接', 'err', 3000);
+            alert(uiText("未找到种子下载链接", "No torrent download link was found."));
+            onStatus?.(uiText("推送失败: 未找到种子链接", "Could not send: no torrent download link."), 'err', 3000);
             return;
         }
 
-        onStatus?.('下载种子中...', 'info');
+        onStatus?.(uiText("下载种子中...", "Downloading torrent file..."), 'info');
         const base64 = await this.downloadTorrentBase64(meta.torrentUrl);
         if (!base64) {
-            onStatus?.('推送失败: 种子下载失败', 'err', 3000);
+            onStatus?.(uiText("推送失败: 种子下载失败", "Could not send: torrent file download failed."), 'err', 3000);
             return;
         }
 
         const endpoint = this.normalizeDelugeEndpoint(server.url);
         if (!endpoint) {
-            alert('Deluge 地址为空');
+            alert(uiText("Deluge 地址为空", "The Deluge URL is empty."));
             return;
         }
 
@@ -749,9 +755,9 @@ export class RemoteDownloadService {
         }
 
         try {
-            onStatus?.('登录 Deluge...', 'info');
+            onStatus?.(uiText("登录 Deluge...", "Signing in to Deluge..."), 'info');
             await this.delugeRequest(endpoint, 'auth.login', [server.password || '']);
-            onStatus?.('推送中...', 'info');
+            onStatus?.(uiText("推送中...", "Sending to client..."), 'info');
             const result = await this.delugeRequest(endpoint, 'core.add_torrent_file', ['', base64, options]);
 
             // Optional label plugin
@@ -761,16 +767,16 @@ export class RemoteDownloadService {
             } catch {}
 
             if (result === null) {
-                alert('远程推送失败: Deluge 返回空结果');
+                alert(uiText("远程推送失败: Deluge 返回空结果", "Could not send: Deluge returned an empty result."));
                 onStatus?.('推送失败: Deluge 返回空结果', 'err', 5000);
                 return;
             }
             this.showToast();
-            onStatus?.('推送完成', 'ok', 3000);
+            onStatus?.(uiText("推送完成", "Torrent sent to client"), 'ok', 3000);
         } catch (err) {
             console.error(err);
-            alert('远程推送失败，请检查 Deluge Web 状态和配置');
-            onStatus?.('推送失败', 'err', 5000);
+            alert(uiText("远程推送失败，请检查 Deluge Web 状态和配置", "Could not send to Deluge. Check the Web UI connection and settings."));
+            onStatus?.(uiText("推送失败", "Could not send torrent"), 'err', 5000);
         }
     }
 
@@ -838,8 +844,9 @@ export class RemoteDownloadService {
     }
 
     static async testQbittorrent(server: { url: string; username: string; password: string }): Promise<RemoteTestResult> {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         const host = this.normalizeHost(server.url);
-        if (!host) return { ok: false, message: 'URL 为空' };
+        if (!host) return { ok: false, message: uiText("URL 为空", "URL is required.") };
 
         try {
             const login = await GMAdapter.xmlHttpRequest({
@@ -851,21 +858,22 @@ export class RemoteDownloadService {
                 withCredentials: false
             });
             if (login.status !== 200) {
-                return { ok: false, message: `登录失败: HTTP ${login.status}` };
+                return { ok: false, message: `${uiText("登录失败", "Sign-in failed")}: HTTP ${login.status}` };
             }
             const text = String(login.responseText || '').trim();
             if (!/^ok\.?$/i.test(text)) {
-                return { ok: false, message: text ? `登录失败: ${text}` : '登录失败: 凭据无效' };
+                return { ok: false, message: text ? `${uiText("登录失败", "Sign-in failed")}: ${text}` : uiText("登录失败: 凭据无效", "Sign-in failed: invalid credentials.") };
             }
-            return { ok: true, message: 'OK: qBittorrent 登录成功' };
+            return { ok: true, message: uiText("OK: qBittorrent 登录成功", "OK: signed in to qBittorrent") };
         } catch (err: any) {
-            return { ok: false, message: `登录失败: ${err?.message || String(err)}` };
+            return { ok: false, message: `${uiText("登录失败", "Sign-in failed")}: ${err?.message || String(err)}` };
         }
     }
 
     static async testTransmission(server: { url: string; username: string; password: string }): Promise<RemoteTestResult> {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         const host = this.normalizeHost(server.url);
-        if (!host) return { ok: false, message: 'URL 为空' };
+        if (!host) return { ok: false, message: uiText("URL 为空", "URL is required.") };
         const rpcUrl = `${host}transmission/rpc`;
 
         const auth = 'Basic ' + btoa(`${server.username}:${server.password}`);
@@ -897,34 +905,35 @@ export class RemoteDownloadService {
 
         try {
             const first = await requestOnce();
-            if (first.status === 401) return { ok: false, message: '认证失败: 用户名或密码错误' };
+            if (first.status === 401) return { ok: false, message: uiText("认证失败: 用户名或密码错误", "Authentication failed: incorrect username or password.") };
             if (first.status === 200) {
                 const result = parseResult(first.responseText || '');
-                if (result && result !== 'success') return { ok: false, message: `RPC 失败: ${result}` };
+                if (result && result !== 'success') return { ok: false, message: `${uiText("RPC 失败", "RPC failed")}: ${result}` };
                 return { ok: true, message: 'OK: Transmission RPC' };
             }
-            if (first.status !== 409) return { ok: false, message: `RPC 失败: HTTP ${first.status}` };
+            if (first.status !== 409) return { ok: false, message: `${uiText("RPC 失败", "RPC failed")}: HTTP ${first.status}` };
 
             const match = (first.responseHeaders || '').match(/X-Transmission-Session-Id:\s*(.+)/i);
             const sid = match?.[1]?.trim();
-            if (!sid) return { ok: false, message: 'RPC 失败: 缺少 Session-Id' };
+            if (!sid) return { ok: false, message: uiText("RPC 失败: 缺少 Session-Id", "RPC failed: missing Session-Id.") };
 
             const second = await requestOnce(sid);
-            if (second.status === 401) return { ok: false, message: '认证失败: 用户名或密码错误' };
+            if (second.status === 401) return { ok: false, message: uiText("认证失败: 用户名或密码错误", "Authentication failed: incorrect username or password.") };
             if (second.status === 200) {
                 const result = parseResult(second.responseText || '');
-                if (result && result !== 'success') return { ok: false, message: `RPC 失败: ${result}` };
+                if (result && result !== 'success') return { ok: false, message: `${uiText("RPC 失败", "RPC failed")}: ${result}` };
                 return { ok: true, message: 'OK: Transmission RPC' };
             }
-            return { ok: false, message: `RPC 失败: HTTP ${second.status}` };
+            return { ok: false, message: `${uiText("RPC 失败", "RPC failed")}: HTTP ${second.status}` };
         } catch (err: any) {
-            return { ok: false, message: `RPC 失败: ${err?.message || String(err)}` };
+            return { ok: false, message: `${uiText("RPC 失败", "RPC failed")}: ${err?.message || String(err)}` };
         }
     }
 
     static async testDeluge(server: { url: string; password: string }): Promise<RemoteTestResult> {
+        const uiText = getUiText((await SettingsService.load()).uiLanguage);
         let host = this.normalizeHost(server.url);
-        if (!host) return { ok: false, message: 'URL 为空' };
+        if (!host) return { ok: false, message: uiText("URL 为空", "URL is required.") };
         if (!host.match(/\/json\/?$/i)) host = host.replace(/\/$/, '') + '/json';
 
         let testSessionId = '';
@@ -961,12 +970,12 @@ export class RemoteDownloadService {
         let loginOk = false;
         try {
             const login = await request(0, 'auth.login', [server.password || '']);
-            if (login.res.status !== 200) return { ok: false, message: `登录失败: HTTP ${login.res.status}` };
-            if (!login.json) return { ok: false, message: `登录失败: 非JSON响应 (HTTP ${login.res.status})` };
-            if (login.json.error) return { ok: false, message: `登录失败: ${login.json.error}` };
+            if (login.res.status !== 200) return { ok: false, message: `${uiText("登录失败", "Sign-in failed")}: HTTP ${login.res.status}` };
+            if (!login.json) return { ok: false, message: `${uiText("登录失败: 非JSON响应", "Sign-in failed: non-JSON response")} (HTTP ${login.res.status})` };
+            if (login.json.error) return { ok: false, message: `${uiText("登录失败", "Sign-in failed")}: ${login.json.error}` };
             loginOk = !!login.json.result;
         } catch (err: any) {
-            return { ok: false, message: `登录失败: ${err?.message || String(err)}` };
+            return { ok: false, message: `${uiText("登录失败", "Sign-in failed")}: ${err?.message || String(err)}` };
         }
 
         try {
@@ -980,8 +989,8 @@ export class RemoteDownloadService {
         return {
             ok: true,
             message: loginOk
-                ? 'OK: Deluge 登录成功（info 获取失败/被限制，但推送通常仍可用）'
-                : 'OK: Deluge 会话存在（login=false，但推送通常仍可用）'
+                ? uiText("OK: Deluge 登录成功（info 获取失败/被限制，但推送通常仍可用）", "OK: signed in to Deluge (session info unavailable).")
+                : uiText("OK: Deluge 会话存在（login=false，但推送通常仍可用）", "OK: an existing Deluge session is available.")
         };
     }
 

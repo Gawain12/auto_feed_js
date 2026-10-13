@@ -1,3 +1,5 @@
+import { getUiText } from '../ui/i18n';
+import { SettingsService } from './SettingsService';
 
 /**
  * Service to handle image hosting operations.
@@ -825,6 +827,7 @@ export class ImageHostService {
     }
 
     static async prepareAndOpen(meta: TorrentMeta, host: 'hdbits' | 'imgbox' | 'pixhost' | 'hdbimg' | 'hostik') {
+        const text = getUiText((await SettingsService.load()).uiLanguage);
         let picked: string[] = Array.isArray(meta.images) ? meta.images.slice() : [];
         if (!picked.length) {
             try {
@@ -852,7 +855,7 @@ export class ImageHostService {
             normalized = await this.prependCoverForHostik(normalized, meta);
         }
         if (!normalized.length) {
-            alert('未检测到可转存的图片链接');
+            alert(text("未检测到可转存的图片链接", "No images were found to rehost."));
             return;
         }
 
@@ -876,6 +879,7 @@ export class ImageHostService {
         if (!url.match(/https?:\/\/(www\.)?(imgbox\.com|imagebam\.co|pixhost\.to|img\.hdbits\.org|hdbimg\.com|hostik\.cinematik\.net)/i)) {
             return;
         }
+        const text = getUiText((await SettingsService.load()).uiLanguage);
         const host = window.location.host.toLowerCase();
         const isHostik = host.includes('hostik.cinematik.net');
 
@@ -902,7 +906,7 @@ export class ImageHostService {
         }
 
         const button = document.createElement('button');
-        button.textContent = `一键拉取 (${queue.urls.length})`;
+        button.textContent = `${text("一键拉取", "Fetch queued images")} (${queue.urls.length})`;
         button.style.cssText = [
             'margin: 8px 0',
             'padding: 6px 10px',
@@ -969,12 +973,12 @@ export class ImageHostService {
         }
 
         button.addEventListener('click', async () => {
-            button.textContent = '拉取中...';
+            button.textContent = text("拉取中...", "Fetching images...");
             button.setAttribute('disabled', 'true');
             try {
                 const $fileInput = await this.waitForImageFileInput();
                 if (!$fileInput.length) {
-                    alert('未找到上传文件选择框（可能页面还未加载完成）。');
+                    alert(text("未找到上传文件选择框（可能页面还未加载完成）。", "No upload file input was found. Wait for the page to finish loading."));
                     return;
                 }
                 const files = await this.buildImageFiles(queue.urls);
@@ -999,14 +1003,14 @@ export class ImageHostService {
                 }
 
                 await GMAdapter.setValue(this.IMAGE_QUEUE_KEY, '');
-                button.textContent = '拉取成功';
+                button.textContent = text("拉取成功", "Images ready to upload");
             } catch (err) {
                 console.error(err);
-                button.textContent = '拉取失败';
+                button.textContent = text("拉取失败", "Could not fetch images");
             } finally {
                 setTimeout(() => {
                     button.removeAttribute('disabled');
-                    button.textContent = `一键拉取 (${queue.urls.length})`;
+                    button.textContent = `${text("一键拉取", "Fetch queued images")} (${queue.urls.length})`;
                 }, 1200);
             }
         });
@@ -1191,7 +1195,8 @@ export class ImageHostService {
         return ok;
     }
 
-    private static renderHostikResultModal(imageBlock: string) {
+    private static async renderHostikResultModal(imageBlock: string) {
+        const text = getUiText((await SettingsService.load()).uiLanguage);
         const existing = document.getElementById(this.HOSTIK_RESULT_MODAL_ID);
         if (existing) existing.remove();
 
@@ -1222,7 +1227,7 @@ export class ImageHostService {
 
         const header = document.createElement('div');
         header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e5e7eb;';
-        header.innerHTML = '<div><div style="font-weight:700;color:#1f2937;">Hostik 标准格式</div><div style="margin-top:4px;font-size:12px;color:#6b7280;">封面全尺寸，后续截图为缩略图加原图链接，可直接贴回 Tik 开头图片区块。</div></div>';
+        header.innerHTML = `<div><div style="font-weight:700;color:#1f2937;">${text("Hostik 标准格式", "Hostik BBCode for Tik")}</div><div style="margin-top:4px;font-size:12px;color:#6b7280;">${text("封面全尺寸，后续截图为缩略图加原图链接，可直接贴回 Tik 开头图片区块。", "Full-size cover followed by linked screenshot thumbnails. Paste this block into the image section at the start of your Tik description.")}</div></div>`;
 
         const closeBtn = document.createElement('button');
         closeBtn.textContent = '×';
@@ -1238,15 +1243,15 @@ export class ImageHostService {
         const bar = document.createElement('div');
         bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;';
         const label = document.createElement('div');
-        label.textContent = 'Tik 图床段';
+        label.textContent = text("Tik 图床段", "Tik image BBCode");
         label.style.cssText = 'font-weight:700;color:#374151;';
         const copyBtn = document.createElement('button');
-        copyBtn.textContent = '复制';
+        copyBtn.textContent = text("复制", "Copy");
         copyBtn.style.cssText = 'border:1px solid #d1d5db;background:#111827;color:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px;';
         copyBtn.onclick = async () => {
             const ok = await this.copyText(imageBlock);
-            copyBtn.textContent = ok ? '已复制' : '复制失败';
-            setTimeout(() => { copyBtn.textContent = '复制'; }, 1200);
+            copyBtn.textContent = ok ? text("已复制", "Copied") : text("复制失败", "Copy failed");
+            setTimeout(() => { copyBtn.textContent = text("复制", "Copy"); }, 1200);
         };
         const textarea = document.createElement('textarea');
         textarea.value = imageBlock;
@@ -1267,6 +1272,7 @@ export class ImageHostService {
     }
 
     private static async installHostikComposer(pending: { urls: string[]; gallery?: string; createdAt?: number } | null) {
+        const text = getUiText((await SettingsService.load()).uiLanguage);
         const expected = pending?.urls?.length || 0;
         const readUploadProgress = () => {
             const text = document.body?.innerText || '';
@@ -1399,7 +1405,7 @@ export class ImageHostService {
             if (existing) existing.remove();
             const btn = document.createElement('button');
             btn.id = this.HOSTIK_RESULT_BTN_ID;
-            btn.textContent = '复制 Tik 图床段';
+            btn.textContent = text("复制 Tik 图床段", "Tik image BBCode");
             btn.style.cssText = [
                 'position:fixed',
                 'top:14px',

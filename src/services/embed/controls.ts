@@ -1,3 +1,4 @@
+import { getUiText } from '../../ui/i18n';
 import $ from 'jquery';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { AppSettings } from '../SettingsService';
@@ -32,11 +33,12 @@ import {
     );
 
     export async function renderForwardRow(container: JQuery, meta: TorrentMeta, settings: AppSettings) {
+        const text = getUiText(settings.uiLanguage);
         container.empty();
 
         const enabledSet = new Set(settings.enabledSites || []);
         const supported = SiteCatalogService.getSupportedSites().filter((s) => enabledSet.has(s.name));
-        const exclusiveWarnings = getExclusiveSourceWarnings(meta);
+        const exclusiveWarnings = getExclusiveSourceWarnings(meta, settings.uiLanguage);
 
         // --- Forward targets (one-line list with favicon, legacy-like) ---
         const forwardLine = document.createElement('div');
@@ -99,15 +101,15 @@ import {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const blockReason = getForwardTargetBlockReason(site.name, meta);
+                const blockReason = getForwardTargetBlockReason(site.name, meta, settings.uiLanguage);
                 if (blockReason) {
                     alert(blockReason);
                     return;
                 }
 
-                const warnings = Array.from(new Set([...exclusiveWarnings, ...getForwardWarnings(site.name, meta)]));
+                const warnings = Array.from(new Set([...exclusiveWarnings, ...getForwardWarnings(site.name, meta, settings.uiLanguage)]));
                 if (warnings.length) {
-                    const ok = window.confirm(`转发到 ${site.name} 可能违反以下规则:\n${warnings.join('\n')}\n是否仍继续发布？`);
+                    const ok = window.confirm(`${text("转发到", "Forwarding to")} ${site.name}:\n${warnings.join('\n')}\n${text("是否仍继续发布？", "Continue to the upload form?")}`);
                     if (!ok) return;
                 }
 
@@ -163,13 +165,13 @@ import {
             forwardLine.appendChild(a);
         });
 
-        const modeWrap = document.createElement('span');
+        const modeWrap = document.createElement('label');
         modeWrap.style.marginLeft = '10px';
 
         const check = document.createElement('input');
         check.type = 'checkbox';
         check.id = 'search_type';
-        const label = document.createTextNode('查重');
+        const label = document.createTextNode(text("查重", "Search for duplicates"));
         check.addEventListener('change', () => {
             modeState.searchMode = check.checked ? 0 : 1;
             refreshLinksHref();
@@ -182,7 +184,7 @@ import {
             tip.style.color = '#c0392b';
             tip.style.fontWeight = 'bold';
             tip.style.marginBottom = '6px';
-            tip.textContent = '[疑似禁转/禁止转载]';
+            tip.textContent = text("[疑似禁转/禁止转载]", "[Possible exclusive / no re-upload restriction]");
             tip.title = exclusiveWarnings.join('\n');
             rootWrap(container).append(tip);
         }
@@ -214,9 +216,11 @@ import {
 
         // 教程: keep legacy link for now.
         const wiki = document.createElement('a');
-        wiki.textContent = '教程';
-        wiki.title = 'Github/Gitee 教程';
-        wiki.href = 'https://gitee.com/tomorrow505/auto_feed_js/wikis/pages';
+        wiki.textContent = text("教程", "Help");
+        wiki.title = text("Github/Gitee 教程", "Documentation (GitHub/Gitee)");
+        wiki.href = settings.uiLanguage === 'en'
+            ? 'https://github.com/Gawain12/auto_feed_js/blob/refactor-dev/docs/GreasyFork.en.md'
+            : 'https://gitee.com/tomorrow505/auto_feed_js/wikis/pages';
         wiki.target = '_blank';
         wiki.style.color = 'red';
         appendTool(wiki);
@@ -224,18 +228,18 @@ import {
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const ptgenLink = document.createElement('a');
         ptgenLink.textContent = 'PTgen';
-        ptgenLink.title = '打开 ptgen（IYUU）';
+        ptgenLink.title = text("打开 ptgen（IYUU）", "Open PTGen (IYUU)");
         ptgenLink.href = imdbId ? `https://api.iyuu.cn/ptgen/?imdb=${encodeURIComponent(imdbId)}` : 'https://api.iyuu.cn/ptgen/';
         ptgenLink.target = '_blank';
         appendTool(ptgenLink);
 
-        appendTool(mkTool('提取图片', '打开图片处理弹窗', () => {
+        appendTool(mkTool(text("提取图片", "Image tools"), text("打开图片处理弹窗", "Open image tools"), () => {
             QuickLinkService.openImageToolboxModal(meta, settings.uiLanguage || 'zh').catch((e) => {
-                alert(`打开图片处理失败: ${String(e?.message || e)}`);
+                alert(`${text("打开图片处理失败", "Could not open image tools")}: ${String(e?.message || e)}`);
             });
         }));
 
-        appendTool(mkTool('脚本设置', '打开设置弹窗 (Alt+S)', () => openSettingsPanel()));
+        appendTool(mkTool(text("脚本设置", "Settings"), text("打开设置弹窗 (Alt+S)", "Open settings (Alt+S)"), () => openSettingsPanel()));
 
         // Trim last separator
         try {
@@ -251,6 +255,7 @@ import {
     }
 
     export function addSearchUrls(container: JQuery, meta: TorrentMeta, settings: AppSettings) {
+        const text = getUiText(settings.uiLanguage);
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const quickSearchSetting = resolveQuickSearchSetting(settings);
         const html = renderQuickSearchHtml(
@@ -275,13 +280,14 @@ import {
                 // Best-effort heuristic: block obvious imdb-id searches when imdb is missing.
                 if (href.match(/imdb/i) || extractImdbId(href)) {
                     e.preventDefault();
-                    alert('当前影视没有IMDB信息！！');
+                    alert(text("当前影视没有IMDB信息！！", "No IMDb ID is available for this title."));
                 }
             });
         }
     }
 
     export function initButtonsForTransfer(container: JQuery, site: string, mode: 0 | 1, meta: TorrentMeta, settings: AppSettings) {
+        const text = getUiText(settings.uiLanguage);
         container.empty();
 
         // Root marker for cleanup/scoping.
@@ -301,6 +307,7 @@ import {
         input.type = 'text';
         input.className = 'input';
         input.id = 'input_box';
+        input.setAttribute('aria-label', text('IMDb / 豆瓣链接', 'IMDb / Douban URL'));
         input.value = meta.imdbUrl || meta.doubanUrl || '';
 
         // width rules (legacy)
@@ -311,13 +318,7 @@ import {
         (input.style as any).boxSizing = 'border-box';
         container.append(input);
 
-        const searchBtn = document.createElement('input');
-        searchBtn.type = 'button';
-        searchBtn.id = 'search_button';
-        searchBtn.value = '检索名称';
-        (searchBtn.style as any).marginLeft = '12px';
-        (searchBtn.style as any).marginRight = '4px';
-        container.append(searchBtn);
+        // The old title-search button had no handler. Keep the working Quick Search links below.
 
         const enableFetchButton = isChineseNexusSite(site);
         let apiCb: HTMLInputElement | null = null;
@@ -332,7 +333,7 @@ import {
         const ptgenBtn = document.createElement('input');
         ptgenBtn.type = 'button';
         ptgenBtn.id = 'ptgen_button';
-        ptgenBtn.value = 'ptgen跳转';
+        ptgenBtn.value = text("ptgen跳转", "Open PTGen");
         (ptgenBtn.style as any).marginLeft = '12px';
         container.append(ptgenBtn);
 
@@ -341,7 +342,7 @@ import {
             fetchBtn = document.createElement('input');
             fetchBtn.type = 'button';
             fetchBtn.id = 'douban_button';
-            fetchBtn.value = '点击获取';
+            fetchBtn.value = text("点击获取", "Fetch metadata");
             (fetchBtn.style as any).marginLeft = '12px';
             container.append(fetchBtn);
         }
@@ -367,14 +368,14 @@ import {
         const imgBtn = document.createElement('input');
         imgBtn.type = 'button';
         imgBtn.id = 'download_pngs';
-        imgBtn.value = '转存截图';
+        imgBtn.value = text("转存截图", "Rehost images");
         (imgBtn.style as any).marginLeft = '0px';
         (imgBtn.style as any).paddingLeft = '2px';
         container.append(imgBtn);
 
         imgBtn.onclick = () => {
             QuickLinkService.openImageToolboxModal(meta, settings.uiLanguage || 'zh').catch((e) => {
-                alert(`打开图片处理失败: ${String(e?.message || e)}`);
+                alert(`${text("打开图片处理失败", "Could not open image tools")}: ${String(e?.message || e)}`);
             });
         };
 
@@ -390,7 +391,7 @@ import {
         if (fetchBtn) {
             fetchBtn.onclick = async () => {
                 try {
-                    fetchBtn!.value = '获取中...';
+                    fetchBtn!.value = text("获取中...", "Fetching...");
                     const { PtgenService } = await import('../PtgenService');
                     const { SettingsService } = await import('../SettingsService');
 
@@ -418,14 +419,14 @@ import {
 
                     Object.assign(meta, updated);
                     await StorageService.save(meta);
-                    fetchBtn!.value = '获取成功';
+                    fetchBtn!.value = text("获取成功", "Metadata updated");
                     setTimeout(() => {
-                        if (fetchBtn) fetchBtn.value = '点击获取';
+                        if (fetchBtn) fetchBtn.value = text("点击获取", "Fetch metadata");
                     }, 1200);
                 } catch (e: any) {
-                    fetchBtn!.value = '获取失败';
+                    fetchBtn!.value = text("获取失败", "Fetch failed");
                     setTimeout(() => {
-                        if (fetchBtn) fetchBtn.value = '点击获取';
+                        if (fetchBtn) fetchBtn.value = text("点击获取", "Fetch metadata");
                     }, 1200);
                 }
             };
@@ -435,10 +436,10 @@ import {
         if (mode === 1) {
             // center align for the PTP-style header row
             (container.get(0) as any).align = 'center';
-            $('#douban_button,#ptgen_button,#search_button,#download_pngs').css({ border: '1px solid #2F3546', color: '#FFFFFF', backgroundColor: '#2F3546' });
+            $('#douban_button,#ptgen_button,#download_pngs').css({ border: '1px solid #2F3546', color: '#FFFFFF', backgroundColor: '#2F3546' });
         } else {
             // Unit3D/Nexus dark theme friendly
-            $('#douban_button,#ptgen_button,#search_button,#download_pngs').css({ border: '1px solid #0D8ED9', color: '#FFFFFF', backgroundColor: '#292929' });
+            $('#douban_button,#ptgen_button,#download_pngs').css({ border: '1px solid #0D8ED9', color: '#FFFFFF', backgroundColor: '#292929' });
         }
 
         // Dark input/textarea for these sites (legacy list subset)

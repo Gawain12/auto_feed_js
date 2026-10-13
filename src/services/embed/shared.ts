@@ -1,3 +1,4 @@
+import { getUiText, SupportedLang } from '../../ui/i18n';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { AppSettings } from '../SettingsService';
 import { SiteCatalogService } from '../SiteCatalogService';
@@ -200,25 +201,27 @@ export function resolveFaviconUrl(siteName: string, settings: AppSettings): stri
     return `${normalized}favicon.ico`;
 }
 
-export function getForwardWarnings(siteName: string, meta: TorrentMeta): string[] {
+export function getForwardWarnings(siteName: string, meta: TorrentMeta, lang: SupportedLang = 'zh'): string[] {
+    const text = getUiText(lang);
     const warnings: string[] = [];
     const blob = `${meta.title || ''}\n${meta.smallDescr || ''}\n${meta.description || ''}`;
 
-    warnings.push(...getExclusiveSourceWarnings(meta));
+    warnings.push(...getExclusiveSourceWarnings(meta, lang));
 
     if (siteName === 'KG') {
         if (meta.standardSel === '4K' || /\b(?:4K|2160p)\b/i.test(blob)) {
-            warnings.push('KG 不允许 4K / 2160p 资源。');
+            warnings.push(text("KG 不允许 4K / 2160p 资源。", "KG does not allow 4K / 2160p releases."));
         }
         if (meta.mediumSel === 'Remux' || /\bREMUX\b/i.test(blob)) {
-            warnings.push('KG 不允许 Remux 资源。');
+            warnings.push(text("KG 不允许 Remux 资源。", "KG does not allow remuxes."));
         }
     }
 
     return Array.from(new Set(warnings.filter(Boolean)));
 }
 
-export function getExclusiveSourceWarnings(meta: TorrentMeta): string[] {
+export function getExclusiveSourceWarnings(meta: TorrentMeta, lang: SupportedLang = 'zh'): string[] {
+    const text = getUiText(lang);
     const warnings: string[] = [];
     const source = String(meta.sourceSite || meta.originSite || '').trim();
     const title = String(meta.title || '').trim();
@@ -227,63 +230,64 @@ export function getExclusiveSourceWarnings(meta: TorrentMeta): string[] {
 
     // Legacy keyword guard (global).
     if (blob.match(/(拒绝转发|不允许转发|严禁转发|谢绝.*?转载|禁转|禁止转载|禁止轉載|禁止转发|謝絕.*?轉載|exclusive|独占|獨占|no[\s-]?reupload|do not reupload|forbid.*reupload|禁止二次转载)/i)) {
-        warnings.push('资源命中禁转关键词（禁转/禁止转载/exclusive/no-reupload）。');
+        warnings.push(text("资源命中禁转关键词（禁转/禁止转载/exclusive/no-reupload）。", "The release contains an exclusive / no re-upload notice."));
     }
     if (title.match(/Audies$|-ADE$|-ADWeb$|@Audies|@ADWeb/i)) {
-        warnings.push('资源命中观众系后缀（Audies/ADE/ADWeb），请按站点规则核查是否可转载。');
+        warnings.push(text("资源命中观众系后缀（Audies/ADE/ADWeb），请按站点规则核查是否可转载。", "Audies / ADE / ADWeb release: check the source tracker rules before forwarding."));
     }
 
     // Legacy source-site DOM rules.
     if (source === 'PigGo' && !!document.querySelector('span')) {
         const has = Array.from(document.querySelectorAll('span')).some((s) => (s.textContent || '').includes('禁转'));
-        if (has) warnings.push('PigGo 页面标记为禁转资源。');
+        if (has) warnings.push(text("PigGo 页面标记为禁转资源。", "PigGo marks this release as not for re-upload."));
     }
     if (source === 'HHClub' && Array.from(document.querySelectorAll('span')).some((s) => (s.textContent || '').includes('禁转'))) {
-        warnings.push('HHClub 页面标记为禁转资源。');
+        warnings.push(text("HHClub 页面标记为禁转资源。", "HHClub marks this release as not for re-upload."));
     }
     if (source === 'TJUPT' && !!document.querySelector('#tag .tag-exclusive')) {
-        warnings.push('TJUPT 标签包含 exclusive（禁转）。');
+        warnings.push(text("TJUPT 标签包含 exclusive（禁转）。", "TJUPT marks this release as exclusive."));
     }
     if (source === 'PTer') {
         const exclusiveSelect = document.querySelector('select[name="tag_exclusive"]') as HTMLSelectElement | null;
         const exclusiveValue = String(exclusiveSelect?.value || '').trim().toLowerCase();
         if (exclusiveValue === 'yes') {
-            warnings.push('PTer 标签 `tag_exclusive` 标记为 `yes`（禁转）。');
+            warnings.push(text("PTer 标签 `tag_exclusive` 标记为 `yes`（禁转）。", "PTer marks tag_exclusive as yes (no re-upload)."));
         }
     }
     if (['HDDolby', 'HDHome', 'PThome', 'Audiences'].includes(source)) {
         const hasTag = !!document.querySelector('span.txz, span.tjz');
-        if (hasTag) warnings.push(`${source} 页面标签包含限转/禁转标记（txz/tjz）。`);
+        if (hasTag) warnings.push(`${source}: ${text("页面标签包含限转/禁转标记（txz/tjz）。", "restricted / no re-upload tag (txz/tjz).")}`);
     }
     if (source === 'BHD' && /THIS IS A BEYONDHD EXCLUSIVE\./i.test(bodyText)) {
-        warnings.push('BHD 页面标记为 EXCLUSIVE。');
+        warnings.push(text("BHD 页面标记为 EXCLUSIVE。", "BHD marks this release as exclusive."));
     }
     if (source === 'HDB' && !!document.querySelector('div.torrent-title > span.exclusive')) {
-        warnings.push('HDB 页面存在 exclusive 标记。');
+        warnings.push(text("HDB 页面存在 exclusive 标记。", "HDB marks this release as exclusive."));
     }
     if (source === 'CMCT' && bodyText.includes('禁转')) {
-        warnings.push('CMCT 页面出现禁转标记。');
+        warnings.push(text("CMCT 页面出现禁转标记。", "CMCT displays a no re-upload notice."));
     }
     if (source === 'OpenCD' && bodyText.includes('禁止轉載')) {
-        warnings.push('OpenCD 页面出现“禁止轉載”标记。');
+        warnings.push(text("OpenCD 页面出现“禁止轉載”标记。", "OpenCD displays a no re-upload notice."));
     }
 
     return Array.from(new Set(warnings.filter(Boolean)));
 }
 
-export function getForwardTargetBlockReason(targetSite: string, meta: TorrentMeta): string {
+export function getForwardTargetBlockReason(targetSite: string, meta: TorrentMeta, lang: SupportedLang = 'zh'): string {
+    const text = getUiText(lang);
     const title = String(meta.title || '');
     const source = String(meta.sourceSite || meta.originSite || '');
     const medium = String(meta.mediumSel || '');
 
     if ((source === 'FRDS' || /frds/i.test(title)) && ['CMCT', 'OurBits', 'HDSky'].includes(targetSite)) {
-        return 'FRDS 资源不支持转发到 CMCT / OurBits / HDSky。';
+        return text("FRDS 资源不支持转发到 CMCT / OurBits / HDSky。", "FRDS releases cannot be forwarded to CMCT / OurBits / HDSky.");
     }
     if (/Audies$|-ADE$|-ADWeb$/i.test(title) && targetSite === 'PTT') {
-        return '该资源触发观众系禁转规则（Audies/ADE/ADWeb -> PTT）。';
+        return text("该资源触发观众系禁转规则（Audies/ADE/ADWeb -> PTT）。", "Audies / ADE / ADWeb releases cannot be forwarded to PTT.");
     }
     if (targetSite === 'OurBits' && (medium === 'Remux' || /Remux/i.test(title))) {
-        return 'OurBits 禁止 Remux 资源转发。';
+        return text("OurBits 禁止 Remux 资源转发。", "OurBits does not allow forwarding remuxes.");
     }
     return '';
 }

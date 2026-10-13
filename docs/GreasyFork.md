@@ -16,6 +16,14 @@
 - 远程推送到 qBittorrent、Transmission、Deluge
 - 种子信息清洗与常用字段处理
 
+## 英文界面与可选增强
+
+在详情页点击“脚本设置”或按 **Alt+S**，通过 **中/en** 切换语言。语言会自动保存；刷新站点及图床页面后，快捷工具、图片弹窗和远程侧边栏会使用新语言。豆瓣信息、发布组名、快速搜索等增强可分别关闭，调整后保存并刷新即可。
+
+Tik 发布页可根据现有信息填写英文模板，并在可用时自动将海报转存至 Pixhost；这不代表所有截图都会自动转存。Hostik 可生成“全尺寸封面 + 带原图链接的截图缩略图”BBCode，再由用户复制回 Tik 图片区。
+
+“转载后自动下载种子”会在发布成功后下载目标站的 .torrent；推送到 qBittorrent、Transmission 或 Deluge 仍需在详情页侧边栏手动选择客户端与目录，不会发布后自动推送做种。
+
 ## 界面预览
 
 ![设置面板](https://raw.githubusercontent.com/tomorrow505/auto_feed_js/dev/docs/images/settings.png)

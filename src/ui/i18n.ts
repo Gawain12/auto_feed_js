@@ -2,6 +2,10 @@
 export const i18n = {
     zh: {
         dashboard: '仪表盘',
+        languageHelp: '语言切换会自动保存。刷新站点页面后，快捷工具和侧边栏会使用新语言。',
+        optionalEnhancementsHelp: '豆瓣信息、发布组名和快速搜索均为可选功能。调整后保存并刷新站点页面。',
+        autoDownloadHelp: '发布成功后下载目标站的 .torrent 文件。远程客户端推送需在侧边栏手动选择客户端和目录。',
+        remoteHelp: '在种子详情页选择客户端和已有文件目录。发布后不会自动推送。',
         settings: '设置',
         sites: '站点',
         remote: '远程推送',
@@ -75,9 +79,13 @@ export const i18n = {
     },
     en: {
         dashboard: 'Dashboard',
+        languageHelp: 'Language changes are saved automatically. Reload tracker pages to update the quick tools and sidebar.',
+        optionalEnhancementsHelp: 'Douban info, release group labels and quick search are optional. Save your changes and reload tracker pages.',
+        autoDownloadHelp: 'Downloads the target tracker’s .torrent after a successful upload. To send it to a remote client, choose the client and directory in the sidebar.',
+        remoteHelp: 'On a torrent detail page, choose a client and the directory containing your files. Sending after upload is manual.',
         settings: 'Settings',
         sites: 'Sites',
-        remote: 'Remote',
+        remote: 'Remote clients',
         status: 'Status',
         active: 'Active',
         currentHost: 'Current Host',
@@ -96,8 +104,8 @@ export const i18n = {
         globalSettings: 'Global Settings',
         clientConfigs: 'Client Configs',
         enableSidebar: 'Enable Sidebar',
-        skipCheckingDefault: 'Skip Checking (Default)',
-        askConfirmBeforePush: 'Ask Confirm Before Push',
+        skipCheckingDefault: 'Skip file verification by default',
+        askConfirmBeforePush: 'Choose verification mode before sending',
         addClient: 'Add Client',
         importJson: 'Import JSON',
         chdDomain: 'CHD Domain',
@@ -112,7 +120,7 @@ export const i18n = {
         doubanQuickSearch: 'Douban: Quick Search',
         imdbQuickSearch: 'IMDb: Quick Search',
         defaultAnonymous: 'Default Anonymous On Upload',
-        autoDownloadAfterUpload: 'Auto Download After Upload',
+        autoDownloadAfterUpload: 'Download .torrent after upload',
         remoteSidebarOpacity: 'Remote Sidebar Opacity',
         settingsPanelOpacity: 'Settings Opacity',
         popupOpacity: 'Popup Opacity',
@@ -131,7 +139,7 @@ export const i18n = {
         url: 'URL',
         username: 'Username',
         password: 'Password',
-        downloadPaths: 'Download Paths',
+        downloadPaths: 'Client download directories',
         addPath: '+ Add Path',
         pathLabel: 'Label',
         pathValue: 'Path',
@@ -150,3 +158,7 @@ export const i18n = {
 
 export type SupportedLang = keyof typeof i18n;
 export type LangKey = keyof typeof i18n.en;
+
+// Shared by the settings panel and injected tracker/image-host controls.
+export const getUiText = (lang?: SupportedLang) => (zh: string, en: string): string =>
+    lang === 'en' ? en : zh;
