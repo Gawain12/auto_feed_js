@@ -37,3 +37,20 @@ test('source-page detection per engine', () => {
     assert.equal(isSource('https://hdsky.me/torrents.php'), false);
     assert.equal(isSource('https://blutopia.cc/torrents/123'), true);
 });
+
+test('forum threads and other non-torrent pages are not source pages', () => {
+    const isSource = (url: string) => SiteRegistry.getEngine(url)!.isSourcePage(new URL(url));
+    // Unit3D forums (the forward UI used to appear inside topic posts).
+    assert.equal(isSource('https://cinematik.net/forums/topics/24135'), false);
+    assert.equal(isSource('https://aither.cc/forums/topics/123?page=2'), false);
+    assert.equal(isSource('https://blutopia.cc/forums/threads/5'), false);
+    assert.equal(isSource('https://cinematik.net/torrents?imdbId=tt0133093'), false);
+    assert.equal(isSource('https://cinematik.net/users/someone'), false);
+    // NexusPHP pages that are not a torrent detail.
+    assert.equal(isSource('https://hdsky.me/forums.php?action=viewtopic&topicid=1'), false);
+    assert.equal(isSource('https://hdsky.me/details.php'), false);
+    assert.equal(isSource('https://hdsky.me/userdetails.php?id=1'), false);
+    // Still detected.
+    assert.equal(isSource('https://cinematik.net/torrents/24135'), true);
+    assert.equal(isSource('https://kp.m-team.cc/detail/123'), true);
+});

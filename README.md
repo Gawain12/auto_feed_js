@@ -1,6 +1,8 @@
 # Auto-Feed 重构版｜PT一键转种助手
 
-仓库地址：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
+当前重构分支：<https://github.com/Gawain12/auto_feed_js/tree/refactor-dev>
+
+原项目新版主线：<https://github.com/tomorrow505/auto_feed_js/tree/dev>
 
 这是从原版 **Auto-Feed** 演进而来的新版重构项目。当前开发重点是重新整理站点适配、信息提取、自动填表、图片处理和远程推送等模块，让结构更清晰、功能更容易维护和扩展；原版脚本主要作为现有功能和兼容行为的参考。欢迎更多开发者一起参与新版的站点适配和功能完善。
 

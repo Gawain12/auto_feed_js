@@ -620,32 +620,36 @@ export class TikEngine extends Unit3DClassicEngine {
                     bbcode.value = tpl;
                     fire(bbcode);
                 }
-                await this.renderUploadHelp(bbcode, meta, imdbId, aspect_ratio);
+                await this.renderUploadHelp(bbcode, meta, aspect_ratio);
             }
         } catch (e) {
             console.warn('[Auto-Feed][Tik] Template fill skipped:', e);
         }
     }
 
-    private async renderUploadHelp(textarea: HTMLTextAreaElement, meta: TorrentMeta, imdbId: string, ratio: string) {
+    private async renderUploadHelp(textarea: HTMLTextAreaElement, meta: TorrentMeta, ratio: string) {
         document.getElementById('autofeed-tik-upload-help')?.remove();
         const text = getUiText((await SettingsService.load()).uiLanguage);
         const help = document.createElement('div');
         help.id = 'autofeed-tik-upload-help';
         help.style.cssText = 'margin:10px 0;padding:12px;border:1px solid #9aa4b2;border-radius:6px;font-size:13px;line-height:1.6;';
         const note = document.createElement('div');
-        note.textContent = text('Tik 不预填海报或截图链接。请先将图片转存到 Hostik，再将生成的 BBCode 粘贴到简介开头。', 'Posters and screenshots are left out of Tik autofill. Rehost them to Hostik, then paste the generated BBCode at the start of the description.');
+        note.textContent = text(
+            'Tik 发布请使用 Hostik 图片。此处不会预填图片；点击下方按钮会用本次转种携带的图片打开 Hostik。到 Hostik 页面拉取并完成上传后，将生成的 BBCode 粘贴回下方简介。',
+            'Tik releases should use Hostik images. No image links are prefilled here. The button opens Hostik with images carried over from this torrent; fetch and upload them there, then paste the generated BBCode into the description below.'
+        );
         const tools = document.createElement('div');
         tools.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;';
         const rehost = document.createElement('button');
         rehost.type = 'button';
-        rehost.textContent = text('转存图片到 Hostik', 'Rehost images to Hostik');
+        rehost.textContent = text('准备 Hostik 图片', 'Prepare images for Hostik');
+        rehost.title = text('打开 Hostik 并载入本次转种的图片；仍需在 Hostik 完成上传并复制 BBCode。', 'Opens Hostik with this torrent’s images. Complete the upload there and copy the generated BBCode.');
         const status = document.createElement('span');
         status.setAttribute('role', 'status');
         const showRatio = (value: string) => {
             status.textContent = value
                 ? text('IMDb 电影画幅比：', 'IMDb film aspect ratio: ') + value
-                : text('暂未获取 IMDb 电影画幅比，请打开技术规格页后重新读取；不会使用视频显示比例代替。', 'IMDb film aspect ratio is unavailable. Open its technical specs, then refresh the ratio. Video display aspect ratio is not used as a substitute.');
+                : text('未读取到 IMDb 电影画幅比，字段保持空白。', 'IMDb film aspect ratio was not found; the field was left blank.');
         };
         showRatio(ratio);
         rehost.onclick = async () => {
@@ -655,34 +659,6 @@ export class TikEngine extends Unit3DClassicEngine {
             finally { rehost.disabled = false; }
         };
         tools.append(rehost);
-        if (imdbId) {
-            const open = document.createElement('button');
-            open.type = 'button';
-            open.textContent = text('打开 IMDb 技术规格', 'Open IMDb technical specs');
-            open.onclick = () => ImdbAspectRatioService.primeFromImdbUrl(imdbId);
-            const refresh = document.createElement('button');
-            refresh.type = 'button';
-            refresh.textContent = text('重新读取画幅比', 'Refresh ratio');
-            refresh.onclick = async () => {
-                refresh.disabled = true;
-                status.textContent = text('正在读取 IMDb...', 'Checking IMDb...');
-                try {
-                    const value = await ImdbAspectRatioService.getCachedAspectRatio(imdbId) ||
-                        await ImdbAspectRatioService.fetchAspectRatio(imdbId);
-                    if (value) {
-                        const updated = updateTikFilmAspectRatio(textarea.value, value);
-                        if (updated !== textarea.value) {
-                            textarea.value = updated;
-                            textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                            textarea.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    }
-                    showRatio(value);
-                } catch { showRatio(''); }
-                finally { refresh.disabled = false; }
-            };
-            tools.append(open, refresh);
-        }
         help.append(note, tools, status);
         (textarea.closest('label') || textarea).insertAdjacentElement('beforebegin', help);
     }

@@ -20,14 +20,17 @@ export function hasTorrentIdQuery(url: URL): boolean {
     return /torrentid=\d+/i.test(url.search || '');
 }
 
-/** Generic detail page shapes used by NexusPHP / Unit3D / forum-like trackers. */
+/**
+ * Generic single-torrent detail pages: NexusPHP `details.php?id=`, Unit3D `/torrents/123`,
+ * MTeam `/detail/123`. Forum threads (`/forums/topics/…`) and other pages without a torrent
+ * must not match, or the forward UI is injected where there is nothing to forward.
+ */
 export function isGenericDetailPage(url: URL): boolean {
     const path = url.pathname || '';
     return (
-        isPage(url, 'details.php', 'detail.php') ||
-        /\/(?:threads|topics)(?:\/|$)/i.test(path) ||
+        (isPage(url, 'details.php', 'detail.php') && hasIdQuery(url)) ||
         /\/torrents\/\d+(?:\/|$)/i.test(path) ||
-        /\/detail\//i.test(path)
+        /\/detail\/\d+(?:\/|$)/i.test(path)
     );
 }
 

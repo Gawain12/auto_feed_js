@@ -38,6 +38,9 @@ jobs:
           AUTOFEED_USERSCRIPT_URL: https://github.com/Gawain12/auto_feed_js/releases/download/dev/auto_feed.user.js
           AUTOFEED_USERSCRIPT_VERSION: ${{ steps.pkg.outputs.version }}
 
+      - name: Fetch pinned legacy reference
+        run: npm run legacy:fetch
+
       - name: Tests
         run: npm test
 

@@ -98,8 +98,8 @@ export default defineConfig({
                 },
                 author: 'tomorrow505, Gawain',
                 license: 'GPL-3.0 License',
-                homepageURL: 'https://github.com/tomorrow505/auto_feed_js/tree/dev',
-                supportURL: 'https://greasyfork.org/zh-CN/scripts/424132-auto-feed/feedback',
+                homepageURL: 'https://github.com/Gawain12/auto_feed_js/tree/refactor-dev',
+                supportURL: 'https://greasyfork.org/en/scripts/595185/feedback',
                 // For local development you can override with:
                 // AUTOFEED_USERSCRIPT_URL=http://127.0.0.1:5174/auto-feed.user.js
                 downloadURL: userscriptSelfUrl,
