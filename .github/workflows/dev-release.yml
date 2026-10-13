@@ -27,7 +27,7 @@ jobs:
         id: pkg
         run: |
           base_version="$(node -p 'require("./package.json").version' | tr -d '\n')"
-          echo "version=${base_version}.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "version=${base_version}-dev.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Install
         run: npm ci

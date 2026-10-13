@@ -2,7 +2,7 @@
   "name": "auto-feed-refactor",
   "private": true,
   "author": "tomorrow505, Gawain",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-full.js --watch",
