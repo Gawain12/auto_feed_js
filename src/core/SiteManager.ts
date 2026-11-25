@@ -15,6 +15,8 @@ import { isUploadLikeUrl } from '../common/rules/pages';
 
 export class SiteManager {
     private activeEngine: BaseEngine | null = null;
+    private lastHandledUrl = '';
+    private spaWatcherInstalled = false;
 
     constructor() {
         this.detectSite();
@@ -33,7 +35,70 @@ export class SiteManager {
         }
     }
 
+    private installSpaWatcher() {
+        if (this.spaWatcherInstalled) return;
+        this.spaWatcherInstalled = true;
+
+        let navTimer: number | null = null;
+        const scheduleCheck = () => {
+            if (navTimer !== null) window.clearTimeout(navTimer);
+            navTimer = window.setTimeout(() => {
+                navTimer = null;
+                const current = window.location.href;
+                if (current === this.lastHandledUrl) return;
+                this.handleSpaNavigation(current).catch((err) => {
+                    console.error('[Auto-Feed] SPA navigation handler error:', err);
+                });
+            }, 350);
+        };
+
+        try {
+            const origPush = history.pushState.bind(history);
+            history.pushState = (...args: Parameters<History['pushState']>) => {
+                const ret = origPush(...args);
+                scheduleCheck();
+                return ret;
+            };
+            const origReplace = history.replaceState.bind(history);
+            history.replaceState = (...args: Parameters<History['replaceState']>) => {
+                const ret = origReplace(...args);
+                scheduleCheck();
+                return ret;
+            };
+        } catch {}
+        window.addEventListener('popstate', scheduleCheck);
+        window.addEventListener('hashchange', scheduleCheck);
+    }
+
+    private async handleSpaNavigation(currentUrl: string) {
+        this.lastHandledUrl = currentUrl;
+        this.detectSite();
+
+        try {
+            await RemoteDownloadService.tryInject();
+        } catch (e) {
+            console.error('[Auto-Feed] RemoteDownload SPA Error:', e);
+        }
+
+        if (!this.activeEngine) return;
+        const adapter = this.activeEngine;
+        const uploadLikePage = isUploadLikeUrl(currentUrl);
+        if (!uploadLikePage && adapter.isSourcePage(new URL(currentUrl))) {
+            this.injectEmbeddedUI(adapter).catch((err) => console.error('[Auto-Feed] SPA Injection Error:', err));
+            if (adapter.siteName === 'MTeam' || adapter.siteName === 'BHD') {
+                setTimeout(() => {
+                    if (window.location.href === currentUrl) {
+                        this.injectEmbeddedUI(adapter).catch(() => {});
+                        RemoteDownloadService.tryInject().catch(() => {});
+                    }
+                }, 1300);
+            }
+        }
+    }
+
     async run() {
+        this.lastHandledUrl = window.location.href;
+        this.installSpaWatcher();
         try {
             await ImdbAspectRatioService.tryHandleCurrentPage();
         } catch (e) {
@@ -509,10 +574,10 @@ export class SiteManager {
             // Label-driven anonymity toggles (Unit3D and some modern forms).
             // Legacy parity: match by visible label text and click it if needed.
             try {
-                const patterns = [/匿名上传/i, /Anonymous\\s*Upload/i, /^Anonymous$/i];
+                const patterns = [/匿名上传/i, /Anonymous\s*Upload/i, /^Anonymous$/i];
                 const labels = Array.from(document.querySelectorAll('label')) as HTMLLabelElement[];
                 for (const lab of labels) {
-                    const text = (lab.textContent || '').replace(/\\s+/g, ' ').trim();
+                    const text = (lab.textContent || '').replace(/\s+/g, ' ').trim();
                     if (!text) continue;
                     if (!patterns.some((re) => re.test(text))) continue;
 

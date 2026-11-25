@@ -97,7 +97,7 @@ export default defineConfig({
                     en: 'A refactored version of the original Auto-Feed by tomorrow505. Supports cross-site torrent forwarding, automatic form filling, media information and image handling, quick search, and remote pushing.'
                 },
                 author: 'tomorrow505, Gawain',
-                license: 'GPL-3.0 License',
+                license: 'GPL-3.0-or-later',
                 homepageURL: 'https://github.com/Gawain12/auto_feed_js/tree/refactor-dev',
                 supportURL: 'https://greasyfork.org/en/scripts/595185/feedback',
                 // For local development you can override with:

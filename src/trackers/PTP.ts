@@ -204,8 +204,8 @@ export class PTPEngine extends BaseEngine {
             const t = cleanTitle(String(s || '').trim());
             if (!t) return;
             if (t.length < 5) return;
-            if (t.match(/^(show|hide)\\b/i)) return;
-            if (t.match(/media\\s*info/i)) return;
+            if (t.match(/^(show|hide)\b/i)) return;
+            if (t.match(/media\s*info/i)) return;
             titleCandidates.push(t);
         };
 
@@ -215,7 +215,7 @@ export class PTPEngine extends BaseEngine {
             if (lastGuard) {
                 const as = lastGuard.getElementsByTagName('a');
                 for (let i = 0; i < as.length; i++) {
-                    const onclick = (as[i].getAttribute('onclick') || '').replace(/\\s+/g, ' ').trim();
+                    const onclick = (as[i].getAttribute('onclick') || '').replace(/\s+/g, ' ').trim();
                     if (onclick.includes('MediaInfoToggleShow')) {
                         push(as[i].textContent || '');
                     }
@@ -237,13 +237,13 @@ export class PTPEngine extends BaseEngine {
             if (!t) return score;
             if (t.match(/(2160p|1080p|1080i|720p|480p|576p|4k|uhd|8k)/i)) score += 6;
             if (t.match(/(WEB[- .]?DL|WEBRIP|HDTV|Blu[- ]?ray|BDRip|REMUX|DVDRip|DVD)/i)) score += 4;
-            if (t.match(/(x264|x265|H\\.?264|H\\.?265|AVC|HEVC|VC-1|MPEG-2|XviD|DivX|AV1)/i)) score += 3;
-            if (t.match(/-(?!\\s)([A-Za-z0-9]{2,})$/)) score += 2; // release group
-            if (t.match(/(19|20)\\d{2}/)) score += 1;
+            if (t.match(/(x264|x265|H\.?264|H\.?265|AVC|HEVC|VC-1|MPEG-2|XviD|DivX|AV1)/i)) score += 3;
+            if (t.match(/-(?!\s)([A-Za-z0-9]{2,})$/)) score += 2; // release group
+            if (t.match(/(19|20)\d{2}/)) score += 1;
             if (t.includes('.')) score += 1;
             // Penalize direct file paths / very raw filenames.
-            if (t.match(/\\.(mkv|mp4|avi|m2ts|ts|iso|rar|zip)$/i)) score -= 5;
-            if (t.includes('/') || t.includes('\\\\')) score -= 8;
+            if (t.match(/\.(mkv|mp4|avi|m2ts|ts|iso|rar|zip)$/i)) score -= 5;
+            if (t.includes('/') || t.includes('\\')) score -= 8;
             return score;
         };
 
@@ -268,9 +268,9 @@ export class PTPEngine extends BaseEngine {
 
         if (!title) {
             title = $('.page__title').first().text().trim() || $('h1').first().text().trim();
-            title = title.replace(/\\[.*?\\]/g, '').trim();
+            title = title.replace(/\[.*?\]/g, '').trim();
         }
-        title = title.replace(/\\s+-\\s+/i, '-').trim();
+        title = title.replace(/\s+-\s+/i, '-').trim();
 
         let description = '';
         let fullMediaInfo = '';

@@ -269,7 +269,7 @@ export class QuickLinkService {
         const out = new Set<string>();
         const bb = ImageHostService.extractImageUrlsFromBBCode(text);
         bb.forEach((u) => out.add(u));
-        const m = text.match(/https?:\/\/[^\s"'<>\\]]+/gi) || [];
+        const m = text.match(/https?:\/\/[^\s"'<>\]]+/gi) || [];
         m.forEach((u) => out.add(u));
         return Array.from(out).map((u) => u.trim()).filter(Boolean);
     }
@@ -299,7 +299,7 @@ export class QuickLinkService {
         try {
             if (descr.match(/Disc Title:/i)) return (descr.match(/Disc Title:(.*)/i)?.[1] || '').trim();
             if (descr.match(/Complete name.*?:/i)) return (descr.match(/Complete name.*?:(.*)/i)?.[1] || '').trim();
-            if (descr.match(/RELEASE\\.NAME\\s*:/i)) return (descr.match(/RELEASE\\.NAME\\s*:(.*)/i)?.[1] || '').trim();
+            if (descr.match(/RELEASE\.NAME\s*:/i)) return (descr.match(/RELEASE\.NAME\s*:(.*)/i)?.[1] || '').trim();
         } catch {}
         return (meta.title || 'set your gallary name').trim();
     }

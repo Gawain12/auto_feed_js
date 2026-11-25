@@ -87,7 +87,7 @@ export class BHDEngine extends Unit3DEngine {
                 const href = parent?.href;
                 const src = img.getAttribute('data-src') || img.getAttribute('src') || img.src || '';
                 if (!src) return;
-                const fullSrc = src.replace(/\.md(?=\\.|$)/, '');
+                const fullSrc = src.replace(/\.md(?=\.|$)/, '');
                 meta.images.push(fullSrc || src);
                 if (href) {
                     imgUrls += `[url=${href}][img]${src}[/img][/url] `;
@@ -109,7 +109,11 @@ export class BHDEngine extends Unit3DEngine {
             meta.type = getType(meta.title);
         }
 
-        const downloadLink = $('a[href*="me/download"][role=button]').attr('href') || '';
+        const downloadLink =
+            $('a[href*="me/download"][role=button]').first().attr('href') ||
+            $('a[href*="/download/"][role=button]').first().attr('href') ||
+            $('a[href*="/download/"]').first().attr('href') ||
+            '';
         if (downloadLink) {
             try {
                 meta.torrentUrl = new URL(downloadLink, this.currentUrl).href;

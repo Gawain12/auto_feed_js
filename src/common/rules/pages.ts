@@ -29,7 +29,7 @@ export function isGenericDetailPage(url: URL): boolean {
     const path = url.pathname || '';
     return (
         (isPage(url, 'details.php', 'detail.php') && hasIdQuery(url)) ||
-        /\/torrents\/\d+(?:\/|$)/i.test(path) ||
+        /\/torrents?\/\d+(?:[\/-]|$)/i.test(path) ||
         /\/detail\/\d+(?:\/|$)/i.test(path)
     );
 }

@@ -148,7 +148,7 @@ function buildPTerDescr(meta: TorrentMeta): string {
         const body = String(inner || '').trim();
         if (!body) return m;
         if (body.match(/General.{0,40}\n?(Unique|Complete name)/i)) return `[hide=mediainfo]\n${body}\n[/hide]`;
-        if (body.match(/(Disc Title|DISC INFO|Disc Info|Disc Label|\\.MPLS|Playlist|Video Codec)/i)) return `[hide=bdinfo]\n${body}\n[/hide]`;
+        if (body.match(/(Disc Title|DISC INFO|Disc Info|Disc Label|\.MPLS|Playlist|Video Codec)/i)) return `[hide=bdinfo]\n${body}\n[/hide]`;
         return m;
     });
 

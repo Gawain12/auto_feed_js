@@ -48,6 +48,24 @@ export async function parseGazelle(config: SiteConfig, currentUrl: string): Prom
                 meta.smallDescr = rowText.split('\n').slice(0, 2).join(' ').trim();
             }
         }
+        const dlAnchor = Array.from(document.querySelectorAll('a[href*="action=download"]')).find((el) => {
+            const raw = (el.getAttribute('href') || '').trim();
+            if (!raw) return false;
+            try {
+                const u = new URL(raw, currentUrl);
+                return u.searchParams.get('id') === torrentId || u.searchParams.get('torrentid') === torrentId;
+            } catch {
+                return new RegExp(`[?&](?:id|torrentid)=${torrentId}(?:&|$)`, 'i').test(raw);
+            }
+        }) as HTMLAnchorElement | undefined;
+        const dlHref = (dlAnchor?.getAttribute('href') || '').trim();
+        if (dlHref) {
+            try {
+                meta.torrentUrl = new URL(dlHref, currentUrl).href;
+            } catch {
+                meta.torrentUrl = dlHref;
+            }
+        }
     }
 
     if (tags.length) {

@@ -90,7 +90,25 @@ export class GPWEngine extends GazelleEngine {
                 });
             }
 
-            const href = $(`a[href*="download&id=${torrentId}"]`).first().attr('href') || '';
+            const findGazelleDownloadHref = (tid: string): string => {
+                const exact = $(`a[href*="download&id=${tid}"]`).first().attr('href') || '';
+                if (exact) return exact;
+                const anchors = Array.from(document.querySelectorAll('a[href*="action=download"]')) as HTMLAnchorElement[];
+                for (const a of anchors) {
+                    const raw = (a.getAttribute('href') || '').trim();
+                    if (!raw) continue;
+                    try {
+                        const u = new URL(raw, this.currentUrl);
+                        if (u.searchParams.get('id') === tid || u.searchParams.get('torrentid') === tid) {
+                            return raw;
+                        }
+                    } catch {
+                        if (new RegExp(`[?&](?:id|torrentid)=${tid}(?:&|$)`, 'i').test(raw)) return raw;
+                    }
+                }
+                return '';
+            };
+            const href = findGazelleDownloadHref(torrentId);
             if (href) torrentUrl = abs(href);
         }
 

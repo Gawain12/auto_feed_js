@@ -24,6 +24,16 @@ Auto-Feed 用于在支持的 PT 站点之间整理和转发种子信息：从种
 
 对于有电影画幅比字段的页面，脚本会尝试从 IMDb 技术规格读取画幅比；读取不到时字段留空。它与片源视频的显示比例是不同的信息。
 
+## 最近更新
+
+完整更新记录见 [GitHub Releases](https://github.com/Gawain12/auto_feed_js/releases) 与 [CHANGELOG.md](https://github.com/Gawain12/auto_feed_js/blob/refactor-dev/CHANGELOG.md)。
+
+### v5.1.1
+- 修复 GPW / RED / OPS / DIC 等 Gazelle 站点不显示远程推送侧边栏的问题（兼容 `action=download&id=...` 下载链接匹配）。
+- 修复远程推送侧边栏定位偏移、子菜单过窄易收起、缓存未校验当前页 URL 以及 qB/TR 推送结果与种子响应校验问题。
+- 为 M-Team 等 SPA 页面增加路由切换监听，切进详情页无需手动刷新即可挂载转种栏与远程推送侧边栏；补全 Unit3D / BHD 镜像域 / PrivateHD 下载链接与详情页识别。
+- 修复 PTP 标题识别、Unit3D 季集号、英文匿名上传开关、BHD 缩略图、PTer BDInfo 与图片工具中的多处正则转义缺陷。
+
 ## 界面预览
 
 下方先展示通用工具界面，再展示一个实际站点页面示例。其余预览使用示例数据和客户端地址；没有提交真实发布，也没有向客户端推送任务。各站主题和页面布局可能不同。

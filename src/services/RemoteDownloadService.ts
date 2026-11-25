@@ -5,6 +5,12 @@ import { SiteRegistry } from '../core/SiteRegistry';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { GMAdapter } from './GMAdapter';
 import { StorageService } from './StorageService';
+import {
+    extractDownloadTorrentId,
+    extractPageTorrentId,
+    isSameTorrentPageUrl,
+    looksLikeTorrentBytes
+} from '../common/rules/remoteDownload';
 
 export type RemoteTestResult = { ok: boolean; message: string };
 
@@ -76,26 +82,57 @@ export class RemoteDownloadService {
         a.attr('data-path', entry.path || '');
         a.attr('data-label', entry.label || 'default');
         a.attr('title', entry.path || '(client default)');
-        a.html(`${entry.label || 'default'}`);
+        a.text(entry.label || 'default');
         li.append(a);
         submenu.append(li);
     }
 
-    static async tryInject() {
-        const settings = await SettingsService.load();
-        if (!settings.enableRemoteSidebar || !settings.remoteServer) return;
-        if (document.getElementById('autofeed-remote-sidebar')) return;
+    private static hasConfiguredServers(config: RemoteServerConfig | null | undefined): boolean {
+        if (!config) return false;
+        return (
+            Object.keys(config.qbittorrent || {}).length > 0 ||
+            Object.keys(config.transmission || {}).length > 0 ||
+            Object.keys(config.deluge || {}).length > 0
+        );
+    }
 
-        const engine = SiteRegistry.getEngine(window.location.href);
-        if (!engine) return;
+    static removeSidebar() {
+        document.getElementById('autofeed-remote-sidebar')?.remove();
+        document.getElementById('autofeed-remote-dialog')?.remove();
+        document.getElementById('autofeed-remote-toast')?.remove();
+    }
+
+    static async tryInject() {
+        const currentUrl = window.location.href;
+        const settings = await SettingsService.load();
+        if (!settings.enableRemoteSidebar || !this.hasConfiguredServers(settings.remoteServer)) {
+            this.removeSidebar();
+            return;
+        }
+
+        const existing = document.getElementById('autofeed-remote-sidebar') as HTMLElement | null;
+        if (existing && existing.dataset.boundUrl === currentUrl) return;
+
+        const engine = SiteRegistry.getEngine(currentUrl);
+        if (!engine) {
+            this.removeSidebar();
+            return;
+        }
 
         // Same pages as the embedded forward area (each engine defines its detail URLs).
-        if (!engine.isSourcePage(new URL(window.location.href))) return;
+        if (!engine.isSourcePage(new URL(currentUrl))) {
+            this.removeSidebar();
+            return;
+        }
         // For torrentid-based sites, ensure current page and parsed torrent point to the same torrent id.
-        const canBind = await this.canBindCurrentTorrent(engine, window.location.href);
-        if (!canBind) return;
+        const canBind = await this.canBindCurrentTorrent(engine, currentUrl);
+        if (!canBind) {
+            this.removeSidebar();
+            return;
+        }
 
-        this.injectSidebar(settings.remoteServer, engine, {
+        this.removeSidebar();
+        this.injectSidebar(settings.remoteServer!, engine, currentUrl, {
             skipDefault: !!settings.remoteSkipCheckingDefault,
             askConfirm: !!settings.remoteAskSkipConfirm,
             opacity: Math.min(1, Math.max(0.3, Number(settings.remoteSidebarOpacity ?? 0.92))),
@@ -103,15 +140,11 @@ export class RemoteDownloadService {
         });
     }
 
-    private static extractTorrentId(url: string): string {
-        return url.match(/[?&]torrentid=(\d+)/i)?.[1] || '';
-    }
-
     private static async canBindCurrentTorrent(engine: any, currentUrl: string): Promise<boolean> {
         const siteName = String(engine?.siteName || '');
         // Only strict-check sites whose detail pages are identified by `torrentid`.
         if (!['PTP', 'GPW', 'RED', 'OPS', 'DIC'].includes(siteName)) return true;
-        const currentTid = this.extractTorrentId(currentUrl);
+        const currentTid = extractPageTorrentId(currentUrl);
         if (!currentTid) {
             // PTP group page can be `torrents.php?id=...` without explicit `torrentid`.
             if (siteName === 'PTP' && /[?&]id=\d+/i.test(currentUrl)) return true;
@@ -119,22 +152,25 @@ export class RemoteDownloadService {
         }
         try {
             const meta = await engine.parse();
-            const torrentUrl = String(meta?.torrentUrl || '');
+            const torrentUrl = String(meta?.torrentUrl || '') || this.extractTorrentDownloadUrlFromPage(currentUrl);
             if (!torrentUrl) {
-                // PTP details can fail parse intermittently; keep sidebar visible when URL itself is a strict detail URL.
-                return siteName === 'PTP';
+                // Keep sidebar visible on explicit `torrentid` detail URLs if DOM/parse is temporarily incomplete;
+                // actual push will re-parse and verify the matching download link on click.
+                return true;
             }
-            const parsedTid = this.extractTorrentId(torrentUrl);
+            const parsedTid = extractDownloadTorrentId(torrentUrl);
             if (!parsedTid) return siteName === 'PTP';
             return parsedTid === currentTid;
         } catch {
-            return siteName === 'PTP';
+            // Still allow explicit `torrentid` detail URLs if the page hasn't finished hydrating yet.
+            return true;
         }
     }
 
     private static injectSidebar(
         config: RemoteServerConfig,
         engine: any,
+        boundUrl: string,
         opts: { skipDefault: boolean; askConfirm: boolean; opacity: number; lang?: SupportedLang }
     ) {
         const uiText = getUiText(opts.lang);
@@ -155,14 +191,6 @@ export class RemoteDownloadService {
                 <div id="autofeed-remote-status" style="display:none;"></div>
             </div>
         `);
-
-        // Apply opacity + load draggable position
-        const sidebar = document.getElementById('autofeed-remote-sidebar') as HTMLElement | null;
-        if (sidebar) {
-            sidebar.style.opacity = String(opts.opacity);
-            this.positionSidebarByDefault(sidebar);
-        }
-        this.enableDrag();
 
         $('body').append(`
             <div id="autofeed-remote-dialog" class="af-remote-dialog">
@@ -217,6 +245,15 @@ export class RemoteDownloadService {
             });
         });
 
+        // Apply opacity and position AFTER list items are rendered so sidebar height is accurate.
+        const sidebar = document.getElementById('autofeed-remote-sidebar') as HTMLElement | null;
+        if (sidebar) {
+            sidebar.dataset.boundUrl = boundUrl;
+            sidebar.style.opacity = String(opts.opacity);
+            this.positionSidebarByDefault(sidebar);
+        }
+        this.enableDrag();
+
         const dialogBox = (yesCallback: () => void, noCallback: () => void) => {
             $('#autofeed-remote-dialog').addClass('show');
             $('#autofeed-confirm').off('click').on('click', () => {
@@ -232,14 +269,20 @@ export class RemoteDownloadService {
             });
         };
 
+        let statusHideTimer: number | null = null;
         const setStatus = (text: string, kind: 'info' | 'ok' | 'err' = 'info', hideAfterMs?: number) => {
             const el = document.getElementById('autofeed-remote-status') as HTMLDivElement | null;
             if (!el) return;
+            if (statusHideTimer !== null) {
+                window.clearTimeout(statusHideTimer);
+                statusHideTimer = null;
+            }
             el.style.display = 'block';
             el.setAttribute('data-kind', kind);
             el.textContent = text;
             if (hideAfterMs && hideAfterMs > 0) {
-                window.setTimeout(() => {
+                statusHideTimer = window.setTimeout(() => {
+                    statusHideTimer = null;
                     const el2 = document.getElementById('autofeed-remote-status') as HTMLDivElement | null;
                     if (!el2) return;
                     el2.style.display = 'none';
@@ -314,7 +357,7 @@ export class RemoteDownloadService {
                 if (hideTimer !== null) window.clearTimeout(hideTimer);
                 hideTimer = window.setTimeout(() => {
                     if (!item.matches(':hover') && !submenu.matches(':hover')) hide();
-                }, 180);
+                }, 260);
             };
             const show = () => {
                 if (hideTimer !== null) window.clearTimeout(hideTimer);
@@ -331,8 +374,8 @@ export class RemoteDownloadService {
                 const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
                 const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
                 const margin = 6;
-                const gap = 8;
-                const submenuWidth = submenu.getBoundingClientRect().width || 180;
+                const gap = 2;
+                const submenuWidth = submenu.getBoundingClientRect().width || 120;
                 const submenuHeight = submenu.offsetHeight || 160;
 
                 let left = sidebarRect.left - submenuWidth - gap;
@@ -463,6 +506,9 @@ export class RemoteDownloadService {
         header.addEventListener('mousedown', (e) => {
             // Only left click
             if ((e as any).button !== 0) return;
+            sidebar.querySelectorAll<HTMLElement>('.af-remote-submenu').forEach((sub) => {
+                sub.style.display = 'none';
+            });
             dragging = true;
             const rect = sidebar.getBoundingClientRect();
             startX = e.clientX;
@@ -475,22 +521,37 @@ export class RemoteDownloadService {
     }
 
     private static extractTorrentDownloadUrlFromPage(currentUrl: string): string {
-        const currentTid = this.extractTorrentId(currentUrl);
-        const candidates = currentTid
-            ? [
-                `a[href*="action=download"][href*="torrentid=${currentTid}"]`,
-                `a[href*="download.php"][href*="torrentid=${currentTid}"]`,
-                `a[href*="download"][href*="torrentid=${currentTid}"]`
-            ]
-            : [];
-        candidates.push('a[href*="action=download"]', 'a[href*="download.php"]', 'a[href*="torrents/download"]');
+        const currentTid = extractPageTorrentId(currentUrl);
+        if (currentTid) {
+            const anchors = Array.from(
+                document.querySelectorAll('a[href*="action=download"], a[href*="download.php"], a[href*="download"]')
+            ) as HTMLAnchorElement[];
+            for (const a of anchors) {
+                const href = (a.getAttribute('href') || '').trim();
+                if (!href) continue;
+                if (extractDownloadTorrentId(href) === currentTid) {
+                    try {
+                        return new URL(href, currentUrl).href;
+                    } catch {
+                        return href;
+                    }
+                }
+            }
+            return '';
+        }
 
+        const candidates = [
+            'a[href*="action=download"]',
+            'a[href*="download.php"]',
+            'a[href*="torrents/download"]',
+            'a[href*="/download/"]'
+        ];
         for (const sel of candidates) {
             const a = document.querySelector(sel) as HTMLAnchorElement | null;
             const href = (a?.getAttribute('href') || '').trim();
             if (!href) continue;
             try {
-                return new URL(href, window.location.href).href;
+                return new URL(href, currentUrl).href;
             } catch {
                 return href;
             }
@@ -507,7 +568,9 @@ export class RemoteDownloadService {
         }
         try {
             const cached = await StorageService.load();
-            if (cached?.torrentUrl) return cached;
+            if (cached?.torrentUrl && isSameTorrentPageUrl(cached.sourceUrl, currentUrl)) {
+                return cached;
+            }
         } catch (err) {
             console.error('[Auto-Feed] Load cached meta for remote push failed:', err);
         }
@@ -558,19 +621,25 @@ export class RemoteDownloadService {
             formData.append('upLimit', String(siteUpLimits[meta.sourceSite]));
         }
         formData.append('torrents', torrentFile);
-        formData.append('savepath', path);
+        if (path) formData.append('savepath', path);
         formData.append('category', tag);
         formData.append('skip_checking', String(skipChecking));
 
         const host = this.normalizeHost(server.url);
         try {
             onStatus?.(uiText("登录 qBittorrent...", "Signing in to qBittorrent..."), 'info');
-            await this.qbRequest(host, '/auth/login', {
+            const loginRes = await this.qbRequest(host, '/auth/login', {
                 username: server.username,
                 password: server.password
             });
+            if (loginRes.status !== 200 || !/^ok\.?$/i.test(String(loginRes.responseText || '').trim())) {
+                throw new Error(`qBittorrent login failed (HTTP ${loginRes.status}): ${loginRes.responseText || 'unknown'}`);
+            }
             onStatus?.(uiText("推送中...", "Sending to client..."), 'info');
-            await this.qbRequest(host, '/torrents/add', formData);
+            const addRes = await this.qbRequest(host, '/torrents/add', formData);
+            if (addRes.status < 200 || addRes.status >= 300 || /fails?/i.test(String(addRes.responseText || '').trim())) {
+                throw new Error(`qBittorrent add failed (HTTP ${addRes.status}): ${addRes.responseText || 'unknown'}`);
+            }
             this.showToast();
             onStatus?.(uiText("推送完成", "Torrent sent to client"), 'ok', 3000);
         } catch (err) {
@@ -714,7 +783,7 @@ export class RemoteDownloadService {
 
             if (result === null) {
                 alert(uiText("远程推送失败: Deluge 返回空结果", "Could not send: Deluge returned an empty result."));
-                onStatus?.('推送失败: Deluge 返回空结果', 'err', 5000);
+                onStatus?.(uiText("推送失败: Deluge 返回空结果", "Could not send: Deluge returned an empty result."), 'err', 5000);
                 return;
             }
             this.showToast();
@@ -731,9 +800,18 @@ export class RemoteDownloadService {
             const res = await GMAdapter.xmlHttpRequest({
                 method: 'GET',
                 url,
-                responseType: 'blob'
+                responseType: 'arraybuffer'
             });
-            return res.response as Blob;
+            if (res.status < 200 || res.status >= 300) {
+                console.error('Torrent download failed with HTTP status:', res.status);
+                return null;
+            }
+            const bytes = new Uint8Array(res.response);
+            if (!looksLikeTorrentBytes(bytes)) {
+                console.error('Downloaded content is not a valid torrent file.');
+                return null;
+            }
+            return new Blob([bytes], { type: 'application/x-bittorrent' });
         } catch (err) {
             console.error('Torrent download failed:', err);
             return null;
@@ -747,7 +825,15 @@ export class RemoteDownloadService {
                 url,
                 responseType: 'arraybuffer'
             });
+            if (res.status < 200 || res.status >= 300) {
+                console.error('Torrent download failed with HTTP status:', res.status);
+                return null;
+            }
             const bytes = new Uint8Array(res.response);
+            if (!looksLikeTorrentBytes(bytes)) {
+                console.error('Downloaded content is not a valid torrent file.');
+                return null;
+            }
             let binary = '';
             for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
             return btoa(binary);
@@ -955,14 +1041,16 @@ export class RemoteDownloadService {
         skipChecking: boolean
     ) {
         let sessionId = '';
+        const args: Record<string, any> = {
+            metainfo: base64,
+            'skip-verify': skipChecking
+        };
+        if (path) args['download-dir'] = path;
+        const cleanTags = tag.map((t) => String(t || '').trim()).filter(Boolean);
+        if (cleanTags.length) args.labels = cleanTags;
         const data = {
             method: 'torrent-add',
-            arguments: {
-                metainfo: base64,
-                'download-dir': path,
-                labels: tag,
-                'skip-verify': skipChecking
-            }
+            arguments: args
         };
 
         const headers = {
@@ -971,7 +1059,7 @@ export class RemoteDownloadService {
             Authorization: 'Basic ' + btoa(username + ':' + password)
         };
 
-        const res = await GMAdapter.xmlHttpRequest({
+        let res = await GMAdapter.xmlHttpRequest({
             method: 'POST',
             url: rpcUrl,
             headers,
@@ -981,7 +1069,7 @@ export class RemoteDownloadService {
         if (res.status === 409) {
             const newSessionId = res.responseHeaders.match(/X-Transmission-Session-Id:\s*(.+)/i);
             if (newSessionId) sessionId = newSessionId[1].trim();
-            return GMAdapter.xmlHttpRequest({
+            res = await GMAdapter.xmlHttpRequest({
                 method: 'POST',
                 url: rpcUrl,
                 headers: {
@@ -990,6 +1078,17 @@ export class RemoteDownloadService {
                 },
                 data: JSON.stringify(data)
             });
+        }
+        if (res.status !== 200) {
+            throw new Error(`Transmission RPC failed (HTTP ${res.status})`);
+        }
+        try {
+            const parsed = JSON.parse(res.responseText || '{}');
+            if (parsed?.result && parsed.result !== 'success') {
+                throw new Error(`Transmission RPC error: ${parsed.result}`);
+            }
+        } catch (err) {
+            if (err instanceof Error && err.message.startsWith('Transmission RPC')) throw err;
         }
         return res;
     }
@@ -1102,9 +1201,9 @@ export class RemoteDownloadService {
         #autofeed-remote-sidebar .af-remote-submenu {
             display: none;
             position: fixed !important;
-            width: 80px !important;
-            min-width: 80px !important;
-            max-width: 80px !important;
+            width: max-content !important;
+            min-width: 96px !important;
+            max-width: 240px !important;
             max-height: calc(100vh - 12px) !important;
             overflow: auto !important;
             padding: 0 !important;

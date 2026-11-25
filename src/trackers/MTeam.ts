@@ -64,10 +64,8 @@ export class MTeamEngine extends BaseEngine {
         const detail = results[0] as any;
         const downloadToken = results[1] as any;
 
-        if (downloadToken) {
-            meta.torrentUrl = downloadToken;
-        } else {
-            meta.torrentUrl = this.currentUrl;
+        if (downloadToken && /^https?:\/\//i.test(String(downloadToken))) {
+            meta.torrentUrl = String(downloadToken);
         }
 
         if (detail) {

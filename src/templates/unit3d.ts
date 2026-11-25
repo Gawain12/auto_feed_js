@@ -114,6 +114,18 @@ export class Unit3DEngine extends BaseEngine {
             meta.images.push(image);
         }
 
+        const torrentHref =
+            $('a[href*="torrents/download"]').first().attr('href') ||
+            $('a[href*="/download/"]').first().attr('href') ||
+            '';
+        if (torrentHref) {
+            try {
+                meta.torrentUrl = new URL(torrentHref, this.currentUrl).href;
+            } catch {
+                meta.torrentUrl = torrentHref;
+            }
+        }
+
         this.log(`Parsed: ${meta.title}`);
         return meta;
     }
@@ -596,8 +608,8 @@ export class Unit3DEngine extends BaseEngine {
         // Season/Episode (if present on form)
         try {
             if (meta.type === '剧集' || meta.type === '综艺') {
-                const s = title.match(/\\bS(\\d{1,2})\\b/i)?.[1] || '';
-                const e = title.match(/\\bE(\\d{1,3})\\b/i)?.[1] || '';
+                const s = title.match(/\bS(\d{1,2})\b/i)?.[1] || '';
+                const e = title.match(/\bE(\d{1,3})\b/i)?.[1] || '';
                 if (s) setAnyText(['input#season_number', 'input[name="season_number"]'], String(parseInt(s, 10)));
                 if (e) setAnyText(['input#episode_number', 'input[name="episode_number"]'], String(parseInt(e, 10)));
             }

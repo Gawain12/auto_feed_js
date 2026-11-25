@@ -24,6 +24,16 @@ Trackers have different fields, image rules and upload flows. For example, a Tik
 
 On pages with a film aspect-ratio field, Auto-Feed can read the ratio from IMDb technical specifications. If it cannot retrieve the value, the field stays blank. A film’s aspect ratio is different from the encoded video’s display ratio.
 
+## Recent Changes
+
+Full release notes are available on [GitHub Releases](https://github.com/Gawain12/auto_feed_js/releases) and in [CHANGELOG.md](https://github.com/Gawain12/auto_feed_js/blob/refactor-dev/CHANGELOG.md).
+
+### v5.1.1
+- Fixed the missing remote-push sidebar on Gazelle trackers such as GPW, RED, OPS, and DIC (now matches `action=download&id=...` torrent links).
+- Fixed remote-push sidebar positioning, narrow/flickering path submenus, stale cross-page cache fallback, and response validation for torrent downloads and qBittorrent / Transmission pushes.
+- Added SPA route-change detection (e.g., M-Team) so forwarding tools and the remote-push sidebar mount without manual refreshes; improved download-link and detail-page detection on Unit3D, BHD mirror domains, and PrivateHD.
+- Fixed double-escaped regex bugs affecting PTP title scoring, Unit3D season/episode parsing, English anonymous upload labels, BHD thumbnails, PTer BDInfo blocks, and the image toolbox URL extractor.
+
 ## Screenshots
 
 The examples below include a general tools view and one live tracker-page example. Other previews use example data and client addresses; no real upload was submitted and no client transfer was started. Tracker themes and layouts may differ.
