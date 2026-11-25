@@ -2,11 +2,11 @@
 // @name            Auto-Feed｜PT一键转种助手（重构版）
 // @name:en         Auto-Feed Refactored｜PT Cross-Site Torrent Assistant
 // @namespace       https://github.com/tomorrow505/auto_feed_js
-// @version         5.1.0
+// @version         5.1.1
 // @author          tomorrow505, Gawain
 // @description     原版 Auto-Feed（tomorrow505）的重构版。支持跨站一键转种、自动填写标题与简介、媒体信息和图片处理，并支持快速搜索与远程推送。
 // @description:en  A refactored version of the original Auto-Feed by tomorrow505. Supports cross-site torrent forwarding, automatic form filling, media information and image handling, quick search, and remote pushing.
-// @license         GPL-3.0 License
+// @license         GPL-3.0-or-later
 // @icon            https://kp.m-team.cc/favicon.ico
 // @homepageURL     https://github.com/Gawain12/auto_feed_js/tree/refactor-dev
 // @supportURL      https://greasyfork.org/en/scripts/595185/feedback
@@ -467,7 +467,7 @@ ${imgInfo}`;
     }
     function isGenericDetailPage(url) {
       const path = url.pathname || "";
-      return isPage(url, "details.php", "detail.php") && hasIdQuery(url) || /\/torrents\/\d+(?:\/|$)/i.test(path) || /\/detail\/\d+(?:\/|$)/i.test(path);
+      return isPage(url, "details.php", "detail.php") && hasIdQuery(url) || /\/torrents?\/\d+(?:[\/-]|$)/i.test(path) || /\/detail\/\d+(?:\/|$)/i.test(path);
     }
     function isUploadLikeUrl(url) {
       return /upload|offer|torrents\/create|torrents\/upload|torrent\/upload|torrents\/add|upload\.php|p_torrent\/video_upload|#\/torrent\/add|\/torrent\/add/i.test(url);
@@ -7998,6 +7998,25 @@ ${meta.subtitle || ""}`);
             meta.smallDescr = rowText.split("\n").slice(0, 2).join(" ").trim();
           }
         }
+        const dlAnchor = Array.from(document.querySelectorAll('a[href*="action=download"]')).find((el) => {
+          const raw = (el.getAttribute("href") || "").trim();
+          if (!raw)
+            return false;
+          try {
+            const u2 = new URL(raw, currentUrl);
+            return u2.searchParams.get("id") === torrentId || u2.searchParams.get("torrentid") === torrentId;
+          } catch {
+            return new RegExp(`[?&](?:id|torrentid)=${torrentId}(?:&|$)`, "i").test(raw);
+          }
+        });
+        const dlHref = ((dlAnchor == null ? void 0 : dlAnchor.getAttribute("href")) || "").trim();
+        if (dlHref) {
+          try {
+            meta.torrentUrl = new URL(dlHref, currentUrl).href;
+          } catch {
+            meta.torrentUrl = dlHref;
+          }
+        }
       }
       if (tags.length) {
         meta.subtitle = meta.subtitle ? `${meta.subtitle} | ${tags.join(", ")}` : tags.join(", ");
@@ -8996,6 +9015,14 @@ ${meta.subtitle || ""}`);
         if (image) {
           meta.images.push(image);
         }
+        const torrentHref = $$1('a[href*="torrents/download"]').first().attr("href") || $$1('a[href*="/download/"]').first().attr("href") || "";
+        if (torrentHref) {
+          try {
+            meta.torrentUrl = new URL(torrentHref, this.currentUrl).href;
+          } catch {
+            meta.torrentUrl = torrentHref;
+          }
+        }
         this.log(`Parsed: ${meta.title}`);
         return meta;
       }
@@ -9448,8 +9475,8 @@ ${meta.subtitle || ""}`);
         }
         try {
           if (meta.type === "剧集" || meta.type === "综艺") {
-            const s2 = ((_c = title.match(/\\bS(\\d{1,2})\\b/i)) == null ? void 0 : _c[1]) || "";
-            const e2 = ((_d = title.match(/\\bE(\\d{1,3})\\b/i)) == null ? void 0 : _d[1]) || "";
+            const s2 = ((_c = title.match(/\bS(\d{1,2})\b/i)) == null ? void 0 : _c[1]) || "";
+            const e2 = ((_d = title.match(/\bE(\d{1,3})\b/i)) == null ? void 0 : _d[1]) || "";
             if (s2)
               setAnyText(["input#season_number", 'input[name="season_number"]'], String(parseInt(s2, 10)));
             if (e2)
@@ -9862,10 +9889,8 @@ ${fullMediaInfo}
         );
         const detail = results[0];
         const downloadToken = results[1];
-        if (downloadToken) {
-          meta.torrentUrl = downloadToken;
-        } else {
-          meta.torrentUrl = this.currentUrl;
+        if (downloadToken && /^https?:\/\//i.test(String(downloadToken))) {
+          meta.torrentUrl = String(downloadToken);
         }
         if (detail) {
           meta.title = detail.name || meta.title;
@@ -10603,7 +10628,7 @@ ${mediainfo.trim()}
             const src = img.getAttribute("data-src") || img.getAttribute("src") || img.src || "";
             if (!src)
               return;
-            const fullSrc = src.replace(/\.md(?=\\.|$)/, "");
+            const fullSrc = src.replace(/\.md(?=\.|$)/, "");
             meta.images.push(fullSrc || src);
             if (href) {
               imgUrls += `[url=${href}][img]${src}[/img][/url] `;
@@ -10624,7 +10649,7 @@ ${mediainfo.trim()}
         if (!meta.type && meta.title) {
           meta.type = getType(meta.title);
         }
-        const downloadLink = $$1('a[href*="me/download"][role=button]').attr("href") || "";
+        const downloadLink = $$1('a[href*="me/download"][role=button]').first().attr("href") || $$1('a[href*="/download/"][role=button]').first().attr("href") || $$1('a[href*="/download/"]').first().attr("href") || "";
         if (downloadLink) {
           try {
             meta.torrentUrl = new URL(downloadLink, this.currentUrl).href;
@@ -11171,9 +11196,9 @@ ${title}`;
             return;
           if (t2.length < 5)
             return;
-          if (t2.match(/^(show|hide)\\b/i))
+          if (t2.match(/^(show|hide)\b/i))
             return;
-          if (t2.match(/media\\s*info/i))
+          if (t2.match(/media\s*info/i))
             return;
           titleCandidates.push(t2);
         };
@@ -11183,7 +11208,7 @@ ${title}`;
           if (lastGuard) {
             const as = lastGuard.getElementsByTagName("a");
             for (let i2 = 0; i2 < as.length; i2++) {
-              const onclick = (as[i2].getAttribute("onclick") || "").replace(/\\s+/g, " ").trim();
+              const onclick = (as[i2].getAttribute("onclick") || "").replace(/\s+/g, " ").trim();
               if (onclick.includes("MediaInfoToggleShow")) {
                 push(as[i2].textContent || "");
               }
@@ -11206,17 +11231,17 @@ ${title}`;
             score += 6;
           if (t2.match(/(WEB[- .]?DL|WEBRIP|HDTV|Blu[- ]?ray|BDRip|REMUX|DVDRip|DVD)/i))
             score += 4;
-          if (t2.match(/(x264|x265|H\\.?264|H\\.?265|AVC|HEVC|VC-1|MPEG-2|XviD|DivX|AV1)/i))
+          if (t2.match(/(x264|x265|H\.?264|H\.?265|AVC|HEVC|VC-1|MPEG-2|XviD|DivX|AV1)/i))
             score += 3;
-          if (t2.match(/-(?!\\s)([A-Za-z0-9]{2,})$/))
+          if (t2.match(/-(?!\s)([A-Za-z0-9]{2,})$/))
             score += 2;
-          if (t2.match(/(19|20)\\d{2}/))
+          if (t2.match(/(19|20)\d{2}/))
             score += 1;
           if (t2.includes("."))
             score += 1;
-          if (t2.match(/\\.(mkv|mp4|avi|m2ts|ts|iso|rar|zip)$/i))
+          if (t2.match(/\.(mkv|mp4|avi|m2ts|ts|iso|rar|zip)$/i))
             score -= 5;
-          if (t2.includes("/") || t2.includes("\\\\"))
+          if (t2.includes("/") || t2.includes("\\"))
             score -= 8;
           return score;
         };
@@ -11237,9 +11262,9 @@ ${title}`;
         }
         if (!title) {
           title = $$1(".page__title").first().text().trim() || $$1("h1").first().text().trim();
-          title = title.replace(/\\[.*?\\]/g, "").trim();
+          title = title.replace(/\[.*?\]/g, "").trim();
         }
-        title = title.replace(/\\s+-\\s+/i, "-").trim();
+        title = title.replace(/\s+-\s+/i, "-").trim();
         let description = "";
         let fullMediaInfo = "";
         let aspectRatio = "";
@@ -15703,7 +15728,28 @@ ${header}
               });
             });
           }
-          const href = $$1(`a[href*="download&id=${torrentId}"]`).first().attr("href") || "";
+          const findGazelleDownloadHref = (tid) => {
+            const exact = $$1(`a[href*="download&id=${tid}"]`).first().attr("href") || "";
+            if (exact)
+              return exact;
+            const anchors = Array.from(document.querySelectorAll('a[href*="action=download"]'));
+            for (const a2 of anchors) {
+              const raw = (a2.getAttribute("href") || "").trim();
+              if (!raw)
+                continue;
+              try {
+                const u2 = new URL(raw, this.currentUrl);
+                if (u2.searchParams.get("id") === tid || u2.searchParams.get("torrentid") === tid) {
+                  return raw;
+                }
+              } catch {
+                if (new RegExp(`[?&](?:id|torrentid)=${tid}(?:&|$)`, "i").test(raw))
+                  return raw;
+              }
+            }
+            return "";
+          };
+          const href = findGazelleDownloadHref(torrentId);
           if (href)
             torrentUrl = abs(href);
         }
@@ -18815,7 +18861,7 @@ ${full}
           return `[hide=mediainfo]
 ${body}
 [/hide]`;
-        if (body.match(/(Disc Title|DISC INFO|Disc Info|Disc Label|\\.MPLS|Playlist|Video Codec)/i))
+        if (body.match(/(Disc Title|DISC INFO|Disc Info|Disc Label|\.MPLS|Playlist|Video Codec)/i))
           return `[hide=bdinfo]
 ${body}
 [/hide]`;
@@ -20700,6 +20746,68 @@ ${ratingInfo}`) || pickFromText(html);
         }
       }
     }
+    function extractPageTorrentId(url) {
+      var _a;
+      try {
+        const u2 = new URL(url, "https://example.invalid");
+        const tid = u2.searchParams.get("torrentid") || "";
+        if (/^\d+$/.test(tid))
+          return tid;
+      } catch {
+      }
+      return ((_a = url.match(/[?&]torrentid=(\d+)/i)) == null ? void 0 : _a[1]) || "";
+    }
+    function extractDownloadTorrentId(url) {
+      var _a;
+      const raw = String(url || "").trim();
+      if (!raw)
+        return "";
+      try {
+        const u2 = new URL(raw, "https://example.invalid");
+        const tid = u2.searchParams.get("torrentid") || "";
+        if (/^\d+$/.test(tid))
+          return tid;
+        const id = u2.searchParams.get("id") || "";
+        if (/^\d+$/.test(id))
+          return id;
+      } catch {
+      }
+      return ((_a = raw.match(/[?&](?:torrentid|id)=(\d+)/i)) == null ? void 0 : _a[1]) || "";
+    }
+    function isSameTorrentPageUrl(cachedUrl, currentUrl) {
+      if (!cachedUrl || !currentUrl)
+        return false;
+      try {
+        const a2 = new URL(cachedUrl);
+        const b = new URL(currentUrl);
+        if (a2.origin !== b.origin || a2.pathname !== b.pathname)
+          return false;
+        const aTid = a2.searchParams.get("torrentid") || "";
+        const bTid = b.searchParams.get("torrentid") || "";
+        if (aTid || bTid)
+          return aTid === bTid;
+        const aId = a2.searchParams.get("id") || "";
+        const bId = b.searchParams.get("id") || "";
+        if (aId || bId)
+          return aId === bId;
+        return true;
+      } catch {
+        return cachedUrl === currentUrl;
+      }
+    }
+    function looksLikeTorrentBytes(bytes) {
+      if (!bytes || bytes.length < 16)
+        return false;
+      if (bytes[0] === 100)
+        return true;
+      let i2 = 0;
+      while (i2 < bytes.length && i2 < 32 && (bytes[i2] === 32 || bytes[i2] === 9 || bytes[i2] === 10 || bytes[i2] === 13 || bytes[i2] === 239 || bytes[i2] === 187 || bytes[i2] === 191)) {
+        i2++;
+      }
+      if (bytes[i2] === 60)
+        return false;
+      return false;
+    }
     class RemoteDownloadService {
       static normalizePathEntries(path) {
         if (!path)
@@ -20746,40 +20854,58 @@ ${ratingInfo}`) || pickFromText(html);
         a2.attr("data-path", entry.path || "");
         a2.attr("data-label", entry.label || "default");
         a2.attr("title", entry.path || "(client default)");
-        a2.html(`${entry.label || "default"}`);
+        a2.text(entry.label || "default");
         li.append(a2);
         submenu.append(li);
       }
+      static hasConfiguredServers(config) {
+        if (!config)
+          return false;
+        return Object.keys(config.qbittorrent || {}).length > 0 || Object.keys(config.transmission || {}).length > 0 || Object.keys(config.deluge || {}).length > 0;
+      }
+      static removeSidebar() {
+        var _a, _b, _c;
+        (_a = document.getElementById("autofeed-remote-sidebar")) == null ? void 0 : _a.remove();
+        (_b = document.getElementById("autofeed-remote-dialog")) == null ? void 0 : _b.remove();
+        (_c = document.getElementById("autofeed-remote-toast")) == null ? void 0 : _c.remove();
+      }
       static async tryInject() {
+        const currentUrl = window.location.href;
         const settings = await SettingsService.load();
-        if (!settings.enableRemoteSidebar || !settings.remoteServer)
+        if (!settings.enableRemoteSidebar || !this.hasConfiguredServers(settings.remoteServer)) {
+          this.removeSidebar();
           return;
-        if (document.getElementById("autofeed-remote-sidebar"))
+        }
+        const existing = document.getElementById("autofeed-remote-sidebar");
+        if (existing && existing.dataset.boundUrl === currentUrl)
           return;
-        const engine = SiteRegistry.getEngine(window.location.href);
-        if (!engine)
+        const engine = SiteRegistry.getEngine(currentUrl);
+        if (!engine) {
+          this.removeSidebar();
           return;
-        if (!engine.isSourcePage(new URL(window.location.href)))
+        }
+        if (!engine.isSourcePage(new URL(currentUrl))) {
+          this.removeSidebar();
           return;
-        const canBind = await this.canBindCurrentTorrent(engine, window.location.href);
-        if (!canBind)
+        }
+        const canBind = await this.canBindCurrentTorrent(engine, currentUrl);
+        if (!canBind) {
+          this.removeSidebar();
           return;
-        this.injectSidebar(settings.remoteServer, engine, {
+        }
+        this.removeSidebar();
+        this.injectSidebar(settings.remoteServer, engine, currentUrl, {
           skipDefault: !!settings.remoteSkipCheckingDefault,
           askConfirm: !!settings.remoteAskSkipConfirm,
           opacity: Math.min(1, Math.max(0.3, Number(settings.remoteSidebarOpacity ?? 0.92))),
           lang: settings.uiLanguage
         });
       }
-      static extractTorrentId(url) {
-        var _a;
-        return ((_a = url.match(/[?&]torrentid=(\d+)/i)) == null ? void 0 : _a[1]) || "";
-      }
       static async canBindCurrentTorrent(engine, currentUrl) {
         const siteName = String((engine == null ? void 0 : engine.siteName) || "");
         if (!["PTP", "GPW", "RED", "OPS", "DIC"].includes(siteName))
           return true;
-        const currentTid = this.extractTorrentId(currentUrl);
+        const currentTid = extractPageTorrentId(currentUrl);
         if (!currentTid) {
           if (siteName === "PTP" && /[?&]id=\d+/i.test(currentUrl))
             return true;
@@ -20787,19 +20913,19 @@ ${ratingInfo}`) || pickFromText(html);
         }
         try {
           const meta = await engine.parse();
-          const torrentUrl = String((meta == null ? void 0 : meta.torrentUrl) || "");
+          const torrentUrl = String((meta == null ? void 0 : meta.torrentUrl) || "") || this.extractTorrentDownloadUrlFromPage(currentUrl);
           if (!torrentUrl) {
-            return siteName === "PTP";
+            return true;
           }
-          const parsedTid = this.extractTorrentId(torrentUrl);
+          const parsedTid = extractDownloadTorrentId(torrentUrl);
           if (!parsedTid)
             return siteName === "PTP";
           return parsedTid === currentTid;
         } catch {
-          return siteName === "PTP";
+          return true;
         }
       }
-      static injectSidebar(config, engine, opts) {
+      static injectSidebar(config, engine, boundUrl, opts) {
         const uiText = getUiText(opts.lang);
         GMAdapter.xmlHttpRequest;
         this.injectStyles();
@@ -20817,12 +20943,6 @@ ${ratingInfo}`) || pickFromText(html);
                 <div id="autofeed-remote-status" style="display:none;"></div>
             </div>
         `);
-        const sidebar = document.getElementById("autofeed-remote-sidebar");
-        if (sidebar) {
-          sidebar.style.opacity = String(opts.opacity);
-          this.positionSidebarByDefault(sidebar);
-        }
-        this.enableDrag();
         $$1("body").append(`
             <div id="autofeed-remote-dialog" class="af-remote-dialog">
                 <div class="af-remote-dialog-box">
@@ -20870,6 +20990,13 @@ ${ratingInfo}`) || pickFromText(html);
             this.appendPathEntry(submenu, "de_download", entry);
           });
         });
+        const sidebar = document.getElementById("autofeed-remote-sidebar");
+        if (sidebar) {
+          sidebar.dataset.boundUrl = boundUrl;
+          sidebar.style.opacity = String(opts.opacity);
+          this.positionSidebarByDefault(sidebar);
+        }
+        this.enableDrag();
         const dialogBox = (yesCallback, noCallback) => {
           $$1("#autofeed-remote-dialog").addClass("show");
           $$1("#autofeed-confirm").off("click").on("click", () => {
@@ -20884,15 +21011,21 @@ ${ratingInfo}`) || pickFromText(html);
             $$1("#autofeed-remote-dialog").removeClass("show");
           });
         };
+        let statusHideTimer = null;
         const setStatus = (text, kind = "info", hideAfterMs) => {
           const el = document.getElementById("autofeed-remote-status");
           if (!el)
             return;
+          if (statusHideTimer !== null) {
+            window.clearTimeout(statusHideTimer);
+            statusHideTimer = null;
+          }
           el.style.display = "block";
           el.setAttribute("data-kind", kind);
           el.textContent = text;
           if (hideAfterMs && hideAfterMs > 0) {
-            window.setTimeout(() => {
+            statusHideTimer = window.setTimeout(() => {
+              statusHideTimer = null;
               const el2 = document.getElementById("autofeed-remote-status");
               if (!el2)
                 return;
@@ -20975,7 +21108,7 @@ ${ratingInfo}`) || pickFromText(html);
             hideTimer = window.setTimeout(() => {
               if (!item.matches(":hover") && !submenu.matches(":hover"))
                 hide();
-            }, 180);
+            }, 260);
           };
           const show = () => {
             if (hideTimer !== null)
@@ -20992,8 +21125,8 @@ ${ratingInfo}`) || pickFromText(html);
             const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1280;
             const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
             const margin = 6;
-            const gap = 8;
-            const submenuWidth = submenu.getBoundingClientRect().width || 180;
+            const gap = 2;
+            const submenuWidth = submenu.getBoundingClientRect().width || 120;
             const submenuHeight = submenu.offsetHeight || 160;
             let left = sidebarRect.left - submenuWidth - gap;
             if (left < margin)
@@ -21120,6 +21253,9 @@ ${ratingInfo}`) || pickFromText(html);
         header.addEventListener("mousedown", (e2) => {
           if (e2.button !== 0)
             return;
+          sidebar.querySelectorAll(".af-remote-submenu").forEach((sub) => {
+            sub.style.display = "none";
+          });
           dragging = true;
           const rect = sidebar.getBoundingClientRect();
           startX = e2.clientX;
@@ -21131,20 +21267,38 @@ ${ratingInfo}`) || pickFromText(html);
         });
       }
       static extractTorrentDownloadUrlFromPage(currentUrl) {
-        const currentTid = this.extractTorrentId(currentUrl);
-        const candidates = currentTid ? [
-          `a[href*="action=download"][href*="torrentid=${currentTid}"]`,
-          `a[href*="download.php"][href*="torrentid=${currentTid}"]`,
-          `a[href*="download"][href*="torrentid=${currentTid}"]`
-        ] : [];
-        candidates.push('a[href*="action=download"]', 'a[href*="download.php"]', 'a[href*="torrents/download"]');
+        const currentTid = extractPageTorrentId(currentUrl);
+        if (currentTid) {
+          const anchors = Array.from(
+            document.querySelectorAll('a[href*="action=download"], a[href*="download.php"], a[href*="download"]')
+          );
+          for (const a2 of anchors) {
+            const href = (a2.getAttribute("href") || "").trim();
+            if (!href)
+              continue;
+            if (extractDownloadTorrentId(href) === currentTid) {
+              try {
+                return new URL(href, currentUrl).href;
+              } catch {
+                return href;
+              }
+            }
+          }
+          return "";
+        }
+        const candidates = [
+          'a[href*="action=download"]',
+          'a[href*="download.php"]',
+          'a[href*="torrents/download"]',
+          'a[href*="/download/"]'
+        ];
         for (const sel of candidates) {
           const a2 = document.querySelector(sel);
           const href = ((a2 == null ? void 0 : a2.getAttribute("href")) || "").trim();
           if (!href)
             continue;
           try {
-            return new URL(href, window.location.href).href;
+            return new URL(href, currentUrl).href;
           } catch {
             return href;
           }
@@ -21161,8 +21315,9 @@ ${ratingInfo}`) || pickFromText(html);
         }
         try {
           const cached = await StorageService.load();
-          if (cached == null ? void 0 : cached.torrentUrl)
+          if ((cached == null ? void 0 : cached.torrentUrl) && isSameTorrentPageUrl(cached.sourceUrl, currentUrl)) {
             return cached;
+          }
         } catch (err) {
           console.error("[Auto-Feed] Load cached meta for remote push failed:", err);
         }
@@ -21203,18 +21358,25 @@ ${ratingInfo}`) || pickFromText(html);
           formData.append("upLimit", String(siteUpLimits[meta.sourceSite]));
         }
         formData.append("torrents", torrentFile);
-        formData.append("savepath", path);
+        if (path)
+          formData.append("savepath", path);
         formData.append("category", tag);
         formData.append("skip_checking", String(skipChecking));
         const host = this.normalizeHost(server.url);
         try {
           onStatus == null ? void 0 : onStatus(uiText("登录 qBittorrent...", "Signing in to qBittorrent..."), "info");
-          await this.qbRequest(host, "/auth/login", {
+          const loginRes = await this.qbRequest(host, "/auth/login", {
             username: server.username,
             password: server.password
           });
+          if (loginRes.status !== 200 || !/^ok\.?$/i.test(String(loginRes.responseText || "").trim())) {
+            throw new Error(`qBittorrent login failed (HTTP ${loginRes.status}): ${loginRes.responseText || "unknown"}`);
+          }
           onStatus == null ? void 0 : onStatus(uiText("推送中...", "Sending to client..."), "info");
-          await this.qbRequest(host, "/torrents/add", formData);
+          const addRes = await this.qbRequest(host, "/torrents/add", formData);
+          if (addRes.status < 200 || addRes.status >= 300 || /fails?/i.test(String(addRes.responseText || "").trim())) {
+            throw new Error(`qBittorrent add failed (HTTP ${addRes.status}): ${addRes.responseText || "unknown"}`);
+          }
           this.showToast();
           onStatus == null ? void 0 : onStatus(uiText("推送完成", "Torrent sent to client"), "ok", 3e3);
         } catch (err) {
@@ -21332,7 +21494,7 @@ ${ratingInfo}`) || pickFromText(html);
           }
           if (result === null) {
             alert(uiText("远程推送失败: Deluge 返回空结果", "Could not send: Deluge returned an empty result."));
-            onStatus == null ? void 0 : onStatus("推送失败: Deluge 返回空结果", "err", 5e3);
+            onStatus == null ? void 0 : onStatus(uiText("推送失败: Deluge 返回空结果", "Could not send: Deluge returned an empty result."), "err", 5e3);
             return;
           }
           this.showToast();
@@ -21348,9 +21510,18 @@ ${ratingInfo}`) || pickFromText(html);
           const res = await GMAdapter.xmlHttpRequest({
             method: "GET",
             url,
-            responseType: "blob"
+            responseType: "arraybuffer"
           });
-          return res.response;
+          if (res.status < 200 || res.status >= 300) {
+            console.error("Torrent download failed with HTTP status:", res.status);
+            return null;
+          }
+          const bytes = new Uint8Array(res.response);
+          if (!looksLikeTorrentBytes(bytes)) {
+            console.error("Downloaded content is not a valid torrent file.");
+            return null;
+          }
+          return new Blob([bytes], { type: "application/x-bittorrent" });
         } catch (err) {
           console.error("Torrent download failed:", err);
           return null;
@@ -21363,7 +21534,15 @@ ${ratingInfo}`) || pickFromText(html);
             url,
             responseType: "arraybuffer"
           });
+          if (res.status < 200 || res.status >= 300) {
+            console.error("Torrent download failed with HTTP status:", res.status);
+            return null;
+          }
           const bytes = new Uint8Array(res.response);
+          if (!looksLikeTorrentBytes(bytes)) {
+            console.error("Downloaded content is not a valid torrent file.");
+            return null;
+          }
           let binary = "";
           for (let i2 = 0; i2 < bytes.length; i2++)
             binary += String.fromCharCode(bytes[i2]);
@@ -21556,21 +21735,25 @@ ${ratingInfo}`) || pickFromText(html);
       }
       static async transmissionRequest(rpcUrl, username, password, base64, path, tag, skipChecking) {
         let sessionId = "";
+        const args = {
+          metainfo: base64,
+          "skip-verify": skipChecking
+        };
+        if (path)
+          args["download-dir"] = path;
+        const cleanTags = tag.map((t2) => String(t2 || "").trim()).filter(Boolean);
+        if (cleanTags.length)
+          args.labels = cleanTags;
         const data = {
           method: "torrent-add",
-          arguments: {
-            metainfo: base64,
-            "download-dir": path,
-            labels: tag,
-            "skip-verify": skipChecking
-          }
+          arguments: args
         };
         const headers = {
           "Content-Type": "application/json",
           "X-Transmission-Session-Id": sessionId,
           Authorization: "Basic " + btoa(username + ":" + password)
         };
-        const res = await GMAdapter.xmlHttpRequest({
+        let res = await GMAdapter.xmlHttpRequest({
           method: "POST",
           url: rpcUrl,
           headers,
@@ -21580,7 +21763,7 @@ ${ratingInfo}`) || pickFromText(html);
           const newSessionId = res.responseHeaders.match(/X-Transmission-Session-Id:\s*(.+)/i);
           if (newSessionId)
             sessionId = newSessionId[1].trim();
-          return GMAdapter.xmlHttpRequest({
+          res = await GMAdapter.xmlHttpRequest({
             method: "POST",
             url: rpcUrl,
             headers: {
@@ -21589,6 +21772,18 @@ ${ratingInfo}`) || pickFromText(html);
             },
             data: JSON.stringify(data)
           });
+        }
+        if (res.status !== 200) {
+          throw new Error(`Transmission RPC failed (HTTP ${res.status})`);
+        }
+        try {
+          const parsed = JSON.parse(res.responseText || "{}");
+          if ((parsed == null ? void 0 : parsed.result) && parsed.result !== "success") {
+            throw new Error(`Transmission RPC error: ${parsed.result}`);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.message.startsWith("Transmission RPC"))
+            throw err;
         }
         return res;
       }
@@ -21700,9 +21895,9 @@ ${ratingInfo}`) || pickFromText(html);
         #autofeed-remote-sidebar .af-remote-submenu {
             display: none;
             position: fixed !important;
-            width: 80px !important;
-            min-width: 80px !important;
-            max-width: 80px !important;
+            width: max-content !important;
+            min-width: 96px !important;
+            max-width: 240px !important;
             max-height: calc(100vh - 12px) !important;
             overflow: auto !important;
             padding: 0 !important;
@@ -22811,7 +23006,7 @@ ${updated.description || ""}`.trim();
         const out = /* @__PURE__ */ new Set();
         const bb = ImageHostService.extractImageUrlsFromBBCode(text);
         bb.forEach((u2) => out.add(u2));
-        const m2 = text.match(/https?:\/\/[^\s"'<>\\]]+/gi) || [];
+        const m2 = text.match(/https?:\/\/[^\s"'<>\]]+/gi) || [];
         m2.forEach((u2) => out.add(u2));
         return Array.from(out).map((u2) => u2.trim()).filter(Boolean);
       }
@@ -22842,8 +23037,8 @@ ${updated.description || ""}`.trim();
             return (((_a = descr.match(/Disc Title:(.*)/i)) == null ? void 0 : _a[1]) || "").trim();
           if (descr.match(/Complete name.*?:/i))
             return (((_b = descr.match(/Complete name.*?:(.*)/i)) == null ? void 0 : _b[1]) || "").trim();
-          if (descr.match(/RELEASE\\.NAME\\s*:/i))
-            return (((_c = descr.match(/RELEASE\\.NAME\\s*:(.*)/i)) == null ? void 0 : _c[1]) || "").trim();
+          if (descr.match(/RELEASE\.NAME\s*:/i))
+            return (((_c = descr.match(/RELEASE\.NAME\s*:(.*)/i)) == null ? void 0 : _c[1]) || "").trim();
         } catch {
         }
         return (meta.title || "set your gallary name").trim();
@@ -24832,6 +25027,8 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
     class SiteManager {
       constructor() {
         __publicField(this, "activeEngine", null);
+        __publicField(this, "lastHandledUrl", "");
+        __publicField(this, "spaWatcherInstalled", false);
         this.detectSite();
       }
       detectSite() {
@@ -24844,7 +25041,71 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
           console.log("[Auto-Feed] No matching engine found for this site.");
         }
       }
+      installSpaWatcher() {
+        if (this.spaWatcherInstalled)
+          return;
+        this.spaWatcherInstalled = true;
+        let navTimer = null;
+        const scheduleCheck = () => {
+          if (navTimer !== null)
+            window.clearTimeout(navTimer);
+          navTimer = window.setTimeout(() => {
+            navTimer = null;
+            const current = window.location.href;
+            if (current === this.lastHandledUrl)
+              return;
+            this.handleSpaNavigation(current).catch((err) => {
+              console.error("[Auto-Feed] SPA navigation handler error:", err);
+            });
+          }, 350);
+        };
+        try {
+          const origPush = history.pushState.bind(history);
+          history.pushState = (...args) => {
+            const ret = origPush(...args);
+            scheduleCheck();
+            return ret;
+          };
+          const origReplace = history.replaceState.bind(history);
+          history.replaceState = (...args) => {
+            const ret = origReplace(...args);
+            scheduleCheck();
+            return ret;
+          };
+        } catch {
+        }
+        window.addEventListener("popstate", scheduleCheck);
+        window.addEventListener("hashchange", scheduleCheck);
+      }
+      async handleSpaNavigation(currentUrl) {
+        this.lastHandledUrl = currentUrl;
+        this.detectSite();
+        try {
+          await RemoteDownloadService.tryInject();
+        } catch (e2) {
+          console.error("[Auto-Feed] RemoteDownload SPA Error:", e2);
+        }
+        if (!this.activeEngine)
+          return;
+        const adapter = this.activeEngine;
+        const uploadLikePage = isUploadLikeUrl(currentUrl);
+        if (!uploadLikePage && adapter.isSourcePage(new URL(currentUrl))) {
+          this.injectEmbeddedUI(adapter).catch((err) => console.error("[Auto-Feed] SPA Injection Error:", err));
+          if (adapter.siteName === "MTeam" || adapter.siteName === "BHD") {
+            setTimeout(() => {
+              if (window.location.href === currentUrl) {
+                this.injectEmbeddedUI(adapter).catch(() => {
+                });
+                RemoteDownloadService.tryInject().catch(() => {
+                });
+              }
+            }, 1300);
+          }
+        }
+      }
       async run() {
+        this.lastHandledUrl = window.location.href;
+        this.installSpaWatcher();
         try {
           await ImdbAspectRatioService.tryHandleCurrentPage();
         } catch (e2) {
@@ -25277,10 +25538,10 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
               return { applied, verified };
           }
           try {
-            const patterns = [/匿名上传/i, /Anonymous\\s*Upload/i, /^Anonymous$/i];
+            const patterns = [/匿名上传/i, /Anonymous\s*Upload/i, /^Anonymous$/i];
             const labels = Array.from(document.querySelectorAll("label"));
             for (const lab of labels) {
-              const text = (lab.textContent || "").replace(/\\s+/g, " ").trim();
+              const text = (lab.textContent || "").replace(/\s+/g, " ").trim();
               if (!text)
                 continue;
               if (!patterns.some((re) => re.test(text)))
@@ -27363,7 +27624,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
     };
     const name = "auto-feed-refactor";
     const author = "tomorrow505, Gawain";
-    const version = "5.1.0";
+    const version = "5.1.1";
     const type = "module";
     const scripts = {
       dev: "node scripts/dev-full.js --watch",
