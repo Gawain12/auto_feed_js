@@ -2,7 +2,7 @@
 // @name            Auto-Feed｜PT一键转种助手（重构版）
 // @name:en         Auto-Feed Refactored｜PT Cross-Site Torrent Assistant
 // @namespace       https://github.com/tomorrow505/auto_feed_js
-// @version         5.1.1
+// @version         5.2.0
 // @author          tomorrow505, Gawain
 // @description     原版 Auto-Feed（tomorrow505）的重构版。支持跨站一键转种、自动填写标题与简介、媒体信息和图片处理，并支持快速搜索与远程推送。
 // @description:en  A refactored version of the original Auto-Feed by tomorrow505. Supports cross-site torrent forwarding, automatic form filling, media information and image handling, quick search, and remote pushing.
@@ -34,16 +34,14 @@
 // @match           *://*.totheglory.im/*
 // @match           *://totheglory.me/*
 // @match           *://*.totheglory.me/*
-// @match           *://bwtorrents.tv/*
-// @match           *://*.bwtorrents.tv/*
 // @match           *://pterclub.net/*
 // @match           *://*.pterclub.net/*
 // @match           *://audiences.me/*
 // @match           *://*.audiences.me/*
-// @match           *://www.tjupt.org/*
-// @match           *://*.www.tjupt.org/*
 // @match           *://tjupt.org/*
 // @match           *://*.tjupt.org/*
+// @match           *://pt.keepfrds.com/*
+// @match           *://*.pt.keepfrds.com/*
 // @match           *://keepfrds.com/*
 // @match           *://*.keepfrds.com/*
 // @match           *://chdbits.co/*
@@ -54,20 +52,262 @@
 // @match           *://*.ptchdbits.org/*
 // @match           *://chddiy.xyz/*
 // @match           *://*.chddiy.xyz/*
+// @match           *://uhddolby.com/*
+// @match           *://*.uhddolby.com/*
+// @match           *://hddolby.com/*
+// @match           *://*.hddolby.com/*
+// @match           *://pthome.net/*
+// @match           *://*.pthome.net/*
+// @match           *://ubits.club/*
+// @match           *://*.ubits.club/*
+// @match           *://pt.btschool.club/*
+// @match           *://*.pt.btschool.club/*
+// @match           *://btschool.club/*
+// @match           *://*.btschool.club/*
+// @match           *://hdarea.club/*
+// @match           *://*.hdarea.club/*
+// @match           *://hdarea.co/*
+// @match           *://*.hdarea.co/*
+// @match           *://hdfans.org/*
+// @match           *://*.hdfans.org/*
+// @match           *://hdtime.org/*
+// @match           *://*.hdtime.org/*
+// @match           *://pt.upxin.net/*
+// @match           *://*.pt.upxin.net/*
+// @match           *://pt.hdupt.com/*
+// @match           *://*.pt.hdupt.com/*
+// @match           *://hdvideo.top/*
+// @match           *://*.hdvideo.top/*
+// @match           *://hdvideo.one/*
+// @match           *://*.hdvideo.one/*
+// @match           *://piggo.me/*
+// @match           *://*.piggo.me/*
+// @match           *://qingwapt.com/*
+// @match           *://*.qingwapt.com/*
+// @match           *://ptlgs.org/*
+// @match           *://*.ptlgs.org/*
+// @match           *://zmpt.cc/*
+// @match           *://*.zmpt.cc/*
+// @match           *://icc2022.com/*
+// @match           *://*.icc2022.com/*
+// @match           *://agsvpt.com/*
+// @match           *://*.agsvpt.com/*
+// @match           *://pt.soulvoice.club/*
+// @match           *://*.pt.soulvoice.club/*
+// @match           *://soulvoice.club/*
+// @match           *://*.soulvoice.club/*
+// @match           *://pttime.org/*
+// @match           *://*.pttime.org/*
+// @match           *://ptsbao.club/*
+// @match           *://*.ptsbao.club/*
+// @match           *://pt.eastgame.org/*
+// @match           *://*.pt.eastgame.org/*
+// @match           *://eastgame.org/*
+// @match           *://*.eastgame.org/*
+// @match           *://wintersakura.net/*
+// @match           *://*.wintersakura.net/*
+// @match           *://wintersakura.org/*
+// @match           *://*.wintersakura.org/*
+// @match           *://crabpt.vip/*
+// @match           *://*.crabpt.vip/*
+// @match           *://discfan.net/*
+// @match           *://*.discfan.net/*
+// @match           *://pt.0ff.cc/*
+// @match           *://*.pt.0ff.cc/*
+// @match           *://0ff.cc/*
+// @match           *://*.0ff.cc/*
+// @match           *://pandapt.net/*
+// @match           *://*.pandapt.net/*
+// @match           *://carpt.net/*
+// @match           *://*.carpt.net/*
+// @match           *://1ptba.com/*
+// @match           *://*.1ptba.com/*
+// @match           *://52pt.site/*
+// @match           *://*.52pt.site/*
+// @match           *://ptcafe.club/*
+// @match           *://*.ptcafe.club/*
+// @match           *://ptfans.cc/*
+// @match           *://*.ptfans.cc/*
+// @match           *://cyanbug.net/*
+// @match           *://*.cyanbug.net/*
+// @match           *://okpt.net/*
+// @match           *://*.okpt.net/*
+// @match           *://kufei.org/*
+// @match           *://*.kufei.org/*
+// @match           *://dragonhd.xyz/*
+// @match           *://*.dragonhd.xyz/*
+// @match           *://share.ilolicon.com/*
+// @match           *://*.share.ilolicon.com/*
+// @match           *://ilolicon.com/*
+// @match           *://*.ilolicon.com/*
+// @match           *://xloli.cc/*
+// @match           *://*.xloli.cc/*
+// @match           *://pt.itzmx.com/*
+// @match           *://*.pt.itzmx.com/*
+// @match           *://itzmx.com/*
+// @match           *://*.itzmx.com/*
+// @match           *://joyhd.net/*
+// @match           *://*.joyhd.net/*
+// @match           *://oshen.win/*
+// @match           *://*.oshen.win/*
+// @match           *://pt.hdbd.us/*
+// @match           *://*.pt.hdbd.us/*
+// @match           *://hdbd.us/*
+// @match           *://*.hdbd.us/*
+// @match           *://ultrahd.net/*
+// @match           *://*.ultrahd.net/*
+// @match           *://hdkyl.in/*
+// @match           *://*.hdkyl.in/*
+// @match           *://htpt.cc/*
+// @match           *://*.htpt.cc/*
+// @match           *://hdwing.org/*
+// @match           *://*.hdwing.org/*
+// @match           *://hdchina.org/*
+// @match           *://*.hdchina.org/*
+// @match           *://ptzone.xyz/*
+// @match           *://*.ptzone.xyz/*
+// @match           *://et8.org/*
+// @match           *://*.et8.org/*
+// @match           *://13city.org/*
+// @match           *://*.13city.org/*
+// @match           *://hitpt.com/*
+// @match           *://*.hitpt.com/*
+// @match           *://hudbt.hust.edu.cn/*
+// @match           *://*.hudbt.hust.edu.cn/*
+// @match           *://nanyangpt.com/*
+// @match           *://*.nanyangpt.com/*
+// @match           *://nexushd.org/*
+// @match           *://*.nexushd.org/*
+// @match           *://pt.sjtu.edu.cn/*
+// @match           *://*.pt.sjtu.edu.cn/*
+// @match           *://resource.xidian.edu.cn/*
+// @match           *://*.resource.xidian.edu.cn/*
+// @match           *://raingfh.top/*
+// @match           *://*.raingfh.top/*
+// @match           *://pt.gtk.pw/*
+// @match           *://*.pt.gtk.pw/*
+// @match           *://pt.ecust.pp.ua/*
+// @match           *://*.pt.ecust.pp.ua/*
+// @match           *://pt.hdclone.top/*
+// @match           *://*.pt.hdclone.top/*
+// @match           *://pt.cdfile.org/*
+// @match           *://*.pt.cdfile.org/*
+// @match           *://hdbao.cc/*
+// @match           *://*.hdbao.cc/*
+// @match           *://ptlover.cc/*
+// @match           *://*.ptlover.cc/*
+// @match           *://devtracker.me/*
+// @match           *://*.devtracker.me/*
+// @match           *://tmpt.top/*
+// @match           *://*.tmpt.top/*
+// @match           *://dubhe.site/*
+// @match           *://*.dubhe.site/*
+// @match           *://cspt.top/*
+// @match           *://*.cspt.top/*
+// @match           *://pt.xingyungept.org/*
+// @match           *://*.pt.xingyungept.org/*
+// @match           *://pt.ying.us.kg/*
+// @match           *://*.pt.ying.us.kg/*
+// @match           *://whax.net/*
+// @match           *://*.whax.net/*
+// @match           *://sewerpt.com/*
+// @match           *://*.sewerpt.com/*
+// @match           *://lemonhd.net/*
+// @match           *://*.lemonhd.net/*
+// @match           *://bilibili.download/*
+// @match           *://*.bilibili.download/*
+// @match           *://cc.mypt.cc/*
+// @match           *://*.cc.mypt.cc/*
+// @match           *://ptskit.org/*
+// @match           *://*.ptskit.org/*
+// @match           *://duckboobee.org/*
+// @match           *://*.duckboobee.org/*
+// @match           *://pt.novahd.top/*
+// @match           *://*.pt.novahd.top/*
+// @match           *://pt.luckpt.de/*
+// @match           *://*.pt.luckpt.de/*
+// @match           *://tokyopt.xyz/*
+// @match           *://*.tokyopt.xyz/*
+// @match           *://pt.aling.de/*
+// @match           *://*.pt.aling.de/*
+// @match           *://longpt.org/*
+// @match           *://*.longpt.org/*
+// @match           *://cangbao.ge/*
+// @match           *://*.cangbao.ge/*
+// @match           *://nex.jivon.de/*
+// @match           *://*.nex.jivon.de/*
+// @match           *://zrpt.cc/*
+// @match           *://*.zrpt.cc/*
+// @match           *://sbpt.link/*
+// @match           *://*.sbpt.link/*
+// @match           *://yhpp.cc/*
+// @match           *://*.yhpp.cc/*
+// @match           *://52movie.top/*
+// @match           *://*.52movie.top/*
+// @match           *://tangpt.top/*
+// @match           *://*.tangpt.top/*
+// @match           *://p.t-baozi.cc/*
+// @match           *://*.p.t-baozi.cc/*
+// @match           *://npupt.com/*
+// @match           *://*.npupt.com/*
+// @match           *://njtupt.top/*
+// @match           *://*.njtupt.top/*
+// @match           *://haidan.video/*
+// @match           *://*.haidan.video/*
+// @match           *://byr.pt/*
+// @match           *://*.byr.pt/*
+// @match           *://bt.byr.cn/*
+// @match           *://*.bt.byr.cn/*
+// @match           *://hdcity.city/*
+// @match           *://*.hdcity.city/*
+// @match           *://gamegamept.com/*
+// @match           *://*.gamegamept.com/*
+// @match           *://xingtan.one/*
+// @match           *://*.xingtan.one/*
+// @match           *://star-space.net/*
+// @match           *://*.star-space.net/*
+// @match           *://pt.muxuege.org/*
+// @match           *://*.pt.muxuege.org/*
+// @match           *://u2.dmhy.org/*
+// @match           *://*.u2.dmhy.org/*
+// @match           *://hhanclub.top/*
+// @match           *://*.hhanclub.top/*
+// @match           *://hhan.club/*
+// @match           *://*.hhan.club/*
+// @match           *://hhanclub.net/*
+// @match           *://*.hhanclub.net/*
 // @match           *://greatposterwall.com/*
 // @match           *://*.greatposterwall.com/*
 // @match           *://secret-cinema.pw/*
 // @match           *://*.secret-cinema.pw/*
 // @match           *://passthepopcorn.me/*
 // @match           *://*.passthepopcorn.me/*
-// @match           *://redacted.ch/*
-// @match           *://*.redacted.ch/*
 // @match           *://redacted.sh/*
 // @match           *://*.redacted.sh/*
+// @match           *://redacted.ch/*
+// @match           *://*.redacted.ch/*
 // @match           *://orpheus.network/*
 // @match           *://*.orpheus.network/*
 // @match           *://dicmusic.com/*
 // @match           *://*.dicmusic.com/*
+// @match           *://broadcasthe.net/*
+// @match           *://*.broadcasthe.net/*
+// @match           *://backup.landof.tv/*
+// @match           *://*.backup.landof.tv/*
+// @match           *://anthelion.me/*
+// @match           *://*.anthelion.me/*
+// @match           *://tv-vault.me/*
+// @match           *://*.tv-vault.me/*
+// @match           *://nebulance.io/*
+// @match           *://*.nebulance.io/*
+// @match           *://hd-only.org/*
+// @match           *://*.hd-only.org/*
+// @match           *://hdf.world/*
+// @match           *://*.hdf.world/*
+// @match           *://jpopsuki.eu/*
+// @match           *://*.jpopsuki.eu/*
+// @match           *://lztr.me/*
+// @match           *://*.lztr.me/*
 // @match           *://blutopia.cc/*
 // @match           *://*.blutopia.cc/*
 // @match           *://cinematik.net/*
@@ -92,10 +332,26 @@
 // @match           *://*.beyond-hd.io/*
 // @match           *://beyondhd.co/*
 // @match           *://*.beyondhd.co/*
-// @match           *://hdf.world/*
-// @match           *://*.hdf.world/*
 // @match           *://privatehd.to/*
 // @match           *://*.privatehd.to/*
+// @match           *://onlyencodes.cc/*
+// @match           *://*.onlyencodes.cc/*
+// @match           *://darkland.top/*
+// @match           *://*.darkland.top/*
+// @match           *://reelflix.xyz/*
+// @match           *://*.reelflix.xyz/*
+// @match           *://reelflix.cc/*
+// @match           *://*.reelflix.cc/*
+// @match           *://fearnopeer.com/*
+// @match           *://*.fearnopeer.com/*
+// @match           *://hd-olimpo.club/*
+// @match           *://*.hd-olimpo.club/*
+// @match           *://hawke.uno/*
+// @match           *://*.hawke.uno/*
+// @match           *://desitorrents.tv/*
+// @match           *://*.desitorrents.tv/*
+// @match           *://torrent.desi/*
+// @match           *://*.torrent.desi/*
 // @match           *://hdbits.org/*
 // @match           *://*.hdbits.org/*
 // @match           *://karagarga.in/*
@@ -104,6 +360,50 @@
 // @match           *://*.hd-torrents.org/*
 // @match           *://hdts.ru/*
 // @match           *://*.hdts.ru/*
+// @match           *://hdroute.org/*
+// @match           *://*.hdroute.org/*
+// @match           *://filelist.io/*
+// @match           *://*.filelist.io/*
+// @match           *://torrentleech.org/*
+// @match           *://*.torrentleech.org/*
+// @match           *://torrentleech.me/*
+// @match           *://*.torrentleech.me/*
+// @match           *://torrentleech.cc/*
+// @match           *://*.torrentleech.cc/*
+// @match           *://tlgetin.cc/*
+// @match           *://*.tlgetin.cc/*
+// @match           *://avistaz.to/*
+// @match           *://*.avistaz.to/*
+// @match           *://cinemaz.to/*
+// @match           *://*.cinemaz.to/*
+// @match           *://cinemageddon.net/*
+// @match           *://*.cinemageddon.net/*
+// @match           *://bibliotik.me/*
+// @match           *://*.bibliotik.me/*
+// @match           *://iptorrents.com/*
+// @match           *://*.iptorrents.com/*
+// @match           *://bit-hdtv.com/*
+// @match           *://*.bit-hdtv.com/*
+// @match           *://bluebird-hd.org/*
+// @match           *://*.bluebird-hd.org/*
+// @match           *://bwtorrents.tv/*
+// @match           *://*.bwtorrents.tv/*
+// @match           *://digitalcore.club/*
+// @match           *://*.digitalcore.club/*
+// @match           *://hd-space.org/*
+// @match           *://*.hd-space.org/*
+// @match           *://shadowthein.net/*
+// @match           *://*.shadowthein.net/*
+// @match           *://zhuque.in/*
+// @match           *://*.zhuque.in/*
+// @match           *://yemapt.org/*
+// @match           *://*.yemapt.org/*
+// @match           *://www1.yemapt.org/*
+// @match           *://*.www1.yemapt.org/*
+// @match           *://rousi.pro/*
+// @match           *://*.rousi.pro/*
+// @match           *://rousi.zip/*
+// @match           *://*.rousi.zip/*
 // @match           *://www.douban.com/subject/*
 // @match           *://movie.douban.com/subject/*
 // @match           *://www.imdb.com/title/tt*
@@ -128,6 +428,7 @@
 // @grant           GM_download
 // @grant           GM_getResourceText
 // @grant           GM_getValue
+// @grant           GM_info
 // @grant           GM_setClipboard
 // @grant           GM_setValue
 // @grant           GM_xmlhttpRequest
@@ -159,8 +460,8 @@
     const i18n = {
       zh: {
         dashboard: "仪表盘",
-        languageHelp: "语言切换会自动保存。刷新站点页面后，快捷工具和侧边栏会使用新语言。",
-        optionalEnhancementsHelp: "豆瓣信息、发布组名和快速搜索均为可选功能。调整后保存并刷新站点页面。",
+        languageHelp: "修改任何设置后，请点击右上角「保存」按钮使更改生效。",
+        optionalEnhancementsHelp: "豆瓣信息、发布组名和快速搜索均为可选功能。调整后点击「保存」生效（部分页面增强项需刷新页面）。",
         autoDownloadHelp: "发布成功后下载目标站的 .torrent 文件。远程客户端推送需在侧边栏手动选择客户端和目录。",
         remoteHelp: "在种子详情页选择客户端和已有文件目录。发布后不会自动推送。",
         settings: "设置",
@@ -201,6 +502,8 @@
         imdbQuickSearch: "IMDb: 快速搜索",
         defaultAnonymous: "发布页默认匿名",
         autoDownloadAfterUpload: "转载后自动下载种子",
+        filterForwardTargetsByType: "按站点内容类型智能过滤",
+        filterForwardTargetsByTypeDesc: "音乐/电影/剧集自动隔离（保留 PTP↔BTN 迷你剧），转发栏可一键展开其他站",
         remoteSidebarOpacity: "远程侧边栏透明度",
         settingsPanelOpacity: "设置弹窗透明度",
         popupOpacity: "弹窗透明度",
@@ -210,7 +513,8 @@
         ptgenSource: "PTGen 来源",
         loading: "加载中...",
         saving: "保存中...",
-        saved: "设置已保存",
+        saved: "已保存",
+        unsaved: "有未保存更改",
         saveFailed: "保存失败",
         configLoaded: "配置已加载",
         add: "添加",
@@ -236,8 +540,8 @@
       },
       en: {
         dashboard: "Dashboard",
-        languageHelp: "Language changes are saved automatically. Reload tracker pages to update the quick tools and sidebar.",
-        optionalEnhancementsHelp: "Douban info, release group labels and quick search are optional. Save your changes and reload tracker pages.",
+        languageHelp: "Click Save in the top right after making changes to apply and persist your settings.",
+        optionalEnhancementsHelp: "Douban info, release group labels and quick search are optional. Click Save to apply (reload tracker pages for page enhancers).",
         autoDownloadHelp: "Downloads the target tracker’s .torrent after a successful upload. To send it to a remote client, choose the client and directory in the sidebar.",
         remoteHelp: "On a torrent detail page, choose a client and the directory containing your files. Sending after upload is manual.",
         settings: "Settings",
@@ -278,6 +582,8 @@
         imdbQuickSearch: "IMDb: Quick Search",
         defaultAnonymous: "Default Anonymous On Upload",
         autoDownloadAfterUpload: "Download .torrent after upload",
+        filterForwardTargetsByType: "Smart target filtering by type",
+        filterForwardTargetsByTypeDesc: "Isolate music / movie / TV sites (keeps PTP↔BTN miniseries); expand others in one click",
         remoteSidebarOpacity: "Remote Sidebar Opacity",
         settingsPanelOpacity: "Settings Opacity",
         popupOpacity: "Popup Opacity",
@@ -287,7 +593,8 @@
         ptgenSource: "PTGen Source",
         loading: "Loading...",
         saving: "Saving...",
-        saved: "Settings Saved",
+        saved: "Saved",
+        unsaved: "Unsaved changes",
         saveFailed: "Save Failed",
         configLoaded: "Config Loaded",
         add: "Add",
@@ -325,6 +632,11 @@
       SiteType2["HDB"] = "HDB";
       SiteType2["KG"] = "KG";
       SiteType2["HDT"] = "HDT";
+      SiteType2["BTN"] = "BTN";
+      SiteType2["HDRoute"] = "HDRoute";
+      SiteType2["FileList"] = "FileList";
+      SiteType2["TorrentLeech"] = "TorrentLeech";
+      SiteType2["CG"] = "CG";
       SiteType2["Avistaz"] = "Avistaz";
       SiteType2["General"] = "General";
       return SiteType2;
@@ -343,6 +655,10 @@
       "[img]https://img.pterclub.net/images/2021/07/14/78c58ee6b3e092d0c5a7fa02f3a1905e.png[/img]",
       "[img]https://pterclub.net/pic/CS.png[/img]",
       "[img]https://pterclub.net/pic/GDJT.png[/img]",
+      "[img]https://pterclub.net/pic/PTerWEB.png[/img]",
+      "[img]https://pterclub.net/pic/PTerMV.png[/img]",
+      "[img]https://pterclub.net/pic/PTer.png[/img]",
+      "[img]https://img.btschool.net/images/2023/07/10/mediainfo.png[/img]",
       "[img]http://img.pterclub.net/images/CS.png[/img]",
       "[img]https://img.pterclub.net/images/GDJT.png[/img]",
       "[img]https://kp.m-team.cc/logo.png[/img]",
@@ -379,9 +695,13 @@
       }
       try {
         if (imgUrls) {
+          const skipList = (options == null ? void 0 : options.skipImgList) || skipImg;
+          const isBannerImg = (tag) => skipList.includes(tag) || /\/pic\/(?:PTer\w*|CS|GDJT|Ourbits_\w+|hds_logo)\.png/i.test(tag);
           for (let i2 = 0; i2 < imgUrls.length; i2++) {
             if (descr.indexOf(imgUrls[i2]) < 10 || descr.indexOf(imgUrls[i2]) < indexOfInfo) {
-              info.coverImg = imgUrls[i2];
+              if (!info.coverImg && !isBannerImg(imgUrls[i2])) {
+                info.coverImg = imgUrls[i2];
+              }
             } else {
               descr = descr.replace(imgUrls[i2], "");
               imgInfo += ((_b = imgUrls[i2].match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/)) == null ? void 0 : _b[0]) || "";
@@ -421,7 +741,9 @@ ${imgInfo}`;
       try {
         if (imgMatches) {
           const skipList = (options == null ? void 0 : options.skipImgList) || skipImg;
-          imgs = imgMatches.filter((item) => skipList.indexOf(item) < 0 && !item.match(/m.media-amazon.com\/images/)).join(" ");
+          imgs = imgMatches.filter(
+            (item) => skipList.indexOf(item) < 0 && !/m\.media-amazon\.com\/images/i.test(item) && !/img\.btschool\.net\/images\/[^[\]]+\/(?:mediainfo|info|screens|screenshots)\.png/i.test(item)
+          ).join(" ");
         } else {
           imgs = "";
         }
@@ -7270,18 +7592,18 @@ ${content}
       let result = text;
       if (result.match(/(4320p|8k)/i)) {
         result = "8K";
-      } else if (result.match(/(1080p|2K)/i)) {
-        result = "1080p";
-      } else if (result.match(/(720p)/i)) {
-        result = "720p";
-      } else if (result.match(/(1080i)/i)) {
-        result = "1080i";
-      } else if (result.match(/(576[pi]|480[pi])/i)) {
-        result = "SD";
-      } else if (result.match(/(1440p)/i)) {
-        result = "144Op";
       } else if (result.match(/(2160p|4k)/i)) {
         result = "4K";
+      } else if (result.match(/(1440p)/i)) {
+        result = "144Op";
+      } else if (result.match(/(1080p|2K)/i)) {
+        result = "1080p";
+      } else if (result.match(/(1080i)/i)) {
+        result = "1080i";
+      } else if (result.match(/(720p)/i)) {
+        result = "720p";
+      } else if (result.match(/(576[pi]|480[pi])/i)) {
+        result = "SD";
       } else {
         result = "";
       }
@@ -7382,7 +7704,7 @@ ${content}
       return labels;
     }
     async function parseNexus(config, currentUrl) {
-      var _a, _b, _c;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i;
       const selectors = {
         title: "#top",
         titleFallback: 'td.rowhead:contains("Title") + td, td.rowhead:contains("标题") + td',
@@ -7441,8 +7763,31 @@ ${content}
       } catch {
       }
       const descrEl = getElement(configSelectors.description) || getElement(selectors.description) || getElement(selectors.descriptionFallback);
-      let description = descrEl ? htmlToBBCode(descrEl) : "";
-      let fullMediaInfo = extractStructuredMediaInfo(descrEl);
+      let cleanDescrEl = descrEl;
+      if (descrEl) {
+        try {
+          const clone = descrEl.cloneNode(true);
+          clone.querySelectorAll("#ad_torrentdetail, .ad_torrentdetail").forEach((n2) => n2.remove());
+          cleanDescrEl = clone;
+        } catch {
+          cleanDescrEl = descrEl;
+        }
+      }
+      let description = cleanDescrEl ? htmlToBBCode(cleanDescrEl) : "";
+      let fullMediaInfo = extractStructuredMediaInfo(cleanDescrEl);
+      if (!fullMediaInfo) {
+        const externalMi = ((_b = (_a = document.querySelector(".nexus-media-info-raw pre")) == null ? void 0 : _a.textContent) == null ? void 0 : _b.trim()) || ((_d = (_c = document.querySelector(".nexus-media-info-raw")) == null ? void 0 : _c.textContent) == null ? void 0 : _d.trim()) || ((_f = (_e = document.querySelector("#kmediainfo")) == null ? void 0 : _e.textContent) == null ? void 0 : _f.trim()) || "";
+        if (externalMi && externalMi !== "暂无媒体信息" && externalMi.length > 40) {
+          fullMediaInfo = externalMi;
+          if (!description.includes(externalMi.slice(0, 40))) {
+            description = `${description}
+
+[quote]
+${externalMi}
+[/quote]`.trim();
+          }
+        }
+      }
       const meta = {
         title,
         subtitle: getText(configSelectors.subtitle) || $$1(selectors.subtitleFallback).text().trim() || "",
@@ -7508,7 +7853,7 @@ ${content}
           return { href, score };
         };
         const sorted = links.map((a2) => ({ a: a2, ...pick(a2) })).filter((x2) => !!x2.href).sort((x2, y2) => y2.score - x2.score);
-        const relativeUrl = ((_a = sorted[0]) == null ? void 0 : _a.href) || "";
+        const relativeUrl = ((_g = sorted[0]) == null ? void 0 : _g.href) || "";
         if (relativeUrl) {
           try {
             meta.torrentUrl = new URL(relativeUrl, currentUrl).href;
@@ -7556,7 +7901,7 @@ ${content}
         const blob = `${title}
 ${meta.subtitle || ""}
 ${description}`;
-        const lineType = ((_b = blob.match(/(?:^|\n)\s*(?:类型|類別|Category|Type)\s*[:：]\s*([^\n]+)/i)) == null ? void 0 : _b[1]) || ((_c = blob.match(/(?:^|\n)\s*◎\s*类\s*别\s*[:：]?\s*([^\n]+)/i)) == null ? void 0 : _c[1]) || "";
+        const lineType = ((_h = blob.match(/(?:^|\n)\s*(?:类型|類別|Category|Type)\s*[:：]\s*([^\n]+)/i)) == null ? void 0 : _h[1]) || ((_i = blob.match(/(?:^|\n)\s*◎\s*类\s*别\s*[:：]?\s*([^\n]+)/i)) == null ? void 0 : _i[1]) || "";
         if (lineType)
           meta.type = getType(lineType) || lineType.trim();
       }
@@ -7587,13 +7932,391 @@ ${meta.subtitle || ""}`);
     function getMetaLabels(meta) {
       return meta.labelInfo || getLabel(labelSourceText(meta));
     }
+    const EUROPEAN_COUNTRIES = /* @__PURE__ */ new Set([
+      "阿尔巴尼亚",
+      "安道尔",
+      "奥地利",
+      "白俄罗斯",
+      "比利时",
+      "波斯尼亚和黑塞哥维那",
+      "保加利亚",
+      "克罗地亚",
+      "塞浦路斯",
+      "捷克",
+      "丹麦",
+      "爱沙尼亚",
+      "芬兰",
+      "法国",
+      "德国",
+      "希腊",
+      "匈牙利",
+      "冰岛",
+      "爱尔兰",
+      "意大利",
+      "科索沃",
+      "拉脱维亚",
+      "列支敦士登",
+      "立陶宛",
+      "卢森堡",
+      "马耳他",
+      "摩尔多瓦",
+      "摩纳哥",
+      "黑山",
+      "荷兰",
+      "北马其顿",
+      "挪威",
+      "波兰",
+      "葡萄牙",
+      "罗马尼亚",
+      "俄罗斯",
+      "圣马力诺",
+      "塞尔维亚",
+      "斯洛伐克",
+      "斯洛文尼亚",
+      "西班牙",
+      "瑞典",
+      "瑞士",
+      "乌克兰",
+      "英国",
+      "梵蒂冈",
+      "西德"
+    ]);
+    const SOUTHEAST_ASIA = /* @__PURE__ */ new Set([
+      "菲律宾",
+      "印度尼西亚",
+      "马来西亚",
+      "新加坡",
+      "泰国",
+      "老挝",
+      "缅甸",
+      "越南",
+      "文莱",
+      "柬埔寨",
+      "不丹"
+    ]);
+    function extractPrimaryRegionFromDescr(descr) {
+      var _a;
+      const m2 = String(descr || "").match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|◎產.{0,5}?地)([^\r\n]+)/);
+      if (!m2)
+        return "";
+      return ((_a = m2[1].split("/")[0].split(":").pop()) == null ? void 0 : _a.trim()) || "";
+    }
+    function pickFromMap(mapping, keys, ctx) {
+      var _a;
+      if (!mapping)
+        return void 0;
+      let val = void 0;
+      for (const k2 of keys) {
+        if (!k2)
+          continue;
+        if (Object.prototype.hasOwnProperty.call(mapping.map, k2)) {
+          val = mapping.map[k2];
+          break;
+        }
+      }
+      if (val === void 0 && mapping.defaultValue !== void 0) {
+        val = mapping.defaultValue;
+      }
+      if ((_a = mapping.titleOverrides) == null ? void 0 : _a.length) {
+        for (const ov of mapping.titleOverrides) {
+          if (matchesOverride(ov, ctx)) {
+            val = ov.value;
+          }
+        }
+      }
+      return val;
+    }
+    function matchesOverride(ov, ctx) {
+      if (ov.whenType && ctx.type !== ov.whenType)
+        return false;
+      if (ov.whenMedium && ctx.medium !== ov.whenMedium)
+        return false;
+      if (ov.whenCodec && ctx.codec !== ov.whenCodec)
+        return false;
+      if (ov.whenAudio && ctx.audio !== ov.whenAudio)
+        return false;
+      if (ov.whenStandard && ctx.standard !== ov.whenStandard)
+        return false;
+      if (ov.whenDiy !== void 0 && ctx.isDiy !== ov.whenDiy)
+        return false;
+      if (!ov.pattern)
+        return true;
+      const haystack = ov.inField === "descr" ? ctx.descr : ov.inField === "smallDescr" ? ctx.smallDescr : ov.inField === "all" ? `${ctx.title}
+${ctx.smallDescr}
+${ctx.descr}` : ctx.title;
+      try {
+        return new RegExp(ov.pattern, ov.flags ?? "i").test(haystack);
+      } catch {
+        return false;
+      }
+    }
+    function buildRegionKeys(sourceSel, descr) {
+      const primary = extractPrimaryRegionFromDescr(descr);
+      const keys = [];
+      if (sourceSel === "欧美" && primary) {
+        if (/美国/.test(primary))
+          keys.push("美国");
+        else if (/英国/.test(primary))
+          keys.push("英国");
+        else if (EUROPEAN_COUNTRIES.has(primary))
+          keys.push("欧洲");
+      }
+      if (primary && /泰国/.test(primary))
+        keys.push("泰国");
+      if (sourceSel && SOUTHEAST_ASIA.has(sourceSel))
+        keys.push(sourceSel, "东南亚");
+      if (sourceSel === "香港" || sourceSel === "台湾") {
+        keys.push(sourceSel, "港台");
+      } else if (sourceSel) {
+        keys.push(sourceSel);
+      }
+      if (primary && !keys.includes(primary)) {
+        if (SOUTHEAST_ASIA.has(primary))
+          keys.push("东南亚");
+        keys.push(primary);
+      }
+      return keys;
+    }
+    function resolveNexusProfileValues(meta, profile) {
+      var _a, _b;
+      const out = [];
+      const title = String(meta.title || "");
+      const smallDescr = String(meta.smallDescr || meta.subtitle || "");
+      const descr = String(meta.description || "");
+      const fullBlob = `${title}
+${smallDescr}
+${descr}
+${meta.fullMediaInfo || ""}`;
+      const labels = getMetaLabels(meta);
+      const isDiy = Boolean(labels.diy || /DIY|@/i.test(title));
+      const isDdp = /Dolby Digital Plus|E-?AC-?3/i.test(fullBlob) || /DD[P+]/i.test(title);
+      const isAtmos = /Atmos/i.test(fullBlob);
+      const isTrueHd = /True.?HD/i.test(fullBlob);
+      const isRemuxName = /remux/i.test(title);
+      const isComplete = Boolean(labels.complete || /S\d+[^E]|complete/i.test(title) || /全\d+集/.test(smallDescr));
+      const hasEpisode = /E\d+/i.test(title);
+      const hasSeason = /S\d+/i.test(title);
+      const ctx = {
+        title,
+        descr,
+        smallDescr,
+        type: meta.type,
+        medium: meta.mediumSel,
+        codec: meta.codecSel,
+        audio: meta.audioCodecSel,
+        standard: meta.standardSel,
+        isDiy
+      };
+      const push = (field, selector, value) => {
+        if (value === void 0)
+          return;
+        out.push({ field, selector, value });
+      };
+      let usedSpecialcat = false;
+      if (profile.specialcat && meta.type) {
+        const spKeys = [meta.type];
+        const spVal = pickFromMap(profile.specialcat, spKeys, ctx);
+        if (spVal !== void 0) {
+          push("specialcat", profile.specialcat.selector, spVal);
+          usedSpecialcat = true;
+          if ((_a = profile.specialcatExtras) == null ? void 0 : _a.length) {
+            for (const ex of profile.specialcatExtras) {
+              if (!ex.whenPattern || new RegExp(ex.whenPattern, "i").test(title)) {
+                push("processingByMedium", ex.selector, ex.value);
+              }
+            }
+          }
+        }
+      }
+      if (profile.type && !(usedSpecialcat && profile.specialcatMode5)) {
+        if (!usedSpecialcat) {
+          const typeKeys = [];
+          if (meta.type) {
+            const regionKeys = buildRegionKeys(meta.sourceSel, descr);
+            if (meta.mediumSel)
+              typeKeys.push(`${meta.type}_${meta.mediumSel}`);
+            if (meta.standardSel)
+              typeKeys.push(`${meta.type}_${meta.standardSel}`);
+            for (const rk of regionKeys) {
+              if (rk)
+                typeKeys.push(`${meta.type}_${rk}`);
+            }
+            if (hasEpisode)
+              typeKeys.push(`${meta.type}_ep`);
+            if (isComplete || hasSeason)
+              typeKeys.push(`${meta.type}_pack`);
+            typeKeys.push(meta.type);
+          }
+          push("type", profile.type.selector, pickFromMap(profile.type, typeKeys, ctx));
+        }
+      }
+      if (usedSpecialcat && profile.specialcatMode5) {
+        return out;
+      }
+      if (profile.medium) {
+        const mediumKeys = [];
+        const med = meta.mediumSel;
+        if (med) {
+          if (isDiy && (med === "UHD" || med === "Blu-ray")) {
+            mediumKeys.push(`${med}_DIY`);
+          }
+          if (isRemuxName && (med === "UHD" || med === "Blu-ray")) {
+            mediumKeys.push(`${med}_Remux`);
+          }
+          if (med === "Remux" && meta.standardSel && meta.type) {
+            mediumKeys.push(`${med}_${meta.standardSel}_${meta.type}`);
+          }
+          if (meta.standardSel) {
+            mediumKeys.push(`${med}_${meta.standardSel}`);
+          }
+          if (meta.type) {
+            mediumKeys.push(`${med}_${meta.type}`);
+          }
+          mediumKeys.push(med);
+        }
+        if (meta.audioCodecSel) {
+          mediumKeys.push(`audio_${meta.audioCodecSel}`);
+        }
+        push("medium", profile.medium.selector, pickFromMap(profile.medium, mediumKeys, ctx));
+      }
+      if (profile.codec) {
+        const codecFallbacks = {
+          X265: ["X265", "H265"],
+          H265: ["H265", "X265"],
+          X264: ["X264", "H264"],
+          H264: ["H264", "X264"],
+          "MPEG-4": ["MPEG-4", "MPEG-2"],
+          Xvid: ["Xvid", "XVID"],
+          XVID: ["XVID", "Xvid"]
+        };
+        const keys = [];
+        if (meta.codecSel) {
+          const baseKeys = codecFallbacks[meta.codecSel] || [meta.codecSel];
+          if (meta.mediumSel) {
+            for (const k2 of baseKeys)
+              keys.push(`${k2}_${meta.mediumSel}`);
+          }
+          keys.push(...baseKeys);
+        }
+        let codecVal = pickFromMap(profile.codec, keys, ctx);
+        if (codecVal === void 0 && profile.codecAudioFallback && meta.audioCodecSel) {
+          if (Object.prototype.hasOwnProperty.call(profile.codecAudioFallback, meta.audioCodecSel)) {
+            codecVal = profile.codecAudioFallback[meta.audioCodecSel];
+          }
+        }
+        push("codec", profile.codec.selector, codecVal);
+      }
+      if (profile.audio) {
+        const audioKeys = [];
+        const ac = meta.audioCodecSel;
+        if (ac === "Atmos") {
+          if (isDdp)
+            audioKeys.push("Atmos_DDP", "DDP_Atmos");
+          if (isTrueHd)
+            audioKeys.push("Atmos_TrueHD");
+          audioKeys.push("Atmos");
+        } else if (ac === "AC3") {
+          if (isDdp && isAtmos)
+            audioKeys.push("DDP_Atmos", "Atmos_DDP", "DDP");
+          else if (isDdp)
+            audioKeys.push("DDP");
+          if (/(?:DD|DD\+|AC3).*?2\.0/i.test(title))
+            audioKeys.push("AC3_2.0");
+          audioKeys.push("AC3");
+        } else if (ac === "DTS-HDMA:X 7.1" || ac === "DTS-X") {
+          audioKeys.push(ac, "DTS-X", "DTS-HDMA:X 7.1", "DTS-HDMA", "DTS-HD");
+        } else if (ac === "DTS-HDMA") {
+          audioKeys.push("DTS-HDMA", "DTS-HD");
+        } else if (ac === "DTS-HDHR") {
+          audioKeys.push("DTS-HDHR", "DTS-HD");
+        } else if (ac) {
+          audioKeys.push(ac);
+        }
+        push("audio", profile.audio.selector, pickFromMap(profile.audio, audioKeys, ctx));
+      }
+      if (profile.standard) {
+        push("standard", profile.standard.selector, pickFromMap(profile.standard, [meta.standardSel], ctx));
+      }
+      if (profile.source) {
+        const srcKeys = buildRegionKeys(meta.sourceSel, descr);
+        push("source", profile.source.selector, pickFromMap(profile.source, srcKeys, ctx));
+      }
+      if (profile.sourceByMedium) {
+        const medKeys = [];
+        const med = meta.mediumSel;
+        if (med) {
+          if (isDiy && (med === "UHD" || med === "Blu-ray"))
+            medKeys.push(`${med}_DIY`);
+          if (meta.standardSel === "4K" || /UHD/i.test(title))
+            medKeys.push(`${med}_4K`);
+          medKeys.push(med);
+        }
+        if (meta.standardSel === "4K")
+          medKeys.push("4K");
+        push("sourceByMedium", profile.sourceByMedium.selector, pickFromMap(profile.sourceByMedium, medKeys, ctx));
+      }
+      if (profile.sourceByType) {
+        const stKeys = [];
+        if (meta.type) {
+          const regionKeys = buildRegionKeys(meta.sourceSel, descr);
+          if (meta.mediumSel && meta.standardSel) {
+            stKeys.push(`${meta.type}_${meta.mediumSel}_${meta.standardSel}`);
+          }
+          if (meta.mediumSel)
+            stKeys.push(`${meta.type}_${meta.mediumSel}`);
+          if (meta.standardSel)
+            stKeys.push(`${meta.type}_${meta.standardSel}`);
+          if (isComplete)
+            stKeys.push(`${meta.type}_complete`);
+          for (const rk of regionKeys) {
+            if (rk)
+              stKeys.push(`${meta.type}_${rk}`);
+          }
+          stKeys.push(meta.type);
+        }
+        push("sourceByType", profile.sourceByType.selector, pickFromMap(profile.sourceByType, stKeys, ctx));
+      }
+      if (profile.processingByMedium) {
+        push("processingByMedium", profile.processingByMedium.selector, pickFromMap(profile.processingByMedium, [meta.mediumSel], ctx));
+      }
+      if (profile.processingBySource) {
+        const srcKeys = buildRegionKeys(meta.sourceSel, descr);
+        push("processingBySource", profile.processingBySource.selector, pickFromMap(profile.processingBySource, srcKeys, ctx));
+      }
+      if (profile.processingByHdr) {
+        const cfg = profile.processingByHdr;
+        const val = labels.db ? cfg.db : labels.hdr10 ? cfg.hdr10 : labels.hdr10plus ? cfg.hdr10plus : cfg.defaultValue;
+        push("processingByHdr", cfg.selector, val);
+      }
+      if (profile.processingByYear && profile.processingByYear.mode === "buckets") {
+        const matches = title.match(/\d{4}[^pi]/gi);
+        const yearStr = (_b = matches == null ? void 0 : matches[matches.length - 1]) == null ? void 0 : _b.slice(0, 4);
+        const year = yearStr ? parseInt(yearStr, 10) : NaN;
+        if (Number.isFinite(year)) {
+          const thresholds = [2011, 2001, 1981, 1961, 1941, 1921, 1901, 1851, 1800];
+          for (let idx = 0; idx < thresholds.length; idx++) {
+            if (year > thresholds[idx]) {
+              push("processingByYear", profile.processingByYear.selector, String(9 - idx));
+              break;
+            }
+          }
+        } else if (profile.processingByYear.defaultValue !== void 0) {
+          push("processingByYear", profile.processingByYear.selector, profile.processingByYear.defaultValue);
+        }
+      }
+      if (profile.team) {
+        push("team", profile.team.selector, profile.team.defaultValue);
+      }
+      return out;
+    }
     async function fillNexus(meta, config) {
+      var _a, _b;
       const formSelectors = {
         name: 'input[name="name"]',
-        smallDescr: 'input[name="small_descr"]',
-        descr: 'textarea[name="descr"]',
-        imdb: 'input[name="imdb_id"], input[name="url"][type="text"]',
-        douban: 'input[name="douban"], input[name="douban_id"], input[name="douban_url"], input[name="dburl"]',
+        smallDescr: 'input[name="small_descr"], input[name="small_desc"], input[name="subhead"]',
+        descr: 'textarea[name="descr"], textarea[name="body"]',
+        imdb: 'input[name="imdb_id"], input[name="imdbid"], input[name="imdb"], input[name="imdb_url"], input[name="imdburl"], input[name="pt_gen[imdb][link]"], input[name="url"][type="text"], input[name="url"][type="url"]',
+        douban: 'input[name="douban"], input[name="douban_id"], input[name="doubanid"], input[name="douban_url"], input[name="dburl"], input[name="url_douban"], input[name="durl"], input[name="pt_gen[douban][link]"]',
         torrent: 'input[type="file"]#file, input[name="file"], input[name="torrent"]'
       };
       const overrides = config.selectors || {};
@@ -7630,7 +8353,7 @@ ${meta.subtitle || ""}`);
         $$1(imdbSel).each((_2, el) => {
           const input = el;
           const name2 = (input.getAttribute("name") || "").toLowerCase();
-          if (name2 === "imdb_id")
+          if (name2 === "imdb_id" || name2 === "imdbid")
             input.value = imdbId || imdbUrl;
           else if (name2 === "url")
             input.value = imdbUrl || imdbId;
@@ -7644,15 +8367,62 @@ ${meta.subtitle || ""}`);
         const doubanId = meta.doubanId || extractDoubanId(meta.doubanUrl || "") || "";
         const doubanUrl = meta.doubanUrl || (doubanId ? `https://movie.douban.com/subject/${doubanId}/` : "");
         const doubanSel = overrides.doubanInput || formSelectors.douban;
+        const preferNumericDoubanId = ["TTG", "HDDolby", "BTSchool"].includes(config.name);
         $$1(doubanSel).each((_2, el) => {
           const input = el;
           const name2 = (input.getAttribute("name") || "").toLowerCase();
-          if (name2.includes("douban") && name2.includes("id"))
+          if (name2 === "doubanid" || preferNumericDoubanId && name2.includes("douban") && name2.includes("id")) {
             input.value = doubanId || doubanUrl;
-          else
+          } else {
             input.value = doubanUrl || doubanId;
+          }
           dispatchFormEvents(input);
         });
+        const ptGenVal = doubanUrl || meta.imdbUrl || (meta.imdbId ? `https://www.imdb.com/title/${meta.imdbId}/` : "");
+        if (ptGenVal) {
+          $$1('input[name="pt_gen"]').each((_2, el) => {
+            const input = el;
+            if (!input.value) {
+              input.value = ptGenVal;
+              dispatchFormEvents(input);
+            }
+          });
+        }
+      } catch {
+      }
+      try {
+        const infos = getMediainfoPictureFromDescr(descrVal, { mediumSel: meta.mediumSel });
+        const techEl = document.querySelector(
+          'textarea[name="technical_info"], textarea[name="media_info"], textarea[name="tr_nfo"]'
+        );
+        if (techEl && !techEl.value.trim()) {
+          const mi = (meta.fullMediaInfo || infos.mediainfo || "").replace(/\[\/?(quote|code|size|font|color)[^\]]*\]/gi, "").trim();
+          if (mi) {
+            techEl.value = mi;
+            dispatchFormEvents(techEl);
+          }
+        }
+        const coverEl = document.querySelector('input[name="tr_cover_url"], input[name="cover"]');
+        if (coverEl && !coverEl.value.trim()) {
+          const posterUrl = ((_a = descrVal.match(/\[img\](\S*?)\[\/img\]/i)) == null ? void 0 : _a[1]) || ((_b = meta.images) == null ? void 0 : _b[0]) || "";
+          if (posterUrl) {
+            coverEl.value = posterUrl;
+            dispatchFormEvents(coverEl);
+          }
+        }
+        const tmdbEl = document.querySelector('input[name="tmdb_url"], input[name="tmdb"]');
+        if (tmdbEl && !tmdbEl.value.trim() && (meta.tmdbUrl || meta.tmdbId)) {
+          tmdbEl.value = meta.tmdbUrl || `https://www.themoviedb.org/${meta.type === "剧集" ? "tv" : "movie"}/${meta.tmdbId}`;
+          dispatchFormEvents(tmdbEl);
+        }
+        const screensEl = document.querySelector('textarea[name="screenshots"]');
+        if (screensEl && !screensEl.value.trim() && infos.picInfo) {
+          const urls = Array.from(infos.picInfo.matchAll(/\[img\](.*?)\[\/img\]/gi)).map((m2) => m2[1].trim()).filter(Boolean);
+          if (urls.length) {
+            screensEl.value = Array.from(new Set(urls)).join("\n");
+            dispatchFormEvents(screensEl);
+          }
+        }
       } catch {
       }
       const injectTorrentFile = async () => {
@@ -7708,14 +8478,14 @@ ${meta.subtitle || ""}`);
         return mediumHits > 0 && mediumHits >= regionHits;
       };
       const pickOption = (selectName, keywords) => {
-        var _a;
+        var _a2;
         const select = findSelect(selectName);
         if (!select)
           return;
         const opts = Array.from(select.options);
         const scoreOpt = (opt) => {
-          var _a2;
-          const text = ((_a2 = opt.textContent) == null ? void 0 : _a2.trim()) || "";
+          var _a3;
+          const text = ((_a3 = opt.textContent) == null ? void 0 : _a3.trim()) || "";
           if (!text)
             return -1;
           let score = -1;
@@ -7739,7 +8509,7 @@ ${meta.subtitle || ""}`);
           }
           return score;
         };
-        const found = (_a = opts.map((o2) => ({ o: o2, s: scoreOpt(o2) })).filter((x2) => x2.s >= 0).sort((a2, b) => b.s - a2.s)[0]) == null ? void 0 : _a.o;
+        const found = (_a2 = opts.map((o2) => ({ o: o2, s: scoreOpt(o2) })).filter((x2) => x2.s >= 0).sort((a2, b) => b.s - a2.s)[0]) == null ? void 0 : _a2.o;
         if (found) {
           found.selected = true;
           try {
@@ -7750,6 +8520,208 @@ ${meta.subtitle || ""}`);
           }
         }
       };
+      const profileHandledFields = /* @__PURE__ */ new Set();
+      const matchTeamOption = (select, titleStr, mode = "standard") => {
+        if (!titleStr)
+          return;
+        const opts = Array.from(select.options);
+        if (mode === "okpt") {
+          const okptTeams = [
+            ["M-team", /-(.*mteam|mpad|tnp|BMDru|MWEB)/i],
+            ["CMCT", /-(CMCT|cmctv)/i],
+            ["HDSky", /-(hds|.*@HDSky)/i],
+            ["CHDBits", /-(CHD|.*@CHDBits)|@CHDWEB/i],
+            ["OurBits", /(-Ao|-.*OurBits|-FLTTH|-IloveTV|OurTV|-IloveHD|OurPad|-MGs)$/i],
+            ["TTG", /-(WiKi|DoA|.*TTG|NGB|ARiN)/i],
+            ["HDChina", /-(HDC)/i],
+            ["PterClub", /-(Pter|.*Pter)/i],
+            ["HDHome", /(-hdh|.*@HDHome)/i],
+            ["PThome", /(-pthome|-pth|.*@pth)/i],
+            ["Audiences", /(-Audies|.*@Audies|-ADE|-ADWeb|.*@ADWeb)/i],
+            ["PTLGS", /(-PTLGS|.*@PTLGS)/i],
+            ["HDDolby", /-DBTV|-QHstudIo|Dream$|.*@dream/i],
+            ["FRDS", /-FRDS|@FRDS/i],
+            ["Ying", /Ying(WEB|DIY|TV|MV|MUSIC)?$/i],
+            ["Red Leaves", /(RLWEB|RLeaves|RLTV|-R²)$/i],
+            ["UBits", /@UBits|-UBits|-UBWEB/i],
+            ["AGSV", /AGSV(PT|E|WEB|REMUX|Rip|TV|DIY|MUS)?$/i]
+          ];
+          if (/PandaMoon|HDSpace|HDClub|LCHD/i.test(titleStr))
+            return;
+          for (const [label, re] of okptTeams) {
+            if (!re.test(titleStr))
+              continue;
+            const hit = opts.find((o2) => new RegExp(label, "i").test((o2.textContent || "").trim()));
+            if (hit) {
+              select.value = hit.value;
+              hit.selected = true;
+              dispatchFormEvents(select);
+              return;
+            }
+          }
+          return;
+        }
+        const tail = mode === "muxuege" ? titleStr.split(/Blu-ray/i).pop() || titleStr : titleStr.split(/(?:19|20)\d{2}/).pop() || titleStr;
+        const tailLower = tail.toLowerCase();
+        for (const opt of opts) {
+          const label = (opt.textContent || "").trim();
+          if (!label || label.length < 2 || /^(请选择|其他|其它|other|none|---)$/i.test(label))
+            continue;
+          if (label === "DIY" || label === "REMUX")
+            continue;
+          if (!tailLower.includes(label.toLowerCase()))
+            continue;
+          if (/PSY|LCHD/.test(tail) && label === "CHD")
+            continue;
+          if (/PandaMoon/.test(tail) && label === "Panda")
+            continue;
+          if (/HDSpace/i.test(tail) && /HDS/i.test(label))
+            continue;
+          if (/HDClub/i.test(tail) && /HDC/i.test(label))
+            continue;
+          if (/REPACK/i.test(tail) && /PACK/i.test(label))
+            continue;
+          select.value = opt.value;
+          opt.selected = true;
+          dispatchFormEvents(select);
+          return;
+        }
+      };
+      if (config.nexusProfile) {
+        const profile = config.nexusProfile;
+        const assignments = resolveNexusProfileValues(meta, profile);
+        const resolveSelectByName = (selectorName) => {
+          if (selectorName === "type") {
+            return document.getElementById("browsecat") || document.querySelector('select[name="type"]');
+          }
+          if (selectorName === "specialcat") {
+            return document.getElementById("specialcat") || document.querySelector('select[name="specialcat"]');
+          }
+          const exact = document.querySelector(`select[name="${selectorName}"]`);
+          if (exact)
+            return exact;
+          const prefix = document.querySelector(`select[name^="${selectorName}"]`);
+          if (prefix)
+            return prefix;
+          return findSelect(selectorName.replace(/\[\d+\]$/, ""));
+        };
+        const applyFieldValue = (select, val) => {
+          if (typeof val === "string") {
+            const opt = Array.from(select.options).find((o2) => o2.value === val);
+            if (!opt)
+              return false;
+            select.value = opt.value;
+          } else {
+            const opt = select.options[val.index];
+            if (!opt)
+              return false;
+            select.selectedIndex = val.index;
+            opt.selected = true;
+          }
+          dispatchFormEvents(select);
+          return true;
+        };
+        const hasSpecialcat = assignments.some((a2) => a2.field === "specialcat");
+        const applyProfilePass = () => {
+          var _a2, _b2, _c, _d, _e, _f, _g, _h, _i;
+          if (hasSpecialcat && profile.specialcatMode5) {
+            $$1("tr.mode_4").hide();
+            $$1("tr.mode_5").show();
+          }
+          for (const item of assignments) {
+            const sel = resolveSelectByName(item.selector);
+            if (!sel)
+              continue;
+            if (item.field === "specialcat") {
+              sel.disabled = false;
+              const browsecat = document.getElementById("browsecat");
+              if (browsecat)
+                browsecat.disabled = true;
+            } else if (item.field === "type") {
+              const specialcat = document.getElementById("specialcat");
+              if (specialcat)
+                specialcat.disabled = true;
+              try {
+                (_a2 = window.disableother) == null ? void 0 : _a2.call(window, "browsecat", "specialcat");
+              } catch {
+              }
+            }
+            if (applyFieldValue(sel, item.value)) {
+              profileHandledFields.add(item.field);
+              if (item.field === "team" && ((_b2 = profile.team) == null ? void 0 : _b2.matchOption) !== false) {
+                matchTeamOption(sel, titleVal, ((_c = profile.team) == null ? void 0 : _c.matchMode) || "standard");
+              }
+            }
+          }
+          if (((_d = profile.processingByYear) == null ? void 0 : _d.mode) === "optionText") {
+            const sel = resolveSelectByName(profile.processingByYear.selector);
+            if (sel) {
+              if (profile.processingByYear.defaultValue !== void 0) {
+                applyFieldValue(sel, profile.processingByYear.defaultValue);
+              }
+              const yr = (_e = titleVal.match(/(?:19|20)\d{2}/g)) == null ? void 0 : _e.pop();
+              if (yr) {
+                const hit = Array.from(sel.options).find((o2) => (o2.textContent || "").includes(yr));
+                if (hit) {
+                  sel.value = hit.value;
+                  hit.selected = true;
+                  dispatchFormEvents(sel);
+                }
+              }
+              profileHandledFields.add("processingByYear");
+            }
+          }
+          if (profile.source && !meta.sourceSel) {
+            const sel = resolveSelectByName(profile.source.selector);
+            const reg = descrVal.match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|◎產.{0,5}?地)([^\r\n]+)/);
+            const region = ((_h = (_g = (_f = reg == null ? void 0 : reg[1]) == null ? void 0 : _f.split("/")[0]) == null ? void 0 : _g.split(":").pop()) == null ? void 0 : _h.trim()) || "";
+            if (sel && region) {
+              const hit = Array.from(sel.options).find((o2) => {
+                var _a3;
+                const part = ((_a3 = (o2.textContent || "").split(/[/（(]/).pop()) == null ? void 0 : _a3.trim()) || "";
+                return part.length >= 2 && region.includes(part);
+              });
+              if (hit) {
+                sel.value = hit.value;
+                hit.selected = true;
+                dispatchFormEvents(sel);
+                profileHandledFields.add("source");
+              }
+            }
+          }
+          if ((_i = profile.customTags) == null ? void 0 : _i.length) {
+            const labels = getMetaLabels(meta);
+            const teamSel = profile.team ? resolveSelectByName(profile.team.selector) : null;
+            for (const tag of profile.customTags) {
+              let active = false;
+              if (tag.when === "4k_sdr")
+                active = meta.standardSel === "4K" && /SDR/i.test(descrVal);
+              else if (tag.when === "hdr10")
+                active = Boolean(labels.hdr10 || /HDR10/i.test(descrVal));
+              else if (tag.when === "dv")
+                active = Boolean(labels.db || /Dolby Vision|\bDV\b/i.test(`${titleVal}
+${descrVal}`));
+              else if (tag.when === "effects_sub")
+                active = /特效字幕/.test(smallDescrVal);
+              else if (tag.when === "jp_lang")
+                active = /◎语.*?言.*?日语/.test(descrVal);
+              else if (tag.when === "kr_lang")
+                active = /◎语.*?言.*?韩语/.test(descrVal);
+              else if (tag.when === "agsv_ark")
+                active = [29, 30, 31].includes(Number((teamSel == null ? void 0 : teamSel.value) || 0));
+              if (!active)
+                continue;
+              const cb = document.querySelector(tag.selector);
+              if (cb && !cb.checked) {
+                cb.checked = true;
+                dispatchFormEvents(cb);
+              }
+            }
+          }
+        };
+        applyProfilePass();
+        window.setTimeout(applyProfilePass, 350);
+      }
       const typeMap = {
         电影: [/Movie/i, /电影/],
         剧集: [/TV/i, /Series/i, /剧集/],
@@ -7764,7 +8736,7 @@ ${meta.subtitle || ""}`);
         软件: [/Software/i, /软件/],
         学习: [/Study/i, /学习/]
       };
-      if (meta.type && typeMap[meta.type]) {
+      if (!profileHandledFields.has("type") && !profileHandledFields.has("specialcat") && meta.type && typeMap[meta.type]) {
         pickOption("type", typeMap[meta.type]);
         pickOption("category", typeMap[meta.type]);
         pickOption("cat", typeMap[meta.type]);
@@ -7780,7 +8752,7 @@ ${meta.subtitle || ""}`);
         DVD: [/DVD/i, /DVDRip/i],
         CD: [/CD/i]
       };
-      if (meta.mediumSel && mediumMap[meta.mediumSel]) {
+      if (!profileHandledFields.has("medium") && !profileHandledFields.has("sourceByMedium") && !profileHandledFields.has("sourceByType") && meta.mediumSel && mediumMap[meta.mediumSel]) {
         pickOption("medium_sel", mediumMap[meta.mediumSel]);
         pickOption("medium", mediumMap[meta.mediumSel]);
         const sourceSel = findSelect("source_sel");
@@ -7797,7 +8769,7 @@ ${meta.subtitle || ""}`);
         "720p": [/720p/i],
         SD: [/SD/i, /480/i, /576/i]
       };
-      if (meta.standardSel && standardMap[meta.standardSel]) {
+      if (!profileHandledFields.has("standard") && meta.standardSel && standardMap[meta.standardSel]) {
         pickOption("standard_sel", standardMap[meta.standardSel]);
         pickOption("standard", standardMap[meta.standardSel]);
       }
@@ -7810,7 +8782,7 @@ ${meta.subtitle || ""}`);
         "MPEG-2": [/MPEG-?2/i],
         XVID: [/XVID/i]
       };
-      if (meta.codecSel && codecMap[meta.codecSel]) {
+      if (!profileHandledFields.has("codec") && meta.codecSel && codecMap[meta.codecSel]) {
         pickOption("codec_sel", codecMap[meta.codecSel]);
         pickOption("codec", codecMap[meta.codecSel]);
       }
@@ -7829,7 +8801,7 @@ ${meta.subtitle || ""}`);
         WAV: [/WAV/i],
         MP3: [/MP3/i]
       };
-      if (meta.audioCodecSel && audioMap[meta.audioCodecSel]) {
+      if (!profileHandledFields.has("audio") && meta.audioCodecSel && audioMap[meta.audioCodecSel]) {
         pickOption("audiocodec_sel", audioMap[meta.audioCodecSel]);
         pickOption("audio", audioMap[meta.audioCodecSel]);
       }
@@ -7853,7 +8825,7 @@ ${meta.subtitle || ""}`);
       } catch {
       }
       try {
-        if (meta.sourceSel) {
+        if (!profileHandledFields.has("source") && !profileHandledFields.has("sourceByMedium") && !profileHandledFields.has("sourceByType") && !profileHandledFields.has("processingBySource") && meta.sourceSel) {
           const regionKw = (() => {
             const src = String(meta.sourceSel || "");
             if (/大陆|内地|中国大陆|中国(?!香港|台湾|澳门)|华语/i.test(src))
@@ -7874,8 +8846,10 @@ ${meta.subtitle || ""}`);
               return [/欧美|歐美|美国|英国|欧洲|US|USA|UK|Europe/i];
             return [src, new RegExp(src, "i")];
           })();
-          pickOption("team_sel", regionKw);
-          pickOption("team", regionKw);
+          if (!profileHandledFields.has("team")) {
+            pickOption("team_sel", regionKw);
+            pickOption("team", regionKw);
+          }
           pickOption("region", regionKw);
           pickOption("area", regionKw);
           const sourceSel = findSelect("source_sel");
@@ -7891,12 +8865,14 @@ ${meta.subtitle || ""}`);
         const retry2 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
         retry2(() => {
           const inputs = Array.from(
-            document.querySelectorAll('input[type="checkbox"][name="tags[]"], input[type="checkbox"][name="tags[4][]"]')
+            document.querySelectorAll(
+              'input[type="checkbox"][name="tags[]"], input[type="checkbox"][name="tags[4][]"], input[type="checkbox"][name="span[]"]'
+            )
           );
           if (!inputs.length)
             return;
           const getInputText = (el) => {
-            var _a, _b;
+            var _a2;
             let t2 = "";
             if (el.id) {
               const labels2 = Array.from(document.querySelectorAll("label"));
@@ -7905,33 +8881,54 @@ ${meta.subtitle || ""}`);
                 t2 = byFor.textContent || "";
             }
             if (!t2)
-              t2 = ((_a = el.closest("label")) == null ? void 0 : _a.textContent) || "";
-            if (!t2)
-              t2 = ((_b = el.parentElement) == null ? void 0 : _b.textContent) || "";
+              t2 = ((_a2 = el.closest("label")) == null ? void 0 : _a2.textContent) || "";
+            if (!t2) {
+              const chunks = [];
+              let cur = el.nextSibling;
+              while (cur) {
+                if (cur.nodeName === "INPUT" || cur.nodeName === "BR")
+                  break;
+                if (cur instanceof Element && cur.querySelector("input"))
+                  break;
+                const part = (cur.textContent || "").trim();
+                if (part)
+                  chunks.push(part);
+                if (chunks.length >= 2)
+                  break;
+                cur = cur.nextSibling;
+              }
+              t2 = chunks.join(" ");
+            }
             return t2.replace(/\s+/g, " ").trim();
           };
-          const setTag = (on, valueAliases, labelPattern) => {
+          const setTag = (on, semanticValues, numericFallbackValues, labelPattern) => {
             if (!on)
               return;
-            const aliasSet = new Set(valueAliases.map((v2) => String(v2).toLowerCase()));
+            const semanticSet = new Set(semanticValues.map((v2) => v2.toLowerCase()));
+            const numericSet = new Set(numericFallbackValues);
             for (const el of inputs) {
-              const val = (el.value || "").toLowerCase();
+              const val = (el.value || "").trim().toLowerCase();
               const txt = getInputText(el);
-              if (!aliasSet.has(val) && !labelPattern.test(txt))
+              const matchedBySemantic = semanticSet.has(val);
+              const matchedByLabel = !!txt && labelPattern.test(txt);
+              const matchedByNumericFallback = !txt && numericSet.has(val);
+              if (!matchedBySemantic && !matchedByLabel && !matchedByNumericFallback)
                 continue;
-              el.checked = true;
-              el.dispatchEvent(new Event("change", { bubbles: true }));
-              el.dispatchEvent(new Event("input", { bubbles: true }));
+              if (!el.checked) {
+                el.checked = true;
+                el.dispatchEvent(new Event("change", { bubbles: true }));
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+              }
             }
           };
-          setTag(!!labels.gy, ["gy", "5"], /(国.?语|mandarin|国语配音|中文配音)/i);
-          setTag(!!labels.yy, ["yy", "11"], /(粤语|cantonese)/i);
-          setTag(!!labels.zz, ["zz", "6"], /(中字|字幕|中文字幕|chinese.?sub)/i);
-          setTag(!!labels.diy, ["diy", "4", "13"], /(DIY|自制|原盘DIY)/i);
-          setTag(!!labels.hdr10, ["hdr10", "7", "9"], /HDR10/i);
-          setTag(!!labels.hdr10plus, ["hdrm", "10", "17", "20"], /(HDR10\+|HDR\+)/i);
-          setTag(!!labels.db, ["db", "8", "9", "11", "12", "15"], /(杜比视界|Dolby.?Vision|DoVi|DV)/i);
-          setTag(!!labels.complete, ["wj", "13", "17", "20"], /(完结|全集|pack|complete)/i);
+          setTag(!!labels.gy, ["gy"], ["5"], /(国.?语|mandarin|国语配音|中文配音)/i);
+          setTag(!!labels.yy, ["yy"], ["11"], /(粤语|cantonese)/i);
+          setTag(!!labels.zz, ["zz"], ["6"], /(中字|中文字幕|chinese.?sub)/i);
+          setTag(!!labels.diy, ["diy"], ["4"], /(DIY|原盘DIY)/i);
+          setTag(!!labels.hdr10, ["hdr10"], ["7"], /(?:\bHDR10\b(?!\+)|^HDR$)/i);
+          setTag(!!labels.hdr10plus, ["hdrm"], ["10"], /(HDR10\+|HDR\+)/i);
+          setTag(!!labels.db, ["db"], ["8"], /(杜比视界|Dolby.?Vision|DoVi|\bDV\b)/i);
+          setTag(!!labels.complete, ["wj"], ["13"], /(完结|全集|pack|complete)/i);
         });
       } catch {
       }
@@ -8097,6 +9094,7 @@ ${meta.subtitle || ""}`);
         }
       }
       static async setValue(key, value) {
+        let gmErr = null;
         try {
           if (typeof GM_setValue !== "undefined") {
             GM_setValue(key, value);
@@ -8106,11 +9104,14 @@ ${meta.subtitle || ""}`);
             await GM.setValue(key, value);
             return;
           }
-        } catch {
+        } catch (e2) {
+          gmErr = e2;
         }
         try {
           localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-        } catch {
+          return;
+        } catch (lsErr) {
+          throw gmErr || lsErr;
         }
       }
       static async setClipboard(text) {
@@ -8186,6 +9187,8117 @@ ${meta.subtitle || ""}`);
       __proto__: null,
       GMAdapter
     }, Symbol.toStringTag, { value: "Module" }));
+    const NEXUS_FILL_PROFILES = {
+      "HDDolby": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "410",
+            "学习": "411",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "2",
+            "Remux": "3",
+            "Encode": "10",
+            "WEB-DL": "6",
+            "HDTV": "5",
+            "DVD": "8",
+            "CD": "9"
+          },
+          "defaultValue": "11",
+          "titleOverrides": [
+            {
+              "pattern": "webrip",
+              "whenMedium": "WEB-DL",
+              "value": "7"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "H266": "13",
+            "VC-1": "5",
+            "MPEG-2": "6",
+            "XVID": "7",
+            "AV1": "11",
+            "VP9": "12",
+            "MPEG-4": "6"
+          },
+          "defaultValue": "7"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "2",
+            "DTS-X": "15",
+            "DTS-HDMA:X 7.1": "15",
+            "TrueHD": "2",
+            "DTS-HDMA": "1",
+            "DTS-HD": "1",
+            "DTS-HDHR": "1",
+            "DTS": "4",
+            "AC3": "5",
+            "AAC": "6",
+            "LPCM": "3",
+            "Flac": "7",
+            "APE": "8",
+            "WAV": "9",
+            "MP3": "10",
+            "M4A": "11",
+            "OPUS": "13",
+            "DDP": "14"
+          },
+          "defaultValue": "12",
+          "titleOverrides": [
+            {
+              "pattern": "DDP|DD\\+|EAC3",
+              "value": "14"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": "6",
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "3",
+            "720p": "4",
+            "SD": "5"
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "8"
+        },
+        "customTags": [
+          { "selector": 'input[name="tags[]"][value="tx"]', "when": "effects_sub" },
+          { "selector": 'input[name="tags[]"][value="ja"]', "when": "jp_lang" },
+          { "selector": 'input[name="tags[]"][value="ko"]', "when": "kr_lang" }
+        ]
+      },
+      "PThome": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "408",
+            "软件": "411",
+            "游戏": "410",
+            "学习": "412",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "12",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "15",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8",
+            "UHD_DIY": "13",
+            "Blu-ray_DIY": "14"
+          },
+          "defaultValue": "11"
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "20",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "19",
+            "TrueHD": "20",
+            "DTS-HDMA": "19",
+            "DTS-HD": "19",
+            "DTS-HDHR": "19",
+            "DTS": "3",
+            "AC3": "18",
+            "AAC": "6",
+            "LPCM": "21",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "22",
+            "MP3": "23",
+            "M4A": "24"
+          },
+          "defaultValue": "7",
+          "titleOverrides": [
+            {
+              "pattern": "Atmos",
+              "value": "20"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": "10",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "11"
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "5"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "书籍": "508"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "m4a|mp3",
+              "inField": "descr",
+              "whenType": "书籍",
+              "value": "507"
+            }
+          ]
+        }
+      },
+      "UBits": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "HD.?DVD",
+              "value": "2"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "7",
+            "X265": "7",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "9",
+            "DTS-HDMA:X 7.1": "9",
+            "TrueHD": "10",
+            "DTS-HDMA": "11",
+            "DTS-HD": "11",
+            "DTS-HDHR": "11",
+            "DTS": "3",
+            "AC3": "14",
+            "AAC": "6",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "12"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "2",
+            "台湾": "3",
+            "港台": "2",
+            "日本": "5",
+            "韩国": "6",
+            "欧美": "4",
+            "印度": "8"
+          },
+          "defaultValue": "11"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "customTags": [
+          {
+            "selector": 'input[name="tags[]"][value="7"]',
+            "when": "4k_sdr"
+          }
+        ]
+      },
+      "BTSchool": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "405",
+            "剧集": "406",
+            "动漫": "407",
+            "综艺": "412",
+            "纪录": "408",
+            "音乐": "409",
+            "体育": "410",
+            "软件": "404",
+            "游戏": "411",
+            "学习": "402"
+          },
+          "defaultValue": "415"
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "12",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "defaultValue": "11"
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "10",
+            "X265": "10",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "11",
+            "DTS-X": "3",
+            "DTS-HDMA:X 7.1": "3",
+            "TrueHD": "11",
+            "DTS-HDMA": "3",
+            "DTS-HD": "3",
+            "DTS-HDHR": "3",
+            "DTS": "3",
+            "AC3": "10",
+            "AAC": "6",
+            "LPCM": "5",
+            "Flac": "1",
+            "APE": "2",
+            "MP3": "4"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": "5",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "6"
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "12"
+        }
+      },
+      "HDArea": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影_UHD": "300",
+            "电影_Blu-ray": "401",
+            "电影_Remux": "415",
+            "电影_WEB-DL": "412",
+            "电影_HDTV": "413",
+            "电影_DVD": "414",
+            "电影_4K": "300",
+            "电影_1080p": "410",
+            "电影_720p": "411",
+            "电影": "410",
+            "剧集": "402",
+            "纪录": "404",
+            "动漫": "405",
+            "综艺": "403",
+            "音乐": "408",
+            "MV": "406",
+            "体育": "407"
+          },
+          "defaultValue": "409",
+          "titleOverrides": [
+            {
+              "pattern": "pad$|ipad",
+              "whenType": "电影",
+              "value": "417"
+            }
+          ]
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "9",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "7",
+            "X264": "7",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "MPEG-4": "1",
+            "XVID": "3",
+            "AV1": "8",
+            "VP9": "9"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "10",
+            "Atmos_DDP": "15",
+            "DDP_Atmos": "15",
+            "DTS-X": "12",
+            "DTS-HDMA:X 7.1": "12",
+            "TrueHD": "7",
+            "DTS-HDMA": "4",
+            "DTS-HD": "4",
+            "DTS-HDHR": "13",
+            "DTS": "3",
+            "AC3": "5",
+            "AC3_2.0": "11",
+            "DDP": "16",
+            "AAC": "6",
+            "LPCM": "8",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "9",
+            "MP3": "21",
+            "OPUS": "25"
+          },
+          "defaultValue": "24",
+          "titleOverrides": [
+            {
+              "pattern": "DDP|DD\\+|E-?AC-?3",
+              "value": "16"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "6"
+        }
+      },
+      "HDfans": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "417",
+            "综艺": "416",
+            "纪录": "403",
+            "音乐": "406",
+            "体育": "418",
+            "MV": "407",
+            "软件": "419",
+            "游戏": "421",
+            "学习": "404",
+            "书籍": "423"
+          },
+          "defaultValue": "410",
+          "titleOverrides": [
+            {
+              "pattern": "m4a|mp3",
+              "inField": "descr",
+              "whenType": "书籍",
+              "value": "405"
+            }
+          ]
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "17",
+            "UHD_DIY": "18",
+            "UHD_Remux": "19",
+            "Blu-ray": "21",
+            "Blu-ray_DIY": "22",
+            "Blu-ray_Remux": "23",
+            "Remux": "23",
+            "HDTV": "6",
+            "WEB-DL": "5",
+            "DVD": "7",
+            "CD": "9",
+            "Encode_4K": "20",
+            "Encode_1080p": "24",
+            "Encode_1080i": "24",
+            "Encode_720p": "25",
+            "Encode": "24"
+          },
+          "defaultValue": "10"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "3",
+            "X265": "4",
+            "H264": "1",
+            "X264": "2",
+            "VC-1": "5",
+            "MPEG-2": "10",
+            "MPEG-4": "11",
+            "XVID": "12",
+            "AV1": "14"
+          },
+          "defaultValue": "13"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "1",
+            "DTS-X": "3",
+            "DTS-HDMA:X 7.1": "3",
+            "TrueHD": "6",
+            "DTS-HDMA": "4",
+            "DTS-HD": "5",
+            "DTS-HDHR": "5",
+            "DTS": "2",
+            "AC3": "10",
+            "AAC": "11",
+            "LPCM": "7",
+            "Flac": "12",
+            "APE": "13",
+            "WAV": "14",
+            "OGG": "15",
+            "MP3": "17",
+            "ALAC": "25",
+            "M4A": "24",
+            "DDP": "21",
+            "DDP_Atmos": "23",
+            "Atmos_DDP": "23"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "DDP|DD\\+",
+              "value": "21"
+            },
+            {
+              "pattern": " DD ",
+              "flags": "",
+              "value": "19"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "4",
+            "720p": "5",
+            "SD": "6"
+          },
+          "defaultValue": "7"
+        },
+        "processingBySource": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "大陆": "1",
+            "美国": "2",
+            "英国": "3",
+            "香港": "4",
+            "台湾": "5",
+            "港台": "4",
+            "日本": "6",
+            "韩国": "7",
+            "欧美": "8",
+            "欧洲": "8",
+            "印度": "10",
+            "新加坡": "11",
+            "马来西亚": "12"
+          },
+          "defaultValue": "9"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "27"
+        }
+      },
+      "HDTime": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "414",
+            "游戏": "410",
+            "学习": "411",
+            "书籍": "411",
+            "电影_Blu-ray": "424",
+            "电影_UHD": "424"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "HD ?DVD",
+              "whenMedium": "DVD",
+              "value": "2"
+            },
+            {
+              "pattern": "webrip",
+              "whenMedium": "WEB-DL",
+              "value": "7"
+            },
+            {
+              "pattern": "minibd",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "12",
+            "X265": "12",
+            "H264": "1",
+            "X264": "1",
+            "H266": "16",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "15",
+            "VP9": "14"
+          },
+          "defaultValue": "5",
+          "titleOverrides": [
+            {
+              "pattern": "10.?bit",
+              "whenCodec": "X264",
+              "value": "11"
+            }
+          ]
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "10",
+            "DTS-HDMA:X 7.1": "10",
+            "TrueHD": "9",
+            "DTS-HDMA": "10",
+            "DTS-HD": "10",
+            "DTS-HDHR": "10",
+            "DTS": "3",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7",
+            "MP3": "4",
+            "OGG": "5",
+            "M4A": "7",
+            "OPUS": "15",
+            "DDP": "12"
+          },
+          "defaultValue": "7",
+          "titleOverrides": [
+            {
+              "pattern": "DDP|DD\\+|EAC3",
+              "value": "12"
+            }
+          ]
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "HDU": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 2
+            },
+            "动漫": {
+              "index": 5
+            },
+            "综艺": {
+              "index": 3
+            },
+            "纪录": {
+              "index": 4
+            },
+            "音乐": {
+              "index": 8
+            },
+            "体育": {
+              "index": 7
+            },
+            "MV": {
+              "index": 6
+            },
+            "软件": {
+              "index": 9
+            },
+            "游戏": {
+              "index": 10
+            },
+            "学习": {
+              "index": 9
+            },
+            "书籍": {
+              "index": 9
+            }
+          },
+          "defaultValue": {
+            "index": 9
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": {
+              "index": 2
+            },
+            "Blu-ray": {
+              "index": 1
+            },
+            "DVD": {
+              "index": 4
+            },
+            "HDTV": {
+              "index": 3
+            },
+            "CD": {
+              "index": 14
+            },
+            "Remux_4K_剧集": {
+              "index": 7
+            },
+            "Remux_4K": {
+              "index": 6
+            },
+            "Remux_剧集": {
+              "index": 8
+            },
+            "Remux": {
+              "index": 5
+            },
+            "WEB-DL_剧集": {
+              "index": 12
+            },
+            "WEB-DL": {
+              "index": 11
+            },
+            "Encode_剧集": {
+              "index": 10
+            },
+            "Encode": {
+              "index": 9
+            }
+          },
+          "defaultValue": {
+            "index": 9
+          }
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": {
+              "index": 2
+            },
+            "X265": {
+              "index": 2
+            },
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 4
+            },
+            "VC-1": {
+              "index": 3
+            },
+            "MPEG-2": {
+              "index": 6
+            },
+            "XVID": {
+              "index": 5
+            },
+            "AV1": {
+              "index": 7
+            }
+          },
+          "defaultValue": {
+            "index": 7
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": {
+              "index": 3
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 1
+            },
+            "TrueHD": {
+              "index": 3
+            },
+            "DTS-HDMA": {
+              "index": 2
+            },
+            "DTS-HD": {
+              "index": 6
+            },
+            "DTS-HDHR": {
+              "index": 5
+            },
+            "DTS": {
+              "index": 5
+            },
+            "AC3": {
+              "index": 6
+            },
+            "AAC": {
+              "index": 7
+            },
+            "LPCM": {
+              "index": 4
+            },
+            "Flac": {
+              "index": 8
+            },
+            "APE": {
+              "index": 9
+            },
+            "WAV": {
+              "index": 10
+            },
+            "MP3": {
+              "index": 10
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": {
+              "index": 3
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 4
+            },
+            "SD": {
+              "index": 5
+            }
+          },
+          "titleOverrides": [
+            {
+              "pattern": "pad$|ipad",
+              "value": {
+                "index": 6
+              }
+            }
+          ]
+        },
+        "processingBySource": {
+          "selector": "processing_sel",
+          "map": {
+            "大陆": {
+              "index": 1
+            },
+            "香港": {
+              "index": 2
+            },
+            "台湾": {
+              "index": 2
+            },
+            "港台": {
+              "index": 2
+            },
+            "日本": {
+              "index": 4
+            },
+            "韩国": {
+              "index": 5
+            },
+            "欧美": {
+              "index": 3
+            },
+            "印度": {
+              "index": 6
+            },
+            "日韩": {
+              "index": 5
+            }
+          },
+          "defaultValue": {
+            "index": 8
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "5"
+        }
+      },
+      "HDVideo": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "11",
+            "Remux": "12",
+            "Encode": "13",
+            "WEB-DL": "14",
+            "HDTV": "16",
+            "DVD": "0",
+            "CD": "20"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "7",
+            "X264": "7",
+            "VC-1": "8",
+            "MPEG-2": "9",
+            "XVID": "11",
+            "AV1": "11"
+          },
+          "defaultValue": "11"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "14",
+            "DTS-X": "16",
+            "DTS-HDMA:X 7.1": "16",
+            "TrueHD": "11",
+            "DTS-HDMA": "3",
+            "DTS-HD": "17",
+            "DTS-HDHR": "15",
+            "DTS": "17",
+            "AC3": "9",
+            "AAC": "21",
+            "LPCM": "8",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "12",
+            "MP3": "18",
+            "M4A": "7",
+            "DDP": "10"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "6",
+            "1080p": "8",
+            "1080i": "9",
+            "720p": "10",
+            "SD": "11"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "4"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "23",
+            "Blu-ray_4K": "23",
+            "Remux_4K": "23",
+            "Encode_4K": "23",
+            "Blu-ray": "22",
+            "Remux": "22",
+            "Encode": "22",
+            "WEB-DL": "24",
+            "DVD": "25",
+            "HDTV": "26",
+            "CD": "27"
+          },
+          "defaultValue": "28"
+        },
+        "customTags": [
+          {
+            "selector": 'input[name="tags[]"][value="11"]',
+            "when": "hdr10"
+          },
+          {
+            "selector": 'input[name="tags[]"][value="12"]',
+            "when": "dv"
+          }
+        ]
+      },
+      "PigGo": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "11",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "11",
+            "HDTV": "8",
+            "DVD": "11",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "DVDr",
+              "whenMedium": "DVD",
+              "value": "7"
+            },
+            {
+              "pattern": "webrip",
+              "whenMedium": "WEB-DL",
+              "value": "7"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "5",
+            "MPEG-2": "5",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "10",
+            "DTS-HDMA:X 7.1": "9",
+            "TrueHD": "10",
+            "DTS-HDMA": "9",
+            "DTS-HD": "9",
+            "DTS-HDHR": "9",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "11",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "1",
+            "Encode": "1",
+            "HDTV": "5",
+            "WEB-DL": "7",
+            "DVD": "3"
+          },
+          "defaultValue": "6"
+        },
+        "processingByHdr": {
+          "selector": "processing_sel[4]",
+          "db": "4",
+          "hdr10": "2",
+          "hdr10plus": "3",
+          "defaultValue": "1"
+        }
+      },
+      "QingWa": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "7",
+            "VP9": "8",
+            "MPEG-4": "3"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "7",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "9",
+            "TrueHD": "12",
+            "DTS-HDMA": "10",
+            "DTS-HD": "5",
+            "DTS-HDHR": "10",
+            "DTS": "14",
+            "AC3": "15",
+            "AAC": "17",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "18",
+            "WAV": "19",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "16",
+            "Atmos_TrueHD": "11",
+            "OPUS": "20"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "7",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "8",
+            "Remux": "9",
+            "Encode": "10",
+            "WEB-DL": "7",
+            "HDTV": "4",
+            "DVD": "2",
+            "CD": "3"
+          },
+          "defaultValue": "6"
+        }
+      },
+      "PTLGS": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406",
+            "软件": "0",
+            "游戏": "0",
+            "学习": "0",
+            "书籍": "0"
+          },
+          "defaultValue": "0"
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "14",
+            "Blu-ray": "14",
+            "Remux": "8",
+            "Encode": "5",
+            "WEB-DL": "4",
+            "HDTV": "3",
+            "DVD": "2",
+            "CD": "15"
+          },
+          "defaultValue": "12",
+          "titleOverrides": [
+            {
+              "pattern": "webrip",
+              "value": "7"
+            },
+            {
+              "pattern": "tvrip",
+              "value": "2"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "7",
+            "X264": "7",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "12",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "12",
+            "DTS-HDMA": "10",
+            "DTS-HD": "10",
+            "DTS-HDHR": "10",
+            "DTS": "19",
+            "AC3": "9",
+            "AAC": "11",
+            "LPCM": "8",
+            "Flac": "13",
+            "APE": "14",
+            "WAV": "1",
+            "MP3": "6",
+            "M4A": "7"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "13"
+        }
+      },
+      "ZMPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "417",
+            "综艺": "403",
+            "纪录": "422",
+            "音乐": "423",
+            "体育": "409",
+            "MV": "423",
+            "软件": "425",
+            "游戏": "426",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409",
+          "titleOverrides": [
+            {
+              "pattern": "m4a|mp3",
+              "inField": "descr",
+              "whenType": "书籍",
+              "value": "424"
+            }
+          ]
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "DVDr",
+              "whenMedium": "DVD",
+              "value": "6"
+            },
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "7",
+            "DTS-HDMA:X 7.1": "3",
+            "TrueHD": "7",
+            "DTS-HDMA": "3",
+            "DTS-HD": "3",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "7",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "8",
+            "SD": "7"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "ICC": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "dvdr",
+              "whenMedium": "DVD",
+              "value": "6"
+            },
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "processingByYear": {
+          "selector": "processing_sel[5]",
+          "mode": "buckets"
+        }
+      },
+      "AGSV": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "411",
+            "体育": "407",
+            "MV": "406",
+            "短剧": "419"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "defaultValue": "13"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "17",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "9",
+            "DTS-HDMA": "8",
+            "DTS-HD": "7",
+            "DTS-HDHR": "8",
+            "DTS": "3",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "10",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "15",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "19"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "8"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "22"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "软件": "412",
+            "游戏": "413",
+            "书籍": "415",
+            "学习": "417"
+          }
+        },
+        "customTags": [
+          {
+            "selector": 'input[name="tags[4][]"][value="52"]',
+            "when": "agsv_ark"
+          }
+        ]
+      },
+      "SoulVoice": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "409",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "407",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "Encode": "7",
+            "audio_Flac": "10",
+            "audio_APE": "10"
+          },
+          "defaultValue": "12",
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            },
+            {
+              "pattern": "dsd",
+              "whenType": "音乐",
+              "value": "11"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "5",
+            "MPEG-2": "5",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "4",
+            "4K": "3",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "4",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "customTags": [
+          {
+            "selector": 'input[name="tags[4][]"][value="9"]',
+            "when": "effects_sub"
+          }
+        ]
+      },
+      "PTT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "431",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "490",
+            "MV": "408",
+            "软件": "450",
+            "游戏": "406",
+            "学习": "420"
+          }
+        }
+      },
+      "PTsbao": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "纪录": "404",
+            "动漫": "405",
+            "综艺": "403",
+            "音乐": "414",
+            "MV": "414",
+            "体育": "409",
+            "软件": "409",
+            "学习": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[1]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "1",
+            "Encode": "1",
+            "WEB-DL": "2",
+            "HDTV": "5",
+            "DVD": "3",
+            "CD": "8"
+          },
+          "defaultValue": "9"
+        },
+        "codec": {
+          "selector": "codec_sel[1]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[1]",
+          "map": {
+            "Atmos": "9",
+            "DTS-X": "13",
+            "DTS-HDMA:X 7.1": "13",
+            "TrueHD": "9",
+            "DTS-HDMA": "8",
+            "DTS-HDHR": "8",
+            "DTS": "3",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "12",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[1]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "2",
+            "SD": "4"
+          }
+        },
+        "processingByMedium": {
+          "selector": "processing_sel[1]",
+          "map": {
+            "Remux": "1",
+            "UHD": "5",
+            "Blu-ray": "5",
+            "Encode": "2"
+          },
+          "defaultValue": "3"
+        },
+        "team": {
+          "selector": "team_sel[1]",
+          "defaultValue": "7"
+        },
+        "sourceByType": {
+          "selector": "source_sel[1]",
+          "map": {
+            "电影_UHD": "55",
+            "电影_Blu-ray": "55",
+            "电影_DVD": "89",
+            "电影_Remux": "88",
+            "电影_HDTV": "94",
+            "电影_WEB-DL": "4",
+            "电影_Encode_1080p": "3",
+            "电影_Encode_720p": "91",
+            "电影_Encode_4K": "92",
+            "电影_1080p": "3",
+            "电影_720p": "91",
+            "电影_4K": "92",
+            "剧集_大陆": "23",
+            "剧集_台湾": "24",
+            "剧集_香港": "24",
+            "剧集_港台": "24",
+            "剧集_日本": "26",
+            "剧集_韩国": "27",
+            "剧集_英国": "90",
+            "剧集_欧美": "25",
+            "纪录": "41",
+            "动漫_complete": "66",
+            "动漫": "45",
+            "综艺": "15",
+            "音乐": "10",
+            "体育": "75",
+            "学习": "75",
+            "软件": "75"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "Netflix| NF ",
+              "value": "95"
+            },
+            {
+              "pattern": "",
+              "whenDiy": true,
+              "value": "93"
+            }
+          ]
+        }
+      },
+      "TLFbits": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "438",
+            "剧集": "440",
+            "综艺": "441",
+            "动漫": "442",
+            "纪录": "443",
+            "体育": "444",
+            "MV": "445",
+            "音乐": "446",
+            "游戏": "447",
+            "软件": "448",
+            "学习": "449",
+            "书籍": "449"
+          },
+          "defaultValue": "450"
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "defaultValue": "9"
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "7",
+            "VP9": "8"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": "13",
+            "TrueHD": "14",
+            "DTS-X": "10",
+            "DTS-HDMA:X 7.1": "10",
+            "DTS-HDMA": "11",
+            "DTS-HD": "11",
+            "DTS-HDHR": "11",
+            "DTS": "3",
+            "AC3": "9",
+            "DDP": "17",
+            "DDP_Atmos": "18",
+            "Atmos_DDP": "18",
+            "AAC": "6",
+            "OPUS": "15",
+            "LPCM": "12",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "8",
+            "MP3": "4",
+            "OGG": "5"
+          },
+          "defaultValue": "7",
+          "titleOverrides": [
+            {
+              "pattern": "DDP|DD\\+",
+              "value": "17"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "5"
+        },
+        "source": {
+          "selector": "source_sel",
+          "map": {},
+          "defaultValue": "17"
+        },
+        "processingBySource": {
+          "selector": "processing_sel",
+          "map": {
+            "大陆": "1",
+            "香港": "3",
+            "台湾": "3",
+            "港台": "3",
+            "日本": "4",
+            "韩国": "5",
+            "欧美": "2"
+          },
+          "defaultValue": "6"
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "5"
+        }
+      },
+      "WT-Sakura": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "422",
+            "综艺": "418",
+            "纪录": "410",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "动漫_ep": "413",
+            "动漫_pack": "423",
+            "剧集_pack": "414",
+            "综艺_pack": "403"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "12",
+            "Remux": "14",
+            "Encode": "15",
+            "WEB-DL": "21",
+            "HDTV": "16",
+            "CD": "18",
+            "UHD_DIY": "11",
+            "Blu-ray_DIY": "13"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "HD.?DVD",
+              "whenMedium": "DVD",
+              "value": "23"
+            },
+            {
+              "pattern": "dvdr",
+              "whenMedium": "DVD",
+              "value": "17"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "9",
+            "X265": "7",
+            "H264": "6",
+            "X264": "8",
+            "VC-1": "10",
+            "MPEG-2": "11",
+            "XVID": "12",
+            "AV1": "13"
+          },
+          "defaultValue": "13"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "10",
+            "DTS-X": "21",
+            "DTS-HDMA:X 7.1": "9",
+            "TrueHD": "12",
+            "DTS-HDMA": "8",
+            "DTS-HD": "13",
+            "DTS-HDHR": "22",
+            "DTS": "13",
+            "AC3": "20",
+            "AAC": "19",
+            "LPCM": "14",
+            "Flac": "15",
+            "APE": "16",
+            "WAV": "23",
+            "MP3": "17",
+            "M4A": "21",
+            "DDP": "25"
+          },
+          "defaultValue": "21"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "CrabPt": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "3",
+            "X265": "3",
+            "H264": "2",
+            "X264": "2",
+            "VC-1": "1",
+            "MPEG-2": "1",
+            "XVID": "1",
+            "AV1": "6",
+            "VP9": "5"
+          },
+          "defaultValue": "1",
+          "titleOverrides": [
+            {
+              "pattern": "H.?266",
+              "value": "4"
+            }
+          ]
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "26",
+            "DTS-HDMA:X 7.1": "8",
+            "TrueHD": "6",
+            "DTS-HDMA": "17",
+            "DTS-HD": "15",
+            "DTS-HDHR": "17",
+            "DTS": "5",
+            "AC3": "3",
+            "AAC": "2",
+            "LPCM": "7",
+            "Flac": "10",
+            "APE": "12",
+            "WAV": "11",
+            "DDP": "4"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "4",
+            "1080p": "3",
+            "1080i": "3",
+            "720p": "2",
+            "SD": "1"
+          }
+        },
+        "processingBySource": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "欧美": "4",
+            "大陆": "2",
+            "香港": "3",
+            "台湾": "3",
+            "港台": "3",
+            "日本": "5",
+            "韩国": "6",
+            "印度": "7"
+          },
+          "defaultValue": "1"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "1"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "3",
+            "Blu-ray": "2",
+            "Remux": "4",
+            "Encode": "5",
+            "WEB-DL": "6",
+            "HDTV": "7",
+            "CD": "8"
+          },
+          "defaultValue": "1"
+        }
+      },
+      "DiscFan": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影_大陆": {
+              "index": 1
+            },
+            "电影_香港": {
+              "index": 2
+            },
+            "电影_台湾": {
+              "index": 3
+            },
+            "电影_泰国": {
+              "index": 4
+            },
+            "电影_日本": {
+              "index": 5
+            },
+            "电影_韩国": {
+              "index": 6
+            },
+            "电影": {
+              "index": 7
+            },
+            "剧集": {
+              "index": 8
+            },
+            "音乐": {
+              "index": 9
+            },
+            "MV": {
+              "index": 9
+            },
+            "纪录": {
+              "index": 10
+            },
+            "综艺": {
+              "index": 11
+            },
+            "体育": {
+              "index": 12
+            },
+            "动漫": {
+              "index": 13
+            }
+          }
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "2",
+            "Blu-ray": "3",
+            "DVD": "4",
+            "HDTV": "1",
+            "Encode": "10",
+            "WEB-DL": "9",
+            "Remux": "131",
+            "4K": "2"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip|BDRIP",
+              "value": "10"
+            },
+            {
+              "pattern": " tv ",
+              "value": "5"
+            },
+            {
+              "pattern": "ldrip",
+              "value": "7"
+            },
+            {
+              "pattern": "vcd",
+              "value": "6"
+            },
+            {
+              "pattern": "vhs",
+              "value": "8"
+            }
+          ]
+        }
+      },
+      "FreeFarm": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "404",
+            "纪录": "403",
+            "音乐": "407",
+            "体育": "408",
+            "MV": "406"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "2",
+            "Remux": "5",
+            "Encode": "6",
+            "WEB-DL": "12",
+            "HDTV": "7",
+            "DVD": "14"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "DVDR",
+              "whenMedium": "DVD",
+              "value": "8"
+            },
+            {
+              "pattern": "MiniBD",
+              "value": "10"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "1",
+            "X265": "3",
+            "H264": "2",
+            "X264": "4",
+            "VC-1": "6",
+            "MPEG-2": "8",
+            "XVID": "9",
+            "AV1": "14"
+          },
+          "defaultValue": "14"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "1",
+            "DTS-X": "21",
+            "DTS-HDMA:X 7.1": "6",
+            "TrueHD": "5",
+            "DTS-HDMA": "2",
+            "DTS-HD": "21",
+            "DTS-HDHR": "3",
+            "DTS": "14",
+            "AC3": "4",
+            "AAC": "13",
+            "LPCM": "7",
+            "Flac": "9",
+            "APE": "15",
+            "WAV": "11",
+            "MP3": "12",
+            "M4A": "21"
+          },
+          "defaultValue": "21"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "5",
+            "720p": "6",
+            "SD": "7"
+          }
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "35",
+            "香港": "36",
+            "台湾": "37",
+            "港台": "42",
+            "日本": "40",
+            "韩国": "39",
+            "欧美": "38",
+            "印度": "41"
+          },
+          "defaultValue": "42"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "14"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "学习": "413",
+            "游戏": "417"
+          }
+        }
+      },
+      "Panda": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "2",
+            "DTS-HDMA:X 7.1": "2",
+            "TrueHD": "1",
+            "DTS-HDMA": "3",
+            "DTS-HD": "3",
+            "DTS-HDHR": "18",
+            "DTS": "4",
+            "AC3": "5",
+            "AAC": "7",
+            "LPCM": "9",
+            "Flac": "11",
+            "APE": "12",
+            "WAV": "15",
+            "MP3": "10",
+            "M4A": "16",
+            "DDP": "6"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3"
+          }
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "7",
+            "香港": "2",
+            "台湾": "2",
+            "港台": "6",
+            "日本": "3",
+            "韩国": "4",
+            "欧美": "1",
+            "印度": "9"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "CarPt": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "403",
+            "综艺": "405",
+            "纪录": "404",
+            "音乐": "406",
+            "体育": "407",
+            "MV": "406",
+            "软件": "407",
+            "游戏": "407",
+            "学习": "407",
+            "书籍": "407"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "8",
+            "Blu-ray": "7",
+            "Remux": "9",
+            "Encode": "1",
+            "WEB-DL": "2",
+            "HDTV": "3",
+            "DVD": "4",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": {
+              "index": 2
+            },
+            "X265": {
+              "index": 2
+            },
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 1
+            },
+            "VC-1": {
+              "index": 4
+            },
+            "MPEG-2": {
+              "index": 3
+            },
+            "XVID": {
+              "index": 5
+            },
+            "AV1": {
+              "index": 6
+            }
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": {
+              "index": 1
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 2
+            },
+            "TrueHD": {
+              "index": 1
+            },
+            "DTS-HDMA": {
+              "index": 2
+            },
+            "DTS-HD": {
+              "index": 2
+            },
+            "DTS-HDHR": {
+              "index": 2
+            },
+            "DTS": {
+              "index": 2
+            },
+            "AC3": {
+              "index": 3
+            },
+            "AAC": {
+              "index": 7
+            },
+            "LPCM": {
+              "index": 4
+            },
+            "Flac": {
+              "index": 5
+            },
+            "APE": {
+              "index": 8
+            },
+            "WAV": {
+              "index": 9
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": {
+              "index": 1
+            },
+            "1080p": {
+              "index": 2
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 3
+            },
+            "SD": {
+              "index": 4
+            }
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "1PTBA": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "410",
+            "游戏": "411",
+            "学习": "412",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "16",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "HD.?DVD",
+              "whenMedium": "DVD",
+              "value": "2"
+            },
+            {
+              "pattern": "minibd",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "18",
+            "X265": "18",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "7",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "3",
+            "TrueHD": "31",
+            "DTS-HDMA": "3",
+            "DTS-HD": "3",
+            "DTS-HDHR": "3",
+            "DTS": "3",
+            "AC3": "7",
+            "AAC": "6",
+            "LPCM": "7",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7",
+            "MP3": "4",
+            "M4A": "7"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": {
+              "index": 6
+            },
+            "4K": {
+              "index": 5
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 3
+            },
+            "SD": {
+              "index": 4
+            }
+          }
+        },
+        "processingByMedium": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "Remux": {
+              "index": 0
+            },
+            "UHD": {
+              "index": 1
+            },
+            "Blu-ray": {
+              "index": 1
+            },
+            "Encode": {
+              "index": 2
+            }
+          },
+          "defaultValue": {
+            "index": 0
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "16",
+            "UHD_DIY": "17",
+            "Blu-ray": "1",
+            "Blu-ray_DIY": "19",
+            "Remux": "20",
+            "Encode": "22",
+            "HDTV": "4",
+            "WEB-DL": "23",
+            "DVD": "2",
+            "CD": "25"
+          },
+          "defaultValue": "6"
+        }
+      },
+      "52PT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 4
+            },
+            "动漫": {
+              "index": 3
+            },
+            "综艺": {
+              "index": 5
+            },
+            "纪录": {
+              "index": 2
+            },
+            "音乐": {
+              "index": 10
+            },
+            "体育": {
+              "index": 7
+            },
+            "MV": {
+              "index": 6
+            },
+            "软件": {
+              "index": 8
+            },
+            "游戏": {
+              "index": 8
+            },
+            "学习": {
+              "index": 8
+            },
+            "书籍": {
+              "index": 8
+            }
+          },
+          "defaultValue": {
+            "index": 8
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": {
+              "index": 4
+            },
+            "Blu-ray": {
+              "index": 3
+            },
+            "Remux": {
+              "index": 2
+            },
+            "Encode": {
+              "index": 9
+            },
+            "WEB-DL": {
+              "index": 13
+            },
+            "HDTV": {
+              "index": 7
+            },
+            "DVD": {
+              "index": 11
+            },
+            "CD": {
+              "index": 14
+            },
+            "UHD_DIY": {
+              "index": 8
+            },
+            "Blu-ray_DIY": {
+              "index": 1
+            }
+          },
+          "defaultValue": {
+            "index": 14
+          },
+          "titleOverrides": [
+            {
+              "pattern": "uhd",
+              "whenMedium": "Remux",
+              "value": {
+                "index": 10
+              }
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": "14",
+            "X265": "12",
+            "H264": "13",
+            "X264": "11",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5",
+          "titleOverrides": [
+            {
+              "pattern": "HEVC",
+              "whenCodec": "H265",
+              "value": "1"
+            }
+          ]
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": {
+              "index": 3
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 4
+            },
+            "TrueHD": {
+              "index": 2
+            },
+            "DTS-HDMA": {
+              "index": 1
+            },
+            "DTS-HD": {
+              "index": 1
+            },
+            "DTS-HDHR": {
+              "index": 1
+            },
+            "DTS": {
+              "index": 7
+            },
+            "AC3": {
+              "index": 5
+            },
+            "AAC": {
+              "index": 8
+            },
+            "LPCM": {
+              "index": 6
+            },
+            "Flac": {
+              "index": 9
+            },
+            "APE": {
+              "index": 10
+            },
+            "WAV": {
+              "index": 11
+            },
+            "MP3": {
+              "index": 13
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": {
+              "index": 8
+            },
+            "4K": {
+              "index": 2
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 3
+            },
+            "720p": {
+              "index": 5
+            },
+            "SD": {
+              "index": 6
+            }
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "5"
+        }
+      },
+      "PTCafe": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "4",
+            "Remux": "6",
+            "Encode": "7",
+            "WEB-DL": "8",
+            "HDTV": "13",
+            "DVD": "10",
+            "CD": "12",
+            "UHD_DIY": "2",
+            "Blu-ray_DIY": "5",
+            "TV": "9"
+          },
+          "defaultValue": "13",
+          "titleOverrides": [
+            {
+              "pattern": "UHD",
+              "whenMedium": "Remux",
+              "value": "3"
+            },
+            {
+              "pattern": "CD",
+              "inField": "smallDescr",
+              "whenMedium": "CD",
+              "value": "11"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "1",
+            "X265": "3",
+            "H264": "2",
+            "X264": "4",
+            "VC-1": "5",
+            "MPEG-2": "6",
+            "XVID": "8",
+            "AV1": "11"
+          },
+          "defaultValue": "11"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "5",
+            "DTS-HDMA:X 7.1": "1",
+            "TrueHD": "10",
+            "DTS-HDMA": "2",
+            "DTS-HD": "4",
+            "DTS-HDHR": "3",
+            "DTS": "11",
+            "AC3": "7",
+            "AAC": "9",
+            "LPCM": "6",
+            "Flac": "12",
+            "APE": "13",
+            "WAV": "15",
+            "MP3": "14",
+            "M4A": "18"
+          },
+          "defaultValue": "18"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "3",
+            "720p": "4",
+            "SD": "5"
+          },
+          "defaultValue": "6"
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "2",
+            "台湾": "2",
+            "港台": "2",
+            "日本": "4",
+            "韩国": "5",
+            "欧美": "3",
+            "印度": "6"
+          },
+          "defaultValue": "7"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "30"
+        }
+      },
+      "PTFans": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "404",
+            "动漫": "415",
+            "综艺": "405",
+            "纪录": "406",
+            "音乐": "407",
+            "体育": "403",
+            "MV": "407",
+            "软件": "419",
+            "游戏": "419",
+            "学习": "419",
+            "书籍": "419"
+          },
+          "defaultValue": "419"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "6",
+            "Blu-ray": "6",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "5",
+            "HDTV": "8",
+            "DVD": "2",
+            "CD": "1"
+          },
+          "defaultValue": "8",
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD",
+              "flags": "",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "6",
+            "XVID": "9",
+            "AV1": "8",
+            "H265_Blu-ray": "5",
+            "X265_Blu-ray": "5",
+            "H265_UHD": "5",
+            "X265_UHD": "5",
+            "H264_Blu-ray": "4",
+            "X264_Blu-ray": "4",
+            "H264_UHD": "4",
+            "X264_UHD": "4"
+          },
+          "defaultValue": "9"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "CyanBug": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "13",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "11",
+            "TrueHD": "10",
+            "DTS-HDMA": "12",
+            "DTS-HD": "15",
+            "DTS-HDHR": "15",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "14",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "9",
+            "MP3": "7",
+            "M4A": "7"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "OKPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "415",
+            "体育": "407",
+            "软件": "431",
+            "游戏": "413",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "defaultValue": "7",
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "11",
+            "X265": "11",
+            "H264": "2",
+            "X264": "2",
+            "VC-1": "14",
+            "MPEG-2": "14",
+            "XVID": "14",
+            "AV1": "14",
+            "VP9": "9"
+          },
+          "defaultValue": "14",
+          "titleOverrides": [
+            {
+              "pattern": "H.?266",
+              "value": "10"
+            }
+          ]
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "15",
+            "DTS-HDMA:X 7.1": "22",
+            "TrueHD": "19",
+            "DTS-HDMA": "7",
+            "DTS-HD": "7",
+            "DTS-HDHR": "7",
+            "DTS": "3",
+            "AC3": "15",
+            "AAC": "6",
+            "LPCM": "16",
+            "Flac": "1",
+            "APE": "5",
+            "WAV": "7",
+            "Atmos_TrueHD": "19"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "3",
+            "720p": "4",
+            "SD": "5"
+          },
+          "defaultValue": "5"
+        },
+        "processingBySource": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "欧美": "6",
+            "大陆": "8",
+            "香港": "7",
+            "台湾": "7",
+            "港台": "7",
+            "澳门": "7",
+            "日本": "5",
+            "韩国": "4",
+            "印度": "17",
+            "东南亚": "18"
+          },
+          "defaultValue": "3"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "14",
+          "matchMode": "okpt"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "MV": "406"
+          }
+        },
+        "customTags": [
+          {
+            "selector": 'input[name="tags[4][]"][value="28"]',
+            "when": "jp_lang"
+          },
+          {
+            "selector": 'input[name="tags[4][]"][value="25"]',
+            "when": "kr_lang"
+          }
+        ]
+      },
+      "KuFei": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "412",
+            "游戏": "410",
+            "学习": "413"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "UHD_DIY": "2",
+            "Blu-ray": "4",
+            "Blu-ray_DIY": "5",
+            "Remux_4K": "3",
+            "Remux": "6",
+            "Encode_4K": "7",
+            "Encode_1080p": "8",
+            "Encode_1080i": "8",
+            "Encode_720p": "9",
+            "Encode": "18",
+            "WEB-DL": "11",
+            "HDTV": "12",
+            "DVD": "13",
+            "CD": "14"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "minibd",
+              "value": "10"
+            },
+            {
+              "pattern": "",
+              "whenDiy": true,
+              "whenStandard": "4K",
+              "value": "2"
+            },
+            {
+              "pattern": "",
+              "whenDiy": true,
+              "whenStandard": "1080p",
+              "value": "5"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "3",
+            "X265": "4",
+            "H264": "1",
+            "X264": "2",
+            "VC-1": "5",
+            "MPEG-2": "6",
+            "XVID": "8",
+            "AV1": "10"
+          },
+          "defaultValue": "10"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "10",
+            "DTS-HDMA:X 7.1": "10",
+            "TrueHD": "13",
+            "DTS-HDMA": "11",
+            "DTS-HD": "11",
+            "DTS-HDHR": "11",
+            "DTS": "9",
+            "AC3": "17",
+            "AAC": "18",
+            "LPCM": "14",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "19",
+            "MP3": "10",
+            "M4A": "7",
+            "DDP": "15",
+            "DDP_Atmos": "24"
+          },
+          "defaultValue": "7",
+          "titleOverrides": [
+            {
+              "pattern": "dts.?hd.?hr",
+              "value": "12"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "Dragon": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 2
+            },
+            "动漫": {
+              "index": 5
+            },
+            "综艺": {
+              "index": 6
+            },
+            "纪录": {
+              "index": 4
+            },
+            "音乐": {
+              "index": 9
+            },
+            "体育": {
+              "index": 8
+            },
+            "MV": {
+              "index": 7
+            },
+            "软件": {
+              "index": 11
+            },
+            "游戏": {
+              "index": 3
+            },
+            "学习": {
+              "index": 11
+            }
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": {
+              "index": 1
+            },
+            "Blu-ray": {
+              "index": 2
+            },
+            "Remux": {
+              "index": 3
+            },
+            "Encode": {
+              "index": 4
+            },
+            "WEB-DL": {
+              "index": 5
+            },
+            "HDTV": {
+              "index": 7
+            },
+            "DVD": {
+              "index": 6
+            },
+            "CD": {
+              "index": 8
+            }
+          }
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": {
+              "index": 2
+            },
+            "X265": {
+              "index": 2
+            },
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 1
+            },
+            "VC-1": {
+              "index": 3
+            },
+            "MPEG-2": {
+              "index": 4
+            },
+            "XVID": {
+              "index": 5
+            },
+            "AV1": {
+              "index": 5
+            }
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": {
+              "index": 1
+            },
+            "DTS-X": {
+              "index": 15
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 3
+            },
+            "TrueHD": {
+              "index": 2
+            },
+            "DTS-HDMA": {
+              "index": 4
+            },
+            "DTS-HD": {
+              "index": 1
+            },
+            "DTS-HDHR": {
+              "index": 5
+            },
+            "DTS": {
+              "index": 6
+            },
+            "AC3": {
+              "index": 9
+            },
+            "AAC": {
+              "index": 8
+            },
+            "LPCM": {
+              "index": 10
+            },
+            "Flac": {
+              "index": 7
+            },
+            "APE": {
+              "index": 13
+            },
+            "WAV": {
+              "index": 14
+            },
+            "MP3": {
+              "index": 15
+            },
+            "M4A": {
+              "index": 15
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": {
+              "index": 1
+            },
+            "4K": {
+              "index": 2
+            },
+            "1080p": {
+              "index": 4
+            },
+            "1080i": {
+              "index": 4
+            },
+            "720p": {
+              "index": 5
+            },
+            "SD": {
+              "index": 6
+            }
+          }
+        }
+      },
+      "iloli": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "430",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "402",
+            "MV": "410",
+            "软件": "413",
+            "游戏": "412",
+            "学习": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "14",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "12",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "defaultValue": "11",
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD|DVDRip",
+              "value": "7"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "8",
+            "X265": "8",
+            "H264": "9",
+            "X264": "9",
+            "VC-1": "12",
+            "MPEG-2": "13",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "14",
+            "DTS-X": "14",
+            "DTS-HDMA:X 7.1": "23",
+            "TrueHD": "9",
+            "DTS-HDMA": "10",
+            "DTS-HD": "3",
+            "DTS-HDHR": "10",
+            "DTS": "3",
+            "AC3": "13",
+            "AAC": "6",
+            "LPCM": "15",
+            "Flac": "1",
+            "APE": "14",
+            "WAV": "14",
+            "MP3": "21",
+            "M4A": "14",
+            "DDP": "20",
+            "Atmos_TrueHD": "9"
+          },
+          "defaultValue": "14"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "9",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "9"
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "2",
+            "台湾": "3",
+            "港台": "13",
+            "日本": "6",
+            "韩国": "5",
+            "欧美": "4",
+            "印度": "7"
+          },
+          "defaultValue": "13"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "ITZMX": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 4
+            },
+            "剧集": {
+              "index": 5
+            },
+            "动漫": {
+              "index": 1
+            },
+            "综艺": {
+              "index": 5
+            },
+            "纪录": {
+              "index": 5
+            },
+            "音乐": {
+              "index": 3
+            },
+            "体育": {
+              "index": 0
+            },
+            "MV": {
+              "index": 3
+            },
+            "软件": {
+              "index": 7
+            },
+            "游戏": {
+              "index": 8
+            },
+            "学习": {
+              "index": 0
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": {
+              "index": 0
+            },
+            "4K": {
+              "index": 3
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 1
+            },
+            "720p": {
+              "index": 2
+            },
+            "SD": {
+              "index": 0
+            }
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "1"
+        }
+      },
+      "JoyHD": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 2
+            },
+            "动漫": {
+              "index": 4
+            },
+            "综艺": {
+              "index": 3
+            },
+            "纪录": {
+              "index": 7
+            },
+            "音乐": {
+              "index": 5
+            },
+            "体育": {
+              "index": 6
+            },
+            "MV": {
+              "index": 8
+            },
+            "软件": {
+              "index": 9
+            },
+            "游戏": {
+              "index": 10
+            },
+            "学习": {
+              "index": 11
+            },
+            "书籍": {
+              "index": 12
+            }
+          },
+          "defaultValue": {
+            "index": 12
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "13"
+        },
+        "sourceByType": {
+          "selector": "source_sel",
+          "map": {
+            "电影_UHD": {
+              "index": 5
+            },
+            "电影_Blu-ray": {
+              "index": 5
+            },
+            "电影_DVD": {
+              "index": 8
+            },
+            "电影_Remux": {
+              "index": 6
+            },
+            "电影_HDTV": {
+              "index": 9
+            },
+            "电影_WEB-DL": {
+              "index": 4
+            },
+            "电影_Encode_1080p": {
+              "index": 2
+            },
+            "电影_Encode_720p": {
+              "index": 1
+            },
+            "电影_Encode_4K": {
+              "index": 11
+            },
+            "电影_1080p": {
+              "index": 2
+            },
+            "电影_720p": {
+              "index": 1
+            },
+            "电影_4K": {
+              "index": 11
+            },
+            "剧集_大陆": {
+              "index": 2
+            },
+            "剧集_台湾": {
+              "index": 3
+            },
+            "剧集_香港": {
+              "index": 3
+            },
+            "剧集_港台": {
+              "index": 3
+            },
+            "剧集_欧美": {
+              "index": 4
+            },
+            "剧集_日本": {
+              "index": 5
+            },
+            "剧集_韩国": {
+              "index": 6
+            },
+            "综艺": {
+              "index": 2
+            },
+            "纪录": {
+              "index": 7
+            },
+            "动漫": {
+              "index": 2
+            },
+            "音乐": {
+              "index": 1
+            },
+            "体育": {
+              "index": 4
+            },
+            "学习": {
+              "index": 4
+            },
+            "软件": {
+              "index": 4
+            }
+          },
+          "titleOverrides": [
+            {
+              "pattern": "pad$|ipad",
+              "whenType": "电影",
+              "whenMedium": "Encode",
+              "value": {
+                "index": 12
+              }
+            },
+            {
+              "pattern": "10bit",
+              "flags": "",
+              "whenType": "电影",
+              "value": {
+                "index": 3
+              }
+            },
+            {
+              "pattern": "BDRIP",
+              "whenType": "电影",
+              "value": {
+                "index": 10
+              }
+            },
+            {
+              "pattern": "S\\d+[^E]|complete",
+              "whenType": "剧集",
+              "value": {
+                "index": 1
+              }
+            }
+          ]
+        }
+      },
+      "Oshen": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "410",
+            "学习": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "10",
+            "X265": "10",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "YDY": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影_UHD": {
+              "index": 8
+            },
+            "电影_Blu-ray": {
+              "index": 8
+            },
+            "电影": {
+              "index": 7
+            },
+            "剧集_UHD": {
+              "index": 10
+            },
+            "剧集_Blu-ray": {
+              "index": 10
+            },
+            "剧集": {
+              "index": 9
+            }
+          },
+          "defaultValue": {
+            "index": 12
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": {
+              "index": 1
+            },
+            "Blu-ray": {
+              "index": 2
+            },
+            "Remux": {
+              "index": 3
+            },
+            "Encode": {
+              "index": 4
+            },
+            "HDTV": {
+              "index": 5
+            }
+          }
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": {
+              "index": 5
+            },
+            "X265": {
+              "index": 5
+            },
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 1
+            },
+            "VC-1": {
+              "index": 2
+            },
+            "MPEG-2": {
+              "index": 4
+            },
+            "XVID": {
+              "index": 3
+            },
+            "AV1": {
+              "index": 6
+            }
+          },
+          "defaultValue": {
+            "index": 6
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": {
+              "index": 9
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 8
+            },
+            "TrueHD": {
+              "index": 7
+            },
+            "DTS-HDMA": {
+              "index": 8
+            },
+            "DTS-HD": {
+              "index": 8
+            },
+            "DTS-HDHR": {
+              "index": 8
+            },
+            "DTS": {
+              "index": 1
+            },
+            "AC3": {
+              "index": 5
+            },
+            "AAC": {
+              "index": 6
+            },
+            "Flac": {
+              "index": 2
+            },
+            "APE": {
+              "index": 4
+            },
+            "WAV": {
+              "index": 3
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": {
+              "index": 1
+            },
+            "1080p": {
+              "index": 2
+            },
+            "1080i": {
+              "index": 3
+            },
+            "720p": {
+              "index": 4
+            },
+            "SD": {
+              "index": 5
+            }
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "9"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel",
+          "map": {
+            "UHD": {
+              "index": 1
+            },
+            "Blu-ray": {
+              "index": 2
+            },
+            "Remux": {
+              "index": 2
+            },
+            "Encode": {
+              "index": 2
+            },
+            "HDTV": {
+              "index": 3
+            },
+            "DVD": {
+              "index": 4
+            },
+            "WEB-DL": {
+              "index": 5
+            }
+          },
+          "defaultValue": {
+            "index": 7
+          },
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip|webrip",
+              "value": {
+                "index": 6
+              }
+            }
+          ]
+        }
+      },
+      "UltraHD": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 2
+            },
+            "动漫": {
+              "index": 5
+            },
+            "综艺": {
+              "index": 3
+            },
+            "纪录": {
+              "index": 4
+            },
+            "MV": {
+              "index": 6
+            }
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": {
+              "index": 2
+            },
+            "Blu-ray": {
+              "index": 9
+            },
+            "Remux": {
+              "index": 3
+            },
+            "Encode": {
+              "index": 4
+            },
+            "WEB-DL": {
+              "index": 6
+            },
+            "HDTV": {
+              "index": 5
+            },
+            "DVD": {
+              "index": 9
+            },
+            "CD": {
+              "index": 9
+            }
+          }
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": {
+              "index": 1
+            },
+            "X265": {
+              "index": 1
+            },
+            "H264": {
+              "index": 2
+            },
+            "X264": {
+              "index": 2
+            },
+            "VC-1": {
+              "index": 6
+            },
+            "MPEG-2": {
+              "index": 6
+            },
+            "XVID": {
+              "index": 6
+            },
+            "AV1": {
+              "index": 5
+            }
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Atmos": {
+              "index": 1
+            },
+            "DTS-X": {
+              "index": 6
+            },
+            "DTS-HDMA:X 7.1": {
+              "index": 2
+            },
+            "TrueHD": {
+              "index": 4
+            },
+            "DTS-HDMA": {
+              "index": 3
+            },
+            "DTS-HD": {
+              "index": 9
+            },
+            "DTS-HDHR": {
+              "index": 9
+            },
+            "DTS": {
+              "index": 7
+            },
+            "AC3": {
+              "index": 5
+            },
+            "AAC": {
+              "index": 8
+            },
+            "LPCM": {
+              "index": 9
+            },
+            "Flac": {
+              "index": 9
+            },
+            "APE": {
+              "index": 9
+            },
+            "WAV": {
+              "index": 9
+            },
+            "MP3": {
+              "index": 9
+            },
+            "M4A": {
+              "index": 9
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": {
+              "index": 2
+            },
+            "4K": {
+              "index": 1
+            }
+          }
+        }
+      },
+      "麒麟": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "420",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "411",
+            "游戏": "412",
+            "学习": "419",
+            "书籍": "409",
+            "短剧": "421"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "24",
+            "Blu-ray": "25",
+            "Remux": "30",
+            "Encode": "29",
+            "WEB-DL": "31",
+            "HDTV": "28",
+            "DVD": "27",
+            "CD": "33",
+            "Blu-ray_DIY": "26"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "webrip",
+              "value": "29"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "15",
+            "DTS-HDMA:X 7.1": "8",
+            "TrueHD": "9",
+            "DTS-HDMA": "8",
+            "DTS-HD": "13",
+            "DTS-HDHR": "19",
+            "DTS": "3",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "10",
+            "Flac": "1",
+            "APE": "12",
+            "WAV": "13",
+            "DDP": "17",
+            "Atmos_DDP": "17"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "9",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "8"
+          },
+          "defaultValue": "9"
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "15",
+            "香港": "16",
+            "台湾": "17",
+            "港台": "14",
+            "日本": "19",
+            "韩国": "20",
+            "欧美": "14",
+            "印度": "14"
+          },
+          "defaultValue": "14"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "processingByYear": {
+          "selector": "processing_sel[4]",
+          "mode": "optionText",
+          "defaultValue": "9"
+        }
+      },
+      "海棠": {
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H265": {
+              "index": 2
+            },
+            "X265": {
+              "index": 2
+            },
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 1
+            }
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "type": {
+          "selector": "type",
+          "map": {},
+          "titleOverrides": [
+            {
+              "pattern": "相声",
+              "inField": "all",
+              "value": "1"
+            },
+            {
+              "pattern": "小品",
+              "inField": "all",
+              "value": "4101"
+            }
+          ]
+        }
+      },
+      "PTzone": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "406",
+            "体育": "407",
+            "MV": "406",
+            "软件": "408",
+            "游戏": "408",
+            "学习": "408",
+            "书籍": "408"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "3",
+            "XVID": "5",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "14",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "10",
+            "TrueHD": "14",
+            "DTS-HDMA": "10",
+            "DTS-HD": "4",
+            "DTS-HDHR": "10",
+            "DTS": "3",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "7",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "15",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "12"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "TCCF": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "纪录": "624",
+            "学习": "628",
+            "书籍": "629"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "5",
+            "Encode": "11",
+            "WEB-DL": "9",
+            "HDTV": "6",
+            "DVD": "7"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H264": "1",
+            "X265": "6",
+            "H265": "8",
+            "X264": "7",
+            "VC-1": "2",
+            "XVID": "3",
+            "MPEG-2": "4"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Flac": "1",
+            "APE": "2",
+            "DTS": "3",
+            "AC3": "4",
+            "MP3": "5",
+            "AAC": "6",
+            "DTS-HD": "8",
+            "DTS-HDMA": "8",
+            "DTS-HDHR": "8",
+            "DTS-HDMA:X 7.1": "8",
+            "TrueHD": "9",
+            "Atmos": "9",
+            "LPCM": "10",
+            "WAV": "11"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel",
+          "defaultValue": "7"
+        }
+      },
+      "13City": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "413",
+            "音乐": "408",
+            "MV": "406"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "defaultValue": "9",
+          "titleOverrides": [
+            {
+              "pattern": "minibd",
+              "value": "4"
+            },
+            {
+              "pattern": "dvdr",
+              "value": "6"
+            },
+            {
+              "pattern": "HD.DVD",
+              "value": "2"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "4",
+            "MPEG-2": "3",
+            "XVID": "6",
+            "AV1": "7"
+          },
+          "defaultValue": "7"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "9",
+            "DTS-X": "3",
+            "DTS-HDMA:X 7.1": "3",
+            "TrueHD": "8",
+            "DTS-HDMA": "3",
+            "DTS-HD": "11",
+            "DTS-HDHR": "3",
+            "DTS": "3",
+            "AC3": "7",
+            "AAC": "6",
+            "LPCM": "10",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "11",
+            "MP3": "4",
+            "M4A": "11",
+            "DDP": "7"
+          },
+          "defaultValue": "11"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "4",
+            "720p": "5",
+            "SD": "5"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "11"
+        },
+        "processingBySource": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "1",
+            "台湾": "1",
+            "港台": "1",
+            "日本": "2",
+            "泰国": "3",
+            "印度": "4",
+            "韩国": "5",
+            "欧美": "6"
+          },
+          "defaultValue": "7"
+        }
+      },
+      "HITPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "416",
+            "纪录": "413",
+            "体育": "407",
+            "MV": "415"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "10",
+            "X265": "14",
+            "H264": "1",
+            "X264": "13",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "13",
+            "DTS-X": "15",
+            "DTS-HDMA:X 7.1": "19",
+            "TrueHD": "12",
+            "DTS-HDMA": "18",
+            "DTS-HD": "16",
+            "DTS-HDHR": "7",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "14",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "11",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "8"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "7",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "8"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "4"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "音乐": "406",
+            "软件": "408",
+            "游戏": "410"
+          }
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "12",
+            "HDTV": "4",
+            "Encode": "2",
+            "WEB-DL": "9",
+            "DVD": "3",
+            "CD": "7",
+            "TV": "5"
+          },
+          "defaultValue": "8"
+        }
+      },
+      "HUDBT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影_大陆": "401",
+            "电影_港台": "413",
+            "电影_香港": "413",
+            "电影_台湾": "413",
+            "电影_日本": "414",
+            "电影_韩国": "414",
+            "电影_日韩": "414",
+            "电影_印度": "414",
+            "电影_欧美": "415",
+            "电影": "415",
+            "剧集_大陆": "402",
+            "剧集_港台": "417",
+            "剧集_香港": "417",
+            "剧集_台湾": "417",
+            "剧集_日本": "416",
+            "剧集_韩国": "416",
+            "剧集_日韩": "416",
+            "剧集_印度": "416",
+            "剧集_欧美": "418",
+            "剧集": "418",
+            "综艺_大陆": "403",
+            "综艺_港台": "419",
+            "综艺_香港": "419",
+            "综艺_台湾": "419",
+            "综艺_日本": "420",
+            "综艺_韩国": "420",
+            "综艺_日韩": "420",
+            "综艺_欧美": "421",
+            "综艺": "421",
+            "纪录": "404",
+            "动漫": "405",
+            "MV": "406",
+            "体育": "407",
+            "音乐": "408",
+            "游戏": "410",
+            "软件": "411",
+            "学习": "412",
+            "书籍": "432"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "pad$|ipad",
+              "value": "430"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": {
+              "index": 6
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 3
+            },
+            "SD": {
+              "index": 4
+            }
+          }
+        }
+      },
+      "NanYang": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": {
+              "index": 1
+            },
+            "剧集": {
+              "index": 2
+            },
+            "动漫": {
+              "index": 3
+            },
+            "综艺": {
+              "index": 4
+            },
+            "纪录": {
+              "index": 6
+            },
+            "音乐": {
+              "index": 7
+            },
+            "体育": {
+              "index": 5
+            },
+            "MV": {
+              "index": 7
+            },
+            "软件": {
+              "index": 9
+            },
+            "学习": {
+              "index": 8
+            }
+          }
+        }
+      },
+      "NexusHD": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "101",
+            "剧集": "102",
+            "综艺": "103",
+            "纪录": "104",
+            "动漫": "105",
+            "体育": "106",
+            "MV": "107",
+            "音乐": "108",
+            "游戏": "110",
+            "学习": "111"
+          },
+          "defaultValue": "109"
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H264": "1",
+            "X264": "1",
+            "H265": "2",
+            "X265": "2"
+          },
+          "defaultValue": "0"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "DVD": "3",
+            "HDTV": "4",
+            "WEB-DL": "7"
+          },
+          "defaultValue": "0",
+          "titleOverrides": [
+            {
+              "pattern": "blu[-]?ray|bdrip",
+              "value": "1"
+            },
+            {
+              "pattern": "hd[-]?dvd",
+              "value": "2"
+            },
+            {
+              "pattern": "web[-]?dl",
+              "value": "7"
+            },
+            {
+              "pattern": "web[-]?rip",
+              "value": "9"
+            }
+          ]
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4",
+            "4K": "6"
+          },
+          "defaultValue": "0",
+          "titleOverrides": [
+            {
+              "pattern": "dvd",
+              "whenMedium": "DVD",
+              "value": "4"
+            }
+          ]
+        },
+        "processingByMedium": {
+          "selector": "processing_sel",
+          "map": {
+            "Remux": "1",
+            "WEB-DL": "1",
+            "Encode": "2"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "x264|x265|bdrip|dvdrip|web[-]?rip",
+              "value": "2"
+            },
+            {
+              "pattern": "remux",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "PuTao": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影_大陆": "401",
+            "电影_港台": "401",
+            "电影_香港": "401",
+            "电影_台湾": "401",
+            "电影_欧美": "402",
+            "电影_日本": "403",
+            "电影_韩国": "403",
+            "电影_日韩": "403",
+            "电影_印度": "403",
+            "电影": "402",
+            "剧集_港台": "407",
+            "剧集_香港": "407",
+            "剧集_台湾": "407",
+            "剧集_日本": "408",
+            "剧集_韩国": "408",
+            "剧集_日韩": "408",
+            "剧集_印度": "408",
+            "剧集_大陆": "409",
+            "剧集_欧美": "410",
+            "剧集": "410",
+            "综艺_大陆": "411",
+            "综艺_港台": "412",
+            "综艺_香港": "412",
+            "综艺_台湾": "412",
+            "综艺_欧美": "413",
+            "综艺_日本": "414",
+            "综艺_韩国": "414",
+            "综艺_日韩": "414",
+            "纪录": "406",
+            "音乐": "423",
+            "MV": "427",
+            "动漫": "431",
+            "体育": "432",
+            "软件": "434",
+            "学习": "435"
+          },
+          "defaultValue": "450"
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H264": {
+              "index": 1
+            },
+            "X264": {
+              "index": 1
+            },
+            "VC-1": {
+              "index": 2
+            },
+            "Xvid": {
+              "index": 3
+            },
+            "MPEG-2": {
+              "index": 4
+            },
+            "H265": {
+              "index": 10
+            },
+            "X265": {
+              "index": 10
+            }
+          }
+        },
+        "codecAudioFallback": {
+          "Flac": {
+            "index": 5
+          },
+          "APE": {
+            "index": 6
+          },
+          "DTS": {
+            "index": 7
+          },
+          "AC3": {
+            "index": 8
+          },
+          "WAV": {
+            "index": 9
+          },
+          "MP3": {
+            "index": 9
+          },
+          "AAC": {
+            "index": 9
+          }
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "4K": {
+              "index": 6
+            },
+            "1080p": {
+              "index": 1
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 3
+            },
+            "SD": {
+              "index": 4
+            },
+            "": {
+              "index": 5
+            }
+          }
+        }
+      },
+      "RS": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "综艺": "403",
+            "纪录": "404",
+            "动漫": "405",
+            "体育": "407",
+            "音乐": "408",
+            "学习": "411",
+            "软件": "412"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel",
+          "map": {
+            "UHD": "0",
+            "Blu-ray": "1",
+            "DVD": "2",
+            "Remux": "3",
+            "HDTV": "5",
+            "Encode": "7",
+            "WEB-DL": "10"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "DVDR",
+              "whenMedium": "DVD",
+              "value": "6"
+            },
+            {
+              "pattern": "MiniBD",
+              "value": "10"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel",
+          "map": {
+            "H264": "1",
+            "VC-1": "2",
+            "XVID": "3",
+            "X265": "3",
+            "MPEG-2": "4",
+            "MPEG-4": "5",
+            "X264": "6",
+            "H265": "8"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "Flac": "1",
+            "APE": "2",
+            "DTS": "3",
+            "DTS-HD": "3",
+            "DTS-HDHR": "3",
+            "DTS-HDMA": "3",
+            "DTS-HDMA:X 7.1": "3",
+            "MP3": "4",
+            "OGG": "5",
+            "AAC": "6"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel",
+          "map": {
+            "8K": "0",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        }
+      },
+      "雨": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "406",
+            "体育": "407",
+            "MV": "406",
+            "软件": "410",
+            "游戏": "410",
+            "学习": "410",
+            "书籍": "410"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "7",
+            "MPEG-2": "3",
+            "XVID": "5",
+            "AV1": "8"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "13",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "8",
+            "DTS-HDMA": "7",
+            "DTS-HD": "7",
+            "DTS-HDHR": "7",
+            "DTS": "5",
+            "AC3": "6",
+            "AAC": "4",
+            "LPCM": "9",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "3",
+            "MP3": "4",
+            "M4A": "10",
+            "DDP": "6"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "8",
+            "4K": "7",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "21"
+        }
+      },
+      "GTK": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "411",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "11",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "ECUST": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "411",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "HDClone": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "410",
+            "软件": "407",
+            "游戏": "407",
+            "学习": "407",
+            "书籍": "407"
+          },
+          "defaultValue": "407"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "9",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "6",
+            "HDTV": "11",
+            "DVD": "10",
+            "CD": "5"
+          },
+          "defaultValue": "5",
+          "titleOverrides": [
+            {
+              "pattern": "minibd",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "3"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4",
+            "8K": "6"
+          }
+        }
+      },
+      "CDFile": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "10",
+            "Encode": "10",
+            "WEB-DL": "10",
+            "HDTV": "10",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "HDBAO": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406",
+            "软件": "411",
+            "游戏": "411",
+            "学习": "411",
+            "书籍": "411"
+          },
+          "defaultValue": "411"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "3",
+            "Remux": "5",
+            "Encode": "6",
+            "WEB-DL": "7",
+            "HDTV": "8",
+            "DVD": "12",
+            "CD": "12"
+          },
+          "defaultValue": "13",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "value": "3"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "7",
+            "X265": "7",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "8",
+            "1080i": "2",
+            "720p": "7",
+            "SD": "10"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel",
+          "map": {
+            "AAC": "1",
+            "WAV": "1",
+            "AC3": "2",
+            "DTS": "3",
+            "APE": "6",
+            "DTS-HDMA:X 7.1": "8",
+            "DTS-X": "8",
+            "Atmos": "9",
+            "DTS-HD": "11",
+            "DTS-HDMA": "11",
+            "DTS-HDHR": "11",
+            "TrueHD": "12",
+            "LPCM": "13",
+            "Flac": "15"
+          },
+          "defaultValue": "7"
+        }
+      },
+      "AFUN": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "414",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "defaultValue": "8",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "value": "6"
+            },
+            {
+              "pattern": "monibd|minibd",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "2",
+            "台湾": "3",
+            "港台": "2",
+            "欧美": "4",
+            "日本": "5",
+            "韩国": "6",
+            "印度": "7"
+          },
+          "defaultValue": "99"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "DevTracker": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "12",
+            "TrueHD": "9",
+            "DTS-HDMA": "12",
+            "DTS-HD": "12",
+            "DTS-HDHR": "12",
+            "DTS": "3",
+            "AC3": "10",
+            "AAC": "6",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "11"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "2",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "唐门": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "11",
+            "Remux": "12",
+            "Encode": "13",
+            "WEB-DL": "14",
+            "HDTV": "15",
+            "DVD": "16",
+            "CD": "17"
+          },
+          "titleOverrides": [
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "7",
+            "X265": "7",
+            "H264": "6",
+            "X264": "6",
+            "VC-1": "8",
+            "MPEG-2": "9",
+            "XVID": "11",
+            "AV1": "10"
+          },
+          "defaultValue": "11"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "11",
+            "DTS-X": "16",
+            "DTS-HDMA:X 7.1": "23",
+            "TrueHD": "15",
+            "DTS-HDMA": "17",
+            "DTS-HD": "23",
+            "DTS-HDHR": "17",
+            "DTS": "18",
+            "AC3": "13",
+            "AAC": "9",
+            "LPCM": "14",
+            "Flac": "22",
+            "APE": "10",
+            "WAV": "20",
+            "MP3": "21",
+            "M4A": "19",
+            "DDP": "12"
+          },
+          "defaultValue": "23"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "9",
+            "4K": "8",
+            "1080p": "7",
+            "1080i": "7",
+            "720p": "6",
+            "SD": "5"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "processingByYear": {
+          "selector": "processing_sel[5]",
+          "mode": "buckets"
+        }
+      },
+      "天枢": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "0",
+            "游戏": "0",
+            "学习": "410",
+            "书籍": "0"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "11",
+            "X265": "10",
+            "H264": "13",
+            "X264": "12",
+            "VC-1": "2",
+            "MPEG-2": "6",
+            "XVID": "8",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "0",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "财神": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "410",
+            "游戏": "410",
+            "学习": "410",
+            "书籍": "410"
+          },
+          "defaultValue": "410"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "11",
+            "DTS-X": "16",
+            "DTS-HDMA:X 7.1": "16",
+            "TrueHD": "15",
+            "DTS-HDMA": "17",
+            "DTS-HD": "13",
+            "DTS-HDHR": "17",
+            "DTS": "18",
+            "AC3": "13",
+            "AAC": "9",
+            "LPCM": "14",
+            "Flac": "22",
+            "APE": "10",
+            "WAV": "20",
+            "MP3": "21",
+            "M4A": "19",
+            "DDP": "12"
+          },
+          "defaultValue": "13"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "8",
+            "4K": "7",
+            "1080p": "6",
+            "1080i": "6",
+            "720p": "5",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "sourceByMedium": {
+          "selector": "source_sel[4]",
+          "map": {
+            "Blu-ray": "7",
+            "UHD": "8",
+            "Remux": "9",
+            "Encode": "10",
+            "WEB-DL": "11",
+            "HDTV": "12",
+            "DVD": "13",
+            "CD": "14"
+          },
+          "defaultValue": "16"
+        }
+      },
+      "星陨阁": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "418",
+            "游戏": "409",
+            "学习": "414",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "2",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "12",
+            "DTS-X": "16",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "8",
+            "DTS-HDMA": "6",
+            "DTS-HD": "6",
+            "DTS-HDHR": "6",
+            "DTS": "5",
+            "AC3": "10",
+            "AAC": "14",
+            "LPCM": "9",
+            "Flac": "1",
+            "APE": "13",
+            "WAV": "3",
+            "MP3": "2",
+            "M4A": "4",
+            "DDP": "11"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "4",
+            "1080p": "3",
+            "1080i": "3",
+            "720p": "2",
+            "SD": "6"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "樱花": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "2",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "7",
+            "X265": "7",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "6"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "我好闲": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "9",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "3"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "10",
+            "DTS-X": "16",
+            "DTS-HDMA:X 7.1": "11",
+            "TrueHD": "9",
+            "DTS-HDMA": "8",
+            "DTS-HD": "8",
+            "DTS-HDHR": "8",
+            "DTS": "3",
+            "AC3": "14",
+            "AAC": "6",
+            "LPCM": "12",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "7",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "13"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "7",
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "3",
+            "720p": "5",
+            "SD": "6"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "6"
+        }
+      },
+      "下水道": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "409",
+            "MV": "409",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "11",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "13",
+            "DTS-HDMA": "14",
+            "DTS-HD": "7",
+            "DTS-HDHR": "14",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "16",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "10",
+            "MP3": "4",
+            "M4A": "7",
+            "DDP": "11"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "2"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "柠檬不甜": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "406",
+            "动漫": "403",
+            "综艺": "407",
+            "纪录": "405",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "404",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "6",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "2",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "8",
+            "CD": "9"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "1",
+            "DTS-X": "13",
+            "DTS-HDMA:X 7.1": "4",
+            "TrueHD": "2",
+            "DTS-HDMA": "3",
+            "DTS-HD": "13",
+            "DTS-HDHR": "13",
+            "DTS": "5",
+            "AC3": "6",
+            "AAC": "8",
+            "LPCM": "9",
+            "Flac": "10",
+            "APE": "12",
+            "WAV": "11",
+            "MP3": "13",
+            "M4A": "13",
+            "DDP": "7"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": {
+              "index": 1
+            },
+            "1080p": {
+              "index": 2
+            },
+            "1080i": {
+              "index": 2
+            },
+            "720p": {
+              "index": 3
+            },
+            "SD": {
+              "index": 4
+            }
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "RailgunPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "410",
+            "游戏": "412",
+            "学习": "411",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "2",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "1",
+            "DTS-X": "9",
+            "DTS-HDMA:X 7.1": "9",
+            "TrueHD": "1",
+            "DTS-HDMA": "2",
+            "DTS-HD": "9",
+            "DTS-HDHR": "2",
+            "DTS": "9",
+            "AC3": "3",
+            "AAC": "7",
+            "LPCM": "4",
+            "Flac": "5",
+            "APE": "8",
+            "WAV": "10",
+            "MP3": "6",
+            "M4A": "9",
+            "DDP": "3"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "1",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "MyPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "体育": "407",
+            "MV": "406",
+            "短剧": "408"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "2",
+            "CD": "8"
+          },
+          "defaultValue": "0",
+          "titleOverrides": [
+            {
+              "pattern": "minibd",
+              "value": "4"
+            },
+            {
+              "pattern": "dvdr",
+              "value": "6"
+            },
+            {
+              "pattern": "HD.DVD",
+              "value": "2"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "7",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "7"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "8"
+          },
+          "defaultValue": "1"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "specialcat": {
+          "selector": "specialcat",
+          "map": {
+            "音乐": "412",
+            "漫画": "413",
+            "游戏": "415",
+            "软件": "416"
+          }
+        },
+        "specialcatMode5": true,
+        "specialcatExtras": [
+          {
+            "selector": "processing_sel[5]",
+            "value": "1"
+          },
+          {
+            "selector": "audiocodec_sel[5]",
+            "value": "1",
+            "whenPattern": "flac"
+          }
+        ]
+      },
+      "PTSkit": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "404",
+            "剧集": "405",
+            "动漫": "407",
+            "综艺": "409",
+            "纪录": "406",
+            "音乐": "408",
+            "游戏": "403",
+            "学习": "406"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "9",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "5",
+            "X265": "5",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "MARCH": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "410"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "13",
+            "HDTV": "5",
+            "DVD": "8",
+            "CD": "4"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "3",
+            "X265": "7",
+            "H264": "1",
+            "X264": "6",
+            "VC-1": "11",
+            "MPEG-2": "4",
+            "XVID": "9",
+            "AV1": "10"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "8",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "0"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "11"
+        }
+      },
+      "NovaHD": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406",
+            "软件": "410",
+            "游戏": "410",
+            "学习": "410",
+            "书籍": "410"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "11",
+            "HDTV": "5",
+            "DVD": "12",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "10"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "8",
+            "DTS-X": "15",
+            "DTS-HDMA:X 7.1": "15",
+            "TrueHD": "12",
+            "DTS-HDMA": "13",
+            "DTS-HD": "15",
+            "DTS-HDHR": "13",
+            "DTS": "3",
+            "AC3": "10",
+            "AAC": "6",
+            "LPCM": "11",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "15",
+            "MP3": "4",
+            "M4A": "15",
+            "DDP": "9"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "LuckPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "410",
+            "纪录": "411",
+            "音乐": "408",
+            "体育": "412",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "11",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "defaultValue": "13",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "value": "7"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "12",
+            "AV1": "2"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "11",
+            "DTS-X": "15",
+            "DTS-HDMA:X 7.1": "15",
+            "TrueHD": "14",
+            "DTS-HDMA": "16",
+            "DTS-HD": "7",
+            "DTS-HDHR": "16",
+            "DTS": "3",
+            "AC3": "8",
+            "AAC": "6",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "18",
+            "MP3": "4",
+            "M4A": "17",
+            "DDP": "12",
+            "Atmos_DDP": "12"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "7",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "8"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "Tokyo": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "409",
+            "纪录": "409",
+            "音乐": "408",
+            "体育": "409",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "2",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "7",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "16",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "12",
+            "DTS-HDMA": "10",
+            "DTS-HD": "7",
+            "DTS-HDHR": "10",
+            "DTS": "3",
+            "AC3": "14",
+            "AAC": "6",
+            "LPCM": "13",
+            "Flac": "1",
+            "APE": "17",
+            "WAV": "8",
+            "MP3": "4",
+            "M4A": "9",
+            "DDP": "15"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "ALing": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "402",
+            "纪录": "404",
+            "MV": "404"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "5",
+            "HDTV": "4",
+            "DVD": "6",
+            "CD": "8",
+            "UHD_DIY": "2",
+            "Blu-ray_DIY": "2"
+          },
+          "defaultValue": "8",
+          "titleOverrides": [
+            {
+              "pattern": "",
+              "whenDiy": true,
+              "value": "2"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "5",
+            "MPEG-2": "4",
+            "XVID": "6",
+            "AV1": "3"
+          },
+          "defaultValue": "6"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": {
+              "index": 2
+            },
+            "1080p": {
+              "index": 3
+            },
+            "1080i": {
+              "index": 3
+            },
+            "720p": {
+              "index": 4
+            },
+            "SD": {
+              "index": 5
+            }
+          }
+        },
+        "source": {
+          "selector": "source_sel[4]",
+          "map": {
+            "大陆": "1",
+            "香港": "2",
+            "台湾": "3",
+            "港台": "11",
+            "日本": "4",
+            "韩国": "5",
+            "欧美": "10",
+            "印度": "6"
+          },
+          "defaultValue": "11"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "3"
+        }
+      },
+      "LongPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "2",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "4",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "2",
+            "X265": "2",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "9",
+            "DTS-X": "11",
+            "DTS-HDMA:X 7.1": "11",
+            "TrueHD": "9",
+            "DTS-HDMA": "3",
+            "DTS-HD": "11",
+            "DTS-HDHR": "3",
+            "DTS": "13",
+            "AC3": "15",
+            "AAC": "6",
+            "LPCM": "14",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "17",
+            "MP3": "4",
+            "M4A": "8",
+            "DDP": "10"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "2",
+            "1080i": "2",
+            "720p": "3"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "藏宝阁": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "404",
+            "综艺": "407",
+            "纪录": "408",
+            "音乐": "409",
+            "体育": "0",
+            "MV": "407",
+            "软件": "0",
+            "游戏": "0",
+            "学习": "410",
+            "书籍": "0"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "9",
+            "Blu-ray": "7",
+            "Remux": "8",
+            "Encode": "3",
+            "WEB-DL": "6",
+            "HDTV": "4",
+            "DVD": "2",
+            "CD": "0"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "8",
+            "X265": "8",
+            "H264": "6",
+            "X264": "6",
+            "VC-1": "5",
+            "MPEG-2": "3",
+            "XVID": "0",
+            "AV1": "9"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "0",
+            "DTS-X": "0",
+            "DTS-HDMA:X 7.1": "0",
+            "TrueHD": "8",
+            "DTS-HDMA": "3",
+            "DTS-HD": "0",
+            "DTS-HDHR": "3",
+            "DTS": "3",
+            "AC3": "2",
+            "AAC": "4",
+            "LPCM": "9",
+            "Flac": "7",
+            "APE": "0",
+            "WAV": "0",
+            "MP3": "1",
+            "M4A": "0",
+            "DDP": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "7",
+            "4K": "6",
+            "1080p": "4",
+            "1080i": "4",
+            "720p": "3",
+            "SD": "0"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "1"
+        }
+      },
+      "未来幻境": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "0",
+            "体育": "0",
+            "MV": "0",
+            "软件": "0",
+            "游戏": "0",
+            "学习": "0",
+            "书籍": "0"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "4",
+            "Blu-ray": "9",
+            "Remux": "6",
+            "Encode": "8",
+            "WEB-DL": "5",
+            "HDTV": "2",
+            "DVD": "3",
+            "CD": "2"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "5",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "自然": {
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "8",
+            "Remux": "9",
+            "Encode": "10",
+            "WEB-DL": "7",
+            "HDTV": "4",
+            "DVD": "2",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "7"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "5",
+            "DTS-X": "1",
+            "DTS-HDMA:X 7.1": "17",
+            "TrueHD": "6",
+            "DTS-HDMA": "3",
+            "DTS-HD": "17",
+            "DTS-HDHR": "4",
+            "DTS": "2",
+            "AC3": "8",
+            "AAC": "11",
+            "LPCM": "7",
+            "Flac": "10",
+            "APE": "12",
+            "WAV": "13",
+            "MP3": "14",
+            "M4A": "15",
+            "DDP": "9"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "1",
+            "4K": "2",
+            "1080p": "3",
+            "1080i": "4",
+            "720p": "5",
+            "SD": "6"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "SBPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "0"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "5"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "0",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "YHPP": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "0",
+            "短剧": "402"
+          },
+          "defaultValue": "0"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "19",
+            "UHD_DIY": "18",
+            "UHD_Remux": "17",
+            "Blu-ray": "15",
+            "Blu-ray_DIY": "14",
+            "Blu-ray_Remux": "13",
+            "DVD": "6",
+            "HDTV": "8",
+            "WEB-DL": "9",
+            "CD": "5",
+            "Encode_4K": "16",
+            "Encode_1080p": "12",
+            "Encode_1080i": "12",
+            "Encode_720p": "11",
+            "Encode": "12"
+          },
+          "defaultValue": "1"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "8",
+            "X265": "7",
+            "H264": "10",
+            "X264": "9",
+            "VC-1": "6",
+            "MPEG-2": "1",
+            "XVID": "3",
+            "AV1": "5"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "23",
+            "DTS-HDMA:X 7.1": "22",
+            "TrueHD": "21",
+            "DTS-HDMA": "20",
+            "DTS-HD": "13",
+            "DTS-HDHR": "19",
+            "DTS": "18",
+            "AC3": "2",
+            "AAC": "1",
+            "LPCM": "17",
+            "Flac": "14",
+            "APE": "15",
+            "WAV": "16",
+            "DDP": "11",
+            "Atmos_DDP": "12"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "7",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        },
+        "processingBySource": {
+          "selector": "processing_sel[4]",
+          "map": {
+            "美国": "9",
+            "英国": "7",
+            "欧洲": "8",
+            "欧美": "8",
+            "大陆": "12",
+            "香港": "11",
+            "台湾": "10",
+            "港台": "11",
+            "日本": "6",
+            "韩国": "5",
+            "印度": "4"
+          },
+          "defaultValue": "2"
+        }
+      },
+      "52MOVIE": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "410",
+            "MV": "406",
+            "软件": "411",
+            "游戏": "411",
+            "学习": "411",
+            "书籍": "411",
+            "短剧": "402"
+          },
+          "defaultValue": "411"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          },
+          "defaultValue": "11"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "1",
+            "X265": "1",
+            "H264": "2",
+            "X264": "2",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "6"
+          },
+          "defaultValue": "9"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "6",
+            "DTS-X": "15",
+            "DTS-HDMA:X 7.1": "4",
+            "TrueHD": "7",
+            "DTS-HDMA": "4",
+            "DTS-HD": "4",
+            "DTS-HDHR": "4",
+            "DTS": "3",
+            "AC3": "2",
+            "AAC": "1",
+            "LPCM": "9",
+            "Flac": "11",
+            "APE": "12",
+            "WAV": "10",
+            "MP3": "13",
+            "M4A": "15",
+            "DDP": "5",
+            "Atmos_TrueHD": "8",
+            "DDP_Atmos": "6",
+            "Atmos_DDP": "6"
+          },
+          "defaultValue": "15"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        }
+      },
+      "躺平": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "409",
+            "体育": "407",
+            "MV": "406",
+            "软件": "414",
+            "游戏": "414",
+            "学习": "414",
+            "书籍": "411"
+          }
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "10",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "11",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8"
+          }
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "3",
+            "AV1": "7"
+          }
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "9",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "TrueHD": "12",
+            "DTS-HDMA": "16",
+            "DTS-HD": "7",
+            "DTS-HDHR": "16",
+            "DTS": "14",
+            "AC3": "11",
+            "AAC": "6",
+            "LPCM": "19",
+            "Flac": "1",
+            "APE": "2",
+            "WAV": "13",
+            "MP3": "4",
+            "M4A": "17",
+            "DDP": "10"
+          }
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "2",
+            "SD": "7"
+          }
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "BaoZi": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "动漫": "405",
+            "综艺": "403",
+            "纪录": "404",
+            "音乐": "408",
+            "体育": "407",
+            "MV": "406",
+            "软件": "409",
+            "游戏": "409",
+            "学习": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "11",
+            "Blu-ray": "1",
+            "Remux": "3",
+            "Encode": "7",
+            "WEB-DL": "10",
+            "HDTV": "5",
+            "DVD": "6",
+            "CD": "8",
+            "UHD_DIY": "12",
+            "Blu-ray_DIY": "13"
+          },
+          "defaultValue": "0",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "value": "6"
+            },
+            {
+              "pattern": "HD DVD",
+              "value": "2"
+            },
+            {
+              "pattern": "minibd",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H265": "6",
+            "X265": "6",
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "XVID": "5",
+            "AV1": "3"
+          },
+          "defaultValue": "5"
+        },
+        "audio": {
+          "selector": "audiocodec_sel[4]",
+          "map": {
+            "Atmos": "9",
+            "DTS-X": "8",
+            "DTS-HDMA:X 7.1": "8",
+            "TrueHD": "11",
+            "DTS-HDMA": "10",
+            "DTS-HD": "7",
+            "DTS-HDHR": "10",
+            "DTS": "3",
+            "AC3": "1",
+            "AAC": "6",
+            "LPCM": "12",
+            "Flac": "13",
+            "APE": "14",
+            "WAV": "15",
+            "MP3": "4",
+            "M4A": "5",
+            "DDP": "1"
+          },
+          "defaultValue": "7"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "6",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          },
+          "defaultValue": "7"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5"
+        }
+      },
+      "NJTUPT": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "综艺": "403",
+            "纪录": "404",
+            "动漫": "405",
+            "MV": "406",
+            "体育": "407",
+            "学习": "415",
+            "音乐": "422",
+            "游戏": "425",
+            "软件": "409",
+            "书籍": "409"
+          },
+          "defaultValue": "409"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "9",
+            "Blu-ray": "9",
+            "Remux": "8",
+            "Encode": "7",
+            "WEB-DL": "5",
+            "HDTV": "6",
+            "DVD": "2"
+          },
+          "defaultValue": "10"
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "H265": "3",
+            "X265": "3",
+            "MPEG-2": "4",
+            "MPEG-4": "4",
+            "AV1": "6"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            "SD": "4"
+          }
+        }
+      },
+      "影": {
+        "type": {
+          "selector": "tr_category",
+          "map": {
+            "电影": "mo",
+            "剧集": "tv",
+            "动漫": "an",
+            "综艺": "ot",
+            "纪录": "do",
+            "体育": "sp",
+            "MV": "mv"
+          }
+        },
+        "medium": {
+          "selector": "tr_source",
+          "map": {
+            "UHD": "s54",
+            "UHD_DIY": "s53",
+            "Blu-ray": "s44",
+            "Blu-ray_DIY": "s43",
+            "DVD": "s33",
+            "Remux_4K": "s52",
+            "Remux": "s42",
+            "HDTV": "s22",
+            "WEB-DL": "s13",
+            "Encode_4K": "s51",
+            "Encode": "s41"
+          },
+          "defaultValue": "s11",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "whenMedium": "DVD",
+              "value": "s31"
+            },
+            {
+              "pattern": "remux",
+              "whenMedium": "DVD",
+              "value": "s32"
+            },
+            {
+              "pattern": "dvd",
+              "whenMedium": "Remux",
+              "value": "s32"
+            },
+            {
+              "pattern": "tvrip",
+              "whenMedium": "HDTV",
+              "value": "s21"
+            },
+            {
+              "pattern": "dvd",
+              "whenMedium": "Encode",
+              "value": "s31"
+            },
+            {
+              "pattern": "web",
+              "whenMedium": "Encode",
+              "whenStandard": "1080p",
+              "value": "s13"
+            },
+            {
+              "pattern": "web",
+              "whenMedium": "Encode",
+              "whenStandard": "720p",
+              "value": "s13"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "tr_video_codec",
+          "map": {
+            "H264": "1",
+            "H265": "2",
+            "MPEG-2": "3",
+            "MPEG-4": "3",
+            "VC-1": "5",
+            "X264": "6",
+            "X265": "7",
+            "XVID": "8"
+          },
+          "defaultValue": "4"
+        },
+        "audio": {
+          "selector": "tr_audio_codec",
+          "map": {
+            "AAC": "1",
+            "APE": "2",
+            "AC3": "3",
+            "DTS-HD": "4",
+            "DTS": "4",
+            "DTS-HDHR": "5",
+            "DTS-HDMA": "6",
+            "DTS-X": "7",
+            "DTS-HDMA:X 7.1": "7",
+            "Flac": "8",
+            "LPCM": "9",
+            "M4A": "10",
+            "MP3": "11",
+            "TrueHD": "14",
+            "Atmos_TrueHD": "15",
+            "Atmos": "3",
+            "WAV": "16"
+          },
+          "defaultValue": "13"
+        },
+        "standard": {
+          "selector": "tr_resolution",
+          "map": {
+            "SD": "r1",
+            "720p": "r2",
+            "1080p": "r3",
+            "1080i": "r3",
+            "4K": "r4",
+            "8K": "r5"
+          }
+        },
+        "team": {
+          "selector": "tr_team",
+          "defaultValue": "5"
+        }
+      },
+      "慕雪阁": {
+        "type": {
+          "selector": "type",
+          "map": {
+            "电影": "401",
+            "剧集": "402",
+            "短剧": "402",
+            "综艺": "403",
+            "纪录": "404",
+            "动漫": "405",
+            "MV": "406",
+            "体育": "407",
+            "音乐": "408",
+            "游戏": "409",
+            "学习": "409",
+            "软件": "409"
+          },
+          "defaultValue": "0"
+        },
+        "medium": {
+          "selector": "medium_sel[4]",
+          "map": {
+            "UHD": "1",
+            "Blu-ray": "1",
+            "HD DVD": "2",
+            "Remux": "3",
+            "HDTV": "5",
+            "DVD": "6",
+            "Encode": "7",
+            "CD": "8",
+            "WEB-DL": "10"
+          },
+          "defaultValue": "0",
+          "titleOverrides": [
+            {
+              "pattern": "dvdrip",
+              "value": "7"
+            },
+            {
+              "pattern": "MiniBD",
+              "value": "4"
+            }
+          ]
+        },
+        "codec": {
+          "selector": "codec_sel[4]",
+          "map": {
+            "H264": "1",
+            "X264": "1",
+            "VC-1": "2",
+            "XVID": "3",
+            "MPEG-2": "4",
+            "H265": "6",
+            "X265": "6"
+          },
+          "defaultValue": "5"
+        },
+        "standard": {
+          "selector": "standard_sel[4]",
+          "map": {
+            "8K": "0",
+            "4K": "5",
+            "2K": "0",
+            "1080p": "1",
+            "1080i": "1",
+            "720p": "3",
+            "720i": "3",
+            "SD": "4"
+          },
+          "defaultValue": "0"
+        },
+        "team": {
+          "selector": "team_sel[4]",
+          "defaultValue": "5",
+          "matchMode": "muxuege"
+        }
+      }
+    };
+    const VERIFIED_CHINESE_NP = /* @__PURE__ */ new Set(["PThome", "BTSchool", "HDArea", "HDTime", "TCCF", "HDChina", "HDDolby", "HDfans", "TLFbits"]);
+    const makeChineseNexus = (name2, baseUrl, keywords, description, extra) => ({
+      name: name2,
+      type: SiteType.NexusPHP,
+      keywords,
+      baseUrl,
+      description,
+      isChinese: true,
+      experimental: !VERIFIED_CHINESE_NP.has(name2),
+      nexusProfile: NEXUS_FILL_PROFILES[name2],
+      ...extra
+    });
     const NexusSites = [
       {
         name: "OpenCD",
@@ -8193,6 +17305,7 @@ ${meta.subtitle || ""}`);
         keywords: ["open.cd"],
         baseUrl: "https://open.cd/",
         uploadPath: "plugin_upload.php",
+        contentDomains: ["music"],
         description: "OpenCD"
       },
       {
@@ -8211,6 +17324,7 @@ ${meta.subtitle || ""}`);
         // Legacy parity: browse keyword is title-based, not IMDb id.
         search: { name: "browse?keyword={name}" },
         preferCurrentHost: true,
+        contentDomains: ["movie", "tv", "miniseries", "anime", "doc", "book", "game", "misc"],
         description: "M-Team TP (New AntD Layout)",
         features: {
           imdbSearch: true,
@@ -8264,7 +17378,7 @@ ${meta.subtitle || ""}`);
       {
         name: "TTG",
         type: SiteType.NexusPHP,
-        keywords: ["totheglory.im", "totheglory.me", "totheglory.", "bwtorrents.tv"],
+        keywords: ["totheglory.im", "totheglory.me", "totheglory."],
         baseUrl: "https://totheglory.im/",
         search: {
           imdb: "browse.php?search_field=imdb{imdbNo}&c=M",
@@ -8297,6 +17411,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.NexusPHP,
         keywords: ["tjupt.org"],
         baseUrl: "https://www.tjupt.org/",
+        contentDomains: ["movie", "tv", "miniseries", "anime", "doc", "book", "game", "misc"],
         search: {
           imdb: "torrents.php?incldead=0&search_area=4&search={imdb}&sort=5&type=desc",
           name: "torrents.php?incldead=0&search_area=0&search={name}&sort=5&type=desc"
@@ -8317,7 +17432,7 @@ ${meta.subtitle || ""}`);
         name: "FRDS",
         type: SiteType.NexusPHP,
         keywords: ["keepfrds.com"],
-        baseUrl: "https://keepfrds.com/",
+        baseUrl: "https://pt.keepfrds.com/",
         description: "FRDS"
       },
       {
@@ -8330,7 +17445,113 @@ ${meta.subtitle || ""}`);
         features: {
           imdbSearch: true
         }
-      }
+      },
+      // --- Group A: Declarative Chinese NexusPHP sites (aligned with upstream legacy) ---
+      makeChineseNexus("HDDolby", "https://www.uhddolby.com/", ["uhddolby.com", "hddolby.com"], "高清杜比 (HDDolby)"),
+      makeChineseNexus("PThome", "https://www.pthome.net/", ["pthome.net"], "铂金家 (PThome)"),
+      makeChineseNexus("UBits", "https://ubits.club/", ["ubits.club"], "你堡 (UBits)"),
+      makeChineseNexus("BTSchool", "https://pt.btschool.club/", ["btschool.club"], "学校 (BTSchool)"),
+      makeChineseNexus("HDArea", "https://hdarea.club/", ["hdarea.club", "hdarea.co"], "高清地带 (HDArea)"),
+      makeChineseNexus("HDfans", "https://hdfans.org/", ["hdfans.org"], "红豆饭 (HDfans)"),
+      makeChineseNexus("HDTime", "https://hdtime.org/", ["hdtime.org"], "高清时光 (HDTime)", {
+        contentDomains: ["movie", "tv", "miniseries", "anime", "doc", "book", "game", "misc"]
+      }),
+      makeChineseNexus("HDU", "https://pt.upxin.net/", ["pt.upxin.net", "pt.hdupt.com"], "好多油 (HDU)"),
+      makeChineseNexus("HDVideo", "https://hdvideo.top/", ["hdvideo.top", "hdvideo.one"], "HDVideo"),
+      makeChineseNexus("PigGo", "https://piggo.me/", ["piggo.me"], "猪猪网 (PigGo)"),
+      makeChineseNexus("QingWa", "https://qingwapt.com/", ["qingwapt.com"], "青蛙 (QingWa)"),
+      makeChineseNexus("PTLGS", "https://ptlgs.org/", ["ptlgs.org"], "劳改所 (PTLGS)"),
+      makeChineseNexus("ZMPT", "https://zmpt.cc/", ["zmpt.cc"], "织梦 (ZMPT)"),
+      makeChineseNexus("ICC", "https://www.icc2022.com/", ["icc2022.com"], "冰淇淋 (ICC)"),
+      makeChineseNexus("AGSV", "https://www.agsvpt.com/", ["agsvpt.com"], "末日种子库 (AGSV)"),
+      makeChineseNexus("SoulVoice", "https://pt.soulvoice.club/", ["soulvoice.club"], "铃音 (SoulVoice)"),
+      makeChineseNexus("PTT", "https://www.pttime.org/", ["pttime.org"], "PTTime"),
+      makeChineseNexus("PTsbao", "https://ptsbao.club/", ["ptsbao.club"], "烧包 (PTsbao)"),
+      makeChineseNexus("TLFbits", "https://pt.eastgame.org/", ["eastgame.org"], "吐鲁番 (TLFbits)"),
+      makeChineseNexus("WT-Sakura", "https://wintersakura.net/", ["wintersakura.net", "wintersakura.org"], "冬樱 (WT-Sakura)"),
+      makeChineseNexus("CrabPt", "https://crabpt.vip/", ["crabpt.vip"], "蟹黄堡 (CrabPt)"),
+      makeChineseNexus("DiscFan", "https://discfan.net/", ["discfan.net"], "碟粉 (DiscFan)"),
+      makeChineseNexus("FreeFarm", "https://pt.0ff.cc/", ["0ff.cc"], "自由农场 (FreeFarm)"),
+      makeChineseNexus("Panda", "https://pandapt.net/", ["pandapt.net"], "熊猫 (Panda)"),
+      makeChineseNexus("CarPt", "https://carpt.net/", ["carpt.net"], "车PT (CarPt)"),
+      makeChineseNexus("1PTBA", "https://1ptba.com/", ["1ptba.com"], "壹PT吧 (1PTBA)"),
+      makeChineseNexus("52PT", "https://52pt.site/", ["52pt.site"], "吾爱PT (52PT)"),
+      makeChineseNexus("PTCafe", "https://ptcafe.club/", ["ptcafe.club"], "咖啡 (PTCafe)"),
+      makeChineseNexus("PTFans", "https://ptfans.cc/", ["ptfans.cc"], "PTFans"),
+      makeChineseNexus("CyanBug", "https://cyanbug.net/", ["cyanbug.net"], "大青虫 (CyanBug)"),
+      makeChineseNexus("OKPT", "https://www.okpt.net/", ["okpt.net"], "OKPT"),
+      makeChineseNexus("KuFei", "https://kufei.org/", ["kufei.org"], "库非 (KuFei)"),
+      makeChineseNexus("Dragon", "https://www.dragonhd.xyz/", ["dragonhd.xyz"], "龙之家 (Dragon)"),
+      makeChineseNexus("iloli", "https://share.ilolicon.com/", ["ilolicon.com", "xloli.cc"], "iloli"),
+      makeChineseNexus("ITZMX", "https://pt.itzmx.com/", ["itzmx.com"], "ITZMX"),
+      makeChineseNexus("JoyHD", "https://www.joyhd.net/", ["joyhd.net"], "JoyHD"),
+      makeChineseNexus("Oshen", "http://www.oshen.win/", ["oshen.win"], "欧神 (Oshen)"),
+      makeChineseNexus("YDY", "https://pt.hdbd.us/", ["hdbd.us"], "伊甸园 (YDY)"),
+      makeChineseNexus("UltraHD", "https://ultrahd.net/", ["ultrahd.net"], "UltraHD"),
+      makeChineseNexus("麒麟", "https://www.hdkyl.in/", ["hdkyl.in"], "麒麟 (HDKylin)"),
+      makeChineseNexus("海棠", "https://www.htpt.cc/", ["htpt.cc"], "海棠 (HTPT)"),
+      makeChineseNexus("HDChina", "https://hdwing.org/", ["hdwing.org", "hdchina.org"], "瓷器 (HDChina)", { nexusProfile: void 0 }),
+      makeChineseNexus("PTzone", "https://ptzone.xyz/", ["ptzone.xyz"], "PTzone"),
+      makeChineseNexus("TCCF", "https://et8.org/", ["et8.org"], "TorrentCCF (TCCF)", {
+        contentDomains: ["doc", "book"]
+      }),
+      makeChineseNexus("13City", "https://13city.org/", ["13city.org"], "13City"),
+      makeChineseNexus("HITPT", "https://www.hitpt.com/", ["hitpt.com"], "百川 (HITPT)"),
+      makeChineseNexus("HUDBT", "https://hudbt.hust.edu.cn/", ["hudbt.hust.edu.cn"], "蝴蝶 (HUDBT)"),
+      makeChineseNexus("NanYang", "https://nanyangpt.com/", ["nanyangpt.com"], "南洋 (NanYang)"),
+      makeChineseNexus("NexusHD", "https://www.nexushd.org/", ["nexushd.org"], "NexusHD"),
+      makeChineseNexus("PuTao", "https://pt.sjtu.edu.cn/", ["pt.sjtu.edu.cn"], "葡萄 (PuTao)"),
+      makeChineseNexus("RS", "https://resource.xidian.edu.cn/", ["resource.xidian.edu.cn"], "睿思 (RS)"),
+      makeChineseNexus("雨", "https://raingfh.top/", ["raingfh.top"], "雨 (RainGFH)"),
+      makeChineseNexus("GTK", "https://pt.gtk.pw/", ["pt.gtk.pw"], "GTK"),
+      makeChineseNexus("ECUST", "https://pt.ecust.pp.ua/", ["pt.ecust.pp.ua"], "华理 (ECUST)"),
+      makeChineseNexus("HDClone", "https://pt.hdclone.top/", ["pt.hdclone.top"], "HDClone"),
+      makeChineseNexus("CDFile", "https://pt.cdfile.org/", ["pt.cdfile.org"], "CDFile"),
+      makeChineseNexus("HDBAO", "https://hdbao.cc/", ["hdbao.cc"], "HDBAO"),
+      makeChineseNexus("AFUN", "https://www.ptlover.cc/", ["ptlover.cc"], "AFUN"),
+      makeChineseNexus("DevTracker", "https://www.devtracker.me/", ["devtracker.me"], "DevTracker"),
+      makeChineseNexus("唐门", "https://tmpt.top/", ["tmpt.top"], "唐门 (TMPT)"),
+      makeChineseNexus("天枢", "https://dubhe.site/", ["dubhe.site"], "天枢 (Dubhe)"),
+      makeChineseNexus("财神", "https://cspt.top/", ["cspt.top"], "财神 (CSPT)"),
+      makeChineseNexus("星陨阁", "https://pt.xingyungept.org/", ["pt.xingyungept.org"], "星陨阁"),
+      makeChineseNexus("樱花", "http://pt.ying.us.kg/", ["pt.ying.us.kg"], "樱花"),
+      makeChineseNexus("我好闲", "http://whax.net/", ["whax.net"], "我好闲"),
+      makeChineseNexus("下水道", "https://sewerpt.com/", ["sewerpt.com"], "下水道"),
+      makeChineseNexus("柠檬不甜", "https://lemonhd.net/", ["lemonhd.net"], "柠檬不甜 (LemonHD)"),
+      makeChineseNexus("RailgunPT", "https://bilibili.download/", ["bilibili.download"], "RailgunPT"),
+      makeChineseNexus("MyPT", "https://cc.mypt.cc/", ["cc.mypt.cc"], "MyPT"),
+      makeChineseNexus("PTSkit", "https://www.ptskit.org/", ["ptskit.org"], "PTSkit"),
+      makeChineseNexus("MARCH", "https://duckboobee.org/", ["duckboobee.org"], "MARCH"),
+      makeChineseNexus("NovaHD", "https://pt.novahd.top/", ["pt.novahd.top"], "NovaHD"),
+      makeChineseNexus("LuckPT", "https://pt.luckpt.de/", ["pt.luckpt.de"], "LuckPT"),
+      makeChineseNexus("Tokyo", "https://www.tokyopt.xyz/", ["tokyopt.xyz"], "Tokyo"),
+      makeChineseNexus("ALing", "https://pt.aling.de/", ["pt.aling.de"], "ALing"),
+      makeChineseNexus("LongPT", "https://longpt.org/", ["longpt.org"], "LongPT"),
+      makeChineseNexus("藏宝阁", "https://cangbao.ge/", ["cangbao.ge"], "藏宝阁"),
+      makeChineseNexus("未来幻境", "https://nex.jivon.de/", ["nex.jivon.de"], "未来幻境"),
+      makeChineseNexus("自然", "http://zrpt.cc/", ["zrpt.cc"], "自然"),
+      makeChineseNexus("SBPT", "https://sbpt.link/", ["sbpt.link"], "SBPT"),
+      makeChineseNexus("YHPP", "https://www.yhpp.cc/", ["yhpp.cc"], "YHPP"),
+      makeChineseNexus("52MOVIE", "https://www.52movie.top/", ["52movie.top"], "52MOVIE"),
+      makeChineseNexus("躺平", "https://www.tangpt.top/", ["tangpt.top"], "躺平"),
+      makeChineseNexus("BaoZi", "https://p.t-baozi.cc/", ["p.t-baozi.cc"], "BaoZi"),
+      makeChineseNexus("NPUPT", "https://npupt.com/", ["npupt.com"], "蒲公英 (NPUPT)", { nexusProfile: void 0 }),
+      makeChineseNexus("NJTUPT", "https://njtupt.top/", ["njtupt.top"], "南工大 (NJTUPT)"),
+      makeChineseNexus("HaiDan", "https://www.haidan.video/", ["haidan.video"], "海胆 (HaiDan)", { nexusProfile: void 0 }),
+      makeChineseNexus("BYR", "https://byr.pt/", ["byr.pt", "bt.byr.cn"], "北邮人 (BYR)", { nexusProfile: void 0 }),
+      makeChineseNexus("HDCity", "https://hdcity.city/", ["hdcity.city"], "高清城市 (HDCity)", {
+        uploadPath: "upload",
+        nexusProfile: void 0
+      }),
+      makeChineseNexus("GGPT", "https://www.gamegamept.com/", ["gamegamept.com"], "GGPT", { contentDomains: ["game"], nexusProfile: void 0 }),
+      makeChineseNexus("杏林", "https://xingtan.one/", ["xingtan.one"], "杏林 (XingTan)", { nexusProfile: void 0 }),
+      makeChineseNexus("影", "https://star-space.net/", ["star-space.net"], "影 (StarSpace)"),
+      makeChineseNexus("慕雪阁", "https://pt.muxuege.org/", ["pt.muxuege.org"], "慕雪阁"),
+      makeChineseNexus("U2", "https://u2.dmhy.org/", ["u2.dmhy.org"], "U2 动漫花园 (仅源站)", { contentDomains: ["anime"], capabilities: { source: true, target: false }, nexusProfile: void 0 }),
+      makeChineseNexus("HHClub", "https://hhanclub.top/", ["hhanclub.top", "hhan.club", "hhanclub.net"], "憨憨 (HHClub, 源站)", {
+        capabilities: { source: true, target: false },
+        nexusProfile: void 0
+      })
     ];
     const GazelleSites = [
       {
@@ -8338,6 +17559,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.Gazelle,
         keywords: ["greatposterwall.com"],
         baseUrl: "https://greatposterwall.com/",
+        contentDomains: ["movie"],
         description: "GreatPosterWall"
       },
       {
@@ -8345,6 +17567,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.Gazelle,
         keywords: ["secret-cinema.pw"],
         baseUrl: "https://secret-cinema.pw/",
+        contentDomains: ["movie"],
         search: {
           imdb: "torrents.php?action=advanced&searchsubmit=1&filter_cat=1&cataloguenumber={imdb}",
           name: "torrents.php?searchstr={name}"
@@ -8359,6 +17582,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.PTP,
         keywords: ["passthepopcorn.me"],
         baseUrl: "https://passthepopcorn.me/",
+        contentDomains: ["movie", "miniseries", "doc"],
         search: { imdb: "torrents.php?searchstr={imdb}", name: "torrents.php?searchstr={name}" },
         groupUpload: true,
         description: "PassThePopcorn"
@@ -8366,8 +17590,10 @@ ${meta.subtitle || ""}`);
       {
         name: "RED",
         type: SiteType.Gazelle,
-        keywords: ["redacted.ch", "redacted.sh"],
-        baseUrl: "https://redacted.ch/",
+        keywords: ["redacted.sh", "redacted.ch"],
+        baseUrl: "https://redacted.sh/",
+        preferCurrentHost: true,
+        contentDomains: ["music"],
         description: "Redacted",
         features: {
           imdbSearch: false,
@@ -8379,6 +17605,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.Gazelle,
         keywords: ["orpheus.network"],
         baseUrl: "https://orpheus.network/",
+        contentDomains: ["music"],
         description: "Orpheus"
       },
       {
@@ -8386,7 +17613,111 @@ ${meta.subtitle || ""}`);
         type: SiteType.Gazelle,
         keywords: ["dicmusic.com"],
         baseUrl: "https://dicmusic.com/",
+        contentDomains: ["music"],
         description: "DICMusic"
+      },
+      {
+        name: "BTN",
+        type: SiteType.BTN,
+        keywords: ["broadcasthe.net", "backup.landof.tv"],
+        baseUrl: "https://broadcasthe.net/",
+        mirrorUrl: "https://backup.landof.tv/",
+        preferCurrentHost: true,
+        contentDomains: ["tv", "miniseries"],
+        search: {
+          imdb: "torrents.php?action=advanced&imdb={imdb}",
+          name: "torrents.php?searchstr={name}"
+        },
+        description: "BroadcasTheNet (BTN)"
+      },
+      {
+        name: "ANT",
+        type: SiteType.Gazelle,
+        keywords: ["anthelion.me"],
+        baseUrl: "https://anthelion.me/",
+        experimental: true,
+        contentDomains: ["movie"],
+        search: {
+          imdb: "torrents.php?order_by=time&order_way=desc&searchstr={imdb}&search_type=0",
+          name: "torrents.php?order_by=time&order_way=desc&searchstr={name}&search_type=0"
+        },
+        description: "Anthelion (ANT)"
+      },
+      {
+        name: "TVV",
+        type: SiteType.Gazelle,
+        keywords: ["tv-vault.me"],
+        baseUrl: "https://tv-vault.me/",
+        experimental: true,
+        contentDomains: ["tv", "miniseries"],
+        search: {
+          imdb: "torrents.php?searchstr={imdb}",
+          name: "torrents.php?searchstr={name}"
+        },
+        description: "TV-Vault (TVV)"
+      },
+      {
+        name: "NBL",
+        type: SiteType.Gazelle,
+        keywords: ["nebulance.io"],
+        baseUrl: "https://nebulance.io/",
+        experimental: true,
+        contentDomains: ["tv", "miniseries"],
+        search: {
+          imdb: "torrents.php?order_by=time&order_way=desc&searchtext={name}&search_type=0",
+          name: "torrents.php?order_by=time&order_way=desc&searchtext={name}&search_type=0"
+        },
+        description: "Nebulance (NBL)"
+      },
+      {
+        name: "HD-Only",
+        type: SiteType.Gazelle,
+        keywords: ["hd-only.org"],
+        baseUrl: "https://hd-only.org/",
+        experimental: true,
+        search: {
+          imdb: "torrents.php?searchstr={imdb}",
+          name: "torrents.php?searchstr={name}"
+        },
+        description: "HD-Only"
+      },
+      {
+        name: "HDF",
+        type: SiteType.Gazelle,
+        keywords: ["hdf.world"],
+        baseUrl: "https://hdf.world/",
+        experimental: true,
+        search: {
+          imdb: "torrents.php?searchstr={imdb}",
+          name: "torrents.php?searchstr={name}"
+        },
+        description: "HD-Forever (HDF)"
+      },
+      {
+        name: "jpop",
+        type: SiteType.Gazelle,
+        keywords: ["jpopsuki.eu"],
+        baseUrl: "https://jpopsuki.eu/",
+        contentDomains: ["music"],
+        capabilities: { source: true, target: false },
+        features: {
+          imdbSearch: false,
+          doubanSearch: false
+        },
+        description: "JPopsuki (Source-only)"
+      },
+      {
+        name: "lztr",
+        type: SiteType.Gazelle,
+        keywords: ["lztr.me"],
+        baseUrl: "https://lztr.me/",
+        contentDomains: ["music"],
+        capabilities: { source: true, target: false },
+        features: {
+          imdbSearch: false,
+          doubanSearch: false
+        },
+        description: "LzTr (Source-only)"
       }
     ];
     const Unit3DSites = [
@@ -8406,6 +17737,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.Unit3DClassic,
         keywords: ["cinematik.net", "cinematik.me", "cinematik.cc"],
         baseUrl: "https://cinematik.net/",
+        contentDomains: ["movie", "doc"],
         description: "Cinematik (Tik)"
       },
       {
@@ -8447,18 +17779,74 @@ ${meta.subtitle || ""}`);
         }
       },
       {
-        name: "HDF",
-        type: SiteType.Unit3D,
-        keywords: ["hdf.world"],
-        baseUrl: "https://hdf.world/",
-        description: "HD-Forever"
-      },
-      {
         name: "PrivateHD",
-        type: SiteType.Unit3D,
+        type: SiteType.Avistaz,
         keywords: ["privatehd.to"],
         baseUrl: "https://privatehd.to/",
+        uploadPath: "upload/movie",
+        search: {
+          imdb: "movies?search=&imdb={imdb}",
+          name: "torrents?in=1&search={name}"
+        },
         description: "PrivateHD"
+      },
+      {
+        name: "OnlyEncodes",
+        type: SiteType.Unit3DClassic,
+        keywords: ["onlyencodes.cc"],
+        baseUrl: "https://onlyencodes.cc/",
+        experimental: true,
+        description: "OnlyEncodes+"
+      },
+      {
+        name: "DarkLand",
+        type: SiteType.Unit3DClassic,
+        keywords: ["darkland.top"],
+        baseUrl: "https://darkland.top/",
+        experimental: true,
+        description: "DarkLand"
+      },
+      {
+        name: "ReelFliX",
+        type: SiteType.Unit3DClassic,
+        keywords: ["reelflix.xyz", "reelflix.cc"],
+        baseUrl: "https://reelflix.xyz/",
+        mirrorUrl: "https://reelflix.cc/",
+        experimental: true,
+        description: "ReelFliX"
+      },
+      {
+        name: "FNP",
+        type: SiteType.Unit3DClassic,
+        keywords: ["fearnopeer.com"],
+        baseUrl: "https://fearnopeer.com/",
+        experimental: true,
+        description: "FearNoPeer (FNP)"
+      },
+      {
+        name: "HDOli",
+        type: SiteType.Unit3DClassic,
+        keywords: ["hd-olimpo.club"],
+        baseUrl: "https://hd-olimpo.club/",
+        experimental: true,
+        description: "HD-Olimpo"
+      },
+      {
+        name: "HONE",
+        type: SiteType.Unit3DClassic,
+        keywords: ["hawke.uno"],
+        baseUrl: "https://hawke.uno/",
+        experimental: true,
+        capabilities: { source: true, target: false },
+        description: "Hawke-Uno (Source Only)"
+      },
+      {
+        name: "DesiTorrents",
+        type: SiteType.Unit3DClassic,
+        keywords: ["desitorrents.tv", "torrent.desi"],
+        baseUrl: "https://desitorrents.tv/",
+        experimental: true,
+        description: "DesiTorrents"
       }
     ];
     const SpecialSites = [
@@ -8476,6 +17864,7 @@ ${meta.subtitle || ""}`);
         type: SiteType.KG,
         keywords: ["karagarga.in"],
         baseUrl: "https://karagarga.in/",
+        contentDomains: ["movie", "doc"],
         search: { imdb: "browse.php?search={imdb}&search_type=imdb", name: "browse.php?search={name}" },
         description: "Karagarga"
       },
@@ -8490,6 +17879,198 @@ ${meta.subtitle || ""}`);
         },
         mirrorUrl: "https://hdts.ru/",
         description: "HD-Torrents"
+      },
+      {
+        name: "HDRoute",
+        type: SiteType.HDRoute,
+        keywords: ["hdroute.org"],
+        baseUrl: "http://hdroute.org/",
+        uploadPath: "upload.php",
+        search: {
+          imdb: "browse.php?s={name}&dp=0&add=0&action=s&or=1&imdb={imdbNo}",
+          name: "browse.php?s={name}&dp=0&add=0&action=s&or=1&imdb="
+        },
+        isChinese: true,
+        experimental: true,
+        description: "HDRoute"
+      },
+      {
+        name: "FileList",
+        type: SiteType.FileList,
+        keywords: ["filelist.io"],
+        baseUrl: "https://filelist.io/",
+        search: {
+          imdb: "browse.php?search={imdb}",
+          name: "browse.php?search={name}"
+        },
+        capabilities: { source: true, target: false },
+        description: "FileList (Source Only)"
+      },
+      {
+        name: "TorrentLeech",
+        type: SiteType.TorrentLeech,
+        keywords: ["torrentleech.org", "torrentleech.me", "torrentleech.cc", "tlgetin.cc"],
+        baseUrl: "https://www.torrentleech.org/",
+        baseUrlSetting: "tlBaseUrl",
+        preferCurrentHost: true,
+        search: {
+          imdb: "torrents/browse/index/query/{imdb}",
+          name: "torrents/browse/index/query/{name}"
+        },
+        capabilities: { source: true, target: false },
+        description: "TorrentLeech (Source Only)"
+      },
+      {
+        name: "AvistaZ",
+        type: SiteType.Avistaz,
+        keywords: ["avistaz.to"],
+        baseUrl: "https://avistaz.to/",
+        uploadPath: "upload/movie",
+        search: {
+          imdb: "movies?search=&imdb={imdb}",
+          name: "torrents?in=1&search={name}"
+        },
+        description: "AvistaZ (AVZ)"
+      },
+      {
+        name: "CinemaZ",
+        type: SiteType.Avistaz,
+        keywords: ["cinemaz.to"],
+        baseUrl: "https://cinemaz.to/",
+        uploadPath: "upload/movie",
+        experimental: true,
+        search: {
+          imdb: "movies?search=&imdb={imdb}",
+          name: "torrents?in=1&search={name}"
+        },
+        description: "CinemaZ (CNZ)"
+      },
+      {
+        name: "CG",
+        type: SiteType.CG,
+        keywords: ["cinemageddon.net"],
+        baseUrl: "https://cinemageddon.net/",
+        uploadPath: "upload.php",
+        contentDomains: ["movie", "doc"],
+        search: {
+          imdb: "browse.php?search={imdb}&proj=0&descr=1",
+          name: "browse.php?search={name}&proj=0&descr=1"
+        },
+        description: "Cinemageddon (CG)"
+      },
+      {
+        name: "bib",
+        type: SiteType.General,
+        keywords: ["bibliotik.me"],
+        baseUrl: "https://bibliotik.me/",
+        contentDomains: ["book"],
+        capabilities: { source: true, target: false },
+        features: { imdbSearch: false, doubanSearch: false },
+        description: "Bibliotik (Source-only)"
+      },
+      {
+        name: "IPT",
+        type: SiteType.General,
+        keywords: ["iptorrents.com"],
+        baseUrl: "https://iptorrents.com/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        search: {
+          imdb: "t?q={imdb}",
+          name: "t?q={name}"
+        },
+        description: "IPTorrents (Source-only)"
+      },
+      {
+        name: "bit-hdtv",
+        type: SiteType.General,
+        keywords: ["bit-hdtv.com"],
+        baseUrl: "https://www.bit-hdtv.com/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        description: "BIT-HDTV (Source-only)"
+      },
+      {
+        name: "BlueBird",
+        type: SiteType.General,
+        keywords: ["bluebird-hd.org"],
+        baseUrl: "https://bluebird-hd.org/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        description: "BlueBird (Source-only)"
+      },
+      {
+        name: "bwtorrents",
+        type: SiteType.General,
+        keywords: ["bwtorrents.tv"],
+        baseUrl: "https://bwtorrents.tv/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        description: "BWTorrents (Source-only)"
+      },
+      {
+        name: "digitalcore",
+        type: SiteType.General,
+        keywords: ["digitalcore.club"],
+        baseUrl: "https://digitalcore.club/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        description: "DigitalCore (Source-only)"
+      },
+      {
+        name: "HDSpace",
+        type: SiteType.General,
+        keywords: ["hd-space.org"],
+        baseUrl: "https://hd-space.org/",
+        uploadPath: "index.php?page=upload",
+        experimental: true,
+        search: {
+          imdb: "index.php?page=torrents&search={imdbNo}&active=1&options=2",
+          name: "index.php?page=torrents&search={name}&active=1&options=0"
+        },
+        description: "HD-Space"
+      },
+      {
+        name: "iTS",
+        type: SiteType.General,
+        keywords: ["shadowthein.net"],
+        baseUrl: "https://shadowthein.net/",
+        capabilities: { source: true, target: false },
+        experimental: true,
+        description: "iTS (Source-only)"
+      },
+      {
+        name: "ZHUQUE",
+        type: SiteType.General,
+        keywords: ["zhuque.in"],
+        baseUrl: "https://zhuque.in/",
+        uploadPath: "torrent/upload",
+        isChinese: true,
+        experimental: true,
+        description: "朱雀 (ZHUQUE)"
+      },
+      {
+        name: "YemaPT",
+        type: SiteType.General,
+        keywords: ["yemapt.org"],
+        baseUrl: "https://www.yemapt.org/",
+        mirrorUrl: "https://www1.yemapt.org/",
+        preferCurrentHost: true,
+        uploadPath: "#/torrent/add",
+        isChinese: true,
+        experimental: true,
+        description: "野马 (YemaPT)"
+      },
+      {
+        name: "RouSi",
+        type: SiteType.General,
+        keywords: ["rousi.pro", "rousi.zip"],
+        baseUrl: "https://rousi.pro/",
+        preferCurrentHost: true,
+        uploadPath: "upload",
+        isChinese: true,
+        experimental: true,
+        description: "肉丝 (RouSi)"
       }
     ];
     const DEFAULT_ENABLED_SITE_NAMES = [
@@ -8533,7 +18114,10 @@ ${meta.subtitle || ""}`);
       "TJUPT"
     ]);
     function isChineseNexusSite(siteName) {
-      return CHINESE_NEXUS_SITES.has(siteName);
+      if (CHINESE_NEXUS_SITES.has(siteName))
+        return true;
+      const site = SiteCatalogService.getAllSites().find((s2) => s2.name === siteName);
+      return !!(site == null ? void 0 : site.isChinese);
     }
     class SiteCatalogService {
       static getAllSites() {
@@ -8592,7 +18176,6 @@ ${meta.subtitle || ""}`);
       '<a href="https://privatehd.to/torrents?in=1&search={search_name}" target="_blank">PHD</a>',
       '<a href="https://avistaz.to/torrents?in=1&search={search_name}" target="_blank">AVZ</a>',
       '<a href="https://cinemaz.to/torrents?in=1&search={search_name}" target="_blank">CNZ</a>',
-      '<a href="https://xthor.tk/browse.php?sch={search_name}" target="_blank">xTHOR</a>',
       '<a href="https://cinematik.net/torrents?imdbId={imdbid}#page/1" target="_blank">Tik</a>',
       '<a href="https://nzbs.in/search?query=imdb:{imdbid}" target="_blank">IN</a>',
       '<a href="https://search.douban.com/movie/subject_search?search_text={imdbid}" target="_blank">Douban</a>',
@@ -8606,7 +18189,6 @@ ${meta.subtitle || ""}`);
       '<a href="https://greatposterwall.com/torrents.php?searchstr={imdbid}" target="_blank">GPW</a>',
       '<a href="https://anthelion.me/torrents.php?order_by=time&order_way=desc&searchstr={search_name}&search_type=0&taglist=&tags_type=0" target="_blank">ANT</a>',
       '<a href="https://nebulance.io/torrents.php?order_by=time&order_way=desc&searchtext={search_name}&search_type=0&taglist=&tags_type=0" target="_blank">NBL</a>',
-      '<a href="https://www.morethantv.me/torrents/browse?searchtext={search_name}" target="_blank">MTV</a>',
       '<a href="http://tv-vault.me/torrents.php?action=advanced&searchstr=&searchtags=&tags_type=1&groupdesc=&imdbid={imdbid}" target="_blank">TVV</a>',
       '<a href="https://open.cd/torrents.php?incldead=0&spstate=0&inclbookmarked=0&search={search_name}&search_area=0&search_mode=0" target="_blank">OpenCD</a>',
       '<a href="https://orpheus.network/torrents.php?searchstr={search_name}&tags_type=0&order=time&sort=desc&group_results=1&cleardefault=Clear+default&action=basic&searchsubmit=1" target="_blank">OPS</a>',
@@ -8851,6 +18433,7 @@ ${meta.subtitle || ""}`);
       showQuickSearchOnImdb: true,
       defaultAnonymous: false,
       autoDownloadAfterUpload: true,
+      filterForwardTargetsByType: true,
       remoteSidebarOpacity: 0.92,
       settingsPanelOpacity: 0.95,
       popupOpacity: 0.96,
@@ -8871,7 +18454,8 @@ ${meta.subtitle || ""}`);
         HDB: false,
         HDT: false
       },
-      uiLanguage: "zh"
+      uiLanguage: "zh",
+      schemaVersion: 2
     };
     class SettingsService {
       static migrate(settings) {
@@ -8881,18 +18465,24 @@ ${meta.subtitle || ""}`);
         }
         delete migrated.gifyuApiKey;
         const rename = (v2) => v2 === "pterclub" ? "PTer" : v2;
-        const supported = new Set(SiteCatalogService.getSupportedSiteNames());
-        const enabledSet = new Set((settings.enabledSites || []).map(rename).filter((x2) => supported.has(x2)));
-        ["KG", "SC", "TJUPT", "HDT"].forEach((name2) => {
-          if (supported.has(name2))
-            enabledSet.add(name2);
-        });
-        const enabledSites = Array.from(enabledSet);
+        const targetCapable = new Set(
+          SiteCatalogService.getSupportedSites().filter((s2) => {
+            var _a;
+            return ((_a = s2.capabilities) == null ? void 0 : _a.target) !== false;
+          }).map((s2) => s2.name)
+        );
+        const enabledSet = new Set((settings.enabledSites || []).map(rename).filter((x2) => targetCapable.has(x2)));
         const favoriteSet = new Set((settings.favoriteSites || []).map(rename).filter((x2) => enabledSet.has(x2)));
-        ["KG", "SC", "TJUPT", "HDT"].forEach((name2) => {
-          if (enabledSet.has(name2))
-            favoriteSet.add(name2);
-        });
+        const prevSchema = Number(migrated.schemaVersion || 0);
+        if (prevSchema < 2) {
+          ["KG", "SC", "TJUPT", "HDT"].forEach((name2) => {
+            if (targetCapable.has(name2)) {
+              enabledSet.add(name2);
+              favoriteSet.add(name2);
+            }
+          });
+        }
+        const enabledSites = Array.from(enabledSet);
         const favoriteSites = Array.from(favoriteSet);
         const listQuickSearch = settings.showSearchOnList;
         const showSearchOnList = {
@@ -8900,14 +18490,21 @@ ${meta.subtitle || ""}`);
           HDB: (listQuickSearch == null ? void 0 : listQuickSearch.HDB) === void 0 ? DEFAULT_SETTINGS.showSearchOnList.HDB : !!listQuickSearch.HDB,
           HDT: (listQuickSearch == null ? void 0 : listQuickSearch.HDT) === void 0 ? DEFAULT_SETTINGS.showSearchOnList.HDT : !!listQuickSearch.HDT
         };
-        return { ...migrated, enabledSites, favoriteSites, showSearchOnList };
+        const filterForwardTargetsByType = settings.filterForwardTargetsByType === void 0 ? DEFAULT_SETTINGS.filterForwardTargetsByType : !!settings.filterForwardTargetsByType;
+        return { ...migrated, enabledSites, favoriteSites, showSearchOnList, filterForwardTargetsByType, schemaVersion: 2 };
       }
       static async load() {
         return new Promise((resolve) => {
           try {
             GMAdapter.getValue(this.KEY, null).then((stored) => {
               if (stored) {
-                const merged = { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+                const raw = JSON.parse(stored);
+                const merged = {
+                  ...DEFAULT_SETTINGS,
+                  ...raw,
+                  // Preserve missing schemaVersion from older configs so one-time migration runs once.
+                  schemaVersion: raw.schemaVersion ?? 1
+                };
                 resolve(this.migrate(merged));
                 return;
               }
@@ -8921,10 +18518,15 @@ ${meta.subtitle || ""}`);
         });
       }
       static async save(settings) {
-        return new Promise((resolve) => {
-          const data = JSON.stringify(this.migrate(settings));
-          GMAdapter.setValue(this.KEY, data).then(() => resolve());
-        });
+        const normalized = this.migrate(settings);
+        const data = JSON.stringify(normalized);
+        await GMAdapter.setValue(this.KEY, data);
+        try {
+          if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+            window.dispatchEvent(new CustomEvent("autofeed:settings-updated", { detail: normalized }));
+          }
+        } catch {
+        }
       }
     }
     __publicField(SettingsService, "KEY", "auto_feed_settings");
@@ -9110,12 +18712,17 @@ ${meta.subtitle || ""}`);
           "input#upload-form-title"
         ].filter(Boolean);
         const shouldLockTitleAfterFileInject = this.siteName !== "Tik";
+        let reapplyAfterFileInject = null;
         const lockTitleAfterFileInject = () => {
-          if (!title || !shouldLockTitleAfterFileInject)
-            return;
           [0, 120, 380, 900, 1800, 3e3].forEach((ms) => {
             window.setTimeout(() => {
-              setAnyText(titleInputs, title);
+              if (title && shouldLockTitleAfterFileInject) {
+                setAnyText(titleInputs, title);
+              }
+              try {
+                reapplyAfterFileInject == null ? void 0 : reapplyAfterFileInject();
+              } catch {
+              }
             }, ms);
           });
         };
@@ -9132,6 +18739,8 @@ ${meta.subtitle || ""}`);
         }
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
         const imdbNo = ((_a = imdbId.match(/tt(\d+)/i)) == null ? void 0 : _a[1]) || "";
+        const isDocSeriesEarly = meta.type === "纪录" && /[^T]S\d+|E\d+/i.test(title);
+        const isSeriesEarly = meta.type === "剧集" || meta.type === "综艺" || isDocSeriesEarly;
         const applyIds = () => {
           try {
             if (imdbId) {
@@ -9141,19 +18750,26 @@ ${meta.subtitle || ""}`);
               setAnyText(['input[name="url"]', "input#url", 'input[name="imdb_url"]', "input#imdb_url"], imdbUrl);
             }
             const tmdbId = meta.tmdbId || extractTmdbId(meta.tmdbUrl || "") || extractTmdbId(meta.description || "") || "";
-            const tmdbUrl = meta.tmdbUrl || (tmdbId ? `https://www.themoviedb.org/movie/${tmdbId}` : "");
+            const tmdbUrl = meta.tmdbUrl || (tmdbId ? `https://www.themoviedb.org/${isSeriesEarly ? "tv" : "movie"}/${tmdbId}` : "");
             if (tmdbId) {
-              setAnyText(
-                [
-                  'input[name="tmdb_id"]',
-                  "input#tmdb_id",
-                  "input#autotmdb",
-                  "input#auto_tmdb_movie",
-                  'input[name="tmdb"]',
-                  "input#tmdb"
-                ],
-                tmdbId
-              );
+              const tmdbSelectors = isSeriesEarly ? [
+                "input#auto_tmdb_tv",
+                'input[name="tmdb_tv_id"]',
+                'input[name="tmdb_id"]',
+                "input#tmdb_id",
+                "input#autotmdb",
+                'input[name="tmdb"]',
+                "input#tmdb"
+              ] : [
+                "input#auto_tmdb_movie",
+                'input[name="tmdb_movie_id"]',
+                'input[name="tmdb_id"]',
+                "input#tmdb_id",
+                "input#autotmdb",
+                'input[name="tmdb"]',
+                "input#tmdb"
+              ];
+              setAnyText(tmdbSelectors, tmdbId);
             }
             if (tmdbUrl) {
               setAnyText(['input[name="tmdb_url"]', "input#tmdb_url"], tmdbUrl);
@@ -9161,6 +18777,7 @@ ${meta.subtitle || ""}`);
           } catch {
           }
         };
+        reapplyAfterFileInject = applyIds;
         applyIds();
         if (!meta.tmdbId && imdbId) {
           try {
@@ -9168,9 +18785,15 @@ ${meta.subtitle || ""}`);
             const apiKey = getEffectiveTmdbApiKey(settings);
             const api = `https://api.themoviedb.org/3/find/${imdbId}?api_key=${apiKey}&external_source=imdb_id&include_adult=false&language=zh-CN`;
             await new Promise((resolve) => {
+              const timer = window.setTimeout(() => resolve(), 6e3);
+              const done = () => {
+                window.clearTimeout(timer);
+                resolve();
+              };
               GMAdapter.xmlHttpRequest({
                 method: "GET",
                 url: api,
+                timeout: 6e3,
                 onload: (resp) => {
                   var _a2, _b2, _c2, _d2, _e, _f;
                   try {
@@ -9182,14 +18805,15 @@ ${meta.subtitle || ""}`);
                     if (picked) {
                       meta.tmdbId = String(picked);
                       if (!meta.tmdbUrl)
-                        meta.tmdbUrl = `https://www.themoviedb.org/movie/${meta.tmdbId}`;
+                        meta.tmdbUrl = `https://www.themoviedb.org/${isSeriesEarly ? "tv" : "movie"}/${meta.tmdbId}`;
                     }
                   } catch {
                   }
-                  resolve();
+                  done();
                 },
-                onerror: () => resolve()
-              }).catch(() => resolve());
+                onerror: () => done(),
+                ontimeout: () => done()
+              }).catch(() => done());
             });
           } catch {
           }
@@ -9226,14 +18850,14 @@ ${meta.subtitle || ""}`);
         try {
           const autocat = document.querySelector("#autocat");
           const autores = document.querySelector("#autores");
-          const autoreg = document.querySelector("#autoreg");
+          const autoreg = document.querySelector('#autoreg, select#region_id, select[name="region_id"]');
           const autotype = document.querySelector("#autotype");
           const typeId = document.querySelector('select[name="type_id"], #type_id');
           const titleBlob = `${meta.title || ""} ${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.description || ""} ${meta.fullMediaInfo || ""}`;
           const descrBlob = `${meta.description || ""} ${meta.fullMediaInfo || ""}`;
           const medium = meta.mediumSel || "";
           const standard = meta.standardSel || "";
-          const setSelectIndex = (sel, idx) => {
+          const setSelectIndex2 = (sel, idx) => {
             if (!sel)
               return false;
             const opt = sel.options[idx];
@@ -9250,7 +18874,8 @@ ${meta.subtitle || ""}`);
             fire(autotype);
             return true;
           };
-          const isSeriesLike = meta.type === "剧集" || meta.type === "综艺" || meta.type === "纪录";
+          const isDocSeries = meta.type === "纪录" && /[^T]S\d+|E\d+/i.test(title);
+          const isSeriesLike = meta.type === "剧集" || meta.type === "综艺" || isDocSeries;
           if (autocat) {
             const v2 = isSeriesLike ? "2" : "1";
             if (autocat.value !== v2) {
@@ -9285,22 +18910,25 @@ ${meta.subtitle || ""}`);
             medium,
             standard,
             typeId,
-            setSelectIndex,
+            setSelectIndex: setSelectIndex2,
             setAutoTypeValue
           });
           if (!handledBySite) {
             if (medium === "UHD" || medium === "Blu-ray")
-              setSelectIndex(typeId, 1);
+              setSelectIndex2(typeId, 1);
             else if (medium === "Remux")
-              setSelectIndex(typeId, 2);
+              setSelectIndex2(typeId, 2);
             else if (medium === "Encode")
-              setSelectIndex(typeId, 3);
+              setSelectIndex2(typeId, 3);
             else if (medium === "WEB-DL")
-              setSelectIndex(typeId, 4);
+              setSelectIndex2(typeId, 4);
             else if (medium === "HDTV")
-              setSelectIndex(typeId, 6);
+              setSelectIndex2(typeId, 6);
             if (/webrip/i.test(titleBlob))
-              setSelectIndex(typeId, 5);
+              setSelectIndex2(typeId, 5);
+          }
+          if (handledBySite) {
+            document.body.__autofeedU3dTypeHandled = true;
           }
           if (autores && meta.standardSel) {
             const dict = this.getClassicAutoResolutionMap();
@@ -9324,13 +18952,14 @@ ${meta.subtitle || ""}`);
             }
           }
           if (autoreg) {
-            const ver = ["AUS", "CAN", "CEE", "CZE", "ESP", "EUR", "FRA", "GBR", "GER", "HKG", "ITA", "JPN", "KOR", "NOR", "NLD", "RUS", "TWN", "USA"];
+            const ver = ["AUS", "BRA", "CAN", "CEE", "CHN", "CZE", "ESP", "EUR", "FRA", "GBR", "GER", "HKG", "ITA", "JPN", "KOR", "MEX", "NOR", "NLD", "RUS", "THA", "TWN", "UKR", "USA"];
             for (const code of ver) {
-              const reg = new RegExp("(\\.| )" + code + "(\\.| )", "i");
+              const reg = new RegExp("(?:^|[.\\s\\[(])" + code + "(?:$|[.\\s\\])])", "i");
               if (!reg.test(titleBlob))
                 continue;
               const opts = Array.from(autoreg.options);
-              const found = opts.find((o2) => (o2.textContent || "").trim() === code);
+              const optRe = new RegExp(`^${code}(?:\\s|\\(|$)`, "i");
+              const found = opts.find((o2) => optRe.test((o2.textContent || "").trim()));
               if (found) {
                 autoreg.value = found.value;
                 fire(autoreg);
@@ -9340,56 +18969,59 @@ ${meta.subtitle || ""}`);
           }
         } catch {
         }
-        try {
-          const medium = meta.mediumSel || "";
-          const titleBlob = `${meta.title || ""} ${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.description || ""} ${meta.fullMediaInfo || ""}`;
-          const typeSelectors = ['select[name="type_id"]', "#type_id", "#autotype"];
-          let picked = false;
-          if (/webrip/i.test(titleBlob)) {
-            picked = pickOption(typeSelectors, [/WEB[- ]?RIP/i, /WEB/i, /WEBrip/i]);
-          } else if (medium === "UHD") {
-            picked = pickOption(typeSelectors, [/UHD/i, /Ultra/i, /Blu[- ]?ray/i, /BluRay/i]);
-          } else if (medium === "Blu-ray") {
-            picked = pickOption(typeSelectors, [/Blu[- ]?ray/i, /BluRay/i, /\bBD\b/i]);
-          } else if (medium === "Remux") {
-            picked = pickOption(typeSelectors, [/Remux/i]);
-          } else if (medium === "Encode") {
-            picked = pickOption(typeSelectors, [/Encode/i, /x264/i, /x265/i, /H\.?26/i, /AVC/i, /HEVC/i]);
-          } else if (medium === "WEB-DL") {
-            picked = pickOption(typeSelectors, [/WEB[- ]?DL/i, /WEB/i]);
-          } else if (medium === "HDTV") {
-            picked = pickOption(typeSelectors, [/HDTV/i]);
-          } else if (medium === "DVD") {
-            picked = pickOption(typeSelectors, [/DVD/i]);
-          }
-          if (!picked && medium) {
-            const sel = pickSelect(typeSelectors);
-            if (sel) {
-              const opts = Array.from(sel.options);
-              const byIndex = (i2) => {
-                const opt = opts[i2];
-                if (!opt)
-                  return false;
-                sel.value = opt.value;
-                fire(sel);
-                return true;
-              };
-              if (/webrip/i.test(titleBlob))
-                byIndex(5);
-              else if (medium === "UHD" || medium === "Blu-ray")
-                byIndex(1);
-              else if (medium === "Remux")
-                byIndex(2);
-              else if (medium === "Encode")
-                byIndex(3);
-              else if (medium === "WEB-DL")
-                byIndex(4);
-              else if (medium === "HDTV")
-                byIndex(6);
+        const siteAlreadyHandledType = Boolean(document.body.__autofeedU3dTypeHandled);
+        delete document.body.__autofeedU3dTypeHandled;
+        if (!siteAlreadyHandledType)
+          try {
+            const medium = meta.mediumSel || "";
+            const titleBlob = `${meta.title || ""} ${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.description || ""} ${meta.fullMediaInfo || ""}`;
+            const typeSelectors = ['select[name="type_id"]', "#type_id", "#autotype"];
+            let picked = false;
+            if (/webrip/i.test(titleBlob)) {
+              picked = pickOption(typeSelectors, [/WEB[- ]?RIP/i, /WEB/i, /WEBrip/i]);
+            } else if (medium === "UHD") {
+              picked = pickOption(typeSelectors, [/UHD/i, /Ultra/i, /Blu[- ]?ray/i, /BluRay/i]);
+            } else if (medium === "Blu-ray") {
+              picked = pickOption(typeSelectors, [/Blu[- ]?ray/i, /BluRay/i, /\bBD\b/i]);
+            } else if (medium === "Remux") {
+              picked = pickOption(typeSelectors, [/Remux/i]);
+            } else if (medium === "Encode") {
+              picked = pickOption(typeSelectors, [/Encode/i, /x264/i, /x265/i, /H\.?26/i, /AVC/i, /HEVC/i]);
+            } else if (medium === "WEB-DL") {
+              picked = pickOption(typeSelectors, [/WEB[- ]?DL/i, /WEB/i]);
+            } else if (medium === "HDTV") {
+              picked = pickOption(typeSelectors, [/HDTV/i]);
+            } else if (medium === "DVD") {
+              picked = pickOption(typeSelectors, [/DVD/i]);
             }
+            if (!picked && medium) {
+              const sel = pickSelect(typeSelectors);
+              if (sel) {
+                const opts = Array.from(sel.options);
+                const byIndex = (i2) => {
+                  const opt = opts[i2];
+                  if (!opt)
+                    return false;
+                  sel.value = opt.value;
+                  fire(sel);
+                  return true;
+                };
+                if (/webrip/i.test(titleBlob))
+                  byIndex(5);
+                else if (medium === "UHD" || medium === "Blu-ray")
+                  byIndex(1);
+                else if (medium === "Remux")
+                  byIndex(2);
+                else if (medium === "Encode")
+                  byIndex(3);
+                else if (medium === "WEB-DL")
+                  byIndex(4);
+                else if (medium === "HDTV")
+                  byIndex(6);
+              }
+            }
+          } catch {
           }
-        } catch {
-        }
         const resMap = {
           "8K": [/8K/i, /4320p/i],
           "4K": [/4K/i, /2160p/i],
@@ -9481,6 +19113,17 @@ ${meta.subtitle || ""}`);
               setAnyText(["input#season_number", 'input[name="season_number"]'], String(parseInt(s2, 10)));
             if (e2)
               setAnyText(["input#episode_number", 'input[name="episode_number"]'], String(parseInt(e2, 10)));
+          }
+        } catch {
+        }
+        try {
+          const settings = await SettingsService.load();
+          if (settings.defaultAnonymous) {
+            const anon = document.querySelector('#anon, input[name="anonymous"]');
+            if (anon && !anon.checked) {
+              anon.checked = true;
+              fire(anon);
+            }
           }
         } catch {
         }
@@ -10078,7 +19721,7 @@ ${mediainfo.trim()}
             audioCodec = "AC3(DD)";
             if (meta.title.match(/DDP|DD\+/)) {
               audioCodec = "E-AC3(DDP)";
-              if (meta.title.match(/Atoms/)) {
+              if (meta.title.match(/Atmos|Atoms/i)) {
                 audioCodec = "E-AC3 Atoms(DDP Atoms)";
               }
             }
@@ -10245,6 +19888,11 @@ ${mediainfo.trim()}
             document.getElementsByName("cnsub")[0].checked = true;
           if (labels.diy)
             document.getElementsByName("diy")[0].checked = true;
+          if (/特效字幕/.test(`${meta.smallDescr || meta.subtitle || ""} ${meta.description || ""}`)) {
+            const tx = document.getElementsByName("txsub")[0];
+            if (tx)
+              tx.checked = true;
+          }
         } catch {
         }
         try {
@@ -10253,82 +19901,108 @@ ${mediainfo.trim()}
           this.checkByAlias(!!labels.db, ["dovi", "dolbyvision", "db", "dv"], /(Dolby.?Vision|杜比视界|DoVi|\bDV\b)/i);
         } catch {
         }
+        const setSelectVal = (name2, val) => {
+          const el = document.getElementsByName(name2)[0];
+          if (!el || !val)
+            return;
+          if (!Array.from(el.options).some((o2) => o2.value === val))
+            return;
+          el.value = val;
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        };
         try {
-          const browsecat = document.getElementsByName("type")[0];
           const typeDict = {
-            电影: 1,
-            剧集: 4,
-            动漫: 3,
-            综艺: 5,
-            音乐: 6,
-            MV: 6,
-            纪录: 2,
-            体育: 7
+            电影: "401",
+            剧集: "402",
+            动漫: "405",
+            综艺: "403",
+            音乐: "406",
+            MV: "406",
+            纪录: "404",
+            体育: "407",
+            游戏: "410"
           };
-          if (typeDict.hasOwnProperty(meta.type || "")) {
-            const index = typeDict[meta.type || ""];
-            browsecat.options[index].selected = true;
+          if (meta.type === "书籍" && /m4a|mp3/i.test(meta.description || "")) {
+            setSelectVal("type", "408");
+          } else if (meta.type && typeDict[meta.type]) {
+            setSelectVal("type", typeDict[meta.type]);
           }
-          if (meta.type === "书籍" && meta.description.match(/m4a|mp3/i)) {
-            browsecat.options[9].selected = true;
-          }
-          const audiocodecBox = document.getElementsByName("audiocodec_sel")[0];
-          const audiocodecDict = {
-            Flac: 6,
-            APE: 7,
-            AC3: 2,
-            WAV: 8,
-            Atmos: 4,
-            AAC: 9,
-            "DTS-HDMA": 3,
-            "DTS-HDHR": 3,
-            "TrueHD Atmos": 4,
-            TrueHD: 4,
-            DTS: 1,
-            LPCM: 5,
-            "DTS-HDMA:X 7.1": 3
+          const audioDict = {
+            Flac: "1",
+            APE: "2",
+            DTS: "3",
+            AAC: "6",
+            AC3: "7",
+            "DTS-HDMA": "10",
+            "DTS-HD": "10",
+            "DTS-HDHR": "10",
+            "DTS-HDMA:X 7.1": "10",
+            "DTS-X": "10",
+            TrueHD: "11",
+            Atmos: "11",
+            "TrueHD Atmos": "11",
+            WAV: "12",
+            LPCM: "13",
+            ALAC: "14"
           };
-          if (audiocodecDict.hasOwnProperty(meta.audioCodecSel || "")) {
-            const index = audiocodecDict[meta.audioCodecSel || ""];
-            audiocodecBox.options[index].selected = true;
+          if (meta.audioCodecSel && audioDict[meta.audioCodecSel]) {
+            setSelectVal("audiocodec_sel", audioDict[meta.audioCodecSel]);
           }
-          const standardBox = document.getElementsByName("standard_sel")[0];
-          const standardDict = {
-            "8K": 5,
-            "4K": 6,
-            "1080p": 1,
-            "1080i": 2,
-            "720p": 3,
-            SD: 4,
-            "": 4
+          const stdDict = {
+            "8K": "7",
+            "4K": "6",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            SD: "5",
+            "": "5"
           };
-          if (standardDict.hasOwnProperty(meta.standardSel || "")) {
-            const index = standardDict[meta.standardSel || ""];
-            standardBox.options[index].selected = true;
+          setSelectVal("standard_sel", stdDict[meta.standardSel || ""] || "5");
+          const codecDict = {
+            H264: "1",
+            X264: "1",
+            H265: "5",
+            X265: "5",
+            "VC-1": "2",
+            AV1: "3",
+            "MPEG-2": "4",
+            "MPEG-4": "6"
+          };
+          if (meta.codecSel && codecDict[meta.codecSel]) {
+            setSelectVal("codec_sel", codecDict[meta.codecSel]);
           }
-          const codecBox = document.getElementsByName("codec_sel")[0];
-          const codecDict = { H264: 1, X265: 2, X264: 1, H265: 2, "VC-1": 5, "MPEG-2": 4 };
-          if (codecDict.hasOwnProperty(meta.codecSel || "")) {
-            const index = codecDict[meta.codecSel || ""];
-            codecBox.options[index].selected = true;
+          const medDict = {
+            "Blu-ray": "1",
+            UHD: "19",
+            Remux: "3",
+            Encode: "4",
+            HDTV: "6",
+            "WEB-DL": "18",
+            CD: "8"
+          };
+          if (meta.mediumSel && medDict[meta.mediumSel]) {
+            setSelectVal("medium_sel", medDict[meta.mediumSel]);
           }
-          const mediumBox = document.getElementsByName("medium_sel")[0];
-          const mediumDict = { UHD: 2, "Blu-ray": 1, Encode: 4, HDTV: 5, "WEB-DL": 6, Remux: 3, CD: 7 };
-          if (mediumDict.hasOwnProperty(meta.mediumSel || "")) {
-            const index = mediumDict[meta.mediumSel || ""];
-            mediumBox.options[index].selected = true;
-          }
-          switch (meta.mediumSel) {
-            case "UHD":
-              if (meta.title.match(/(diy|@)/i)) {
-                mediumBox.options[2].selected = true;
-              }
-              break;
-            case "Blu-ray":
-              if (meta.title.match(/(diy|@)/i)) {
-                mediumBox.options[1].selected = true;
-              }
-              break;
+          const t2 = meta.title || "";
+          if (/(?:^|[.\s])3D(?:[.\s]|$)/i.test(t2)) {
+            setSelectVal("processing_sel", "1");
+          } else if (meta.type === "剧集") {
+            const isPack = /(?:complete|S\d{1,2}(?!E))/i.test(t2) && !/E\d{1,3}/i.test(t2);
+            const src = meta.sourceSel || "";
+            if (isPack)
+              setSelectVal("processing_sel", "13");
+            else if (src === "日本")
+              setSelectVal("processing_sel", "4");
+            else if (src === "香港")
+              setSelectVal("processing_sel", "5");
+            else if (src === "韩国")
+              setSelectVal("processing_sel", "6");
+            else if (src === "大陆")
+              setSelectVal("processing_sel", "8");
+            else if (src === "台湾")
+              setSelectVal("processing_sel", "9");
+            else if (src === "欧美")
+              setSelectVal("processing_sel", /英国/.test(meta.description || "") ? "7" : "3");
           }
         } catch (err) {
           console.error(err);
@@ -10666,7 +20340,7 @@ ${mediainfo.trim()}
         return meta;
       }
       async fill(meta) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
         this.log("Filling BHD form...");
         const titleInput = document.getElementById("titleauto");
         if (titleInput)
@@ -10686,35 +20360,39 @@ ${mediainfo.trim()}
         } catch (err) {
           console.error("[Auto-Feed][BHD] Torrent inject failed:", err);
         }
+        const setSelVal = (el, val) => {
+          if (!el || !val)
+            return;
+          if (!Array.from(el.options).some((o2) => o2.value === val))
+            return;
+          el.value = val;
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        };
         const categoryId = document.getElementById("category_id");
         if (categoryId) {
-          const typeDict = { 电影: 1, 剧集: 2, 纪录: 2, 综艺: 2 };
-          if (typeDict.hasOwnProperty(meta.type || "")) {
-            const index = typeDict[meta.type || ""];
-            categoryId.options[index].selected = true;
+          const t2 = meta.title || "";
+          const isSeries = meta.type === "剧集" || meta.type === "综艺" || meta.type === "纪录" && /[^T]S\d+|E\d+/i.test(t2);
+          setSelVal(categoryId, isSeries ? "2" : "1");
+          if (isSeries && /(?:complete|S\d{1,2}(?!E))/i.test(t2) && !/E\d{1,3}/i.test(t2)) {
+            const packCb = document.querySelector('input[name="pack"]');
+            if (packCb && !packCb.checked) {
+              packCb.checked = true;
+              packCb.dispatchEvent(new Event("change", { bubbles: true }));
+            }
           }
         }
         const autosource = document.getElementById("autosource");
         if (autosource) {
-          switch (meta.mediumSel) {
-            case "Remux":
-            case "UHD":
-            case "Blu-ray":
-            case "Encode":
-              autosource.options[1].selected = true;
-              break;
-            case "DVD":
-              autosource.options[5].selected = true;
-              break;
-            case "HDTV":
-              autosource.options[4].selected = true;
-              break;
-            case "WEB-DL":
-              autosource.options[3].selected = true;
-              break;
-            default:
-              autosource.options[0].selected = true;
-          }
+          const srcMap = {
+            Remux: "Blu-ray",
+            UHD: "Blu-ray",
+            "Blu-ray": "Blu-ray",
+            Encode: "Blu-ray",
+            DVD: "DVD",
+            HDTV: "HDTV",
+            "WEB-DL": "WEB"
+          };
+          setSelVal(autosource, srcMap[meta.mediumSel || ""] || "");
         }
         const autotype = document.getElementById("autotype");
         if (autotype) {
@@ -10722,76 +20400,85 @@ ${mediainfo.trim()}
           if (meta.mediumSel === "Blu-ray" || meta.mediumSel === "UHD") {
             size = getSizeFromDescr(meta.description || "");
           }
-          switch (meta.standardSel) {
-            case "4K":
-              if (meta.mediumSel === "UHD") {
-                if (0 <= size && size < 50)
-                  autotype.options[3].selected = true;
-                else if (size < 66)
-                  autotype.options[2].selected = true;
-                else
-                  autotype.options[1].selected = true;
-              } else if (meta.mediumSel === "Remux") {
-                autotype.options[4].selected = true;
-              } else {
-                autotype.options[8].selected = true;
-              }
-              break;
-            case "1080p":
-              if (meta.mediumSel !== "Blu-ray" && meta.mediumSel !== "Remux") {
-                autotype.options[9].selected = true;
+          const t2 = meta.title || "";
+          let typeVal = "";
+          if (meta.mediumSel === "DVD") {
+            if (/remux/i.test(t2))
+              typeVal = "DVD Remux";
+            else if (/dvd5/i.test(t2))
+              typeVal = "DVD 5";
+            else if (/dvd9/i.test(t2))
+              typeVal = "DVD 9";
+            else
+              typeVal = /576/i.test(t2) ? "576p" : "480p";
+          } else {
+            switch (meta.standardSel) {
+              case "4K":
+                if (meta.mediumSel === "UHD") {
+                  typeVal = 0 <= size && size < 50 ? "UHD 50" : size < 66 ? "UHD 66" : "UHD 100";
+                } else if (meta.mediumSel === "Remux") {
+                  typeVal = "UHD Remux";
+                } else {
+                  typeVal = "2160p";
+                }
                 break;
-              }
-            case "1080i":
-              if (meta.mediumSel === "Blu-ray") {
-                if (0 <= size && size < 25)
-                  autotype.options[6].selected = true;
+              case "1080p":
+                if (meta.mediumSel === "Blu-ray")
+                  typeVal = 0 <= size && size < 25 ? "BD 25" : "BD 50";
+                else if (meta.mediumSel === "Remux")
+                  typeVal = "BD Remux";
                 else
-                  autotype.options[5].selected = true;
-              } else if (meta.mediumSel === "Remux") {
-                autotype.options[7].selected = true;
-              } else {
-                autotype.options[10].selected = true;
-              }
-              break;
-            case "720p":
-              autotype.options[11].selected = true;
-              break;
-            default:
-              autotype.options[0].selected = true;
+                  typeVal = "1080p";
+                break;
+              case "1080i":
+                if (meta.mediumSel === "Blu-ray")
+                  typeVal = 0 <= size && size < 25 ? "BD 25" : "BD 50";
+                else if (meta.mediumSel === "Remux")
+                  typeVal = "BD Remux";
+                else
+                  typeVal = "1080i";
+                break;
+              case "720p":
+                typeVal = "720p";
+                break;
+              case "SD":
+                typeVal = /576/i.test(t2) ? "576p" : /540/i.test(t2) ? "540p" : "480p";
+                break;
+            }
           }
+          setSelVal(autotype, typeVal);
         }
         const region = document.getElementsByName("region")[0];
         if (region) {
-          const options = region.options;
-          for (let i2 = 0; i2 < options.length; i2++) {
-            if (options[i2].value) {
-              const reg = new RegExp(" " + options[i2].value + " ", "i");
-              if ((meta.title || "").match(reg)) {
-                options[i2].selected = true;
-                break;
-              }
+          for (const opt of Array.from(region.options)) {
+            if (!opt.value || opt.value === "N/A")
+              continue;
+            const reg = new RegExp(`(?:^|[.\\s\\[(])${opt.value}(?:$|[.\\s\\])])`, "i");
+            if ((meta.title || "").match(reg)) {
+              setSelVal(region, opt.value);
+              break;
             }
           }
         }
         const edition = document.getElementsByName("edition")[0];
         if (edition) {
-          if ((meta.title || "").match(/Collector/))
-            edition.options[1].selected = true;
-          else if ((meta.title || "").match(/Director/))
-            edition.options[2].selected = true;
-          else if ((meta.title || "").match(/Extended/))
-            edition.options[3].selected = true;
-          else if ((meta.title || "").match(/Limited/))
-            edition.options[4].selected = true;
-          else if ((meta.title || "").match(/Special/))
-            edition.options[5].selected = true;
-          else if ((meta.title || "").match(/Theatrical/))
-            edition.options[6].selected = true;
-          else if ((meta.title || "").match(/Uncut/))
-            edition.options[7].selected = true;
-          else if ((meta.title || "").match(/Unrated/))
-            edition.options[8].selected = true;
+          const t2 = meta.title || "";
+          if (/Collector/i.test(t2))
+            setSelVal(edition, "Collector");
+          else if (/Director/i.test(t2))
+            setSelVal(edition, "Director");
+          else if (/Extended/i.test(t2))
+            setSelVal(edition, "Extended");
+          else if (/Limited/i.test(t2))
+            setSelVal(edition, "Limited");
+          else if (/Special/i.test(t2))
+            setSelVal(edition, "Special");
+          else if (/Theatrical/i.test(t2))
+            setSelVal(edition, "Theatrical");
+          else if (/Uncut/i.test(t2))
+            setSelVal(edition, "Uncut");
+          else if (/Unrated/i.test(t2))
+            setSelVal(edition, "Unrated");
         }
         const labels = meta.labelInfo || getLabel(`${meta.smallDescr || meta.subtitle || ""}${meta.title}#separator#${meta.description}`);
         meta.labelInfo = labels;
@@ -10847,10 +20534,25 @@ ${mediainfo.trim()}
             $$1("#mediainfo").val(meta.description);
           $$1("#mediainfo").css({ height: "600px" });
         }
-        if (meta.imdbId) {
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId) {
           const uploadImdb = document.getElementById("imdbauto");
-          if (uploadImdb)
-            uploadImdb.value = ((_k = meta.imdbId.match(/tt(\d+)/i)) == null ? void 0 : _k[1]) || "";
+          if (uploadImdb) {
+            uploadImdb.value = imdbId;
+            uploadImdb.dispatchEvent(new Event("input", { bubbles: true }));
+            uploadImdb.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+        try {
+          const settings = await SettingsService.load();
+          if (settings.defaultAnonymous) {
+            const anon = document.getElementsByName("anonymous")[0];
+            if (anon) {
+              anon.checked = true;
+              anon.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          }
+        } catch {
         }
       }
     }
@@ -10908,7 +20610,8 @@ ${mediainfo.trim()}
       }
       return "";
     }
-    const CHANNEL_RE = /(7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i;
+    const CHANNEL_TOKEN_SRC = "(?<![\\d.])(7\\.1|6\\.1|5\\.1|5\\.0|4\\.0|2\\.1|2\\.0|1\\.0)(?![\\d.]|\\s*(?:MiB|GiB|KiB|MB|GB|KB|kb\\/s|Mbps|fps|%|Hz|kHz|ms)\\b)";
+    const CHANNEL_RE = new RegExp(CHANNEL_TOKEN_SRC, "i");
     function extractChannelToken(text) {
       var _a;
       return ((_a = text.match(CHANNEL_RE)) == null ? void 0 : _a[1]) || "";
@@ -10961,16 +20664,16 @@ ${title}`;
         [/H\.?264|x264/i, "H.264"]
       ]);
       const audioRules = [
-        { re: /TrueHD[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "TrueHD" },
-        { re: /DTS[- .]?X[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DTS-HD MA" },
-        { re: /DTS[- .]?HD[\s\S]{0,40}?(?:MA|Master(?:\s*Audio)?)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DTS-HD MA" },
-        { re: /DTS[- .]?HD[\s\S]{0,40}?(?:HR|HRA|High(?:\s*Resolution)?)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DTS-HD HR" },
-        { re: /LPCM[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "LPCM" },
-        { re: /(?:\bDDP\b|E-?AC-?3|Dolby Digital Plus)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DD+" },
-        { re: /(?:\bAC-?3\b|Dolby Digital)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DD" },
-        { re: /\bDTS\b[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "DTS" },
-        { re: /AAC[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "AAC" },
-        { re: /FLAC[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: "FLAC" }
+        { re: new RegExp(`TrueHD[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "TrueHD" },
+        { re: new RegExp(`DTS[- .]?X[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DTS-HD MA" },
+        { re: new RegExp(`DTS[- .]?HD[\\s\\S]{0,40}?(?:MA|Master(?:\\s*Audio)?)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DTS-HD MA" },
+        { re: new RegExp(`DTS[- .]?HD[\\s\\S]{0,40}?(?:HR|HRA|High(?:\\s*Resolution)?)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DTS-HD HR" },
+        { re: new RegExp(`LPCM[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "LPCM" },
+        { re: new RegExp(`(?:\\bDDP\\b|E-?AC-?3|Dolby Digital Plus)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DD+" },
+        { re: new RegExp(`(?:\\bAC-?3\\b|\\bDD\\s*5\\.1|Dolby Digital)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DD" },
+        { re: new RegExp(`\\bDTS\\b[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "DTS" },
+        { re: new RegExp(`AAC[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "AAC" },
+        { re: new RegExp(`FLAC[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, "i"), audio: "FLAC" }
       ];
       let audio = "";
       let channels = "";
@@ -11393,6 +21096,14 @@ ${comparePicture}`;
           meta.aspectRatio = aspectRatio;
         if (torrentUrl)
           meta.torrentUrl = torrentUrl;
+        const pageHeaderText = `${$$1(".page__title").first().text()} ${$$1("h2").first().text()}`;
+        const isPtpMiniseries = /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b/i.test(pageHeaderText) || /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b/i.test(meta.title || "") || /\bS0?1\b/i.test(meta.title || "");
+        if (isPtpMiniseries) {
+          meta.type = "剧集";
+          if (!/\bmini[\s.-]?series\b/i.test(meta.editionInfo || "")) {
+            meta.editionInfo = [meta.editionInfo, "Miniseries"].filter(Boolean).join(" / ");
+          }
+        }
         meta.type = meta.type || "电影";
         if (!meta.type && meta.title)
           meta.type = getType(meta.title);
@@ -11531,18 +21242,17 @@ ${meta.fullMediaInfo || ""}`)).trim();
             codecValue = "x265";
             break;
           case "VC-1":
-            codecValue = "VC-1";
+          case "AV1":
+          case "MPEG-2":
+          case "MPEG-4":
+            codecValue = "Other";
+            otherCodec = meta.codecSel || "";
             break;
           case "XVID":
             codecValue = "XviD";
             break;
           case "DIVX":
             codecValue = "DivX";
-            break;
-          case "MPEG-2":
-          case "MPEG-4":
-            codecValue = "Other";
-            otherCodec = meta.codecSel || "";
             break;
         }
         if ((meta.title || "").match(/dvd5/i)) {
@@ -11818,8 +21528,8 @@ ${clean}`.trim();
       }
       async parse() {
         this.log("Parsing HDB page...");
-        let title = $$1("h1#top, h1").first().text().trim();
-        title = title.replace(/\[.*?\]/g, "").trim();
+        const h1Title = $$1("h1#top, h1").first().text().trim().replace(/\[.*?\]/g, "").trim();
+        let title = h1Title;
         const details = document.getElementById("details");
         let descrEl;
         let synopsis = "";
@@ -11982,42 +21692,43 @@ ${wrapped.slice(insertPoint)}`;
         if (details) {
           const cells = Array.from(details.querySelectorAll("td, th"));
           for (const cell of cells) {
-            const text = (cell.textContent || "").trim();
-            if (!text)
+            const text = (cell.textContent || "").replace(/\s+/g, " ").trim();
+            if (!text || text.length > 40)
               continue;
-            if (text.match(/Category|类别|Type|规格|Medium|媒介|介质|Codec|Format|Resolution|Source|Audio/i)) {
+            if (/^(?:Category|类别|Specs|规格|Medium|媒介|介质|Video\s*Codec|Codec|Format|Resolution|Source|Audio)$/i.test(text)) {
               const next = cell.nextElementSibling;
               if (next && next.textContent) {
-                infoParts.push(`${text} ${next.textContent}`);
+                infoParts.push(`${text} ${next.textContent.replace(/\s+/g, " ").trim()}`);
               } else {
                 infoParts.push(text);
               }
             }
           }
         }
-        const infoText = infoParts.length ? infoParts.join(" ") : (details == null ? void 0 : details.textContent) || "";
+        const infoText = infoParts.join(" ");
+        const primarySpecText = `${h1Title} ${meta.title || ""} ${infoText}`.trim();
         if (!meta.type) {
-          meta.type = getType(infoText) || (meta.title ? getType(meta.title) : "");
+          meta.type = getType(infoText) || getType(primarySpecText);
         }
         if (!meta.mediumSel) {
           const mediumText = findDetailsValue([/^medium$/i, /^source$/i, /媒介|介质|来源/i]);
           if (mediumText) {
-            meta.mediumSel = getMediumSel(mediumText, meta.title);
+            meta.mediumSel = getMediumSel(mediumText, h1Title || meta.title);
           } else {
-            meta.mediumSel = getMediumSel(meta.title || "", meta.title);
+            meta.mediumSel = getMediumSel(h1Title || meta.title || "", h1Title || meta.title);
           }
         }
         if (!meta.codecSel) {
-          const codecText = findDetailsValue([/^(video )?codec$/i, /^codec$/i, /编码|格式|压制|Video/i]);
-          meta.codecSel = getCodecSel(codecText || infoText);
+          const codecText = findDetailsValue([/^(video )?codec$/i, /^codec$/i, /^category$/i]);
+          meta.codecSel = getCodecSel(h1Title) || getCodecSel(codecText) || getCodecSel(primarySpecText);
         }
         if (!meta.audioCodecSel) {
           const audioText = findDetailsValue([/^audio/i, /音频/i]);
-          meta.audioCodecSel = getAudioCodecSel(audioText || infoText);
+          meta.audioCodecSel = getAudioCodecSel(h1Title) || getAudioCodecSel(audioText) || getAudioCodecSel(primarySpecText);
         }
         if (!meta.standardSel) {
-          const resText = findDetailsValue([/resolution/i, /分辨率/i]);
-          meta.standardSel = getStandardSel(resText || infoText);
+          const resText = findDetailsValue([/^resolution$/i, /分辨率/i]);
+          meta.standardSel = getStandardSel(h1Title) || getStandardSel(resText) || getStandardSel(primarySpecText);
         }
         if (meta.title) {
           meta.torrentFilename = meta.title.replace(/ /g, ".").replace(/\*/g, "") + ".torrent";
@@ -12162,6 +21873,9 @@ ${shots.map((u2) => `[img]${u2}[/img]`).join("\n")}`.trim();
             break;
           case "XVID":
             setSelect("#type_codec", "4");
+            break;
+          case "VP9":
+            setSelect("#type_codec", "6");
             break;
           default:
             setSelect("#type_codec", "0");
@@ -13286,9 +23000,9 @@ ${info.picInfo}`.trim());
         if (!url.match(/https?:\/\/(www\.)?(imgbox\.com|imagebam\.co|pixhost\.to|img\.hdbits\.org|hdbimg\.com|hostik\.cinematik\.net)/i)) {
           return;
         }
-        const text = getUiText((await SettingsService.load()).uiLanguage);
         const host = window.location.host.toLowerCase();
         const isHostik = host.includes("hostik.cinematik.net");
+        const text = getUiText(isHostik ? "en" : (await SettingsService.load()).uiLanguage);
         let hostikPending = null;
         if (isHostik) {
           const hostikPageSig = `${window.location.pathname}${window.location.search}`;
@@ -13577,7 +23291,7 @@ ${info.picInfo}`.trim());
         return ok;
       }
       static async renderHostikResultModal(imageBlock) {
-        const text = getUiText((await SettingsService.load()).uiLanguage);
+        const text = getUiText("en");
         const existing = document.getElementById(this.HOSTIK_RESULT_MODAL_ID);
         if (existing)
           existing.remove();
@@ -13650,7 +23364,7 @@ ${info.picInfo}`.trim());
       }
       static async installHostikComposer(pending) {
         var _a;
-        const text = getUiText((await SettingsService.load()).uiLanguage);
+        const text = getUiText("en");
         const expected = ((_a = pending == null ? void 0 : pending.urls) == null ? void 0 : _a.length) || 0;
         const readUploadProgress = () => {
           var _a2;
@@ -15472,6 +25186,16 @@ ${imgsStr}`;
             meta.imdbUrl = imdbUrl;
           }
         }
+        if (!meta.torrentUrl) {
+          const dlHref = $$1('a[href*="/dl/"]').first().attr("href") || "";
+          if (dlHref) {
+            try {
+              meta.torrentUrl = new URL(dlHref, this.currentUrl).href;
+            } catch {
+              meta.torrentUrl = dlHref;
+            }
+          }
+        }
         return meta;
       }
       async fill(meta) {
@@ -15660,7 +25384,7 @@ ${imgsStr}`;
         super(config, url);
       }
       async parse() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+        var _a, _b, _c, _d, _e, _f;
         this.log("Parsing GPW page...");
         const abs = (href) => {
           try {
@@ -15682,11 +25406,23 @@ ${imgsStr}`;
           if (detail) {
             const detailName = ($$1(detail).find('a[data-action="toggle-mediainfo"]').first().parent().text().split("详情 | ")[1] || "").trim() || ($$1(detail).find("table.filelist_table tr:eq(1) td:eq(0)").text() || "").trim();
             if (detailName) {
-              const clean = detailName.replace(/\[|\]|\(|\)|mkv$|mp4$/gi, "").trim();
+              const clean = detailName.replace(/\[|\]|\(|\)/g, "").replace(/\.?(?:mkv|mp4)$/gi, "").trim();
               if (clean)
                 title = clean;
             }
-            const miText = ((_f = (_e = detail.querySelector(".MediaInfoText")) == null ? void 0 : _e.textContent) == null ? void 0 : _f.trim()) || ((_h = (_g = detail.querySelector("blockquote")) == null ? void 0 : _g.textContent) == null ? void 0 : _h.trim()) || ((_k = (_j = (_i = detail.nextElementSibling) == null ? void 0 : _i.querySelector(".MediaInfoText")) == null ? void 0 : _j.textContent) == null ? void 0 : _k.trim()) || ((_n = (_m = (_l = detail.nextElementSibling) == null ? void 0 : _l.querySelector("blockquote")) == null ? void 0 : _m.textContent) == null ? void 0 : _n.trim()) || "";
+            const extractPreText = (el) => {
+              if (!el)
+                return "";
+              const html = el.innerHTML || "";
+              if (/<br\s*\/?>|<\/(?:div|p|li|tr)>/i.test(html)) {
+                const tmp = document.createElement("div");
+                tmp.innerHTML = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(?:div|p|li|tr)>/gi, "\n");
+                return (tmp.textContent || "").replace(/\u00a0/g, " ").replace(/\r/g, "").trim();
+              }
+              return (el.innerText || el.textContent || "").replace(/\u00a0/g, " ").replace(/\r/g, "").trim();
+            };
+            const miEl = detail.querySelector(".MediaInfoText") || detail.querySelector("blockquote") || ((_e = detail.nextElementSibling) == null ? void 0 : _e.querySelector(".MediaInfoText")) || ((_f = detail.nextElementSibling) == null ? void 0 : _f.querySelector("blockquote"));
+            const miText = extractPreText(miEl);
             if (miText) {
               fullMediaInfo = miText.trim();
               description += `[quote]
@@ -15829,6 +25565,7 @@ ${meta.editionInfo || ""}`;
             return "480p";
           return "";
         })();
+        let codecOther = "";
         const codecValue = (() => {
           if (/x265/.test(codecText))
             return "x265";
@@ -15838,12 +25575,22 @@ ${meta.editionInfo || ""}`;
             return "x264";
           if (/h264|avc/.test(codecText))
             return "H.264";
-          if (/vc-?1/.test(codecText))
-            return "VC-1";
           if (/xvid/.test(codecText))
             return "XviD";
-          if (/mpeg-?2/.test(codecText))
-            return "MPEG-2";
+          if (/divx/.test(codecText))
+            return "DivX";
+          if (/vc-?1/.test(codecText)) {
+            codecOther = "VC-1";
+            return "Other";
+          }
+          if (/mpeg-?2/.test(codecText)) {
+            codecOther = "MPEG-2";
+            return "Other";
+          }
+          if (/av1/.test(codecText)) {
+            codecOther = "AV1";
+            return "Other";
+          }
           return "";
         })();
         const containerValue = (() => {
@@ -15949,7 +25696,7 @@ ${meta.editionInfo || ""}`;
           } else {
             checkById("no_imdb_link", true);
           }
-          setValue2('input[name="title"], input[name="name"], #title, #name', meta.title || "", { force: true, native: true });
+          setValue2('input[name="title"], input[name="name"], #title, #name', meta.title || "", { force: false, native: true });
           setValue2('input[name="year"], #year', year, { force: false, native: true });
           setValue2('input[name="image"], #image', meta.images && meta.images[0] || "", { force: false, native: true });
           setValue2('#release_desc, textarea[name="release_desc"], textarea[name="description"], textarea[name="body"]', releaseDesc || meta.description || "", { force: false });
@@ -15984,9 +25731,698 @@ ${meta.editionInfo || ""}`;
           setValue2('select[name="processing_other"], #processing_other', processingOther, { force: false });
           setValue2('#resolution, select[name="resolution"]', resolutionValue, { force: false });
           setValue2('#codec, select[name="codec"]', codecValue, { force: false });
+          if (codecValue === "Other" && codecOther) {
+            setValue2('input[name="codec_other"]', codecOther, { force: false, native: true });
+          }
           setValue2('#container, select[name="container"]', containerValue, { force: false });
+          const tTitle = meta.title || "";
+          const tSmall = meta.smallDescr || meta.subtitle || "";
+          const tDescr = meta.description || "";
+          let hasEdition = false;
+          const checkEdition = (id, on) => {
+            if (!on)
+              return;
+            checkById(id, true);
+            hasEdition = true;
+          };
+          checkEdition("dolby_vision", /Dolby.?Vision|杜比视界|\bDoVi\b|\bDV\b/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+          checkEdition("hdr10", /\bHDR10\b(?!\+)/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+          checkEdition("hdr10plus", /HDR10\+/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+          checkEdition("dolby_atmos", /Atmos/i.test(`${tTitle} ${tSmall}`));
+          checkEdition("10_bit", /10.?bit/i.test(tTitle));
+          checkEdition("dts_x", /DTS.?X(?![26])/i.test(tTitle));
+          if (hasEdition) {
+            checkById("movie_edition_information", true);
+            const container = document.getElementById("movie_edition_information_container");
+            if (container)
+              container.style.display = "block";
+          }
+          if (/国配|国语配音/.test(tSmall))
+            checkById("chinese_dubbed", true);
+          if (/特效字幕/.test(`${tSmall} ${tDescr}`))
+            checkById("special_effects_subtitles", true);
         });
       }
+    }
+    const RIP_LOG_MARKERS = /Exact Audio Copy|EAC extraction logfile|X Lossless Decoder|XLD extraction logfile|whipper|CUERipper|dBpoweramp|Rubyripper|fre:ac|TOC of the extracted CD|Log checksum|END XLD SIGNATURE|Peak level\s+\d|Copy OK|Track\s+\d+\s+Filename/i;
+    function isValidRipLogText(text) {
+      const clean = String(text || "").trim();
+      return clean.length >= 120 && RIP_LOG_MARKERS.test(clean);
+    }
+    function sanitizeLogBaseName(raw) {
+      const cleaned = String(raw || "").replace(/[\\/:*?"<>|\[\]]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 80).trim();
+      return cleaned || "rip";
+    }
+    function ensureLogFilename(name2, fallbackBase, index, total) {
+      var _a;
+      const raw = String(name2 || "").trim();
+      let base = (_a = raw.split(/[\\/]/).pop()) == null ? void 0 : _a.replace(/\.(?:txt|log)$/i, "").trim();
+      if (!base) {
+        const safe = sanitizeLogBaseName(fallbackBase);
+        base = total > 1 ? `${safe} - CD${index + 1}` : safe;
+      }
+      return `${base.replace(/[\\/:*?"<>|]+/g, "_")}.log`;
+    }
+    function parseOpenCdNfoLogs(nfoText, baseName) {
+      const raw = String(nfoText || "").replace(/\r\n/g, "\n").trim();
+      if (!raw)
+        return [];
+      const scoreBannerRe = /\*{5,}\s*Score\s*:\s*[^\n*]+\*{5,}\s*/gi;
+      const parts = scoreBannerRe.test(raw) ? raw.split(scoreBannerRe).map((s2) => s2.trim()).filter(Boolean) : [raw];
+      const valid = parts.filter((part) => isValidRipLogText(part));
+      return valid.map((content, idx) => ({
+        filename: ensureLogFilename("", baseName, idx, valid.length),
+        content: normalizeRipLogLineEndings(content)
+      }));
+    }
+    function normalizeRipLogLineEndings(text) {
+      const cleaned = String(text || "").replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+      if (/Exact Audio Copy|EAC extraction logfile/i.test(cleaned)) {
+        return `${cleaned.replace(/\n/g, "\r\n")}\r
+`;
+      }
+      return `${cleaned}
+`;
+    }
+    function parseGazelleLogHtml(html, baseUrl, baseName) {
+      const rawUrls = [];
+      const inlineLogs = [];
+      if (!html || typeof DOMParser === "undefined")
+        return { rawUrls, inlineLogs };
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const seenUrls = /* @__PURE__ */ new Set();
+      const abs = (href) => {
+        try {
+          return new URL(href, baseUrl).href;
+        } catch {
+          return href;
+        }
+      };
+      Array.from(doc.querySelectorAll("a[href]")).forEach((a2) => {
+        const href = (a2.getAttribute("href") || "").trim();
+        if (!href)
+          return;
+        const isRawLogLink = /view\.php\?[^#]*type=riplog/i.test(href) || /(?:^|\/)logs\/[^?#]+\.(?:log|txt)(?:[?#]|$)/i.test(href);
+        if (!isRawLogLink)
+          return;
+        const fullUrl = abs(href);
+        if (seenUrls.has(fullUrl))
+          return;
+        seenUrls.add(fullUrl);
+        rawUrls.push({ url: fullUrl, filename: "" });
+      });
+      const seenText = /* @__PURE__ */ new Set();
+      const collectText = (nodes) => {
+        for (const node of nodes) {
+          const text = (node.textContent || "").replace(/^Score\s*:.*?\(max\s*100\)\s*/i, "").replace(/^得分\s*[:：]\s*\d+\s*/i, "").trim();
+          if (!isValidRipLogText(text))
+            continue;
+          const sig = text.slice(0, 240);
+          if (seenText.has(sig))
+            continue;
+          seenText.add(sig);
+          inlineLogs.push({
+            filename: "",
+            content: normalizeRipLogLineEndings(text)
+          });
+        }
+      };
+      const pres = Array.from(doc.querySelectorAll("pre"));
+      if (pres.length) {
+        collectText(pres);
+      } else {
+        collectText(Array.from(doc.querySelectorAll(".log_section blockquote, blockquote")));
+      }
+      rawUrls.forEach((entry, idx) => {
+        var _a;
+        entry.filename = ensureLogFilename(((_a = entry.url.split("/").pop()) == null ? void 0 : _a.split("?")[0]) || "", baseName, idx, rawUrls.length);
+      });
+      inlineLogs.forEach((entry, idx) => {
+        entry.filename = ensureLogFilename("", baseName, idx, inlineLogs.length);
+      });
+      return { rawUrls, inlineLogs };
+    }
+    function arrayBufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      const chunkSize = 32768;
+      let binary = "";
+      for (let i2 = 0; i2 < bytes.length; i2 += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i2, i2 + chunkSize));
+      }
+      return btoa(binary);
+    }
+    function base64ToUint8Array(base64) {
+      const pure = base64.includes(",") ? base64.split(",").slice(1).join(",") : base64;
+      const binary = atob(pure);
+      const bytes = new Uint8Array(new ArrayBuffer(binary.length));
+      for (let i2 = 0; i2 < binary.length; i2++) {
+        bytes[i2] = binary.charCodeAt(i2);
+      }
+      return bytes;
+    }
+    async function fetchWithTimeout(url, timeoutMs = 6e3) {
+      if (typeof fetch !== "function")
+        return null;
+      try {
+        const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        const timer = controller ? window.setTimeout(() => controller.abort(), timeoutMs) : null;
+        const res = await fetch(url, { credentials: "include", signal: controller == null ? void 0 : controller.signal });
+        if (timer)
+          window.clearTimeout(timer);
+        return res.ok ? res : null;
+      } catch {
+        return null;
+      }
+    }
+    async function fetchGazelleRipLogs(siteName, currentUrl, torrentId, baseName) {
+      var _a;
+      if (!torrentId || typeof fetch !== "function")
+        return [];
+      let groupId = "";
+      try {
+        groupId = new URL(currentUrl).searchParams.get("id") || "";
+      } catch {
+      }
+      const abs = (path) => {
+        try {
+          return new URL(path, currentUrl).href;
+        } catch {
+          return path;
+        }
+      };
+      const endpoint = siteName === "RED" ? abs(`torrents.php?action=loglist&torrentid=${encodeURIComponent(torrentId)}`) : abs(`torrents.php?action=viewlog&torrentid=${encodeURIComponent(torrentId)}${groupId ? `&groupid=${encodeURIComponent(groupId)}` : ""}`);
+      const res = await fetchWithTimeout(endpoint, 6e3);
+      if (!res)
+        return [];
+      const html = await res.text();
+      if (!html)
+        return [];
+      const { rawUrls, inlineLogs } = parseGazelleLogHtml(html, currentUrl, baseName);
+      if (rawUrls.length) {
+        const downloaded = [];
+        for (let i2 = 0; i2 < rawUrls.length; i2++) {
+          const item = rawUrls[i2];
+          const rawRes = await fetchWithTimeout(item.url, 6e3);
+          if (!rawRes)
+            continue;
+          try {
+            const buf = await rawRes.arrayBuffer();
+            if (!buf.byteLength)
+              continue;
+            const cd = rawRes.headers.get("content-disposition") || "";
+            const cdName = ((_a = cd.match(/filename\*?=(?:UTF-8''|")?([^";\r\n"]+)/i)) == null ? void 0 : _a[1]) || "";
+            const filename = ensureLogFilename(cdName || item.filename, baseName, i2, rawUrls.length);
+            downloaded.push({
+              filename,
+              base64: `data:text/plain;base64,${arrayBufferToBase64(buf)}`
+            });
+          } catch {
+          }
+        }
+        if (downloaded.length)
+          return downloaded;
+      }
+      return inlineLogs;
+    }
+    function getPageFileCtor() {
+      try {
+        const pageWin = typeof globalThis.unsafeWindow !== "undefined" ? globalThis.unsafeWindow : window;
+        if (typeof (pageWin == null ? void 0 : pageWin.File) === "function")
+          return pageWin.File;
+        if (typeof (window == null ? void 0 : window.File) === "function")
+          return window.File;
+      } catch {
+      }
+      return File;
+    }
+    function getPageDataTransfer() {
+      try {
+        const pageWin = typeof globalThis.unsafeWindow !== "undefined" ? globalThis.unsafeWindow : window;
+        if (typeof (pageWin == null ? void 0 : pageWin.DataTransfer) === "function")
+          return new pageWin.DataTransfer();
+        if (typeof (window == null ? void 0 : window.DataTransfer) === "function")
+          return new window.DataTransfer();
+      } catch {
+      }
+      try {
+        return new DataTransfer();
+      } catch {
+        return null;
+      }
+    }
+    function buildRipLogFiles(logs) {
+      const PageFile = getPageFileCtor();
+      const out = [];
+      for (let i2 = 0; i2 < logs.length; i2++) {
+        const entry = logs[i2];
+        if (!entry)
+          continue;
+        const filename = ensureLogFilename(entry.filename, "rip", i2, logs.length);
+        if (entry.base64) {
+          try {
+            const bytes = base64ToUint8Array(entry.base64);
+            out.push(new PageFile([bytes], filename, { type: "text/plain" }));
+            continue;
+          } catch {
+          }
+        }
+        if (entry.content) {
+          out.push(new PageFile([entry.content], filename, { type: "text/plain" }));
+        }
+      }
+      return out;
+    }
+    function assignFilesToInput(input, files) {
+      const dt = getPageDataTransfer();
+      if (!dt)
+        return false;
+      files.forEach((f2) => dt.items.add(f2));
+      input.files = dt.files;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    }
+    function injectGazelleRipLogs(logs) {
+      if (!logs || !logs.length)
+        return false;
+      const inputs = Array.from(document.querySelectorAll('input[type="file"][name="logfiles[]"]'));
+      if (!inputs.length)
+        return false;
+      if (inputs.some((inp) => inp.files && inp.files.length > 0))
+        return true;
+      const files = buildRipLogFiles(logs);
+      if (!files.length)
+        return false;
+      const first = inputs[0];
+      if (first.multiple || files.length === 1) {
+        return assignFilesToInput(first, files);
+      }
+      const addBtn = document.querySelector('a[onclick*="AddLogField"]');
+      for (let i2 = 0; i2 < files.length; i2++) {
+        let curInputs = Array.from(document.querySelectorAll('input[type="file"][name="logfiles[]"]'));
+        if (i2 >= curInputs.length && addBtn) {
+          addBtn.click();
+          curInputs = Array.from(document.querySelectorAll('input[type="file"][name="logfiles[]"]'));
+        }
+        const target = curInputs[i2];
+        if (target)
+          assignFilesToInput(target, [files[i2]]);
+      }
+      return true;
+    }
+    function injectOpenCdRipLogs(logs) {
+      if (!logs || !logs.length)
+        return false;
+      const existingInputs = Array.from(document.querySelectorAll('input[type="file"][name^="nfo"]'));
+      if (!existingInputs.length)
+        return false;
+      if (existingInputs.some((inp) => inp.files && inp.files.length > 0))
+        return true;
+      const files = buildRipLogFiles(logs);
+      if (!files.length)
+        return false;
+      const addBtn = document.getElementById("nfoadd");
+      for (let i2 = 0; i2 < files.length; i2++) {
+        let curInputs = Array.from(document.querySelectorAll('input[type="file"][name^="nfo"]'));
+        if (i2 >= curInputs.length && addBtn) {
+          addBtn.click();
+          curInputs = Array.from(document.querySelectorAll('input[type="file"][name^="nfo"]'));
+        }
+        const target = curInputs[i2] || curInputs[curInputs.length - 1];
+        if (target)
+          assignFilesToInput(target, [files[i2]]);
+      }
+      return true;
+    }
+    const RELEASE_TYPE_PATTERNS = [
+      [/\bSoundtrack\b|原声/i, "Soundtrack"],
+      [/\bAnthology\b|精选/i, "Anthology"],
+      [/\bCompilation\b|合辑/i, "Compilation"],
+      [/\bSingle\b|单曲/i, "Single"],
+      [/\bEP\b/i, "EP"],
+      [/\bLive\s*album\b|现场专辑/i, "Live album"],
+      [/\bConcert\s*Recording\b|音乐会录音/i, "Concert Recording"],
+      [/\bRemix\b|重混/i, "Remix"],
+      [/\bBootleg\b|私录/i, "Bootleg"],
+      [/\bInterview\b|访谈/i, "Interview"],
+      [/\bMixtape\b|私制合辑/i, "Mixtape"],
+      [/\bDemo\b|录音样带/i, "Demo"],
+      [/\bDJ\s*Mix\b|DJ\s*混音/i, "DJ Mix"],
+      [/\bAlbum\b|专辑/i, "Album"]
+    ];
+    function unwrapOpsImageCacheUrl(raw) {
+      let url = String(raw || "").trim();
+      if (!url)
+        return "";
+      const decodeB64Url = (token) => {
+        try {
+          const norm2 = token.replace(/-/g, "+").replace(/_/g, "/");
+          const padded = norm2 + "=".repeat((4 - norm2.length % 4) % 4);
+          if (typeof atob === "function")
+            return atob(padded);
+          return Buffer.from(padded, "base64").toString("utf8");
+        } catch {
+          return "";
+        }
+      };
+      const m2 = url.match(/^https?:\/\/imgcache\.opsfet\.ch\/[a-z]+\/[^/]+\/[^/]+\/([A-Za-z0-9_-]+)/i);
+      if (m2 == null ? void 0 : m2[1]) {
+        const decoded = decodeB64Url(m2[1]).trim();
+        if (/^https?:\/\//i.test(decoded))
+          url = decoded;
+      }
+      try {
+        const parsed = new URL(url);
+        if (/orpheus\.network$/i.test(parsed.hostname) && /\/view\.php$/i.test(parsed.pathname)) {
+          const inner = parsed.searchParams.get("u") || "";
+          if (/^https?:\/\//i.test(inner)) {
+            url = inner;
+          } else if (inner) {
+            const decodedInner = decodeB64Url(inner).trim();
+            if (/^https?:\/\//i.test(decodedInner))
+              url = decodedInner;
+          }
+        }
+      } catch {
+      }
+      return url;
+    }
+    const unwrapOpsCacheInText = (text) => String(text || "").replace(/https?:\/\/imgcache\.opsfet\.ch\/[^\s\]"'<>]+/gi, (hit) => unwrapOpsImageCacheUrl(hit));
+    function normalizeMusicReleaseType(text) {
+      for (const [re, canonical] of RELEASE_TYPE_PATTERNS) {
+        if (re.test(text))
+          return canonical;
+      }
+      return "";
+    }
+    function parseEditionLine(editionText) {
+      const cleaned = (editionText || "").replace(/^[−–\-+]+\s*/, "").replace(/\s+/g, " ").trim();
+      if (!cleaned) {
+        return { editionYear: "", recordLabel: "", catalogueNumber: "", editionTitle: "", media: "" };
+      }
+      const mediaMatch = cleaned.match(/\b(CD|WEB|Vinyl|SACD|DVD|Blu[- ]?Ray|BD|Soundboard|DAT|Cassette|LaserDisc)\b/i);
+      const media = mediaMatch ? mediaMatch[1] : "";
+      const yearMatch = cleaned.match(/^((?:19|20)\d{2})\b/);
+      const editionYear = (yearMatch == null ? void 0 : yearMatch[1]) || "";
+      let rest = cleaned.replace(/^((?:19|20)\d{2})\s*[-–\/]?\s*/, "").replace(/\s*\/\s*(CD|WEB|Vinyl|SACD|DVD|Blu[- ]?Ray|BD|Soundboard|DAT|Cassette|LaserDisc)\s*$/i, "").trim();
+      const parts = rest.split(/\s*\/\s*/).map((p2) => p2.trim()).filter(Boolean);
+      let recordLabel = "";
+      let catalogueNumber = "";
+      let editionTitle = "";
+      if (parts.length === 1) {
+        if (!/^Original Release$/i.test(parts[0]))
+          recordLabel = parts[0];
+      } else if (parts.length === 2) {
+        recordLabel = parts[0];
+        catalogueNumber = parts[1];
+      } else if (parts.length >= 3) {
+        recordLabel = parts[0];
+        catalogueNumber = parts[1];
+        editionTitle = parts.slice(2).join(" / ");
+      }
+      return { editionYear, recordLabel, catalogueNumber, editionTitle, media };
+    }
+    function parseFormatLine(formatText) {
+      const t2 = (formatText || "").replace(/[▶»→\[\]]/g, " ").replace(/\s+/g, " ").trim();
+      let format = "";
+      if (/\bFLAC\b/i.test(t2))
+        format = "FLAC";
+      else if (/\bDSD\b/i.test(t2))
+        format = "DSD";
+      else if (/\bMP3\b/i.test(t2))
+        format = "MP3";
+      else if (/\bAAC\b/i.test(t2))
+        format = "AAC";
+      else if (/\bOgg\s*Vorbis\b|\bVorbis\b/i.test(t2))
+        format = "Ogg Vorbis";
+      else if (/\bAC3\b/i.test(t2))
+        format = "AC3";
+      else if (/\bDTS\b/i.test(t2))
+        format = "DTS";
+      let bitrate = "";
+      if (/24bit\s*Lossless/i.test(t2))
+        bitrate = "24bit Lossless";
+      else if (/\bLossless\b/i.test(t2))
+        bitrate = "Lossless";
+      else if (/DSD(?:64|128|256|512)/i.test(t2))
+        bitrate = t2.match(/DSD(?:64|128|256|512)/i)[0].toUpperCase();
+      else if (/V0\s*\(VBR\)|\bV0\b/i.test(t2))
+        bitrate = "V0 (VBR)";
+      else if (/V1\s*\(VBR\)|\bV1\b/i.test(t2))
+        bitrate = "V1 (VBR)";
+      else if (/V2\s*\(VBR\)|\bV2\b/i.test(t2))
+        bitrate = "V2 (VBR)";
+      else if (/\b(320|256|192|160|128|96|64)\b/.test(t2))
+        bitrate = t2.match(/\b(320|256|192|160|128|96|64)\b/)[1];
+      let media = "";
+      const mediaMatch = t2.match(/\b(WEB|CD|Vinyl|SACD|DVD|Blu[- ]?Ray|BD|Soundboard|DAT|Cassette|LaserDisc)\b/i);
+      if (mediaMatch)
+        media = mediaMatch[1];
+      const srMatch = t2.match(/\b(44\.1|48|88\.2|96|176\.4|192)\s*kHz\b/i);
+      const sampleRate = srMatch ? `${srMatch[1]}kHz` : "";
+      return { format, bitrate, media, sampleRate };
+    }
+    async function parseMusicGazelle(config, currentUrl) {
+      var _a, _b, _c, _d, _e, _f, _g, _h;
+      const abs = (href) => {
+        try {
+          return new URL(href, currentUrl).href;
+        } catch {
+          return href;
+        }
+      };
+      const torrentId = ((_a = currentUrl.match(/torrentid=(\d+)/)) == null ? void 0 : _a[1]) || "";
+      const h2 = document.querySelector(".header h2") || document.querySelector("h2");
+      const titleEn = (((_b = document.querySelector("#title_en")) == null ? void 0 : _b.textContent) || "").replace(/\s+/g, " ").trim();
+      const rawH2 = (titleEn || (h2 == null ? void 0 : h2.textContent) || "").replace(/\s+/g, " ").trim();
+      let artists = Array.from((h2 == null ? void 0 : h2.querySelectorAll('a[href*="artist.php"], a[href*="artist"]')) || []).map((a2) => (a2.textContent || "").trim()).filter(Boolean);
+      if (artists.length === 1 && /^V\.A\.$/i.test(artists[0])) {
+        const boxArtists = Array.from(document.querySelectorAll(".box_artists li a:first-child, .sidebar .box:nth-of-type(3) li a:first-child")).map((a2) => (a2.textContent || "").trim()).filter(Boolean);
+        if (boxArtists.length)
+          artists = boxArtists;
+      }
+      const musicAuthor = artists.join(" & ");
+      const yearMatch = rawH2.match(/\[((?:19|20)\d{2})(?:[.\-\/\s][^\]]*)?\]/);
+      const year = (yearMatch == null ? void 0 : yearMatch[1]) || "";
+      const brackets = Array.from(rawH2.matchAll(/\[([^\]]+)\]/g)).map((m2) => m2[1]);
+      let releaseType = brackets.map(normalizeMusicReleaseType).find(Boolean) || "Album";
+      let musicName = (((_c = h2 == null ? void 0 : h2.querySelector('span[dir="ltr"]')) == null ? void 0 : _c.textContent) || "").trim();
+      if (!musicName && rawH2) {
+        let stripped = rawH2.replace(/\s*\[[^\]]+\]\s*/g, " ").replace(/\s+/g, " ").trim();
+        const lastArtist = artists[artists.length - 1];
+        if (lastArtist && stripped.includes(lastArtist)) {
+          const after = stripped.slice(stripped.lastIndexOf(lastArtist) + lastArtist.length);
+          musicName = after.replace(/^\s*[-–—]\s*/, "").trim();
+        }
+        if (!musicName) {
+          const parts = stripped.split(/\s+[-–—]\s+/);
+          musicName = parts.length > 1 ? parts.slice(1).join(" - ").trim() : stripped;
+        }
+      }
+      let cover = "";
+      const isUiIcon = (src) => /\/(?:bbc|icons?|smileys?|flags?|symbols)\//i.test(src) || /\.gif(?:[?#]|$)/i.test(src);
+      const primaryCover = document.querySelector("#cover_div_0 img, .box_image img, p.thumbnail-container img");
+      const fallbackCover = Array.from(document.querySelectorAll(".sidebar .box img, .box img")).find((img) => {
+        const s2 = (img.getAttribute("src") || "").trim();
+        const oc = (img.getAttribute("onclick") || "").trim();
+        return !!oc && /https?:\/\//i.test(oc) || !!s2 && !isUiIcon(s2);
+      });
+      const coverImg = primaryCover || fallbackCover || null;
+      if (coverImg) {
+        const onclick = coverImg.getAttribute("onclick") || "";
+        const lightboxUrl = ((_d = onclick.match(/https?:\/\/[^'")\s]+/i)) == null ? void 0 : _d[0]) || ((_e = onclick.match(/'(\/[^']+)'/)) == null ? void 0 : _e[1]) || "";
+        cover = lightboxUrl || coverImg.getAttribute("src") || coverImg.src || "";
+        if (cover && !isUiIcon(cover)) {
+          cover = abs(cover).replace(/\.th(?=\.(?:jpg|jpeg|png|webp|gif)(?:[?#]|$))/i, "");
+        } else {
+          cover = "";
+        }
+      }
+      let infoBody = document.querySelector(".torrent_description .body") || document.querySelector(".torrent_description div:nth-child(2)") || document.querySelector(".box_torrent_description .pad");
+      if (!infoBody) {
+        const strongs = Array.from(document.querySelectorAll("div strong"));
+        const infoStrong = strongs.reverse().find((s2) => /Info/i.test(s2.textContent || ""));
+        infoBody = ((_f = infoStrong == null ? void 0 : infoStrong.closest(".box, div")) == null ? void 0 : _f.querySelector("div.body")) || null;
+      }
+      if (!infoBody) {
+        const bodies = document.querySelectorAll(".body");
+        infoBody = bodies[2] || bodies[bodies.length - 1] || null;
+      }
+      let albumDesc = "";
+      let tracklist = "";
+      if (infoBody) {
+        albumDesc = htmlToBBCode(infoBody).trim();
+        tracklist = (infoBody.textContent || "").trim();
+      }
+      const downloadAnchor = torrentId ? document.querySelector(
+        `a[href*="action=download"][href*="id=${torrentId}"], a[href*="download&id=${torrentId}"]`
+      ) : null;
+      const rowEl = (torrentId ? document.getElementById(`torrent${torrentId}`) : null) || (downloadAnchor == null ? void 0 : downloadAnchor.closest("tr")) || null;
+      let formatText = "";
+      if (rowEl) {
+        const links = Array.from(rowEl.querySelectorAll("a"));
+        const formatLink = links.find(
+          (a2) => /\b(FLAC|MP3|AAC|AC3|DTS|DSD|Vorbis|Lossless|320|256|192|V0|V2)\b/i.test(a2.textContent || "")
+        ) || links.find(
+          (a2) => Array.from(a2.querySelectorAll("img")).some(
+            (im) => /(?:FLAC|MP3|AAC|DSD|Lossless|320|V0|V2)/i.test((im.getAttribute("src") || "") + " " + (im.getAttribute("alt") || ""))
+          )
+        );
+        if (formatLink) {
+          const imgTokens = Array.from(formatLink.querySelectorAll("img")).map((im) => {
+            var _a2;
+            const src = im.getAttribute("src") || "";
+            const file = ((_a2 = src.split("/").pop()) == null ? void 0 : _a2.replace(/\.[a-z0-9]+$/i, "")) || "";
+            return decodeURIComponent(file).replace(/[_-]+/g, " ").trim();
+          }).filter(Boolean);
+          const rawLinkText = (formatLink.textContent || "").replace(/^[▶»→]\s*/, "").replace(/\s+/g, " ").trim();
+          formatText = imgTokens.length ? `${imgTokens.join(" / ")} ${rawLinkText}`.replace(/\s+/g, " ").trim() : rawLinkText;
+        }
+      }
+      let editionText = "";
+      if (rowEl) {
+        let prev = rowEl.previousElementSibling;
+        let steps = 0;
+        while (prev && steps < 30) {
+          const cls = (prev.className || "").toLowerCase();
+          const txt = (prev.textContent || "").replace(/\s+/g, " ").trim();
+          if (cls.includes("edition") || /^[−–\-+]?\s*(?:(?:19|20)\d{2}\b|Original Release\b)/i.test(txt) || /^[−–]\s/.test(txt)) {
+            editionText = txt;
+            break;
+          }
+          prev = prev.previousElementSibling;
+          steps++;
+        }
+      }
+      const parsedEdition = parseEditionLine(editionText);
+      const parsedFormat = parseFormatLine(formatText);
+      let ajaxData = null;
+      if (torrentId && (config.name === "lztr" || !parsedFormat.format && typeof fetch === "function")) {
+        try {
+          const ajaxUrl = abs(`ajax.php?action=torrent&id=${torrentId}`);
+          const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+          const timer = controller ? window.setTimeout(() => controller.abort(), 3500) : null;
+          const res = await fetch(ajaxUrl, { credentials: "include", signal: controller == null ? void 0 : controller.signal });
+          if (timer)
+            window.clearTimeout(timer);
+          if (res.ok) {
+            const json = await res.json();
+            if ((json == null ? void 0 : json.status) === "success" && (json == null ? void 0 : json.response))
+              ajaxData = json.response;
+          }
+        } catch {
+        }
+      }
+      const ajaxGroup = ajaxData == null ? void 0 : ajaxData.group;
+      const ajaxTorrent = ajaxData == null ? void 0 : ajaxData.torrent;
+      if (ajaxGroup) {
+        if (!cover && ajaxGroup.wikiImage)
+          cover = abs(String(ajaxGroup.wikiImage));
+        if (!albumDesc && ajaxGroup.wikiBBcode)
+          albumDesc = String(ajaxGroup.wikiBBcode).trim();
+        if (ajaxGroup.releaseName)
+          releaseType = normalizeMusicReleaseType(String(ajaxGroup.releaseName)) || releaseType;
+        if (!artists.length && Array.isArray((_g = ajaxGroup.musicInfo) == null ? void 0 : _g.artists)) {
+          artists = ajaxGroup.musicInfo.artists.map((a2) => String((a2 == null ? void 0 : a2.name) || "").trim()).filter(Boolean);
+        }
+      }
+      const finalFormat = String((ajaxTorrent == null ? void 0 : ajaxTorrent.format) || parsedFormat.format || "");
+      const finalBitrate = String((ajaxTorrent == null ? void 0 : ajaxTorrent.encoding) || parsedFormat.bitrate || "");
+      const media = String((ajaxTorrent == null ? void 0 : ajaxTorrent.media) || parsedFormat.media || parsedEdition.media || "");
+      const finalEditionYear = String((ajaxTorrent == null ? void 0 : ajaxTorrent.remasterYear) || parsedEdition.editionYear || "");
+      const finalEditionTitle = String((ajaxTorrent == null ? void 0 : ajaxTorrent.remasterTitle) || parsedEdition.editionTitle || "");
+      const finalRecordLabel = String((ajaxTorrent == null ? void 0 : ajaxTorrent.remasterRecordLabel) || parsedEdition.recordLabel || (ajaxGroup == null ? void 0 : ajaxGroup.recordLabel) || "");
+      const finalCatNo = String((ajaxTorrent == null ? void 0 : ajaxTorrent.remasterCatalogueNumber) || parsedEdition.catalogueNumber || (ajaxGroup == null ? void 0 : ajaxGroup.catalogueNumber) || "");
+      const sampleRate = parsedFormat.sampleRate || (((_h = albumDesc.match(/\b(44\.1|48|88\.2|96|176\.4|192)\s*kHz\b/i)) == null ? void 0 : _h[1]) ? `${albumDesc.match(/\b(44\.1|48|88\.2|96|176\.4|192)\s*kHz\b/i)[1]}kHz` : "");
+      let releaseDesc = "";
+      const detailRow = torrentId ? document.getElementById(`torrent_${torrentId}`) : null;
+      if (detailRow) {
+        const bqs = Array.from(detailRow.querySelectorAll("blockquote"));
+        const realBqs = bqs.filter((bq) => {
+          const t2 = (bq.textContent || "").replace(/\s+/g, " ").trim();
+          if (!t2)
+            return false;
+          if (/^(?:Uploaded\s+by|由\s*\S+\s*发布于)/i.test(t2))
+            return false;
+          return true;
+        });
+        if (realBqs.length) {
+          releaseDesc = htmlToBBCode(realBqs[realBqs.length - 1]).trim();
+        }
+      }
+      let tags = Array.from(document.querySelectorAll('.box_tags a[href*="taglist"], .tags a')).map((a2) => (a2.textContent || "").trim()).filter(Boolean);
+      if (!tags.length) {
+        const tagBox = Array.from(document.querySelectorAll("div.box")).find((b) => {
+          var _a2;
+          return /\bTags\b/i.test(((_a2 = b.querySelector(".head")) == null ? void 0 : _a2.textContent) || b.textContent || "");
+        });
+        if (tagBox) {
+          tags = Array.from(tagBox.querySelectorAll("li a:first-child")).map((a2) => (a2.textContent || "").trim()).filter(Boolean);
+        }
+      }
+      if (/原声|Soundtrack/i.test(rawH2) && !tags.some((t2) => /soundtrack|ost/i.test(t2))) {
+        tags.push("soundtrack");
+      }
+      const torrentHref = torrentId && $$1(`a[href*="action=download"][href*="id=${torrentId}"]`).first().attr("href") || torrentId && $$1(`a[href*="download&id=${torrentId}"]`).first().attr("href") || "";
+      const imdbUrl = matchLink("imdb", document.body.innerHTML) || "";
+      const finalCover = unwrapOpsImageCacheUrl(cover);
+      const finalAlbumDesc = unwrapOpsCacheInText(albumDesc);
+      const finalReleaseDesc = unwrapOpsCacheInText(releaseDesc);
+      const hasLogHint = Boolean(ajaxTorrent == null ? void 0 : ajaxTorrent.hasLog) || /\bLog\b/i.test(formatText) || !!(detailRow == null ? void 0 : detailRow.querySelector('a[onclick*="show_logs"], a[href*="viewlog"]'));
+      let ripLogs = void 0;
+      if (hasLogHint && torrentId && ["RED", "OPS", "DIC", "lztr"].includes(config.name)) {
+        const baseName = [musicAuthor, musicName].filter(Boolean).join(" - ") || rawH2 || config.name;
+        const fetchedLogs = await fetchGazelleRipLogs(config.name, currentUrl, torrentId, baseName);
+        if (fetchedLogs.length)
+          ripLogs = fetchedLogs;
+      }
+      const descriptionParts = [];
+      if (finalCover)
+        descriptionParts.push(`[img]${finalCover}[/img]`);
+      if (finalReleaseDesc)
+        descriptionParts.push(finalReleaseDesc);
+      if (finalAlbumDesc)
+        descriptionParts.push(`[quote]
+${finalAlbumDesc}
+[/quote]`);
+      const description = descriptionParts.join("\n\n").trim();
+      const payload = {
+        musicName,
+        musicAuthor: artists.join(" & ") || musicAuthor,
+        artists,
+        year,
+        releaseType,
+        musicType: tags,
+        editionYear: finalEditionYear,
+        editionTitle: finalEditionTitle,
+        recordLabel: finalRecordLabel,
+        catalogueNumber: finalCatNo,
+        media,
+        format: finalFormat,
+        bitrate: finalBitrate,
+        sampleRate,
+        albumDesc: finalAlbumDesc,
+        releaseDesc: finalReleaseDesc
+      };
+      const cleanTitle2 = rawH2.replace(/–/g, "-").trim() || config.name;
+      return {
+        title: cleanTitle2,
+        smallDescr: formatText || void 0,
+        subtitle: formatText || void 0,
+        description,
+        tracklist: tracklist || void 0,
+        editionInfo: editionText || void 0,
+        musicMedia: media || void 0,
+        type: "音乐",
+        sourceSite: config.name,
+        sourceUrl: currentUrl,
+        imdbUrl: imdbUrl || void 0,
+        imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+        torrentUrl: torrentHref ? abs(torrentHref) : void 0,
+        images: finalCover ? [finalCover] : [],
+        ripLogs,
+        originalDom: JSON.stringify(payload)
+      };
     }
     class TorrentService {
       static withTimeout(promise, ms, label) {
@@ -16220,7 +26656,32 @@ ${meta.editionInfo || ""}`;
         }
         const info = infoPrivate[0].replace("privatei0e", "privatei1e");
         newTorrent += info;
-        const source = `6:source${forwardSite.length}:${forwardSite.toUpperCase()}`;
+        const asciiSourceAliases = {
+          麒麟: "HDKYL",
+          海棠: "HTPT",
+          杏林: "XINGTAN",
+          影: "STARSPACE",
+          雨: "RAINGFH",
+          红叶: "REDLEAVES",
+          象岛: "VICOMO",
+          唐门: "TMPT",
+          天枢: "DUBHE",
+          财神: "CSPT",
+          星陨阁: "XINGYUNGE",
+          樱花: "YINGPT",
+          我好闲: "WHAX",
+          下水道: "SEWERPT",
+          柠檬不甜: "LEMONHD",
+          藏宝阁: "CANGBAO",
+          未来幻境: "JIVON",
+          自然: "ZRPT",
+          慕雪阁: "MUXUEGE",
+          好学: "HXPT",
+          躺平: "TANGPT"
+        };
+        const rawSource = (asciiSourceAliases[forwardSite] || forwardSite).replace(/[^\x20-\x7e]/g, "").trim() || "PT";
+        const sourceTag = rawSource.toUpperCase();
+        const source = `6:source${sourceTag.length}:${sourceTag}`;
         newTorrent += source;
         newTorrent += "ee";
         return { binary: newTorrent, name: name2 || void 0 };
@@ -16301,7 +26762,7 @@ ${meta.editionInfo || ""}`;
             return true;
           }
         }
-        if (["GPW", "RED", "OPS", "DIC", "SC"].includes(forwardSite)) {
+        if (["GPW", "RED", "OPS", "DIC", "SC", "BTN"].includes(forwardSite)) {
           const input = document.querySelector('input[name="file_input"]') || document.querySelector('input[name="file"]') || document.querySelector("#file");
           if (input) {
             input.files = makeTransfer();
@@ -16359,8 +26820,7 @@ ${meta.editionInfo || ""}`;
     }, Symbol.toStringTag, { value: "Module" }));
     function parseOriginalDom(meta) {
       try {
-        const obj = JSON.parse(meta.originalDom || "{}");
-        return obj || {};
+        return JSON.parse(meta.originalDom || "{}") || {};
       } catch {
         return {};
       }
@@ -16368,100 +26828,73 @@ ${meta.editionInfo || ""}`;
     function norm(s2) {
       return (s2 || "").replace(/\*/g, "").replace(/–/g, "-").replace(/\s+/g, " ").trim();
     }
-    function pickReleaseTypeKeyword(meta) {
-      const text = `${meta.title || ""} ${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.editionInfo || ""}`.toLowerCase();
-      if (/\bsingle\b/.test(text))
-        return "single";
-      if (/\bep\b/.test(text))
-        return "ep";
-      if (/compilation/.test(text))
-        return "compilation";
-      if (/soundtrack|ost|原声/.test(text))
-        return "soundtrack";
-      if (/live/.test(text))
-        return "live";
-      if (/remix/.test(text))
-        return "remix";
-      if (/bootleg/.test(text))
-        return "bootleg";
-      if (/demo/.test(text))
-        return "demo";
-      if (/mixtape/.test(text))
-        return "mixtape";
-      if (/dj mix/.test(text))
-        return "dj mix";
-      if (/interview/.test(text))
-        return "interview";
-      return "album";
+    function resolveGazelleReleaseTypeValue(releaseTypeHint, site) {
+      const canonical = normalizeMusicReleaseType(releaseTypeHint) || "Album";
+      const map = {
+        Album: "1",
+        Soundtrack: "3",
+        EP: "5",
+        Anthology: "6",
+        Compilation: "7",
+        Single: "9",
+        "Live album": "11",
+        Remix: "13",
+        Bootleg: "14",
+        Interview: "15",
+        Mixtape: "16",
+        Demo: site === "OPS" ? "10" : "17",
+        "Concert Recording": "18",
+        "DJ Mix": "19"
+      };
+      return map[canonical] || "1";
     }
-    function deriveFormatBitrateMedia(meta) {
-      const blob = `${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.editionInfo || ""} ${meta.tracklist || ""} ${meta.description || ""}`.toLowerCase();
-      let format = "";
-      if (/\bflac\b/.test(blob))
-        format = "FLAC";
-      else if (/\bmp3\b/.test(blob))
-        format = "MP3";
-      else if (/\baac\b/.test(blob))
-        format = "AAC";
-      else if (/\bopus\b/.test(blob))
-        format = "Opus";
-      else if (/\bvorbis\b/.test(blob))
-        format = "Vorbis";
-      else if (/\bac3\b/.test(blob))
-        format = "AC3";
-      else if (/\bdts\b/.test(blob))
-        format = "DTS";
-      else if (/\bwav\b/.test(blob))
-        format = "WAV";
-      let bitrate = "";
-      if (/24bit\s*lossless/.test(blob))
-        bitrate = "24bit Lossless";
-      else if (/lossless/.test(blob))
-        bitrate = "Lossless";
-      else if (/\b320\b/.test(blob))
-        bitrate = "320";
-      else if (/\b256\b/.test(blob))
-        bitrate = "256";
-      else if (/\b192\b/.test(blob))
-        bitrate = "192";
-      else if (/\b160\b/.test(blob))
-        bitrate = "160";
-      else if (/\b128\b/.test(blob))
-        bitrate = "128";
-      else if (/\b96\b/.test(blob))
-        bitrate = "96";
-      else if (/\b64\b/.test(blob))
-        bitrate = "64";
-      else if (/\bvbr\b/.test(blob))
-        bitrate = "V0 (VBR)";
-      let media = "";
-      if (/\bcd\b|hdcd|lpcd|sacd|srcd|hqcd|xrcd|shm-cd/.test(blob))
-        media = "CD";
-      else if (/\bweb\b|web[- ]?rip|web[- ]?dl/.test(blob))
-        media = "WEB";
-      else if (/dvd/.test(blob))
-        media = "DVD";
-      else if (/vinyl/.test(blob))
-        media = "Vinyl";
-      else if (/blu[- ]?ray|bd\b/.test(blob))
-        media = "Blu-Ray";
-      return { format, bitrate, media };
+    function resolveGazelleMediaValue(mediaHint, site) {
+      const m2 = (mediaHint || "").toLowerCase();
+      if (!m2)
+        return "";
+      if (/\bweb\b|web[- ]?(?:dl|rip)/.test(m2))
+        return "WEB";
+      if (/\bsacd\b/.test(m2))
+        return "SACD";
+      if (/blu[- ]?ray|\bbd\b/.test(m2)) {
+        if (site === "OPS")
+          return "BD";
+        if (site === "DIC")
+          return "Blu-ray";
+        return "Blu-Ray";
+      }
+      if (/\bvinyl\b/.test(m2))
+        return "Vinyl";
+      if (/\bdvd\b/.test(m2))
+        return "DVD";
+      if (/\bsoundboard\b/.test(m2))
+        return "Soundboard";
+      if (/\bdat\b/.test(m2))
+        return "DAT";
+      if (/\bcassette\b/.test(m2))
+        return "Cassette";
+      if (/\blaserdisc\b/.test(m2))
+        return "LaserDisc";
+      if (/\bcd\b|hdcd|lpcd|hqcd|xrcd|shm-cd/.test(m2))
+        return "CD";
+      return "";
     }
-    function pickOptionByText(select, preferredValue, hint) {
+    function pickSelectOption(select, preferredValue, fallbackText = "") {
       if (!select)
         return;
       const cur = (select.value || "").trim();
       if (cur && cur !== "---")
         return;
+      const opts = Array.from(select.options);
       if (preferredValue) {
-        const byValue = Array.from(select.options).find((o2) => (o2.value || "").toLowerCase() === preferredValue.toLowerCase());
+        const byValue = opts.find((o2) => (o2.value || "").toLowerCase() === preferredValue.toLowerCase());
         if (byValue) {
           select.value = byValue.value;
           select.dispatchEvent(new Event("change", { bubbles: true }));
           select.dispatchEvent(new Event("input", { bubbles: true }));
           return;
         }
-        const byText = Array.from(select.options).find((o2) => (o2.textContent || "").toLowerCase() === preferredValue.toLowerCase());
+        const byText = opts.find((o2) => (o2.textContent || "").trim().toLowerCase() === preferredValue.toLowerCase());
         if (byText) {
           select.value = byText.value;
           select.dispatchEvent(new Event("change", { bubbles: true }));
@@ -16469,18 +26902,18 @@ ${meta.editionInfo || ""}`;
           return;
         }
       }
-      const h2 = (hint || "").toLowerCase();
+      const h2 = (fallbackText || "").toLowerCase();
       if (!h2)
         return;
-      for (const o2 of Array.from(select.options)) {
-        const t2 = (o2.textContent || "").toLowerCase();
+      for (const o2 of opts) {
+        const t2 = (o2.textContent || "").trim().toLowerCase();
         if (!t2 || t2 === "---")
           continue;
         if (h2.includes(t2)) {
           select.value = o2.value;
           select.dispatchEvent(new Event("change", { bubbles: true }));
           select.dispatchEvent(new Event("input", { bubbles: true }));
-          break;
+          return;
         }
       }
     }
@@ -16510,10 +26943,38 @@ ${meta.editionInfo || ""}`;
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
-    function buildDescription(meta) {
-      const raw = meta.description || "";
-      const albumDesc = raw.replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, "").replace(/\[quote=Tracklist\]/ig, "[quote]").trim();
-      return { albumDesc, releaseDesc: raw.trim() };
+    function fillArtists(artists) {
+      const cleaned = artists.map((a2) => norm(a2)).filter(Boolean);
+      if (!cleaned.length)
+        return;
+      const getArtistInputs = () => Array.from(document.querySelectorAll('input[name="artists[]"], #artist, #artist_0'));
+      const wantCount = Math.min(cleaned.length, 6);
+      const addBtn = document.querySelector('#artistfields a[onclick*="AddArtistField"], a[onclick*="AddArtistField"]');
+      if (addBtn && wantCount > 1) {
+        let currentCount = getArtistInputs().length;
+        while (currentCount < wantCount) {
+          addBtn.click();
+          const nextCount = getArtistInputs().length;
+          if (nextCount <= currentCount)
+            break;
+          currentCount = nextCount;
+        }
+      }
+      const inputs = getArtistInputs();
+      if (inputs.length >= wantCount) {
+        for (let i2 = 0; i2 < wantCount; i2++) {
+          const el = inputs[i2];
+          if (!el.value.trim()) {
+            el.value = cleaned[i2];
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+      } else if (inputs[0] && !inputs[0].value.trim()) {
+        inputs[0].value = cleaned.join(" & ");
+        inputs[0].dispatchEvent(new Event("input", { bubbles: true }));
+        inputs[0].dispatchEvent(new Event("change", { bubbles: true }));
+      }
     }
     async function fillTorrentFile(meta, forwardSite) {
       var _a;
@@ -16524,16 +26985,12 @@ ${meta.editionInfo || ""}`;
         const result = await TorrentService.buildForwardTorrentFile(meta, forwardSite, announce);
         if (!result)
           return;
-        if (TorrentService.injectTorrentForSite(forwardSite, result.file, result.filename))
-          return;
-        const fileInput = document.querySelector('input[name="file_input"]') || document.querySelector('input[name="file"]') || document.querySelector('input[type="file"]');
-        if (fileInput)
+        const fileInput = document.querySelector('input[type="file"][name="file_input"]') || document.querySelector('input[type="file"][name="file"]');
+        if (fileInput) {
           TorrentService.injectFileIntoInput(fileInput, result.file);
-        const trigger = document.getElementById("file");
-        if (trigger) {
-          trigger.dispatchEvent(new Event("change", { bubbles: true }));
-          trigger.dispatchEvent(new Event("input", { bubbles: true }));
+          return;
         }
+        TorrentService.injectTorrentForSite(forwardSite, result.file, result.filename);
       } catch (e2) {
         console.error("[Auto-Feed] Music gazelle torrent injection failed:", e2);
       }
@@ -16542,157 +26999,94 @@ ${meta.editionInfo || ""}`;
       var _a, _b, _c;
       const domInfo = parseOriginalDom(meta);
       const title = norm(meta.title || "");
-      const musicName = norm(String(domInfo.musicName || ""));
-      const musicAuthor = norm(String(domInfo.musicAuthor || ""));
-      const year = ((_a = (meta.editionInfo || "").match(/(19|20)\d{2}/)) == null ? void 0 : _a[0]) || ((_b = (meta.smallDescr || meta.subtitle || "").match(/(19|20)\d{2}/)) == null ? void 0 : _b[0]) || ((_c = title.match(/(19|20)\d{2}/)) == null ? void 0 : _c[0]) || "";
-      const { format, bitrate, media } = deriveFormatBitrateMedia(meta);
-      const { albumDesc, releaseDesc } = buildDescription(meta);
+      const artists = Array.isArray(domInfo.artists) && domInfo.artists.length ? domInfo.artists : (() => {
+        const rawAuthor = norm(String(domInfo.musicAuthor || ""));
+        if (rawAuthor)
+          return rawAuthor.split(/\s*(?:&|,|\/)\s*/).filter(Boolean);
+        const parts = title.split(" - ").map((x2) => x2.trim()).filter(Boolean);
+        return parts.length > 1 ? [parts[0]] : [];
+      })();
+      const albumTitle = (() => {
+        const fromDom = norm(String(domInfo.musicName || ""));
+        if (fromDom)
+          return fromDom;
+        const stripped = title.replace(/\s*\[[^\]]+\]\s*/g, " ").replace(/\s+/g, " ").trim();
+        const parts = stripped.split(" - ").map((x2) => x2.trim()).filter(Boolean);
+        return parts.length > 1 ? parts.slice(1).join(" - ") : stripped;
+      })();
+      const parsedEd = parseEditionLine(meta.editionInfo || "");
+      const parsedFmt = parseFormatLine(`${meta.smallDescr || ""} ${meta.subtitle || ""} ${meta.musicMedia || ""}`);
+      const year = String(domInfo.year || "") || ((_a = title.match(/\[((?:19|20)\d{2})/)) == null ? void 0 : _a[1]) || parsedEd.editionYear || ((_b = (meta.smallDescr || meta.subtitle || "").match(/(?:19|20)\d{2}/)) == null ? void 0 : _b[0]) || "";
+      const editionYear = String(domInfo.editionYear || parsedEd.editionYear || "");
+      const recordLabel = norm(String(domInfo.recordLabel || parsedEd.recordLabel || ""));
+      const catalogueNumber = norm(String(domInfo.catalogueNumber || parsedEd.catalogueNumber || ""));
+      const editionTitle = norm(String(domInfo.editionTitle || parsedEd.editionTitle || ""));
+      const format = String(domInfo.format || parsedFmt.format || "");
+      const bitrate = String(domInfo.bitrate || parsedFmt.bitrate || "");
+      const media = resolveGazelleMediaValue(
+        String(domInfo.media || meta.musicMedia || parsedFmt.media || parsedEd.media || `${meta.smallDescr || ""} ${meta.editionInfo || ""}`),
+        forwardSite
+      );
+      const sampleRate = String(domInfo.sampleRate || parsedFmt.sampleRate || "");
+      const releaseTypeValue = resolveGazelleReleaseTypeValue(
+        `${domInfo.releaseType || ""} ${meta.title || ""} ${meta.smallDescr || ""}`,
+        forwardSite
+      );
       const tagsFromDom = Array.isArray(domInfo.musicType) ? domInfo.musicType : typeof domInfo.musicType === "string" ? domInfo.musicType.split(",") : [];
       const tagsText = tagsFromDom.map((x2) => norm(String(x2))).filter(Boolean).join(", ");
-      const fallbackName = (() => {
-        const t2 = title.replace(/\[(.*?)\]/g, "").trim();
-        if (musicName)
-          return musicName;
-        const p2 = t2.split("-").map((x2) => x2.trim()).filter(Boolean);
-        return p2.length > 1 ? p2.slice(1).join(" - ") : t2;
-      })();
-      const fallbackArtist = (() => {
-        if (musicAuthor)
-          return musicAuthor;
-        const p2 = title.split("-").map((x2) => x2.trim()).filter(Boolean);
-        return p2.length > 1 ? p2[0] : "";
-      })();
-      const retry2 = (fn, times = 16, delayMs = 280) => repeat(fn, times, delayMs);
+      const albumDesc = (String(domInfo.albumDesc || "") || (meta.description || "").replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, "").replace(/\[quote=Tracklist\]/gi, "[quote]").trim()).trim();
+      const releaseDesc = String(domInfo.releaseDesc || "").trim();
+      const retry2 = (fn, times = 12, delayMs = 260) => repeat(fn, times, delayMs);
       retry2(() => {
-        setInput('#artist, input[name="artist"], input[name="artists[]"], #artist_0', fallbackArtist, { native: true });
-        setInput('#title, input[name="title"]', fallbackName, { native: true, force: true });
+        var _a2;
+        fillArtists(artists);
+        setInput('#title, input[name="title"]', albumTitle, { native: true, force: true });
         setInput('#year, input[name="year"]', year, { native: true });
-        const importance = document.querySelector('td#artistfields #importance, select[name="importance[]"], #importance');
-        if (importance && (!importance.value || importance.value === "---")) {
-          importance.selectedIndex = 0;
-          importance.dispatchEvent(new Event("change", { bubbles: true }));
-          importance.dispatchEvent(new Event("input", { bubbles: true }));
+        pickSelectOption(
+          document.querySelector('#releasetype, select[name="releasetype"]'),
+          releaseTypeValue
+        );
+        const hasRemasterInfo = !!(editionYear || recordLabel || catalogueNumber || editionTitle);
+        if (hasRemasterInfo) {
+          const remasterBox = document.getElementById("remaster");
+          if (remasterBox && !remasterBox.checked) {
+            remasterBox.click();
+          }
+          setInput('#remaster_year, input[name="remaster_year"]', editionYear || year, { native: true });
+          setInput('#remaster_title, input[name="remaster_title"]', editionTitle, { native: true });
+          setInput('#remaster_record_label, input[name="remaster_record_label"]', recordLabel, { native: true });
+          setInput('#remaster_catalogue_number, input[name="remaster_catalogue_number"]', catalogueNumber, { native: true });
         }
-        const rt = document.querySelector('#releasetype, select[name="releasetype"]');
-        pickOptionByText(rt, "", pickReleaseTypeKeyword(meta));
-        pickOptionByText(document.querySelector('#format, select[name="format"]'), format, `${format} ${meta.smallDescr || ""}`);
-        pickOptionByText(document.querySelector('#bitrate, select[name="bitrate"]'), bitrate, `${bitrate} ${meta.smallDescr || ""}`);
-        pickOptionByText(document.querySelector('#media, select[name="media"]'), media, `${media} ${meta.editionInfo || ""}`);
+        setInput('#record_label, input[name="record_label"]', recordLabel, { native: true });
+        setInput('#catalogue_number, input[name="catalogue_number"]', catalogueNumber, { native: true });
+        pickSelectOption(document.querySelector('#format, select[name="format"]'), format);
+        pickSelectOption(document.querySelector('#bitrate, select[name="bitrate"]'), bitrate);
+        pickSelectOption(document.querySelector('#media, select[name="media"]'), media);
+        if (sampleRate) {
+          pickSelectOption(document.querySelector('#sample_rate, select[name="sample_rate"]'), sampleRate);
+        }
         setInput('#tags, input[name="tags"]', tagsText, { native: true });
         setInput('#image, input[name="image"]', meta.images && meta.images[0] || "", { native: true });
         setInput('#album_desc, textarea[name="album_desc"]', albumDesc);
-        setInput('#release_desc, textarea[name="release_desc"]', releaseDesc);
-        if (!releaseDesc && meta.tracklist) {
-          setInput('#release_desc, textarea[name="release_desc"]', `[quote=Tracklist]
-${meta.tracklist}
-[/quote]`);
+        if (releaseDesc) {
+          setInput('#release_desc, textarea[name="release_desc"]', releaseDesc);
+        }
+        if ((_a2 = meta.ripLogs) == null ? void 0 : _a2.length) {
+          injectGazelleRipLogs(meta.ripLogs);
         }
       });
       await fillTorrentFile(meta, forwardSite);
+      if ((_c = meta.ripLogs) == null ? void 0 : _c.length) {
+        injectGazelleRipLogs(meta.ripLogs);
+      }
     }
     class REDEngine extends GazelleEngine {
       constructor(config, url) {
         super(config, url);
       }
       async parse() {
-        var _a, _b, _c, _d;
         this.log("Parsing RED page...");
-        const abs = (href) => {
-          try {
-            return new URL(href, this.currentUrl).href;
-          } catch {
-            return href;
-          }
-        };
-        const torrentId = ((_a = this.currentUrl.match(/torrentid=(\d+)/)) == null ? void 0 : _a[1]) || "";
-        let title = ((_c = (_b = document.querySelector("h2")) == null ? void 0 : _b.textContent) == null ? void 0 : _c.replace(/\s+/g, " ").trim()) || "";
-        title = title.replace(/\[|\]/g, "*");
-        const musicName = $$1('h2>span[dir="ltr"]').first().text().trim();
-        const musicAuthor = musicName ? title.split(musicName)[0].replace(/-.?$/, "").trim() : "";
-        let cover = "";
-        const coverBox = document.getElementById("cover_div_0");
-        try {
-          const img = coverBox == null ? void 0 : coverBox.querySelector("img");
-          const onclick = (img == null ? void 0 : img.getAttribute("onclick")) || "";
-          cover = ((_d = onclick.match(/'(.*)'/)) == null ? void 0 : _d[1]) || (img == null ? void 0 : img.getAttribute("src")) || (img == null ? void 0 : img.src) || "";
-        } catch {
-        }
-        if (cover)
-          cover = abs(cover);
-        const infoBody = document.querySelector(".torrent_description .body") || document.querySelector(".box_torrent_description .pad");
-        let tracklist = ((infoBody == null ? void 0 : infoBody.textContent) || "").trim();
-        if (infoBody && $$1(infoBody).find("ol.postlist").length) {
-          const merged = [];
-          $$1(infoBody).find("ol.postlist li").each((idx, e2) => {
-            merged.push(`${idx + 1} ${$$1(e2).text()}`);
-          });
-          if (merged.length)
-            tracklist = `${tracklist.split(merged[0])[0].trim()}
-${merged.join("\n")}`.trim();
-        }
-        let smallDescr = "";
-        if (torrentId) {
-          smallDescr = $$1(`#torrent${torrentId}`).find("a").eq(3).text().trim() || "";
-        }
-        let editionInfo = "";
-        let musicMedia = "";
-        if (torrentId) {
-          let row = $$1(`#torrent${torrentId}`);
-          let count = 0;
-          while (count <= 25 && row.length) {
-            const txt = row.text().trim();
-            if (/^[−–]\s/.test(txt)) {
-              editionInfo = txt.replace(/^[−–]\s*/, "").trim();
-              break;
-            }
-            const cls = (row.attr("class") || "").toLowerCase();
-            if (!musicMedia && cls.includes("release") && !cls.includes("torrentdetails")) {
-              musicMedia = txt;
-            }
-            const prev = row.prev();
-            if (!prev.length)
-              break;
-            row = prev;
-            count += 1;
-          }
-        }
-        const musicType = Array.from($$1("div.box_tags").find('a[href*="taglist"]')).map((e2) => $$1(e2).text().trim()).filter(Boolean);
-        const rowQuote = torrentId ? ($$1(`#torrent_${torrentId}`).find("blockquote").last().text() || "").trim() : "";
-        let description = "";
-        if (cover)
-          description += `[img]${cover}[/img]
-
-`;
-        if (rowQuote)
-          description += `${rowQuote}
-
-`;
-        if (tracklist)
-          description += `[quote]${tracklist}[/quote]`;
-        description = description.trim();
-        const torrentHref = torrentId && $$1(`a[href*="download&id=${torrentId}"]`).first().attr("href") || "";
-        const imdbUrl = matchLink("imdb", document.body.innerHTML) || $$1('a[href*="imdb.com/title/tt"]').first().attr("href") || "";
-        return {
-          title: title || "RED",
-          smallDescr: smallDescr || void 0,
-          subtitle: smallDescr || void 0,
-          description,
-          tracklist,
-          editionInfo: editionInfo || void 0,
-          musicMedia: musicMedia || void 0,
-          type: "音乐",
-          sourceSite: this.config.name,
-          sourceUrl: this.currentUrl,
-          imdbUrl: imdbUrl || void 0,
-          imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
-          torrentUrl: torrentHref ? abs(torrentHref) : void 0,
-          images: cover ? [cover] : [],
-          originalDom: JSON.stringify({
-            musicName,
-            musicAuthor,
-            musicType
-          })
-        };
+        return parseMusicGazelle(this.config, this.currentUrl);
       }
       async fill(meta) {
         this.log("Filling RED form...");
@@ -16709,102 +27103,8 @@ ${merged.join("\n")}`.trim();
         super(config, url);
       }
       async parse() {
-        var _a, _b, _c, _d;
         this.log("Parsing OPS page...");
-        const abs = (href) => {
-          try {
-            return new URL(href, this.currentUrl).href;
-          } catch {
-            return href;
-          }
-        };
-        const torrentId = ((_a = this.currentUrl.match(/torrentid=(\d+)/)) == null ? void 0 : _a[1]) || "";
-        let title = ((_c = (_b = document.querySelector("h2")) == null ? void 0 : _b.textContent) == null ? void 0 : _c.replace(/\s+/g, " ").trim()) || "";
-        title = title.replace(/–/g, "-").replace(/\[|\]/g, "*");
-        const musicName = ((_d = $$1("h2").text().replace(/–/g, "-").split($$1('h2>a[href*="artist"]:last').text())[1]) == null ? void 0 : _d.replace(/^.?-.?|\[.*?\]/g, "").trim()) || "";
-        const musicAuthor = Array.from($$1('h2>a[href*="artist"]')).map((e2) => $$1(e2).text()).join(" & ");
-        let cover = "";
-        try {
-          const img = $$1("#cover_div_0").find("img").first();
-          cover = (img.attr("src") || "").trim();
-        } catch {
-        }
-        if (cover)
-          cover = abs(cover);
-        const infoBody = document.querySelector(".torrent_description .body") || document.querySelector(".box_torrent_description .pad");
-        let tracklist = ((infoBody == null ? void 0 : infoBody.textContent) || "").trim();
-        if (infoBody && $$1(infoBody).find("ol.postlist").length) {
-          const merged = [];
-          $$1(infoBody).find("ol.postlist li").each((idx, e2) => {
-            merged.push(`${idx + 1} ${$$1(e2).text()}`);
-          });
-          if (merged.length)
-            tracklist = `${tracklist.split(merged[0])[0].trim()}
-${merged.join("\n")}`.trim();
-        }
-        let smallDescr = "";
-        if (torrentId) {
-          smallDescr = $$1(`#torrent${torrentId}`).find("a").eq(5).text().replace("▶ ", "").trim() || "";
-        }
-        let editionInfo = "";
-        let musicMedia = "";
-        if (torrentId) {
-          let row = $$1(`#torrent${torrentId}`);
-          let count = 0;
-          while (count <= 25 && row.length) {
-            const txt = row.text().trim();
-            if (/^[−–]\s/.test(txt)) {
-              editionInfo = txt.replace(/^[−–]\s*/, "").trim();
-              break;
-            }
-            const cls = (row.attr("class") || "").toLowerCase();
-            if (!musicMedia && cls.includes("release") && !cls.includes("torrentdetails")) {
-              musicMedia = txt;
-            }
-            const prev = row.prev();
-            if (!prev.length)
-              break;
-            row = prev;
-            count += 1;
-          }
-        }
-        const musicType = Array.from($$1("div.box_tags").find('a[href*="taglist"]')).map((e2) => $$1(e2).text().trim()).filter(Boolean);
-        const rowQuote = torrentId ? ($$1(`#torrent_${torrentId}`).find("blockquote").last().text() || "").trim() : "";
-        let description = "";
-        if (cover)
-          description += `[img]${cover}[/img]
-
-`;
-        if (rowQuote)
-          description += `${rowQuote}
-
-`;
-        if (tracklist)
-          description += `[quote]${tracklist}[/quote]`;
-        description = description.trim();
-        const torrentHref = torrentId && $$1(`a[href*="download&id=${torrentId}"]`).first().attr("href") || "";
-        const imdbUrl = matchLink("imdb", document.body.innerHTML) || $$1('a[href*="imdb.com/title/tt"]').first().attr("href") || "";
-        return {
-          title: title || "OPS",
-          smallDescr: smallDescr || void 0,
-          subtitle: smallDescr || void 0,
-          description,
-          tracklist,
-          editionInfo: editionInfo || void 0,
-          musicMedia: musicMedia || void 0,
-          type: "音乐",
-          sourceSite: this.config.name,
-          sourceUrl: this.currentUrl,
-          imdbUrl: imdbUrl || void 0,
-          imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
-          torrentUrl: torrentHref ? abs(torrentHref) : void 0,
-          images: cover ? [cover] : [],
-          originalDom: JSON.stringify({
-            musicName,
-            musicAuthor,
-            musicType
-          })
-        };
+        return parseMusicGazelle(this.config, this.currentUrl);
       }
       async fill(meta) {
         this.log("Filling OPS form...");
@@ -16821,89 +27121,8 @@ ${merged.join("\n")}`.trim();
         super(config, url);
       }
       async parse() {
-        var _a, _b, _c, _d;
         this.log("Parsing DIC page...");
-        const abs = (href) => {
-          try {
-            return new URL(href, this.currentUrl).href;
-          } catch {
-            return href;
-          }
-        };
-        const torrentId = ((_a = this.currentUrl.match(/torrentid=(\d+)/)) == null ? void 0 : _a[1]) || "";
-        let title = ((_c = (_b = document.querySelector("h2")) == null ? void 0 : _b.textContent) == null ? void 0 : _c.replace(/\s+/g, " ").trim()) || "";
-        title = title.replace(/\[|\]/g, "*");
-        const musicName = $$1('h2>span[dir="ltr"]').first().text().trim();
-        const musicAuthor = musicName ? title.split(musicName)[0].replace(/-.?$/, "").trim() : "";
-        let cover = "";
-        try {
-          const img = $$1("#cover_div_0").find("img").first();
-          const onclick = (img.attr("onclick") || "").trim();
-          cover = ((_d = onclick.match(/http.*?(jpg|png|jpeg|webp)/i)) == null ? void 0 : _d[0]) || (img.attr("src") || "").trim();
-        } catch {
-        }
-        if (cover)
-          cover = abs(cover);
-        const infoBody = document.querySelector(".torrent_description .body") || document.querySelector(".torrent_description div:nth-child(2)") || document.querySelector(".box_torrent_description .pad");
-        let tracklist = ((infoBody == null ? void 0 : infoBody.textContent) || "").trim();
-        if (infoBody && $$1(infoBody).find("ol.postlist").length) {
-          const merged = [];
-          $$1(infoBody).find("ol.postlist li").each((idx, e2) => {
-            merged.push(`${idx + 1} ${$$1(e2).text()}`);
-          });
-          if (merged.length)
-            tracklist = `${tracklist.split(merged[0])[0].trim()}
-${merged.join("\n")}`.trim();
-        }
-        let smallDescr = "";
-        if (torrentId) {
-          smallDescr = $$1(`#torrent${torrentId}`).find("a").eq(5).text().trim() || "";
-        }
-        let editionInfo = "";
-        if (torrentId) {
-          const prevTxt = $$1(`#torrent${torrentId}`).prev().text().replace("− ", "").trim();
-          if (prevTxt)
-            editionInfo = prevTxt;
-        }
-        const rowQuote = torrentId ? ($$1(`#torrent_${torrentId}`).find("blockquote").last().text() || "").trim() : "";
-        let description = "";
-        if (cover)
-          description += `[img]${cover}[/img]
-
-`;
-        if (rowQuote && !/发布于/.test(rowQuote))
-          description += `${rowQuote}
-
-`;
-        if (tracklist)
-          description += `[quote]${tracklist}[/quote]`;
-        description = description.trim();
-        const musicType = Array.from($$1("div.box_tags").find('a[href*="taglist"]')).map((e2) => $$1(e2).text().trim()).filter(Boolean);
-        if (/原声/.test(title) && !musicType.some((t2) => /ost/i.test(t2)))
-          musicType.push("OST");
-        const torrentHref = torrentId && $$1(`a[href*="download&id=${torrentId}"]`).first().attr("href") || "";
-        const imdbUrl = matchLink("imdb", document.body.innerHTML) || $$1('a[href*="imdb.com/title/tt"]').first().attr("href") || "";
-        return {
-          title: title || "DIC",
-          smallDescr: smallDescr || void 0,
-          subtitle: smallDescr || void 0,
-          description,
-          tracklist,
-          editionInfo: editionInfo || void 0,
-          musicMedia: editionInfo || void 0,
-          type: "音乐",
-          sourceSite: this.config.name,
-          sourceUrl: this.currentUrl,
-          imdbUrl: imdbUrl || void 0,
-          imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
-          torrentUrl: torrentHref ? abs(torrentHref) : void 0,
-          images: cover ? [cover] : [],
-          originalDom: JSON.stringify({
-            musicName,
-            musicAuthor,
-            musicType
-          })
-        };
+        return parseMusicGazelle(this.config, this.currentUrl);
       }
       async fill(meta) {
         this.log("Filling DIC form...");
@@ -16915,33 +27134,127 @@ ${merged.join("\n")}`.trim();
         await fillMusicGazelleUpload(meta, "DIC");
       }
     }
+    function mapMusicTagsToOpenCdGenre(tagsBlob) {
+      const t2 = (tagsBlob || "").toLowerCase();
+      if (/soundtrack|\bost\b|原声|score/.test(t2))
+        return "4";
+      if (/classical|symphony|concerto|opera|baroque|chamber|古典/.test(t2))
+        return "3";
+      if (/jazz|swing|bebop|bossa|爵士/.test(t2))
+        return "8";
+      if (/electronic|techno|house|ambient|trance|edm|synth|电子/.test(t2))
+        return "14";
+      if (/hip[\s.-]*hop|rap|嘻哈/.test(t2))
+        return "17";
+      if (/rock|metal|punk|grunge|摇滚/.test(t2))
+        return "5";
+      if (/indie|独立/.test(t2))
+        return "16";
+      if (/alternative|另类/.test(t2))
+        return "20";
+      if (/folk|acoustic|民谣/.test(t2))
+        return "15";
+      if (/country|bluegrass|乡村/.test(t2))
+        return "19";
+      if (/dance|disco|舞曲/.test(t2))
+        return "13";
+      if (/new[\s.-]*age|新世纪/.test(t2))
+        return "12";
+      if (/instrumental|piano|violin|guitar|器乐/.test(t2))
+        return "11";
+      if (/musical|音乐剧/.test(t2))
+        return "18";
+      if (/world|ethnic|世界音乐/.test(t2))
+        return "21";
+      if (/pop|cantopop|mandopop|jpop|kpop|流行/.test(t2))
+        return "2";
+      return "9";
+    }
+    function mapMusicFormatToOpenCdStandard(blob) {
+      const t2 = (blob || "").toLowerCase();
+      if (/\bflac\b/.test(t2))
+        return "4";
+      if (/\bwav\b/.test(t2))
+        return "2";
+      if (/\bdts\b/.test(t2))
+        return "15";
+      if (/\bdsf\b/.test(t2))
+        return "18";
+      if (/\bdff\b/.test(t2))
+        return "17";
+      if (/\bdst\b/.test(t2))
+        return "19";
+      if (/镜像|mirror|iso/.test(t2))
+        return "1";
+      return "";
+    }
+    function mapMusicMediaToOpenCdMedium(blob) {
+      const t2 = (blob || "").toLowerCase();
+      if (/shm-?cd/.test(t2))
+        return "18";
+      if (/xrcd/.test(t2))
+        return "17";
+      if (/hqcd/.test(t2))
+        return "16";
+      if (/lpcd/.test(t2))
+        return "4";
+      if (/hdcd/.test(t2))
+        return "5";
+      if (/sacd/.test(t2))
+        return "6";
+      if (/srcd/.test(t2))
+        return "7";
+      if (/k2cd|k2hd/.test(t2))
+        return "8";
+      if (/24kcd/.test(t2))
+        return "2";
+      if (/blu-?spec/.test(t2))
+        return "19";
+      if (/blu-?ray|\bbd\b/.test(t2))
+        return "11";
+      if (/\bdsd\b/.test(t2))
+        return "3";
+      if (/\bvinyl\b|黑胶/.test(t2))
+        return "20";
+      if (/\bdvd\b/.test(t2))
+        return "14";
+      if (/\bdat\b/.test(t2))
+        return "10";
+      if (/hi-?res/.test(t2) || /\bweb\b/.test(t2) && /24\s*bit/.test(t2))
+        return "22";
+      if (/\bweb\b/.test(t2))
+        return "21";
+      if (/\bcd\b/.test(t2))
+        return "1";
+      return "";
+    }
     class OpenCDEngine extends NexusPHPEngine {
       constructor(config, url) {
         super(config, url);
       }
-      // New and old detail layouts both live on details.php?id=
+      // Live OpenCD detail pages use `plugin_details.php?id=` (legacy used `details.php?id=`).
       isSourcePage(url) {
-        return isPage(url, "details.php") && hasIdQuery(url);
+        return isPage(url, "plugin_details.php", "details.php") && hasIdQuery(url);
       }
       async parse() {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i;
         this.log("Parsing OpenCD page...");
-        if (this.currentUrl.includes("open.cd") && document.getElementsByClassName("title").length && document.getElementsByClassName("smalltitle").length && document.getElementById("divdescr")) {
+        if (this.currentUrl.includes("open.cd") && document.getElementsByClassName("title").length && document.getElementById("divdescr")) {
           const title = ((_a = document.getElementsByClassName("title")[0].textContent) == null ? void 0 : _a.trim()) || "";
-          const small = ((_b = document.getElementsByClassName("smalltitle")[0].textContent) == null ? void 0 : _b.trim()) || "";
+          const small = ((_c = (_b = document.getElementsByClassName("smalltitle")[0]) == null ? void 0 : _b.textContent) == null ? void 0 : _c.trim()) || "";
           let cover = "";
           try {
             const coverBox = document.getElementsByClassName("cover")[0];
             const img = coverBox.getElementsByTagName("img")[0];
             const onclick = img.getAttribute("onclick") || "";
-            cover = ((_c = onclick.match(/'(.*)'/)) == null ? void 0 : _c[1]) || img.getAttribute("src") || "";
+            cover = ((_d = onclick.match(/'(.*)'/)) == null ? void 0 : _d[1]) || img.getAttribute("src") || "";
             if (cover && !/^https?:\/\//i.test(cover))
               cover = `https://open.cd/${cover.replace(/^\/+/, "")}`;
           } catch {
           }
-          const descrText = (((_d = document.getElementById("divdescr")) == null ? void 0 : _d.textContent) || "").trim();
-          const tracklist = (((_e = document.getElementById("divtracklist")) == null ? void 0 : _e.textContent) || "").trim();
-          const nfo = (((_f = document.getElementById("divnfo")) == null ? void 0 : _f.textContent) || "").trim();
+          const descrText = (((_e = document.getElementById("divdescr")) == null ? void 0 : _e.textContent) || "").trim();
+          const tracklist = (((_f = document.getElementById("divtracklist")) == null ? void 0 : _f.textContent) || "").trim();
+          const nfo = (((_g = document.getElementById("divnfo")) == null ? void 0 : _g.textContent) || "").trim();
           let description = `${cover ? `[img]${cover}[/img]
 
 ` : ""}${descrText}`.trim();
@@ -16955,7 +27268,7 @@ ${merged.join("\n")}`.trim();
 [quote]${nfo}[/quote]`;
           const torrentTitle = $$1('a[href*="download.php"]').first().attr("title") || "";
           const dlText = $$1('td:contains("下载链接"):last').next().find("a").first().text().trim();
-          const dlHref = $$1('td:contains("下载链接"):last').next().find("a").first().attr("href") || "";
+          const dlHref = $$1('td:contains("下载链接"):last').next().find("a").first().attr("href") || $$1('a[href*="download.php?id="]').first().attr("href") || "";
           let torrentUrl = dlText || dlHref || "";
           if (torrentUrl && !/^https?:\/\//i.test(torrentUrl)) {
             try {
@@ -16963,6 +27276,27 @@ ${merged.join("\n")}`.trim();
             } catch {
             }
           }
+          const readRow = (label) => $$1(`td:contains("${label}"):last`).next().text().replace(/\s+/g, " ").trim();
+          const musicAuthor = readRow("艺术家名") || (title.includes("-") ? title.split("-")[0].trim() : "");
+          const musicName = readRow("专辑名称") || (title.includes("-") ? title.split("-").slice(1).join("-").trim() : title);
+          const tags = Array.from($$1('td:contains("标签列表"):last').next().find("a")).map((e2) => $$1(e2).text().trim()).filter(Boolean);
+          const year = ((_h = title.match(/(?:19|20)\d{2}/)) == null ? void 0 : _h[0]) || ((_i = small.match(/(?:19|20)\d{2}/)) == null ? void 0 : _i[0]) || "";
+          const parsedFmt = parseFormatLine(`${title} ${small} ${descrText}`);
+          const payload = {
+            musicName,
+            musicAuthor,
+            artists: musicAuthor ? musicAuthor.split(/\s*(?:&|,|\/)\s*/).filter(Boolean) : [],
+            year,
+            musicType: tags,
+            format: parsedFmt.format || "FLAC",
+            bitrate: parsedFmt.bitrate || (/24\s*bit/i.test(`${title} ${small}`) ? "24bit Lossless" : "Lossless"),
+            media: parsedFmt.media || "CD",
+            albumDesc: [descrText, tracklist ? `[quote]
+${tracklist}
+[/quote]` : ""].filter(Boolean).join("\n\n"),
+            releaseDesc: nfo
+          };
+          const ripLogs = parseOpenCdNfoLogs(nfo, title || `${musicAuthor} - ${musicName}`);
           return {
             title: title || "OpenCD",
             subtitle: small || void 0,
@@ -16972,18 +27306,21 @@ ${merged.join("\n")}`.trim();
             sourceSite: this.config.name,
             sourceUrl: this.currentUrl,
             tracklist: tracklist || void 0,
+            musicMedia: payload.media,
             torrentName: torrentTitle ? `${torrentTitle}.torrent` : void 0,
             torrentFilename: torrentTitle ? `${torrentTitle}.torrent` : void 0,
             torrentUrl: torrentUrl || void 0,
-            images: cover ? [cover] : []
+            images: cover ? [cover] : [],
+            ripLogs: ripLogs.length ? ripLogs : void 0,
+            originalDom: JSON.stringify(payload)
           };
         }
         return super.parse();
       }
       async fill(meta) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         this.log("Filling OpenCD form...");
-        const isPluginUpload = !!document.querySelector("#release_desc") || !!document.querySelector("#resource_name") || /open\.cd\/plugin_upload\.php/i.test(this.currentUrl);
+        const isPluginUpload = !!document.querySelector("#resource_name") || !!document.querySelector("#audio_mode") || /open\.cd\/plugin_upload\.php/i.test(this.currentUrl);
         if (!isPluginUpload) {
           await super.fill(meta);
           return;
@@ -16991,34 +27328,35 @@ ${merged.join("\n")}`.trim();
         const retry2 = (fn, times = 12, delayMs = 220) => repeat(fn, times, delayMs);
         const norm1 = (s2) => (s2 || "").replace(/\*/g, "").replace(/–/g, "-").replace(/\s+/g, " ").trim();
         const normBlock = (s2) => (s2 || "").replace(/\*/g, "").replace(/–/g, "-").replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
-        let musicName = "";
-        let musicAuthor = "";
+        let dom = {};
         try {
-          const dom = JSON.parse(meta.originalDom || "{}");
-          musicName = norm1(String(dom.musicName || ""));
-          musicAuthor = norm1(String(dom.musicAuthor || ""));
+          dom = JSON.parse(meta.originalDom || "{}");
         } catch {
         }
+        const musicName = norm1(String(dom.musicName || ""));
+        const musicAuthor = norm1(String(dom.musicAuthor || (Array.isArray(dom.artists) ? dom.artists.join(" & ") : "")));
         const rawTitle = norm1(meta.title || "");
         const subtitle = norm1(meta.subtitle || meta.smallDescr || "");
-        const year = ((_a = subtitle.match(/(19|20)\d{2}/)) == null ? void 0 : _a[0]) || ((_b = rawTitle.match(/(19|20)\d{2}/)) == null ? void 0 : _b[0]) || "";
-        const base = norm1(year ? rawTitle.replace(year, "") : rawTitle).replace(/\s*-\s*$/, "").trim();
+        const year = String(dom.year || "") || ((_a = rawTitle.match(/\[((?:19|20)\d{2})/)) == null ? void 0 : _a[1]) || ((_b = subtitle.match(/(?:19|20)\d{2}/)) == null ? void 0 : _b[0]) || ((_c = rawTitle.match(/(?:19|20)\d{2}/)) == null ? void 0 : _c[0]) || "";
+        const strippedTitle = rawTitle.replace(/\s*\[[^\]]+\]\s*/g, " ").replace(/\s+/g, " ").trim();
         let artist = musicAuthor;
-        let album = musicName || base;
-        if (base.includes("-")) {
-          const parts = base.split("-").map((p2) => p2.trim()).filter(Boolean);
+        let album = musicName;
+        if (!album || !artist) {
+          const parts = strippedTitle.split(" - ").map((p2) => p2.trim()).filter(Boolean);
           if (parts.length >= 2) {
-            if (!musicName)
-              album = parts.pop() || album;
-            if (!musicAuthor)
-              artist = parts.join(" - ").trim();
+            if (!artist)
+              artist = parts[0];
+            if (!album)
+              album = parts.slice(1).join(" - ");
+          } else if (!album) {
+            album = strippedTitle || rawTitle;
           }
         }
-        if (!album)
-          album = rawTitle;
         const displayName = norm1(artist && album ? `${artist} - ${album}` : album || rawTitle);
-        const cover = Array.isArray(meta.images) && meta.images[0] || ((_c = (meta.description || "").match(/\[img\](.*?)\[\/img\]/i)) == null ? void 0 : _c[1]) || "";
-        let releaseDesc = normBlock((meta.description || "").replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, "").trim());
+        const cover = Array.isArray(meta.images) && meta.images[0] || ((_d = (meta.description || "").match(/\[img\](.*?)\[\/img\]/i)) == null ? void 0 : _d[1]) || "";
+        let releaseDesc = normBlock(
+          String(dom.albumDesc || "") || (meta.description || "").replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, "").trim()
+        );
         releaseDesc = releaseDesc.replace(/\[b\]\[color=green\]\[size=3\]本站提供的所有影视[\s\S]*$/i, "").replace(/ \n \n/g, " \n").trim();
         let tracklist = normBlock(meta.tracklist || "");
         if (!tracklist) {
@@ -17026,29 +27364,34 @@ ${merged.join("\n")}`.trim();
           if (m2 == null ? void 0 : m2[0])
             tracklist = normBlock(m2[0].replace(/^◎曲目/, "").trim());
         }
-        if (tracklist) {
+        if (tracklist && releaseDesc.includes(tracklist)) {
           releaseDesc = releaseDesc.replace(tracklist, "").trim();
         }
-        let tags = subtitle.includes("|") ? subtitle.split("|").pop().trim() : subtitle;
-        try {
-          const dom = JSON.parse(meta.originalDom || "{}");
-          const mt = Array.isArray(dom.musicType) ? dom.musicType : typeof dom.musicType === "string" ? dom.musicType.split(",") : [];
-          const t2 = mt.map((x2) => norm1(String(x2 || ""))).filter(Boolean).join(", ");
-          if (t2)
-            tags = t2;
-        } catch {
-        }
+        const tagsArr = Array.isArray(dom.musicType) ? dom.musicType : typeof dom.musicType === "string" ? dom.musicType.split(",") : [];
+        const tagsStr = tagsArr.map((x2) => norm1(String(x2 || ""))).filter(Boolean).join(", ");
+        const genreValue = mapMusicTagsToOpenCdGenre(`${tagsStr} ${dom.releaseType || ""} ${rawTitle}`);
+        const smallDescrValue = (() => {
+          const pieces = [
+            dom.format || "",
+            dom.bitrate || "",
+            dom.media || meta.musicMedia || "",
+            dom.recordLabel || "",
+            dom.catalogueNumber || ""
+          ].filter(Boolean);
+          return pieces.length ? pieces.join(" / ") : subtitle;
+        })();
         const frNameDict = {
           RED: "Redacted",
           OPS: "Orpheus",
           DIC: "DICMusic",
           DICMusic: "DICMusic",
           SugoiMusic: "SugoiMusic",
-          jpop: "Jpopsuki"
+          jpop: "Jpopsuki",
+          lztr: "LzTr"
         };
         const frName = frNameDict[meta.sourceSite || ""] || "";
         const setValue2 = (el, v2, opts) => {
-          if (!el)
+          if (!el || !v2)
             return;
           const cur = (el.value ?? "").toString().trim();
           if (!(opts == null ? void 0 : opts.force) && cur && cur !== "---")
@@ -17061,10 +27404,13 @@ ${merged.join("\n")}`.trim();
           }
         };
         const setSelect = (el, v2) => {
-          if (!el)
+          if (!el || !v2)
             return;
           const cur = (el.value || "").toString().trim();
-          if (cur && cur !== "---")
+          if (cur && cur !== "0" && cur !== "---")
+            return;
+          const exists = Array.from(el.options).some((o2) => o2.value === v2);
+          if (!exists)
             return;
           el.value = v2;
           try {
@@ -17073,59 +27419,36 @@ ${merged.join("\n")}`.trim();
           } catch {
           }
         };
+        const formatBlob = `${dom.format || ""} ${dom.bitrate || ""} ${subtitle} ${meta.editionInfo || ""} ${rawTitle}`;
+        const mediaBlob = `${dom.media || ""} ${meta.musicMedia || ""} ${dom.bitrate || ""} ${meta.editionInfo || ""} ${subtitle} ${rawTitle}`;
+        const standardVal = mapMusicFormatToOpenCdStandard(formatBlob);
+        const mediumVal = mapMusicMediaToOpenCdMedium(mediaBlob);
         retry2(() => {
-          var _a2;
-          setValue2(document.querySelector("#artist") || document.querySelector('input[name="artist"]'), artist);
-          setValue2(document.querySelector("#resource_name") || document.querySelector('input[name="resource_name"]'), album);
-          setValue2(document.querySelector("#title") || document.querySelector('input[name="title"]'), displayName, { force: true });
-          setValue2(document.querySelector("#name") || document.querySelector('input[name="name"]'), displayName, { force: true });
-          setValue2(document.querySelector("#year") || document.querySelector('input[name="year"]'), year);
-          setSelect(document.querySelector("#browsecat") || document.querySelector('select[name="browsecat"]'), "408");
-          setSelect(document.querySelector("#share_rule") || document.querySelector('select[name="share_rule"]'), "3");
-          setValue2(document.querySelector("#tags") || document.querySelector('input[name="tags"]'), tags);
-          setValue2(document.querySelector("#image") || document.querySelector('input[name="image"]'), cover);
-          setValue2(document.querySelector("#release_desc") || document.querySelector('textarea[name="release_desc"]'), releaseDesc);
-          setValue2(document.querySelector("#descr") || document.querySelector('textarea[name="descr"]'), releaseDesc);
+          setSelect(document.querySelector('#browsecat, select[name="type"]'), "408");
+          setValue2(document.querySelector('#artist, input[name="artist"]'), artist);
+          setValue2(document.querySelector('#resource_name, input[name="resource_name"]'), album);
+          setValue2(document.querySelector('#name, input[name="name"]'), displayName, { force: true });
+          setValue2(document.querySelector('#year, input[name="year"]'), year);
+          setValue2(document.querySelector('#cover, input[name="cover"], #image, input[name="image"]'), cover);
+          setValue2(document.querySelector('#small_descr, input[name="small_descr"]'), smallDescrValue);
+          setSelect(document.querySelector('#source, select[name="source"]'), genreValue);
+          setSelect(document.querySelector('#standard, select[name="standard"]'), standardVal);
+          setSelect(document.querySelector('#medium, select[name="medium"]'), mediumVal);
+          setSelect(document.querySelector('#share_rule, select[name="share_rule"]'), "3");
+          setSelect(document.querySelector('#team, select[name="team"]'), "5");
+          setValue2(document.querySelector('#descr, textarea[name="descr"]'), releaseDesc);
           if (tracklist) {
             setValue2(document.querySelector('textarea[name="track_list"]'), tracklist);
           }
           if (frName) {
-            setValue2(document.querySelector("#frname") || document.querySelector('input[name="frname"]'), frName);
+            setValue2(document.querySelector('#frname, input[name="frname"]'), frName);
           }
-          setSelect(document.querySelector("#team") || document.querySelector('select[name="team"]'), "5");
-          const blob = `${rawTitle} ${subtitle} ${meta.editionInfo || ""} ${tracklist}`.toUpperCase();
-          const pickByText = (sel) => {
-            const el = document.querySelector(sel);
-            if (!el)
-              return;
-            const cur = (el.value || "").toString().trim();
-            if (cur && cur !== "---")
-              return;
-            const opts = Array.from(el.options);
-            for (const o2 of opts) {
-              const t2 = (o2.textContent || "").toUpperCase();
-              if (!t2 || t2 === "---")
-                continue;
-              if (blob.includes(t2)) {
-                el.value = o2.value;
-                el.dispatchEvent(new Event("change", { bubbles: true }));
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                break;
-              }
-            }
-          };
-          pickByText("#standard");
-          pickByText("#medium");
-          pickByText("#releasetype");
-          pickByText("#format");
-          pickByText("#bitrate");
-          pickByText("#media");
           const audioMode = document.querySelector("#audio_mode");
           if (audioMode && (!audioMode.value || audioMode.value === "---")) {
             const b = `${meta.editionInfo || ""} ${meta.smallDescr || ""} ${meta.subtitle || ""} ${tracklist}`;
-            if (/整轨/.test(b))
+            if (/整轨|image\s*\+\s*cue/i.test(b))
               audioMode.value = "single";
-            else if (/分轨/.test(b) || ((_a2 = document.querySelector("#standard")) == null ? void 0 : _a2.value) === "4")
+            else if (/分轨/i.test(b) || standardVal === "4")
               audioMode.value = "multi";
             else
               audioMode.value = "none";
@@ -17134,10 +27457,17 @@ ${merged.join("\n")}`.trim();
           }
         });
         try {
+          if ((_e = meta.ripLogs) == null ? void 0 : _e.length) {
+            injectOpenCdRipLogs(meta.ripLogs);
+          }
+        } catch (e2) {
+          console.error("[Auto-Feed] OpenCD rip log injection failed:", e2);
+        }
+        try {
           if (meta.torrentBase64 || meta.torrentUrl) {
             const result = await TorrentService.buildForwardTorrentFile(meta, this.config.name, null);
             if (result) {
-              const fileInput = document.querySelector('input[type="file"][name="file"]') || document.querySelector('input[type="file"]#file') || document.querySelector('input[type="file"][name*="torrent"]') || document.querySelector('input[type="file"]');
+              const fileInput = document.querySelector('input[type="file"][name="file"]') || document.querySelector('input[type="file"]#torrent') || document.querySelector('input[type="file"]');
               if (fileInput) {
                 TorrentService.injectFileIntoInput(fileInput, result.file);
               }
@@ -17161,6 +27491,10 @@ ${merged.join("\n")}`.trim();
           const width = Number(ratio[1]);
           const height = Number(ratio[2]);
           return width > 0 && height > 0 ? width + ":" + height : "";
+        }
+        for (const [re, canonical] of this.NAMED_ASPECT_RATIOS) {
+          if (re.test(raw))
+            return canonical;
         }
         if (!/^\d+(?:\.\d+)?$/.test(raw))
           return "";
@@ -17255,10 +27589,48 @@ ${merged.join("\n")}`.trim();
         }
         return "";
       }
+      static async fetchAspectRatioFromWikidata(imdbIdOrUrl) {
+        var _a;
+        const id = extractImdbId(imdbIdOrUrl);
+        if (!id)
+          return "";
+        const sparql = `SELECT ?arLabel WHERE { ?item wdt:P345 "${id}" . ?item wdt:P2061 ?ar . SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 5`;
+        const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(sparql)}`;
+        try {
+          const resp = await GMAdapter.xmlHttpRequest({
+            method: "GET",
+            url,
+            headers: {
+              accept: "application/sparql-results+json"
+            },
+            timeout: 8e3
+          });
+          if ((resp == null ? void 0 : resp.status) !== 200 || !resp.responseText)
+            return "";
+          const json = JSON.parse(resp.responseText);
+          const bindings = Array.isArray((_a = json == null ? void 0 : json.results) == null ? void 0 : _a.bindings) ? json.results.bindings : [];
+          const labels = bindings.map((b) => {
+            var _a2;
+            return String(((_a2 = b == null ? void 0 : b.arLabel) == null ? void 0 : _a2.value) || "").trim();
+          }).filter(Boolean);
+          const explicit = labels.find((l2) => /\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?/.test(l2));
+          const picked = explicit || labels[0] || "";
+          const normalized = this.normalizeAspectRatio(picked);
+          if (normalized) {
+            await this.saveCachedAspectRatio(id, normalized, "https://www.wikidata.org/");
+          }
+          return normalized;
+        } catch {
+          return "";
+        }
+      }
       static async fetchAspectRatio(imdbIdOrUrl) {
         const id = extractImdbId(imdbIdOrUrl);
         if (!id)
           return "";
+        const cached = await this.getCachedAspectRatio(id);
+        if (cached)
+          return cached;
         const urls = [
           `https://www.imdb.com/title/${id}/technical/?ref_=tt_spec_sm`,
           `https://www.imdb.com/title/${id}/`
@@ -17268,12 +27640,15 @@ ${merged.join("\n")}`.trim();
             const resp = await GMAdapter.xmlHttpRequest({
               method: "GET",
               url,
+              withCredentials: true,
               headers: {
                 accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "accept-language": "en-US,en;q=0.9"
               },
-              timeout: 1e4
+              timeout: 8e3
             });
+            if ((resp == null ? void 0 : resp.status) === 202 || (resp == null ? void 0 : resp.status) === 403)
+              break;
             if ((resp == null ? void 0 : resp.status) !== 200)
               continue;
             const html = resp.responseText || "";
@@ -17288,6 +27663,9 @@ ${merged.join("\n")}`.trim();
           } catch {
           }
         }
+        const fromWikidata = await this.fetchAspectRatioFromWikidata(id);
+        if (fromWikidata)
+          return fromWikidata;
         return "";
       }
       static async saveCachedAspectRatio(imdbId, aspectRatio, sourceUrl) {
@@ -17396,6 +27774,15 @@ ${merged.join("\n")}`.trim();
     __publicField(ImdbAspectRatioService, "CACHE_PREFIX", "autofeed_imdb_aspect_");
     __publicField(ImdbAspectRatioService, "HELPER_PARAM", "autofeed_cache_imdb");
     __publicField(ImdbAspectRatioService, "CACHE_TTL_MS", 30 * 24 * 60 * 60 * 1e3);
+    __publicField(ImdbAspectRatioService, "NAMED_ASPECT_RATIOS", [
+      [/\bacademy\b/i, "1.37:1"],
+      [/\b(?:silent\s*film|movietone|full\s*frame)\b/i, "1.33:1"],
+      [/\beuropean\s*widescreen\b/i, "1.66:1"],
+      [/\bflat\s*widescreen\b/i, "1.85:1"],
+      [/\b(?:cinemascope|panavision|anamorphic\s*widescreen)\b/i, "2.35:1"],
+      [/\bultra\s*panavision\b/i, "2.76:1"],
+      [/\bimax\b/i, "1.43:1"]
+    ]);
     const TIK_BASE_CONTENT = `
 [b][color=blue]SYNOPSIS:[/color][/b]
 {en_descr}
@@ -17525,6 +27912,12 @@ Audio......: [x] Untouched
     function stripTikImages(description) {
       return description.replace(/\[url(?:=[^\]]+)?\]\s*\[img(?:=[^\]]+)?\][\s\S]*?\[\/img\]\s*\[\/url\]/gi, "").replace(/\[img(?:=[^\]]+)?\][\s\S]*?\[\/img\]/gi, "").replace(/<img\b[^>]*>/gi, "");
     }
+    function updateTikFilmAspectRatio(description, ratio) {
+      const normalized = ImdbAspectRatioService.normalizeAspectRatio(ratio);
+      if (!normalized)
+        return description;
+      return description.replace(/^Film Aspect Ratio\.*\s*:[^\r\n]*/m, "Film Aspect Ratio..: " + normalized);
+    }
     function parseLangListFromMedia(text, kind) {
       var _a;
       const t2 = text || "";
@@ -17565,8 +27958,11 @@ Audio......: [x] Untouched
         const resp = await GMAdapter.xmlHttpRequest({
           method: "GET",
           url,
-          timeout: 1e4
+          withCredentials: true,
+          timeout: 8e3
         });
+        if ((resp == null ? void 0 : resp.status) !== 200)
+          return {};
         const html = (resp == null ? void 0 : resp.responseText) || "";
         if (!html)
           return {};
@@ -17773,6 +28169,9 @@ Audio......: [x] Untouched
       return {};
     }
     class TikEngine extends Unit3DClassicEngine {
+      applyClassicSiteTypeSelection() {
+        return true;
+      }
       async parse() {
         var _a, _b, _c, _d;
         const meta = await super.parse();
@@ -17810,30 +28209,45 @@ ${meta.description || ""}`.trim();
         try {
           const title = meta.title || "";
           const descr = rawDescrForTitle;
-          const autotype = document.querySelector("#autotype");
-          if (autotype) {
-            let v2 = "";
-            if (/dvd5/i.test(title)) {
-              v2 = /Standard.*?PAL/i.test(descr) ? "10" : "8";
-            } else if (/dvd9/i.test(title)) {
-              v2 = /Standard.*?PAL/i.test(descr) ? "9" : "7";
-            } else if (/mpls/i.test(descr) && (meta.mediumSel === "Blu-ray" || meta.mediumSel === "UHD")) {
-              const size = getSizeFromDescr(descr);
-              if (0 <= size && size < 23.28)
-                v2 = "6";
-              else if (size < 46.57)
-                v2 = "5";
-              else if (size < 61.47)
-                v2 = "4";
-              else
-                v2 = "3";
+          const applyTikAutotypeAndRes = () => {
+            const autotype = document.querySelector("#autotype");
+            if (autotype) {
+              let v2 = "";
+              const isDiscLike = meta.mediumSel === "Blu-ray" || meta.mediumSel === "UHD" || /mpls|DISC INFO|BDMV|COMPLETE[\s.]+(?:UHD[\s.]+)?BLURAY|\bBD(?:25|50|66|100)\b/i.test(`${title}
+${descr}`);
+              if (/dvd5/i.test(title)) {
+                v2 = /Standard.*?PAL/i.test(descr) ? "10" : "8";
+              } else if (/dvd9/i.test(title)) {
+                v2 = /Standard.*?PAL/i.test(descr) ? "9" : "7";
+              } else if (isDiscLike) {
+                const size = getSizeFromDescr(descr);
+                if (size > 0 && size < 23.28)
+                  v2 = "6";
+                else if (size >= 23.28 && size < 46.57)
+                  v2 = "5";
+                else if (size >= 46.57 && size < 61.47)
+                  v2 = "4";
+                else if (size >= 61.47)
+                  v2 = "3";
+              }
+              if (v2 && autotype.value !== v2) {
+                autotype.value = v2;
+                autotype.dispatchEvent(new Event("change", { bubbles: true }));
+                autotype.dispatchEvent(new Event("input", { bubbles: true }));
+              }
             }
-            if (v2) {
-              autotype.value = v2;
-              autotype.dispatchEvent(new Event("change", { bubbles: true }));
-              autotype.dispatchEvent(new Event("input", { bubbles: true }));
+            const autores = document.querySelector("#autores");
+            if (autores && (meta.standardSel === "4K" || /\b2160p\b/i.test(`${title}
+${descr}`))) {
+              if (autores.value !== "2") {
+                autores.value = "2";
+                autores.dispatchEvent(new Event("change", { bubbles: true }));
+                autores.dispatchEvent(new Event("input", { bubbles: true }));
+              }
             }
-          }
+          };
+          applyTikAutotypeAndRes();
+          [180, 500, 1200, 2500].forEach((ms) => window.setTimeout(applyTikAutotypeAndRes, ms));
         } catch {
         }
         try {
@@ -17853,15 +28267,21 @@ ${meta.description || ""}`.trim();
           const year = ((_a = (meta.title || "").match(/(19|20)\d{2}/g)) == null ? void 0 : _a.pop()) || "";
           const imdbId = extractImdbId(meta.imdbId || "") || extractImdbId(meta.imdbUrl || "") || "";
           const imdbUrl = meta.imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : "");
-          const imdbBasics = imdbUrl ? await fetchImdbBasics(imdbUrl) : {};
-          const tmdbBasics = imdbId ? await fetchTmdbBasicsByImdb(imdbId) : {};
+          const [imdbBasics, tmdbBasics, cachedImdbAspect, fetchedAspect] = await Promise.all([
+            imdbUrl ? fetchImdbBasics(imdbUrl) : Promise.resolve({}),
+            imdbId ? fetchTmdbBasicsByImdb(imdbId) : Promise.resolve({}),
+            imdbId ? ImdbAspectRatioService.getCachedAspectRatio(imdbId) : Promise.resolve(""),
+            imdbId || imdbUrl ? ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl) : Promise.resolve("")
+          ]);
           const en_descr = stripTikImages(imdbBasics.en_descr || tmdbBasics.en_descr || meta.synopsis || "");
           const country = imdbBasics.country || tmdbBasics.country || parseCountryFallback(rawDescr) || mapCountryName(meta.sourceSel || "") || "";
           const runtime = imdbBasics.runtime || tmdbBasics.runtime || parseRuntimeMinutesFallback(rawDescr) || 0;
           const audio = parseLangListFromMedia(rawDescr, "audio").join(" / ");
           const subtitles = parseLangListFromMedia(rawDescr, "sub").join(" / ");
           const medium = meta.mediumSel || "";
-          const standard = meta.standardSel || "";
+          const effectiveStandard = meta.standardSel === "4K" || /\b2160p\b/i.test(`${meta.title || ""}
+${rawDescr}`) ? "4K" : meta.standardSel || "";
+          const standard = effectiveStandard;
           const codec = meta.codecSel || "";
           const size = getSizeFromDescr(rawDescr);
           let format = "";
@@ -17899,7 +28319,7 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
             codecTag = "MPEG-2";
           else if (codec === "VC-1")
             codecTag = "VC-1";
-          else if (codec === "H265")
+          else if (codec === "H265" || codec === "X265")
             codecTag = "HEVC";
           const sourceTitle = (meta.title || "").trim();
           const torrentName = expectedTikTitle;
@@ -17926,8 +28346,7 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
           };
           applyTikFallbackTitle();
           TITLE_REAPPLY_DELAYS.forEach((ms) => window.setTimeout(applyTikFallbackTitle, ms));
-          const cachedImdbAspect = await ImdbAspectRatioService.getCachedAspectRatio(imdbId);
-          const aspect_ratio = imdbBasics.aspect_ratio || cachedImdbAspect || await ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl);
+          const aspect_ratio = imdbBasics.aspect_ratio || cachedImdbAspect || fetchedAspect || (meta.sourceSite === "Tik" ? normalizeAspectRatioText(meta.aspectRatio || "") : "");
           if (aspect_ratio && aspect_ratio !== cachedImdbAspect) {
             await ImdbAspectRatioService.saveCachedAspectRatio(imdbId, aspect_ratio, imdbUrl);
           }
@@ -17951,34 +28370,31 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
               bbcode.value = tpl;
               fire(bbcode);
             }
-            await this.renderUploadHelp(bbcode, meta, aspect_ratio);
+            await this.renderUploadHelp(bbcode, meta, aspect_ratio, imdbId, imdbUrl);
           }
         } catch (e2) {
           console.warn("[Auto-Feed][Tik] Template fill skipped:", e2);
         }
       }
-      async renderUploadHelp(textarea, meta, ratio) {
+      async renderUploadHelp(textarea, meta, ratio, imdbId = "", imdbUrl = "") {
         var _a;
         (_a = document.getElementById("autofeed-tik-upload-help")) == null ? void 0 : _a.remove();
-        const text = getUiText((await SettingsService.load()).uiLanguage);
         const help = document.createElement("div");
         help.id = "autofeed-tik-upload-help";
         help.style.cssText = "margin:10px 0;padding:12px;border:1px solid #9aa4b2;border-radius:6px;font-size:13px;line-height:1.6;";
         const note = document.createElement("div");
-        note.textContent = text(
-          "Tik 发布请使用 Hostik 图片。此处不会预填图片；点击下方按钮会用本次转种携带的图片打开 Hostik。到 Hostik 页面拉取并完成上传后，将生成的 BBCode 粘贴回下方简介。",
-          "Tik releases should use Hostik images. No image links are prefilled here. The button opens Hostik with images carried over from this torrent; fetch and upload them there, then paste the generated BBCode into the description below."
-        );
+        note.textContent = "Tik releases require Hostik images. Source image links are not prefilled here; click below to open Hostik with the carried-over images, upload them there, and paste the generated BBCode into the description below.";
         const tools = document.createElement("div");
         tools.style.cssText = "display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;";
         const rehost = document.createElement("button");
         rehost.type = "button";
-        rehost.textContent = text("准备 Hostik 图片", "Prepare images for Hostik");
-        rehost.title = text("打开 Hostik 并载入本次转种的图片；仍需在 Hostik 完成上传并复制 BBCode。", "Opens Hostik with this torrent’s images. Complete the upload there and copy the generated BBCode.");
+        rehost.textContent = "Prepare images for Hostik";
+        rehost.title = "Opens Hostik with this torrent’s images. Upload them there and copy the generated BBCode.";
         const status = document.createElement("span");
         status.setAttribute("role", "status");
+        status.style.cssText = "display:inline-block;margin-top:6px;font-size:12px;opacity:0.9;";
         const showRatio = (value) => {
-          status.textContent = value ? text("IMDb 电影画幅比：", "IMDb film aspect ratio: ") + value : text("未读取到 IMDb 电影画幅比，字段保持空白。", "IMDb film aspect ratio was not found; the field was left blank.");
+          status.textContent = value ? `Film aspect ratio: ${value}` : 'Film aspect ratio not found automatically (IMDb blocks background fetch until session is active) — click "Fetch ratio from IMDb".';
         };
         showRatio(ratio);
         rehost.onclick = async () => {
@@ -17986,12 +28402,47 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
           try {
             await ImageHostService.prepareAndOpen(meta, "hostik");
           } catch {
-            status.textContent = text("图片转存准备失败，请通过图片工具重试。", "Could not prepare images. Try the image toolbox.");
+            status.textContent = "Could not prepare images for Hostik. Please try the image toolbox.";
           } finally {
             rehost.disabled = false;
           }
         };
         tools.append(rehost);
+        const resolvedImdbUrl = imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : "");
+        const resolvedImdbId = imdbId || extractImdbId(resolvedImdbUrl);
+        if (resolvedImdbId && resolvedImdbUrl) {
+          const fetchRatioBtn = document.createElement("button");
+          fetchRatioBtn.type = "button";
+          fetchRatioBtn.textContent = ratio ? "Refresh ratio from IMDb" : "Fetch ratio from IMDb";
+          fetchRatioBtn.title = "Opens IMDb Technical Specifications in a temporary tab to read and fill Film Aspect Ratio automatically.";
+          fetchRatioBtn.onclick = async () => {
+            fetchRatioBtn.disabled = true;
+            fetchRatioBtn.textContent = "Reading IMDb...";
+            try {
+              ImdbAspectRatioService.primeFromImdbUrl(resolvedImdbUrl);
+              const fetched = await ImdbAspectRatioService.waitForCachedAspectRatio(resolvedImdbId, 18e3);
+              if (fetched) {
+                const updated = updateTikFilmAspectRatio(textarea.value || "", fetched);
+                if (updated !== textarea.value) {
+                  textarea.value = updated;
+                  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+                  textarea.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+                showRatio(fetched);
+                fetchRatioBtn.textContent = "Refresh ratio from IMDb";
+              } else {
+                status.textContent = "Could not read aspect ratio from IMDb tab (check if the movie lists an Aspect Ratio on IMDb).";
+                fetchRatioBtn.textContent = "Fetch ratio from IMDb";
+              }
+            } catch {
+              status.textContent = "Failed to open IMDb Technical Specifications tab.";
+              fetchRatioBtn.textContent = "Fetch ratio from IMDb";
+            } finally {
+              fetchRatioBtn.disabled = false;
+            }
+          };
+          tools.append(fetchRatioBtn);
+        }
         help.append(note, tools, status);
         (textarea.closest("label") || textarea).insertAdjacentElement("beforebegin", help);
       }
@@ -17999,7 +28450,8 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
         var _a;
         const year = ((_a = (meta.title || "").match(/(19|20)\d{2}/g)) == null ? void 0 : _a.pop()) || "";
         const medium = meta.mediumSel || "";
-        const standard = meta.standardSel || "";
+        const standard = meta.standardSel === "4K" || /\b2160p\b/i.test(`${meta.title || ""}
+${rawDescr}`) ? "4K" : meta.standardSel || "";
         const codec = meta.codecSel || "";
         const size = getSizeFromDescr(rawDescr);
         let format = "";
@@ -18090,13 +28542,13 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
     }
     class BLUEngine extends Unit3DClassicEngine {
       getClassicAutoResolutionMap() {
-        return { "4K": 1, "1080p": 2, "1080i": 3, "720p": 5, SD: 0, "": 0, "8K": 11 };
+        return { "4K": 1, "1080p": 2, "1080i": 3, "720p": 5, SD: 10, "": 10, "8K": 11 };
       }
       getClassicResolutionFallbackMap() {
-        return { "4K": 1, "1080p": 2, "1080i": 3, "720p": 5, SD: 0, "8K": 11 };
+        return { "4K": 1, "1080p": 2, "1080i": 3, "720p": 5, SD: 10, "8K": 11 };
       }
     }
-    class MonikaEngine extends ACMEngine {
+    class MonikaEngine extends Unit3DClassicEngine {
       async fill(meta) {
         await super.fill(meta);
         const fire = (el) => {
@@ -18123,33 +28575,728 @@ DVD Format.........: Anamorphic / Non-Anamorphic`;
         };
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
         const imdbNo = imdbId.replace(/^tt/i, "");
-        setText(["input#title", 'input[name="title"]'], meta.title || "");
+        setText(["input#name", 'input[name="name"]', "input#title", 'input[name="title"]'], meta.title || "");
         setText(['input[name="subhead"]', "input#subhead"], (meta.smallDescr || meta.subtitle || "").trim());
         setText(["textarea#bbcode-description", 'textarea[name="description"]'], (meta.description || "").trim());
         setText(["input#autoimdb", 'input[name="imdb"]'], imdbNo);
+        const catSel = document.querySelector('select#category_id, select[name="category_id"]');
+        if (catSel && meta.type) {
+          const isSeries = /S\d{1,2}|E\d{1,3}/i.test(meta.title || "");
+          let catVal = "";
+          if (meta.type === "动漫")
+            catVal = isSeries ? "8" : "6";
+          else if (meta.type === "剧集" || meta.type === "综艺")
+            catVal = "2";
+          else if (meta.type === "电影" || meta.type === "纪录")
+            catVal = isSeries ? "2" : "1";
+          else if (meta.type === "游戏")
+            catVal = "4";
+          else if (meta.type === "音乐")
+            catVal = isSeries ? "9" : "3";
+          if (catVal && Array.from(catSel.options).some((o2) => o2.value === catVal)) {
+            catSel.value = catVal;
+            fire(catSel);
+          }
+        }
       }
     }
     class OnlyEncodesEngine extends Unit3DClassicEngine {
       applyClassicSiteTypeSelection(ctx) {
-        const { medium, meta, setSelectIndex, typeId } = ctx;
+        const { medium, meta, setSelectIndex: setSelectIndex2, typeId } = ctx;
         if (medium === "UHD" || medium === "Blu-ray") {
-          setSelectIndex(typeId, 4);
+          setSelectIndex2(typeId, 4);
         } else if (medium === "Remux") {
-          setSelectIndex(typeId, 5);
+          setSelectIndex2(typeId, 5);
         } else if (medium === "HDTV") {
-          setSelectIndex(typeId, 6);
+          setSelectIndex2(typeId, 6);
         } else if (medium === "Encode") {
           if (meta.codecSel === "X264" || meta.codecSel === "H264")
-            setSelectIndex(typeId, 2);
+            setSelectIndex2(typeId, 2);
           else
-            setSelectIndex(typeId, 1);
+            setSelectIndex2(typeId, 1);
         } else if (medium === "WEB-DL") {
-          setSelectIndex(typeId, 6);
+          setSelectIndex2(typeId, 6);
         }
         return true;
       }
     }
-    const retry$4 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    class DoubanService {
+      static getCachedByImdb(imdbId) {
+        const key = String(imdbId || "").trim().toLowerCase();
+        return key ? this.infoByImdbCache.get(key) || null : null;
+      }
+      static getCachedById(id) {
+        const key = String(id || "").trim();
+        return key ? this.infoByIdCache.get(key) || null : null;
+      }
+      static cacheInfo(info, imdbKey) {
+        if (!info)
+          return null;
+        if (info.id)
+          this.infoByIdCache.set(String(info.id).trim(), info);
+        const effectiveImdb = String(imdbKey || info.imdbId || "").trim().toLowerCase();
+        if (effectiveImdb)
+          this.infoByImdbCache.set(effectiveImdb, info);
+        return info;
+      }
+      static async getByImdb(imdbId, options) {
+        var _a;
+        const rawImdb = String(imdbId || "").trim();
+        const cached = this.getCachedByImdb(rawImdb);
+        if (cached)
+          return cached;
+        const query = encodeURIComponent(rawImdb);
+        if (!query)
+          return null;
+        let id = "";
+        try {
+          const searchUrl = `https://m.douban.com/search/?query=${query}&type=movie`;
+          const doc = await HtmlFetchService.getDocument(searchUrl, this.buildFetchOptions(options));
+          id = this.findDoubanId(doc);
+        } catch {
+        }
+        if (!id) {
+          try {
+            const suggestUrl = `https://movie.douban.com/j/subject_suggest?q=${query}`;
+            const text = await HtmlFetchService.getText(suggestUrl, this.buildFetchOptions(options));
+            id = extractDoubanId(text) || ((_a = text.match(/(?:subject\/|"id"\s*:\s*")([0-9]{5,})/i)) == null ? void 0 : _a[1]) || "";
+          } catch {
+          }
+        }
+        if (!id || id === "35580200")
+          return null;
+        const info = await this.getById(id, options);
+        return this.cacheInfo(info, rawImdb);
+      }
+      static async getById(id, options) {
+        const cleanId = String(id || "").trim();
+        if (!cleanId)
+          return null;
+        const cached = this.getCachedById(cleanId);
+        if (cached)
+          return cached;
+        const url = `https://movie.douban.com/subject/${cleanId}/`;
+        const doc = await HtmlFetchService.getDocument(url, this.buildFetchOptions(options));
+        return this.cacheInfo(this.parseDoubanDoc(doc, cleanId));
+      }
+      static findDoubanId(doc) {
+        var _a, _b;
+        const links = Array.from(doc.querySelectorAll("a[href]"));
+        for (const link of links) {
+          const id = extractDoubanId(link.getAttribute("href") || "");
+          if (id)
+            return id;
+        }
+        const html = ((_a = doc.documentElement) == null ? void 0 : _a.outerHTML) || "";
+        return ((_b = html.match(/(?:douban\.com\/subject\/|subject\/)(\d{5,})/i)) == null ? void 0 : _b[1]) || "";
+      }
+      static async resolvePosterDisplayUrl(url, mode = "raw") {
+        const normalized = String(url || "").trim();
+        if (!normalized)
+          return "";
+        if (mode !== "inline")
+          return normalized;
+        if (!/doubanio\.com/i.test(normalized))
+          return normalized;
+        if (!this.posterDataUrlCache.has(normalized)) {
+          this.posterDataUrlCache.set(
+            normalized,
+            this.fetchPosterDataUrl(normalized).catch(() => normalized)
+          );
+        }
+        return await this.posterDataUrlCache.get(normalized);
+      }
+      static parseDoubanDoc(doc, id) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+        const title = (((_a = doc.querySelector("title")) == null ? void 0 : _a.textContent) || "").replace("(豆瓣)", "").trim();
+        const itemReviewed = (((_b = doc.querySelector('#content h1 > span[property="v:itemreviewed"]')) == null ? void 0 : _b.textContent) || "").trim();
+        const originalTitle = itemReviewed && itemReviewed !== title ? itemReviewed.replace(title, "").trim() || itemReviewed : title;
+        let image = "";
+        const img = doc.querySelector("#mainpic img");
+        const imgSrc = (img == null ? void 0 : img.getAttribute("src")) || (img == null ? void 0 : img.src) || "";
+        if (imgSrc) {
+          const match = imgSrc.match(/(p\d+).+$/);
+          if (match == null ? void 0 : match[1]) {
+            image = `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${match[1]}.jpg`;
+          } else {
+            image = imgSrc;
+          }
+        }
+        const yearText = ((_c = doc.querySelector("#content > h1 > span.year")) == null ? void 0 : _c.textContent) || "";
+        const year = yearText ? parseInt(yearText.replace(/[()]/g, ""), 10) : "";
+        const average = ((_e = (_d = doc.querySelector('#interest_sectl [property="v:average"]')) == null ? void 0 : _d.textContent) == null ? void 0 : _e.trim()) || "";
+        const votes = ((_g = (_f = doc.querySelector('#interest_sectl [property="v:votes"]')) == null ? void 0 : _f.textContent) == null ? void 0 : _g.trim()) || "";
+        const genre = Array.from(doc.querySelectorAll('#info span[property="v:genre"]')).map((e2) => {
+          var _a2;
+          return (_a2 = e2.textContent) == null ? void 0 : _a2.trim();
+        }).filter(Boolean).join(" / ");
+        const releaseDate = Array.from(doc.querySelectorAll('#info span[property="v:initialReleaseDate"]')).map((e2) => {
+          var _a2;
+          return (_a2 = e2.textContent) == null ? void 0 : _a2.trim();
+        }).filter(Boolean).sort((a2, b) => new Date(a2 || "").getTime() - new Date(b || "").getTime()).join(" / ");
+        const runtime = ((_i = (_h = doc.querySelector('#info span[property="v:runtime"]')) == null ? void 0 : _h.textContent) == null ? void 0 : _i.trim()) || this.getInfoByLabel(doc, "单集片长") || this.getInfoByLabel(doc, "片长");
+        const aka = this.getInfoByLabel(doc, "又名");
+        const region = this.getInfoByLabel(doc, "制片国家/地区");
+        const director = this.getInfoByLabel(doc, "导演");
+        const writer = this.getInfoByLabel(doc, "编剧");
+        const language = this.getInfoByLabel(doc, "语言");
+        const episodes = this.getInfoByLabel(doc, "集数");
+        const cast = this.getInfoByLabel(doc, "主演");
+        const infoHtml = ((_j = doc.querySelector("#info")) == null ? void 0 : _j.innerHTML) || "";
+        const imdbId = ((_k = infoHtml.match(/\b(tt\d{5,})\b/i)) == null ? void 0 : _k[1]) || "";
+        const summaryEl = doc.querySelector("#link-report-intra span.all.hidden") || doc.querySelector('#link-report-intra [property="v:summary"]');
+        const summary = this.getSummary(summaryEl);
+        const awards = Array.from(doc.querySelectorAll("ul.award")).map(
+          (ul) => Array.from(ul.querySelectorAll("li")).map((li) => (li.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean).join(" ")
+        ).filter(Boolean);
+        return {
+          id,
+          title,
+          originalTitle,
+          year,
+          aka,
+          average,
+          votes,
+          genre,
+          region,
+          director,
+          writer,
+          language,
+          releaseDate,
+          runtime,
+          episodes,
+          cast,
+          summary,
+          awards: awards.length ? awards : void 0,
+          imdbId: imdbId || void 0,
+          image
+        };
+      }
+      static getSummary(summaryEl) {
+        var _a;
+        if (!summaryEl)
+          return "";
+        const directText = Array.from(summaryEl.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => {
+          var _a2;
+          return ((_a2 = node.textContent) == null ? void 0 : _a2.trim()) || "";
+        }).filter(Boolean).join("\n").trim();
+        return directText || ((_a = summaryEl.textContent) == null ? void 0 : _a.trim()) || "";
+      }
+      static getInfoByLabel(doc, label) {
+        const spans = Array.from(doc.querySelectorAll("#info span.pl"));
+        const span = spans.find((s2) => (s2.textContent || "").includes(label));
+        if (!span)
+          return "";
+        const chunks = [];
+        let node = span.nextSibling;
+        while (node) {
+          if (node.nodeName === "BR")
+            break;
+          if (node instanceof Element) {
+            if (node.matches("a.more-attrs, .more-attrs, a.more-actor, .more-actor")) {
+              node = node.nextSibling;
+              continue;
+            }
+            const clone = node.cloneNode(true);
+            clone.querySelectorAll("a.more-attrs, .more-attrs, a.more-actor, .more-actor").forEach((n2) => n2.remove());
+            const text2 = (clone.textContent || "").replace(/更多\.{0,3}\s*$/g, "");
+            if (text2.trim())
+              chunks.push(text2.trim());
+            node = node.nextSibling;
+            continue;
+          }
+          const text = (node.textContent || "").replace(/更多\.{0,3}\s*$/g, "");
+          if (text.trim())
+            chunks.push(text.trim());
+          node = node.nextSibling;
+        }
+        return chunks.join(" ").replace(/^[：:\s]+/, "").replace(/更多\.{0,3}\s*$/g, "").replace(/\s*\/\s*/g, "/").replace(/\s{2,}/g, " ").trim();
+      }
+      static buildFetchOptions(options) {
+        const headers = {};
+        if (options == null ? void 0 : options.cookie)
+          headers["cookie"] = options.cookie;
+        return { headers: Object.keys(headers).length ? headers : void 0, withCredentials: (options == null ? void 0 : options.withCredentials) ?? true };
+      }
+      static async fetchPosterDataUrl(url) {
+        var _a, _b;
+        const response = await GMAdapter.xmlHttpRequest({
+          method: "GET",
+          url,
+          responseType: "arraybuffer",
+          anonymous: true,
+          headers: {
+            Referer: "https://movie.douban.com/",
+            Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+          }
+        });
+        const body = response == null ? void 0 : response.response;
+        if (!(body instanceof ArrayBuffer) || !body.byteLength) {
+          throw new Error("Empty Douban poster response");
+        }
+        const mime = ((_b = (_a = String((response == null ? void 0 : response.responseHeaders) || "").match(/content-type:\s*([^\s;]+)/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.trim()) || "image/jpeg";
+        return `data:${mime};base64,${this.arrayBufferToBase64(body)}`;
+      }
+      static arrayBufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 32768;
+        let binary = "";
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          const chunk = bytes.subarray(index, index + chunkSize);
+          binary += String.fromCharCode(...chunk);
+        }
+        return btoa(binary);
+      }
+      static async getLetterboxdRatingByImdb(imdbId) {
+        var _a, _b, _c, _d, _e;
+        const imdbKey = imdbId.replace(/^tt/, "");
+        const imdbUrl = `https://letterboxd.com/imdb/tt${imdbKey}/`;
+        const headers = {
+          "accept-language": "en-US,en;q=0.9",
+          referer: "https://letterboxd.com/"
+        };
+        const toTenScale = (raw) => {
+          const n2 = parseFloat(raw);
+          if (!Number.isFinite(n2) || n2 <= 0)
+            return "";
+          const v2 = n2 <= 5 ? n2 * 2 : n2;
+          return v2.toFixed(1);
+        };
+        const pickFromText = (text) => {
+          if (!text)
+            return null;
+          const weighted = text.match(/Weighted average of\s*([0-9.]+)\s*based on\s*([0-9,]+).*?ratings/i);
+          if (weighted) {
+            const rating = toTenScale(weighted[1]);
+            const votes = weighted[2].replace(/,/g, "");
+            if (rating && votes)
+              return { rating, votes };
+          }
+          const aggregate = text.match(/"aggregateRating"\s*:\s*\{[\s\S]{0,280}?"ratingValue"\s*:\s*"?([0-9.]+)"?[\s\S]{0,180}?"ratingCount"\s*:\s*"?([0-9,]+)"?/i);
+          if (aggregate) {
+            const rating = toTenScale(aggregate[1]);
+            const votes = aggregate[2].replace(/,/g, "");
+            if (rating && votes)
+              return { rating, votes };
+          }
+          const avg = text.match(/class=["']average-rating["'][^>]*>\s*([0-9.]+)\s*</i);
+          const cnt = text.match(/data-rating-count=["']([0-9,]+)["']/i) || text.match(/([0-9,]+)\s+ratings?/i);
+          if ((avg == null ? void 0 : avg[1]) && (cnt == null ? void 0 : cnt[1])) {
+            const rating = toTenScale(avg[1]);
+            const votes = cnt[1].replace(/,/g, "");
+            if (rating && votes)
+              return { rating, votes };
+          }
+          return null;
+        };
+        const doc = await HtmlFetchService.getDocument(imdbUrl, { headers });
+        const html = ((_a = doc.documentElement) == null ? void 0 : _a.outerHTML) || "";
+        let baseUrl = ((_b = doc.querySelector('meta[property="og:url"]')) == null ? void 0 : _b.getAttribute("content")) || "";
+        if (!baseUrl) {
+          const relCanonical = ((_c = doc.querySelector('link[rel="canonical"]')) == null ? void 0 : _c.getAttribute("href")) || "";
+          baseUrl = relCanonical || "";
+        }
+        if (!baseUrl)
+          return null;
+        const ratingUrl = baseUrl.replace(".com/", ".com/csi/") + "ratings-summary/";
+        const ratingDoc = await HtmlFetchService.getDocument(ratingUrl, { headers });
+        const ratingHtml = ((_d = ratingDoc.documentElement) == null ? void 0 : _d.outerHTML) || "";
+        const ratingInfo = ((_e = ratingDoc.body) == null ? void 0 : _e.textContent) || "";
+        const picked = pickFromText(`${ratingHtml}
+${ratingInfo}`) || pickFromText(html);
+        if (!picked)
+          return null;
+        return { url: baseUrl, rating: picked.rating, votes: picked.votes };
+      }
+    }
+    __publicField(DoubanService, "posterDataUrlCache", /* @__PURE__ */ new Map());
+    __publicField(DoubanService, "infoByImdbCache", /* @__PURE__ */ new Map());
+    __publicField(DoubanService, "infoByIdCache", /* @__PURE__ */ new Map());
+    const DoubanService$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+      __proto__: null,
+      DoubanService
+    }, Symbol.toStringTag, { value: "Module" }));
+    const IYUU_API = "https://api.iyuu.cn/App.Movie.Ptgen";
+    const TJU_API = "https://ptgen.tju.pt/infogen";
+    const buildDoubanFormat = (info, imdbId) => {
+      const lines = [];
+      if (info.image)
+        lines.push(`[img]${info.image}[/img]`, "");
+      const title = info.title || "";
+      const originalTitle = info.originalTitle || title;
+      const effectiveImdbId = imdbId || info.imdbId || "";
+      const splitItems = (raw) => String(raw || "").split(/\s*\/\s*/).map((s2) => s2.trim()).filter(Boolean);
+      const translatedNames = Array.from(new Set([title, ...splitItems(info.aka)].filter(Boolean)));
+      if (translatedNames.length)
+        lines.push(`◎译　　名　${translatedNames.join(" / ")}`);
+      if (originalTitle)
+        lines.push(`◎片　　名　${originalTitle}`);
+      if (info.year)
+        lines.push(`◎年　　代　${info.year}`);
+      if (info.region)
+        lines.push(`◎产　　地　${info.region}`);
+      if (info.genre)
+        lines.push(`◎类　　别　${info.genre}`);
+      if (info.language)
+        lines.push(`◎语　　言　${info.language}`);
+      if (info.releaseDate)
+        lines.push(`◎上映日期　${info.releaseDate}`);
+      if (effectiveImdbId)
+        lines.push(`◎IMDb链接  https://www.imdb.com/title/${effectiveImdbId}/`);
+      if (info.average) {
+        const votes = info.votes ? ` from ${info.votes} users` : "";
+        lines.push(`◎豆瓣评分　${info.average}/10${votes}`);
+      }
+      if (info.id)
+        lines.push(`◎豆瓣链接　https://movie.douban.com/subject/${info.id}/`);
+      if (info.episodes)
+        lines.push(`◎集　　数　${info.episodes}`);
+      if (info.runtime)
+        lines.push(`◎片　　长　${info.runtime}`);
+      const formatCredits = (label, raw, maxCount = 15) => {
+        const items = splitItems(raw).slice(0, maxCount);
+        if (!items.length)
+          return;
+        lines.push(`${label}${items[0]}`);
+        for (let i2 = 1; i2 < items.length; i2++) {
+          lines.push(`　　　　　　${items[i2]}`);
+        }
+      };
+      formatCredits("◎导　　演　", info.director, 6);
+      formatCredits("◎编　　剧　", info.writer, 8);
+      formatCredits("◎主　　演　", info.cast, 15);
+      lines.push("");
+      lines.push("◎简　　介");
+      if (info.summary) {
+        lines.push(info.summary.replace(/^|\n/g, "\n　　").replace(/^\n+/, "").trimEnd());
+      } else {
+        lines.push("　　暂无相关剧情介绍");
+      }
+      if (info.awards && info.awards.length) {
+        lines.push("");
+        lines.push("◎获奖情况");
+        lines.push("");
+        for (const award of info.awards) {
+          lines.push(`　　${award}`);
+        }
+      }
+      return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+    };
+    const hasPtgenBlock = (descr) => {
+      const s2 = String(descr || "");
+      const hits = (s2.match(/◎\s*(?:译|譯|片|年|产|產|类|類|语|語|简|簡|导|導|主)\s*(?:名|代|地|别|別|言|介|演)/g) || []).length;
+      return hits >= 3;
+    };
+    const stripLeadingPtgenBlock = (descr) => {
+      const raw = String(descr || "").trim();
+      if (!raw || !hasPtgenBlock(raw))
+        return raw;
+      const lines = raw.split(/\r?\n/);
+      const firstMarkerIdx = lines.findIndex((l2) => /^◎/.test(l2.trim()));
+      if (firstMarkerIdx < 0)
+        return raw;
+      let startIdx = firstMarkerIdx;
+      while (startIdx > 0 && !lines[startIdx - 1].trim())
+        startIdx -= 1;
+      if (startIdx > 0 && /^\[img\][^\[\]]+\[\/img\]$/i.test(lines[startIdx - 1].trim())) {
+        startIdx -= 1;
+      }
+      let passedSynopsis = false;
+      let endIdx = firstMarkerIdx + 1;
+      for (let i2 = firstMarkerIdx + 1; i2 < lines.length; i2++) {
+        const trimmed = lines[i2].trim();
+        if (/^\[(?:quote|code|mediainfo|bdinfo|hide|spoiler|b)\b/i.test(trimmed)) {
+          break;
+        }
+        if (/^\[img\][^\[\]]+\[\/img\]$/i.test(trimmed) && passedSynopsis) {
+          break;
+        }
+        if (/^◎\s*(?:简|簡)\s*介/.test(trimmed) || /^◎\s*(?:获|獲)\s*(?:奖|獎)/.test(trimmed)) {
+          passedSynopsis = true;
+        }
+        endIdx = i2 + 1;
+      }
+      const combined = [...lines.slice(0, startIdx), ...lines.slice(endIdx)].join("\n").replace(/\n{3,}/g, "\n\n").trim();
+      return hasPtgenBlock(combined) && combined !== raw ? stripLeadingPtgenBlock(combined) : combined;
+    };
+    const extractPosterFromPtgen = (format) => {
+      var _a, _b;
+      return ((_b = (_a = String(format || "").match(/\[img\](https?:\/\/[^\s\]]+)\[\/img\]/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.trim()) || "";
+    };
+    class PtgenService {
+      static extractSubtitle(format, title = "") {
+        const legacySmall = getSmallDescrFromDescr(format, title);
+        return legacySmall || this.extractSubtitleFromFormat(format);
+      }
+      static extractSubtitleFromFormat(format) {
+        const lines = format.split("\n").map((line) => line.trim()).filter(Boolean);
+        const getLineValue = (pattern) => {
+          const line = lines.find((l2) => pattern.test(l2));
+          if (!line)
+            return "";
+          const parts = line.split(/[:：]/);
+          const value = parts.length > 1 ? parts.slice(1).join(":").trim() : line.replace(pattern, "").trim();
+          return value;
+        };
+        const pickChinese = (value) => {
+          if (!value)
+            return "";
+          const first = value.split("/")[0].trim();
+          return /[\u4e00-\u9fa5]/.test(first) ? first : "";
+        };
+        const translated = pickChinese(getLineValue(/译.*名/));
+        if (translated)
+          return translated;
+        const mainTitle = pickChinese(getLineValue(/片.*名/));
+        if (mainTitle)
+          return mainTitle;
+        return "";
+      }
+      static async resolveDoubanId(meta, method, doubanCookie) {
+        var _a, _b;
+        if (meta.doubanId)
+          return meta.doubanId;
+        const doubanIdFromUrl = extractDoubanId(meta.doubanUrl || "");
+        if (doubanIdFromUrl)
+          return doubanIdFromUrl;
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (!imdbId)
+          return null;
+        const cached = DoubanService.getCachedByImdb(imdbId);
+        if (cached == null ? void 0 : cached.id)
+          return cached.id;
+        if (method === 0) {
+          const url = `https://movie.douban.com/j/subject_suggest?q=${imdbId}`;
+          try {
+            const text = await HtmlFetchService.getText(url, {
+              headers: doubanCookie ? { cookie: doubanCookie } : void 0,
+              withCredentials: true
+            });
+            const json = JSON.parse(text);
+            if (Array.isArray(json) && json.length) {
+              const id = (_b = (_a = json[0]) == null ? void 0 : _a.id) == null ? void 0 : _b.toString();
+              if (id && id !== "35580200")
+                return id;
+            }
+          } catch {
+          }
+          return null;
+        }
+        try {
+          const info = await DoubanService.getByImdb(imdbId, { cookie: doubanCookie, withCredentials: true });
+          return (info == null ? void 0 : info.id) || null;
+        } catch {
+          return null;
+        }
+      }
+      static async fetchPtgenOnce(meta, options) {
+        var _a;
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
+        const doubanId = await this.resolveDoubanId(meta, options.imdbToDoubanMethod, options.doubanCookie);
+        if (options.ptgenApi === 3) {
+          const info = (doubanId ? await DoubanService.getById(doubanId, { cookie: options.doubanCookie, withCredentials: true }) : null) || (imdbId ? await DoubanService.getByImdb(imdbId, { cookie: options.doubanCookie, withCredentials: true }) : null);
+          if (!info)
+            return null;
+          return {
+            format: buildDoubanFormat(info, imdbId || void 0),
+            doubanId: info.id,
+            synopsis: info.summary || "",
+            poster: info.image || ""
+          };
+        }
+        const base = options.ptgenApi === 0 ? IYUU_API : TJU_API;
+        let query = "";
+        if (doubanId) {
+          query = `?url=${encodeURIComponent(`https://movie.douban.com/subject/${doubanId}/`)}`;
+        } else if (meta.doubanUrl) {
+          query = `?url=${encodeURIComponent(meta.doubanUrl)}`;
+        } else if (meta.imdbUrl) {
+          if (options.ptgenApi === 1) {
+            query = `?site=douban&sid=${imdbId}`;
+          } else {
+            query = `?url=${encodeURIComponent(meta.imdbUrl)}`;
+          }
+        } else if (imdbId) {
+          if (options.ptgenApi === 1) {
+            query = `?site=douban&sid=${imdbId}`;
+          } else {
+            query = `?url=${encodeURIComponent(`https://www.imdb.com/title/${imdbId}/`)}`;
+          }
+        } else {
+          return null;
+        }
+        try {
+          const text = await HtmlFetchService.getText(`${base}${query}`, { withCredentials: true });
+          let format = "";
+          try {
+            const json = JSON.parse(text);
+            format = ((_a = json == null ? void 0 : json.data) == null ? void 0 : _a.format) || (json == null ? void 0 : json.format) || (json == null ? void 0 : json.data) || "";
+          } catch {
+            format = text || "";
+          }
+          if (!format || typeof format !== "string")
+            return null;
+          if (!format.match(/◎简\s*介|◎译\s*名|douban\.com\/subject\/\d+|imdb\.com\/title\/tt\d+/i))
+            return null;
+          format = format.replace("hongleyou.cn", "doubanio.com").replace(/\[\/img\]\[\/center\]/g, "[/img]");
+          return {
+            format,
+            doubanId: extractDoubanId(format) || doubanId || void 0,
+            poster: extractPosterFromPtgen(format) || void 0
+          };
+        } catch {
+          return null;
+        }
+      }
+      static async fetchPtgen(meta, options) {
+        const order = options.ptgenApi === 3 ? [3, 1, 0] : options.ptgenApi === 1 ? [1, 0] : options.ptgenApi === 0 ? [0, 1] : [options.ptgenApi];
+        const uniq2 = Array.from(new Set(order));
+        for (const api of uniq2) {
+          try {
+            const r2 = await this.fetchPtgenOnce(meta, { ...options, ptgenApi: api });
+            if (r2 == null ? void 0 : r2.format)
+              return r2;
+          } catch {
+          }
+        }
+        return null;
+      }
+      static applyPtgenResult(meta, result, flags) {
+        const updated = { ...meta };
+        const overwrite = !!(flags == null ? void 0 : flags.overwrite);
+        const mergeDescription = (flags == null ? void 0 : flags.mergeDescription) ?? true;
+        const updateSubtitle = (flags == null ? void 0 : flags.updateSubtitle) ?? true;
+        const updateRegion = (flags == null ? void 0 : flags.updateRegion) ?? true;
+        const updateIds = (flags == null ? void 0 : flags.updateIds) ?? true;
+        const updateSynopsis = (flags == null ? void 0 : flags.updateSynopsis) ?? true;
+        if (mergeDescription) {
+          const currentDescr = String(updated.description || "").trim();
+          if (!hasPtgenBlock(currentDescr)) {
+            updated.description = `${result.format}
+
+${currentDescr}`.trim();
+          } else if (overwrite) {
+            const rest = stripLeadingPtgenBlock(currentDescr);
+            updated.description = `${result.format}
+
+${rest}`.trim();
+          }
+        }
+        if (updateSubtitle) {
+          const subtitle = this.extractSubtitle(result.format, updated.title || meta.title || "");
+          if (subtitle) {
+            if (overwrite || !updated.subtitle)
+              updated.subtitle = subtitle;
+            if (overwrite || !updated.smallDescr)
+              updated.smallDescr = subtitle;
+          }
+        }
+        if (updateRegion) {
+          try {
+            const region = getSourceSelFromDescr(result.format);
+            if (region && (overwrite || !updated.sourceSel))
+              updated.sourceSel = region;
+          } catch {
+          }
+        }
+        if (updateIds) {
+          const imdbMatch = extractImdbId(result.format);
+          if (imdbMatch) {
+            if (overwrite || !updated.imdbId)
+              updated.imdbId = imdbMatch;
+            if (overwrite || !updated.imdbUrl)
+              updated.imdbUrl = `https://www.imdb.com/title/${imdbMatch}/`;
+          }
+          const doubanMatch = extractDoubanId(result.format) || result.doubanId || "";
+          if (doubanMatch) {
+            if (overwrite || !updated.doubanId)
+              updated.doubanId = doubanMatch;
+            if (overwrite || !updated.doubanUrl)
+              updated.doubanUrl = `https://movie.douban.com/subject/${doubanMatch}/`;
+          }
+        }
+        if (updateSynopsis) {
+          if (result.synopsis && (overwrite || !updated.synopsis)) {
+            updated.synopsis = result.synopsis;
+          }
+        }
+        return updated;
+      }
+      static async applyPtgen(meta, options, flags) {
+        const result = await this.fetchPtgen(meta, options);
+        if (!result || !result.format)
+          return meta;
+        return this.applyPtgenResult(meta, result, flags);
+      }
+    }
+    const PtgenService$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+      __proto__: null,
+      PtgenService,
+      buildDoubanFormat,
+      extractPosterFromPtgen,
+      hasPtgenBlock,
+      stripLeadingPtgenBlock
+    }, Symbol.toStringTag, { value: "Module" }));
+    const retry$5 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    const buildCmctExtraDescr = (rawDescription, options) => {
+      let extra = String(rawDescription || "").trim();
+      if (!extra)
+        return "";
+      const esc = (s2) => s2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const mi = String((options == null ? void 0 : options.mediaInfo) || "").trim();
+      if (mi) {
+        extra = extra.replace(new RegExp(`\\[(?:quote|mediainfo|bdinfo|hide=mediainfo|hide=bdinfo)[^\\]]*\\]\\s*${esc(mi)}\\s*\\[\\/(?:quote|mediainfo|bdinfo|hide)\\]\\s*`, "ig"), "\n");
+      }
+      extra = extra.replace(
+        /\[(quote|code|mediainfo|bdinfo|hide|spoiler)(?:=[^\]]*)?\][\s\S]*?(?:General|Unique ID|Complete name|DISC INFO:|\.MPLS|Disc Label|Video Codec)[\s\S]*?\[\/\1\]/gi,
+        "\n"
+      );
+      const removeUrls = new Set(
+        [...(options == null ? void 0 : options.screenshotUrls) || [], (options == null ? void 0 : options.coverUrl) || ""].map((u2) => String(u2 || "").trim()).filter(Boolean)
+      );
+      extra = extra.replace(/(?:\[url=[^\]]+\])?\[img\](https?:\/\/[^\s\]]+)\[\/img\](?:\[\/url\])?/gi, (full, url) => {
+        const cleanUrl = String(url || "").trim();
+        if (removeUrls.has(cleanUrl))
+          return "";
+        if ((options == null ? void 0 : options.hasExternalLink) && /doubanio\.com\/view\/photo\//i.test(cleanUrl))
+          return "";
+        return full;
+      });
+      if (options == null ? void 0 : options.hasExternalLink) {
+        extra = stripLeadingPtgenBlock(extra);
+      }
+      extra = extra.replace(/\[quote\]\s*\[\/quote\]/gi, "").replace(/\n{3,}/g, "\n\n").trim();
+      return extra;
+    };
+    const setCmctDescrValue = (value) => {
+      var _a, _b, _c, _d, _e, _f, _g;
+      const descrBox = document.querySelector('#descr, textarea[name="descr"]');
+      if (!descrBox)
+        return;
+      descrBox.value = value;
+      descrBox.dispatchEvent(new Event("input", { bubbles: true }));
+      descrBox.dispatchEvent(new Event("change", { bubbles: true }));
+      try {
+        const pageWin = typeof globalThis.unsafeWindow !== "undefined" ? globalThis.unsafeWindow : window;
+        const inst = ((_b = (_a = pageWin == null ? void 0 : pageWin.sceditor) == null ? void 0 : _a.instance) == null ? void 0 : _b.call(_a, descrBox)) || (pageWin == null ? void 0 : pageWin.jQuery) && ((_d = (_c = pageWin.jQuery(descrBox)) == null ? void 0 : _c.sceditor) == null ? void 0 : _d.call(_c, "instance")) || ((_f = (_e = window.sceditor) == null ? void 0 : _e.instance) == null ? void 0 : _f.call(_e, descrBox));
+        if (inst && typeof inst.val === "function") {
+          inst.val(value);
+          if (typeof inst.updateOriginal === "function")
+            inst.updateOriginal();
+        }
+      } catch {
+      }
+      try {
+        const scTextarea = (_g = descrBox.closest("td, .bbcode-editor")) == null ? void 0 : _g.querySelector(".sceditor-container textarea");
+        if (scTextarea && scTextarea !== descrBox) {
+          scTextarea.value = value;
+          scTextarea.dispatchEvent(new Event("input", { bubbles: true }));
+          scTextarea.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      } catch {
+      }
+    };
     const setById$1 = (id, on) => {
       if (!on)
         return;
@@ -18256,14 +29403,26 @@ ${extraText}
         }
         return meta;
       }
+      isFillComplete() {
+        const name2 = readFieldValue(['input[name="name"]', "#name"]);
+        const mi = readFieldValue(["#Media_BDInfo", 'textarea[name="Media_BDInfo"]']);
+        const shots = readFieldValue(["#url_vimages", 'textarea[name="url_vimages"]']);
+        const descr = readFieldValue(["#descr", 'textarea[name="descr"]']);
+        return !!name2 && (mi.length > 30 || shots.length > 10 || descr.length > 30);
+      }
       async beforeFill(meta) {
         meta.title = buildCmctTitle(meta.title || "");
+        if (meta.subtitle)
+          meta.subtitle = meta.subtitle.replace(/【/g, "[").replace(/】/g, "]");
+        if (meta.smallDescr)
+          meta.smallDescr = meta.smallDescr.replace(/【/g, "[").replace(/】/g, "]");
         return meta;
       }
       async afterFill(meta) {
         var _a;
+        let preferredLink = "";
         try {
-          const preferredLink = (meta.doubanUrl || "").trim() || (meta.doubanId ? `https://movie.douban.com/subject/${meta.doubanId}/` : "") || (meta.imdbUrl || "").trim() || (meta.imdbId ? `https://www.imdb.com/title/${meta.imdbId}/` : "");
+          preferredLink = (meta.doubanUrl || "").trim() || (meta.doubanId ? `https://movie.douban.com/subject/${meta.doubanId}/` : "") || (meta.imdbUrl || "").trim() || (meta.imdbId ? `https://www.imdb.com/title/${meta.imdbId}/` : "");
           if (preferredLink) {
             const linkInputs = Array.from(document.querySelectorAll('input[name="url"], input#url'));
             linkInputs.forEach((input) => {
@@ -18275,49 +29434,48 @@ ${extraText}
         } catch {
         }
         try {
-          const tas = Array.from(document.querySelectorAll("textarea"));
-          if (tas.length >= 3) {
-            const info = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
-            const intro = (meta.description || "").split("[quote]")[0].replace(/\[img\][\s\S]*?\[\/img\]\s*/gi, "").trim();
-            if (intro) {
-              tas[0].value = intro;
-              tas[0].dispatchEvent(new Event("input", { bubbles: true }));
-              tas[0].dispatchEvent(new Event("change", { bubbles: true }));
-            }
-            const pickMi = () => {
-              if (meta.fullMediaInfo)
-                return meta.fullMediaInfo;
-              return (info.mediainfo || "").trim();
-            };
-            let mi = pickMi();
-            mi = mi.replace(/ReportBy[\s\S]*$/i, "").replace(/Report created by[\s\S]*$/i, "").trim();
-            if (mi) {
-              tas[1].value = mi;
-              tas[1].dispatchEvent(new Event("input", { bubbles: true }));
-              tas[1].dispatchEvent(new Event("change", { bubbles: true }));
-            }
-            let extra = meta.description || "";
-            if (mi) {
-              const esc = (s2) => s2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-              extra = extra.replace(new RegExp(`\\[quote\\]\\s*${esc(mi)}\\s*\\[/quote\\]\\s*`, "ig"), "").trim();
-            }
-            tas[2].value = extra || meta.description || "";
-            tas[2].dispatchEvent(new Event("input", { bubbles: true }));
-            tas[2].dispatchEvent(new Event("change", { bubbles: true }));
-            const cover = (info.coverImg || "").replace(/\[img\]|\[\/img\]/gi, "").trim();
-            const imgUrls = Array.from(new Set(
-              ((_a = (info.picInfo || "").match(/\[img\]([^\[]+?)\[\/img\]/gi)) == null ? void 0 : _a.map((s2) => s2.replace(/\[img\]|\[\/img\]/gi, "").trim()).filter(Boolean).filter((u2) => !cover || u2 !== cover)) || []
-            ));
-            const urlBox = document.querySelector("#url_vimages");
-            if (urlBox && imgUrls.length) {
-              urlBox.value = imgUrls.join("\n");
-              urlBox.dispatchEvent(new Event("input", { bubbles: true }));
-              urlBox.dispatchEvent(new Event("change", { bubbles: true }));
-            }
+          const info = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+          const pickMi = () => {
+            if (meta.fullMediaInfo)
+              return meta.fullMediaInfo;
+            return (info.mediainfo || "").trim();
+          };
+          let mi = pickMi();
+          mi = mi.replace(/ReportBy[\s\S]*$/i, "").replace(/Report created by[\s\S]*$/i, "").trim();
+          const miBox = document.querySelector('#Media_BDInfo, textarea[name="Media_BDInfo"]');
+          if (miBox && mi) {
+            miBox.value = mi;
+            miBox.dispatchEvent(new Event("input", { bubbles: true }));
+            miBox.dispatchEvent(new Event("change", { bubbles: true }));
           }
+          const cover = (info.coverImg || "").replace(/\[img\]|\[\/img\]/gi, "").trim();
+          const posterBox = document.querySelector('#url_poster, input[name="url_poster"]');
+          const skipDoubanHotlink = !!preferredLink && /doubanio\.com/i.test(cover);
+          if (posterBox && cover && !skipDoubanHotlink && !posterBox.value.trim()) {
+            posterBox.value = cover;
+            posterBox.dispatchEvent(new Event("input", { bubbles: true }));
+            posterBox.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          const imgUrls = Array.from(new Set(
+            ((_a = (info.picInfo || "").match(/\[img\]([^\[]+?)\[\/img\]/gi)) == null ? void 0 : _a.map((s2) => s2.replace(/\[img\]|\[\/img\]/gi, "").trim()).filter(Boolean).filter((u2) => !cover || u2 !== cover)) || []
+          ));
+          const urlBox = document.querySelector('#url_vimages, textarea[name="url_vimages"]');
+          if (urlBox && imgUrls.length) {
+            urlBox.value = imgUrls.join("\n");
+            urlBox.dispatchEvent(new Event("input", { bubbles: true }));
+            urlBox.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          const extra = buildCmctExtraDescr(meta.description || "", {
+            mediaInfo: miBox ? mi : "",
+            screenshotUrls: urlBox ? imgUrls : [],
+            coverUrl: cover,
+            hasExternalLink: !!preferredLink
+          });
+          setCmctDescrValue(extra);
+          repeat(() => setCmctDescrValue(extra), 4, 300);
         } catch {
         }
-        retry$4(() => {
+        retry$5(() => {
           const nameBlob = `${meta.title || ""} ${meta.subtitle || ""} ${meta.smallDescr || ""}`;
           const descrBlob = `${meta.description || ""}
 ${meta.fullMediaInfo || ""}`;
@@ -18394,6 +29552,7 @@ ${meta.fullMediaInfo || ""}`;
           switch (meta.audioCodecSel) {
             case "DTS-HD":
             case "DTS-HDMA:X 7.1":
+            case "DTS-X":
             case "DTS-HDMA":
             case "DTS-HDHR":
               audio = 1;
@@ -18422,6 +29581,12 @@ ${meta.fullMediaInfo || ""}`;
               break;
             case "WAV":
               audio = 9;
+              break;
+            case "MP3":
+              audio = 10;
+              break;
+            case "OPUS":
+              audio = 12;
               break;
           }
           setSelectValue('select[name="audiocodec_sel"]', audio);
@@ -18456,7 +29621,8 @@ ${meta.fullMediaInfo || ""}`;
         });
         try {
           const labels = getMetaLabels(meta);
-          retry$4(() => {
+          retry$5(() => {
+            setById$1("mandarin", !!labels.gy);
             setById$1("subtitlezh", !!labels.zz);
             if (!labels.diy && /mpls/i.test(`${meta.description || ""}${meta.fullMediaInfo || ""}`)) {
               setById$1("untouched", true);
@@ -18484,15 +29650,17 @@ ${meta.fullMediaInfo || ""}`;
         return meta;
       }
       async afterFill(meta) {
-        try {
-          const small = meta.subtitle || meta.smallDescr || "";
-          const descr = meta.description || "";
-          const labelText = `${small}${meta.title || ""}#separator#${descr}${meta.fullMediaInfo || ""}`;
-          const labels = meta.labelInfo || getLabel(labelText);
-          applyHDSkyOptions(labels, small, descr);
-          fillHDSkySelects(meta);
-        } catch {
-        }
+        repeat(() => {
+          try {
+            const small = meta.subtitle || meta.smallDescr || "";
+            const descr = meta.description || "";
+            const labelText = `${small}${meta.title || ""}#separator#${descr}${meta.fullMediaInfo || ""}`;
+            const labels = meta.labelInfo || getLabel(labelText);
+            applyHDSkyOptions(labels, small, descr, meta.title || "");
+            fillHDSkySelects(meta);
+          } catch {
+          }
+        }, 6, 250);
       }
     }
     function buildHDSkySmallDescr(meta) {
@@ -18571,7 +29739,7 @@ ${meta.fullMediaInfo || ""}`;
       }
       return small.trim();
     }
-    function applyHDSkyOptions(labels, smallDescr, description) {
+    function applyHDSkyOptions(labels, smallDescr, description, title = "") {
       const setOpt = (value, on) => {
         if (!on)
           return;
@@ -18603,114 +29771,102 @@ ${meta.fullMediaInfo || ""}`;
         setOpt(17, true);
       else if (labels.hdr10)
         setOpt(9, true);
-      if ((description || "").match(/atmos/i))
+      if (/\bHLG\b/i.test(`${title} ${description}`))
+        setOpt(16, true);
+      if (/atmos/i.test(`${title} ${description}`))
         setOpt(21, true);
+      if (/DTS[- .:]?X(?![26])/i.test(`${title} ${description}`))
+        setOpt(23, true);
+    }
+    function setHDSkyVal(selector, val) {
+      const el = document.querySelector(selector);
+      if (!el || !val)
+        return false;
+      if (!Array.from(el.options).some((o2) => o2.value === val))
+        return false;
+      el.value = val;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
     }
     function fillHDSkySelects(meta) {
-      var _a, _b, _c, _d, _e;
       try {
-        const typeSelect = document.getElementsByName("type")[0];
-        if (typeSelect) {
-          const typeIndex = {
-            "电影": 1,
-            "纪录": 2,
-            "动漫": 4,
-            "剧集": 6,
-            "综艺": 7,
-            "MV": 8,
-            "体育": 9,
-            "音乐": 10
-          };
-          const idx = typeIndex[meta.type || ""] ?? 11;
-          if (typeSelect.options[idx]) {
-            typeSelect.options[idx].selected = true;
-            typeSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-          if (((_a = meta.title) == null ? void 0 : _a.match(/(pad$|ipad)/i)) && typeSelect.options[3]) {
-            typeSelect.options[3].selected = true;
-            typeSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        const audiocodecDict = {
-          "Flac": 1,
-          "APE": 2,
-          "DTS": 3,
-          "MP3": 4,
-          "AAC": 6,
-          "DTS-HDMA": 10,
-          "TrueHD": 11,
-          "AC3": 12,
-          "LPCM": 13,
-          "DTS-HDHR": 14,
-          "Atmos": 17,
-          "WAV": 15
+        const title = meta.title || "";
+        const typeValMap = {
+          电影: "401",
+          纪录: "404",
+          动漫: "405",
+          剧集: /S\d{1,2}E\d{1,3}/i.test(title) ? "402" : "411",
+          综艺: "403",
+          MV: "406",
+          体育: "407",
+          音乐: "408",
+          短剧: "416"
         };
-        if (meta.audioCodecSel && audiocodecDict[meta.audioCodecSel] !== void 0) {
-          const idx = audiocodecDict[meta.audioCodecSel];
-          $$1('select[name="audiocodec_sel"]').val(idx);
+        let catVal = typeValMap[meta.type || ""] || "409";
+        if (/(?:pad|ipad)$/i.test(title))
+          catVal = "410";
+        setHDSkyVal('#browsecat, select[name="type"]', catVal);
+        const audioMap = {
+          Flac: "1",
+          APE: "2",
+          DTS: "3",
+          MP3: "4",
+          AAC: "6",
+          "DTS-HDMA": "10",
+          "DTS-HD": "10",
+          TrueHD: "11",
+          AC3: "12",
+          LPCM: "13",
+          "DTS-HDHR": "14",
+          WAV: "15",
+          "DTS-HDMA:X 7.1": "16",
+          "DTS-X": "16",
+          Atmos: /DDP|DD\+|E-?AC-?3/i.test(title) ? "21" : "17",
+          DSD: "18",
+          OPUS: "22"
+        };
+        let audioVal = audioMap[meta.audioCodecSel || ""] || "7";
+        if (meta.audioCodecSel === "AC3" && /DDP|DD\+|E-?AC-?3/i.test(title))
+          audioVal = "20";
+        setHDSkyVal('select[name="audiocodec_sel"]', audioVal);
+        const stdMap = { "8K": "6", "4K": "5", "1080p": "1", "1080i": "2", "720p": "3", SD: "4" };
+        if (meta.standardSel && stdMap[meta.standardSel]) {
+          setHDSkyVal('select[name="standard_sel"]', stdMap[meta.standardSel]);
         }
-        const standardSelect = document.getElementsByName("standard_sel")[0];
-        if (standardSelect && meta.standardSel) {
-          const standardDict = { "4K": 1, "1080p": 2, "1080i": 3, "720p": 4, "SD": 5 };
-          const idx = standardDict[meta.standardSel] ?? 0;
-          if (standardSelect.options[idx]) {
-            standardSelect.options[idx].selected = true;
-            standardSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
+        const codecMap = {
+          H264: /x264/i.test(title) ? "10" : "1",
+          X264: "10",
+          H265: /x265/i.test(title) ? "13" : "12",
+          X265: "13",
+          "VC-1": "2",
+          "MPEG-2": "4",
+          "MPEG-4": "4",
+          XVID: "3",
+          AV1: "16",
+          VP9: "17"
+        };
+        setHDSkyVal('select[name="codec_sel"]', codecMap[meta.codecSel || ""] || "11");
+        const isDiy = /(?:diy|@)/i.test(title);
+        const medMap = {
+          UHD: isDiy ? "14" : "13",
+          "Blu-ray": isDiy ? "12" : "1",
+          Remux: "3",
+          Encode: "7",
+          HDTV: "5",
+          DVD: "6",
+          CD: "8",
+          "WEB-DL": "11"
+        };
+        if (meta.mediumSel && medMap[meta.mediumSel]) {
+          setHDSkyVal('select[name="medium_sel"]', medMap[meta.mediumSel]);
         }
-        const codecSelect = document.getElementsByName("codec_sel")[0];
-        if (codecSelect && meta.codecSel) {
-          const codecDict = {
-            "H264": 1,
-            "X265": 2,
-            "X264": 3,
-            "H265": 4,
-            "VC-1": 5,
-            "MPEG-2": 6,
-            "Xvid": 7
-          };
-          let idx = codecDict[meta.codecSel] ?? 8;
-          if (meta.codecSel === "H264" && ((_b = meta.title) == null ? void 0 : _b.match(/X264/i)))
-            idx = 3;
-          if (meta.codecSel === "H265" && ((_c = meta.title) == null ? void 0 : _c.match(/X265/i)))
-            idx = 2;
-          if (codecSelect.options[idx]) {
-            codecSelect.options[idx].selected = true;
-            codecSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        const mediumSelect = document.getElementsByName("medium_sel")[0];
-        if (mediumSelect && meta.mediumSel) {
-          const mediumDict = {
-            "UHD": 1,
-            "Blu-ray": 3,
-            "Remux": 5,
-            "Encode": 6,
-            "HDTV": 7,
-            "CD": 9,
-            "WEB-DL": 12
-          };
-          let idx = mediumDict[meta.mediumSel];
-          if (idx !== void 0 && mediumSelect.options[idx]) {
-            mediumSelect.options[idx].selected = true;
-            if (meta.mediumSel === "UHD" && ((_d = meta.title) == null ? void 0 : _d.match(/(diy|@)/i)) && mediumSelect.options[2]) {
-              mediumSelect.options[2].selected = true;
-            } else if (meta.mediumSel === "Blu-ray" && ((_e = meta.title) == null ? void 0 : _e.match(/(diy|@)/i)) && mediumSelect.options[4]) {
-              mediumSelect.options[4].selected = true;
-            }
-            mediumSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        const teamSelect = document.getElementsByName("team_sel")[0];
-        if (teamSelect && teamSelect.options[10]) {
-          teamSelect.options[10].selected = true;
-          teamSelect.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        setHDSkyVal('select[name="team_sel"]', "27");
       } catch (err) {
         console.error("[Auto-Feed][HDSky] fillHDSkySelects error:", err);
       }
     }
-    const retry$3 = (fn, times = 6, delayMs = 350) => repeat(fn, times, delayMs);
+    const retry$4 = (fn, times = 6, delayMs = 350) => repeat(fn, times, delayMs);
     class PTerEngine extends NexusPHPEngine {
       async beforeFill(meta) {
         meta.description = buildPTerDescr(meta);
@@ -18718,7 +29874,7 @@ ${meta.fullMediaInfo || ""}`;
       }
       async afterFill(meta) {
         try {
-          retry$3(() => {
+          retry$4(() => {
             document.querySelectorAll("tr.mode_4").forEach((tr) => {
               tr.style.display = "";
             });
@@ -18741,12 +29897,13 @@ ${meta.fullMediaInfo || ""}`;
             软件: 410,
             学习: 411,
             书籍: 408,
-            MV: 413
+            MV: 413,
+            短剧: 419
           };
           const typeSel = document.querySelector('select[name="type"]');
           if (typeSel && meta.type && typeDict[meta.type]) {
             const v2 = String(typeDict[meta.type]);
-            retry$3(() => {
+            retry$4(() => {
               typeSel.value = v2;
               typeSel.dispatchEvent(new Event("change", { bubbles: true }));
               typeSel.dispatchEvent(new Event("input", { bubbles: true }));
@@ -18777,7 +29934,7 @@ ${meta.fullMediaInfo || ""}`;
             }
             if (v2 !== null) {
               const vv = String(v2);
-              retry$3(() => {
+              retry$4(() => {
                 sourceSel.value = vv;
                 sourceSel.dispatchEvent(new Event("change", { bubbles: true }));
                 sourceSel.dispatchEvent(new Event("input", { bubbles: true }));
@@ -18794,7 +29951,7 @@ ${meta.fullMediaInfo || ""}`;
             if (meta.sourceSel && teamDict[meta.sourceSel])
               v2 = teamDict[meta.sourceSel];
             const vv = String(v2);
-            retry$3(() => {
+            retry$4(() => {
               teamSel.value = vv;
               if (teamSel.value !== vv) {
                 const opts = Array.from(teamSel.options);
@@ -18829,7 +29986,7 @@ ${meta.fullMediaInfo || ""}`;
             setById2("diy", !!labels.diy);
             setById2("ensub", !!labels.yz);
           };
-          retry$3(apply, 10, 200);
+          retry$4(apply, 10, 200);
         } catch {
         }
       }
@@ -18869,14 +30026,60 @@ ${body}
       });
       return desc;
     }
-    const retry$2 = (fn, times = 6, delayMs = 250) => repeat(fn, times, delayMs);
+    const retry$3 = (fn, times = 6, delayMs = 250) => repeat(fn, times, delayMs);
+    function setAudiencesDropdown(fieldName, value) {
+      var _a;
+      if (!value)
+        return false;
+      const hidden = document.querySelector(`.ui-dropdown input[name="${fieldName}"], input.ui-dropdown-value[name="${fieldName}"]`);
+      if (hidden) {
+        const container = hidden.closest(".ui-dropdown");
+        const link = container == null ? void 0 : container.querySelector(`.ui-dropdown-list a[data-value="${value}"]`);
+        if (link && container) {
+          if (hidden.value !== value) {
+            link.click();
+          }
+          if (hidden.value !== value) {
+            hidden.value = value;
+            const triggerText = container.querySelector(".ui-dropdown-trigger__text");
+            if (triggerText)
+              triggerText.textContent = (link.textContent || "").trim();
+            container.querySelectorAll(".ui-dropdown-list li").forEach((li) => li.classList.remove("is-selected"));
+            (_a = link.closest("li")) == null ? void 0 : _a.classList.add("is-selected");
+            hidden.dispatchEvent(new Event("input", { bubbles: true }));
+            hidden.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          return true;
+        }
+      }
+      const select = document.querySelector(`select[name="${fieldName}"]`) || (fieldName === "type" ? document.querySelector('#browsecat, select[name="browsecat"]') : null);
+      if (select) {
+        const exists = Array.from(select.options).some((o2) => o2.value === value);
+        if (exists) {
+          select.value = value;
+          select.dispatchEvent(new Event("input", { bubbles: true }));
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          return true;
+        }
+      }
+      return false;
+    }
     class AudiencesEngine extends NexusPHPEngine {
       async afterParse(meta) {
         const out = { ...meta };
         try {
           if (document.querySelector("span.tags.tdh"))
             out.type = "动漫";
+          const tagRow = $$1('td.rowhead:contains("标签") + td, td.rowhead:contains("標籤") + td').first().text();
+          if (/动画|動漫/.test(tagRow))
+            out.type = "动漫";
         } catch {
+        }
+        if (out.subtitle) {
+          out.subtitle = out.subtitle.replace(/\s*\d+(?:\.\d+)?\/10.*$/g, "").trim();
+        }
+        if (out.smallDescr) {
+          out.smallDescr = out.smallDescr.replace(/\s*\d+(?:\.\d+)?\/10.*$/g, "").trim();
         }
         try {
           const typeText = $$1('td.rowhead:contains("类型") + td, td.rowhead:contains("類別") + td, td.rowhead:contains("Category") + td, td.rowhead:contains("Type") + td').first().text().trim();
@@ -18892,7 +30095,7 @@ ${body}
               const font = node.querySelector("font");
               if (font)
                 node = font;
-              let mi = htmlToBBCode(node).replace(/\[\/?(font|size|color)[^\]]*\]/gi, "").replace(/\r/g, "").replace(/\n{3,}/g, "\n\n").trim();
+              const mi = htmlToBBCode(node).replace(/\[\/?(font|size|color)[^\]]*\]/gi, "").replace(/\r/g, "").replace(/\n{3,}/g, "\n\n").trim();
               if (mi && /General|Video|Audio|DISC INFO|MPLS|Unique ID|Bit rate|Frame rate/i.test(mi)) {
                 out.fullMediaInfo = mi;
               }
@@ -18903,7 +30106,7 @@ ${body}
         return out;
       }
       async afterFill(meta) {
-        retry$2(() => {
+        retry$3(() => {
           var _a;
           const title = meta.title || "";
           const descr = meta.description || "";
@@ -18912,163 +30115,151 @@ ${body}
             if (m2)
               meta.audioCodecSel = m2.toUpperCase();
           }
-          const browsecat = document.querySelector('#browsecat, select[name="browsecat"]');
-          if (browsecat) {
-            const typeDict = {
-              电影: 401,
-              剧集: 402,
-              动漫: 409,
-              综艺: 403,
-              音乐: 408,
-              纪录: 406,
-              体育: 407,
-              软件: 411,
-              学习: 412,
-              游戏: 410,
-              书籍: 405,
-              MV: 108
-            };
-            let v2 = typeDict[meta.type || ""] ?? 409;
-            if (meta.type === "动漫") {
-              v2 = 401;
-              if (/S\d+|E\d+/i.test(title) || /◎集.*?数.*?\d+/.test(descr))
-                v2 = 402;
-              const dh = document.querySelector('input[name="tags[]"][value="dh"]');
-              if (dh)
-                dh.checked = true;
+          const typeDict = {
+            电影: "401",
+            剧集: "402",
+            综艺: "403",
+            纪录: "406",
+            音乐: "408",
+            体育: "407",
+            软件: "409",
+            学习: "412",
+            游戏: "410",
+            书籍: "405",
+            MV: "408"
+          };
+          let typeVal = typeDict[meta.type || ""] ?? "409";
+          if (meta.type === "动漫") {
+            typeVal = /S\d+|E\d+/i.test(title) || /◎集.*?数.*?\d+/.test(descr) ? "402" : "401";
+            const dh = document.querySelector('input[name="tags[]"][value="dh"]');
+            if (dh && !dh.checked) {
+              dh.checked = true;
+              dh.dispatchEvent(new Event("change", { bubbles: true }));
             }
-            if (meta.type === "书籍" && descr.match(/m4a|mp3/i)) {
-              v2 = 404;
-            }
-            browsecat.value = String(v2);
-            browsecat.dispatchEvent(new Event("change", { bubbles: true }));
-            browsecat.dispatchEvent(new Event("input", { bubbles: true }));
           }
-          const mediumSel = document.querySelector('select[name="medium_sel"]');
-          if (mediumSel) {
-            let mv = 11;
-            switch (meta.mediumSel) {
-              case "UHD":
-                mv = /DIY|@/i.test(title) ? 13 : 12;
-                break;
-              case "Blu-ray":
-                mv = /DIY|@/i.test(title) ? 14 : 1;
-                break;
-              case "DVD":
-                mv = 2;
-                break;
-              case "Remux":
-                mv = 3;
-                break;
-              case "HDTV":
-                mv = 5;
-                break;
-              case "Encode":
-                mv = 15;
-                break;
-              case "WEB-DL":
-                mv = 10;
-                break;
-              case "CD":
-                mv = 8;
-                break;
-            }
-            mediumSel.value = String(mv);
-            mediumSel.dispatchEvent(new Event("change", { bubbles: true }));
-            mediumSel.dispatchEvent(new Event("input", { bubbles: true }));
+          if (meta.type === "书籍" && /m4a|mp3/i.test(descr)) {
+            typeVal = "404";
           }
-          const codecSel = document.querySelector('select[name="codec_sel"]');
-          if (codecSel) {
-            let cv = 5;
-            switch (meta.codecSel) {
-              case "H265":
-              case "X265":
-                cv = 6;
-                break;
-              case "H264":
-              case "X264":
-                cv = 1;
-                break;
-              case "VC-1":
-                cv = 2;
-                break;
-              case "MPEG-2":
-              case "MPEG-4":
-                cv = 4;
-                break;
-            }
-            codecSel.value = String(cv);
-            codecSel.dispatchEvent(new Event("change", { bubbles: true }));
-            codecSel.dispatchEvent(new Event("input", { bubbles: true }));
+          setAudiencesDropdown("type", typeVal);
+          let mv = "11";
+          switch (meta.mediumSel) {
+            case "UHD":
+              mv = /DIY|@/i.test(title) ? "13" : "12";
+              break;
+            case "Blu-ray":
+              mv = /DIY|@/i.test(title) ? "14" : "1";
+              break;
+            case "DVD":
+              mv = "2";
+              break;
+            case "Remux":
+              mv = "3";
+              break;
+            case "HDTV":
+              mv = "5";
+              break;
+            case "Encode":
+              mv = "15";
+              break;
+            case "WEB-DL":
+              mv = "10";
+              break;
+            case "CD":
+              mv = "8";
+              break;
           }
-          const audioSel = document.querySelector('select[name="audiocodec_sel"]');
-          if (audioSel) {
-            let av = 7;
-            switch (meta.audioCodecSel) {
-              case "DTS-HDMA:X 7.1":
-              case "DTS-X":
-                av = 25;
-                break;
-              case "DTS-HD":
-              case "DTS-HDMA":
-                av = 19;
-                break;
-              case "TrueHD":
-                av = 20;
-                break;
-              case "Atmos":
-                av = 26;
-                break;
-              case "LPCM":
-                av = 21;
-                break;
-              case "DTS":
-              case "DTS-HDHR":
-                av = 3;
-                break;
-              case "AC3":
-                av = 18;
-                break;
-              case "AAC":
-                av = 6;
-                break;
-              case "Flac":
-                av = 1;
-                break;
-              case "APE":
-                av = 2;
-                break;
-              case "WAV":
-                av = 22;
-                break;
-              case "MP3":
-                av = 23;
-                break;
-              case "M4A":
-                av = 24;
-                break;
-            }
-            audioSel.value = String(av);
-            audioSel.dispatchEvent(new Event("change", { bubbles: true }));
-            audioSel.dispatchEvent(new Event("input", { bubbles: true }));
+          setAudiencesDropdown("medium_sel", mv);
+          let cv = "5";
+          switch (meta.codecSel) {
+            case "H265":
+            case "X265":
+              cv = "6";
+              break;
+            case "H264":
+            case "X264":
+              cv = "1";
+              break;
+            case "VC-1":
+              cv = "2";
+              break;
+            case "MPEG-2":
+            case "MPEG-4":
+              cv = "4";
+              break;
+            case "AV1":
+              cv = "7";
+              break;
           }
-          const standardSel = document.querySelector('select[name="standard_sel"]');
-          if (standardSel) {
-            const dict = { "8K": 1, "4K": 2, "1080p": 3, "1080i": 4, "720p": 5, SD: 6, "": 7 };
-            const idx = dict[meta.standardSel || ""] ?? 7;
-            if (standardSel.options[idx])
-              standardSel.options[idx].selected = true;
-            standardSel.dispatchEvent(new Event("change", { bubbles: true }));
-            standardSel.dispatchEvent(new Event("input", { bubbles: true }));
+          setAudiencesDropdown("codec_sel", cv);
+          let av = "7";
+          switch (meta.audioCodecSel) {
+            case "DTS-HDMA:X 7.1":
+            case "DTS-X":
+              av = "25";
+              break;
+            case "Atmos":
+              av = "26";
+              break;
+            case "DTS-HD":
+            case "DTS-HDMA":
+            case "DTS-HDHR":
+              av = "19";
+              break;
+            case "TrueHD":
+              av = "20";
+              break;
+            case "LPCM":
+              av = "21";
+              break;
+            case "DTS":
+              av = "3";
+              break;
+            case "AC3":
+              av = "18";
+              break;
+            case "OPUS":
+              av = "27";
+              break;
+            case "AAC":
+              av = "6";
+              break;
+            case "Flac":
+              av = "1";
+              break;
+            case "APE":
+              av = "2";
+              break;
+            case "WAV":
+              av = "22";
+              break;
+            case "MP3":
+              av = "23";
+              break;
+            case "M4A":
+              av = "24";
+              break;
           }
+          setAudiencesDropdown("audiocodec_sel", av);
+          const stdDict = {
+            "8K": "10",
+            "4K": "5",
+            "1080p": "1",
+            "1080i": "2",
+            "720p": "3",
+            SD: "4",
+            "": "11"
+          };
+          setAudiencesDropdown("standard_sel", stdDict[meta.standardSel || ""] ?? "11");
           try {
             const labels = getMetaLabels(meta);
             const check = (value, on) => {
               if (!on)
                 return;
               const el = document.querySelector(`input[name="tags[]"][value="${value}"]`);
-              if (el)
+              if (el && !el.checked) {
                 el.checked = true;
+                el.dispatchEvent(new Event("change", { bubbles: true }));
+              }
             };
             check("gy", !!labels.gy);
             check("yy", !!labels.yy);
@@ -19083,61 +30274,1106 @@ ${body}
         }, 10, 200);
       }
     }
-    const retry$1 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    const retry$2 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    function setVal$2(selector, val) {
+      const el = document.querySelector(selector);
+      if (!el || !val)
+        return;
+      if (!Array.from(el.options).some((o2) => o2.value === val))
+        return;
+      el.value = val;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
     class HDHomeEngine extends NexusPHPEngine {
       async afterFill(meta) {
-        try {
-          const labels = getMetaLabels(meta);
-          if (labels.diy || !labels.yp)
-            return;
-          retry$1(() => {
-            var _a, _b;
-            const inputs = Array.from(
-              document.querySelectorAll('input[type="checkbox"][name="tags[]"], input[type="checkbox"][name="tags[4][]"]')
-            );
-            for (const el of inputs) {
-              const val = (el.value || "").toLowerCase();
-              const text = (((_a = el.closest("label")) == null ? void 0 : _a.textContent) || ((_b = el.parentElement) == null ? void 0 : _b.textContent) || "").trim();
-              if (!(val === "ybyp" || val === "17" || val === "28" || /(原盘|untouch|untouched|ybyp)/i.test(text)))
-                continue;
-              el.checked = true;
-              el.dispatchEvent(new Event("change", { bubbles: true }));
-              el.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-          });
-        } catch {
-        }
+        retry$2(() => {
+          const title = meta.title || "";
+          const descr = meta.description || "";
+          const std = meta.standardSel || "";
+          const med = meta.mediumSel || "";
+          const isPad = /(?:pad|ipad)$/i.test(title);
+          const isUhd = med === "UHD" || std === "4K" || /UHD|2160p/i.test(title);
+          let cat = "409";
+          switch (meta.type || "电影") {
+            case "电影":
+              if (med === "UHD")
+                cat = std === "8K" ? "506" : "499";
+              else if (med === "Blu-ray")
+                cat = "450";
+              else if (med === "Remux")
+                cat = isUhd ? "518" : "415";
+              else if (isPad)
+                cat = "412";
+              else if (std === "8K")
+                cat = "505";
+              else if (std === "4K")
+                cat = "416";
+              else if (std === "720p")
+                cat = "413";
+              else if (std === "SD")
+                cat = "411";
+              else
+                cat = "414";
+              break;
+            case "剧集":
+              if (med === "UHD" || med === "Blu-ray" && std === "4K")
+                cat = std === "8K" ? "523" : "502";
+              else if (med === "Blu-ray")
+                cat = "453";
+              else if (med === "Remux")
+                cat = "437";
+              else if (isPad)
+                cat = "433";
+              else if (std === "8K")
+                cat = "526";
+              else if (std === "4K")
+                cat = "438";
+              else if (std === "1080i")
+                cat = "435";
+              else if (std === "720p")
+                cat = "434";
+              else if (std === "SD")
+                cat = "432";
+              else
+                cat = "436";
+              break;
+            case "纪录":
+              if (med === "UHD")
+                cat = std === "8K" ? "508" : "500";
+              else if (med === "Blu-ray")
+                cat = "451";
+              else if (med === "Remux")
+                cat = std === "8K" ? "529" : "421";
+              else if (isPad)
+                cat = "418";
+              else if (std === "8K")
+                cat = "507";
+              else if (std === "4K")
+                cat = "422";
+              else if (std === "720p")
+                cat = "419";
+              else if (std === "SD")
+                cat = "417";
+              else
+                cat = "420";
+              break;
+            case "动漫":
+              if (med === "UHD")
+                cat = std === "8K" ? "510" : "501";
+              else if (med === "Blu-ray")
+                cat = "454";
+              else if (med === "Remux")
+                cat = isUhd ? "531" : "448";
+              else if (isPad)
+                cat = "445";
+              else if (std === "8K")
+                cat = "509";
+              else if (std === "4K")
+                cat = "449";
+              else if (std === "720p")
+                cat = "446";
+              else if (std === "SD")
+                cat = "444";
+              else
+                cat = "447";
+              break;
+            case "综艺":
+              if (med === "Blu-ray" || med === "UHD")
+                cat = "452";
+              else if (med === "Remux")
+                cat = "430";
+              else if (isPad)
+                cat = "426";
+              else if (std === "4K")
+                cat = "431";
+              else if (std === "1080i")
+                cat = "428";
+              else if (std === "720p")
+                cat = "427";
+              else if (std === "SD")
+                cat = "425";
+              else
+                cat = "429";
+              break;
+            case "体育":
+              if (std === "8K")
+                cat = "511";
+              else if (std === "4K")
+                cat = "504";
+              else if (std === "720p")
+                cat = "442";
+              else
+                cat = "443";
+              break;
+            case "音乐":
+              if (/mpls/i.test(descr))
+                cat = "503";
+              else if (/APE/i.test(title))
+                cat = "439";
+              else
+                cat = "440";
+              break;
+            case "MV":
+              cat = "441";
+              break;
+          }
+          setVal$2("#browsecat", cat);
+          const sourceMap = {
+            UHD: "9",
+            "Blu-ray": "1",
+            Remux: isUhd ? "9" : "1",
+            Encode: isUhd ? "9" : "1",
+            HDTV: "4",
+            DVD: "3",
+            "WEB-DL": "7"
+          };
+          setVal$2('select[name="source_sel"]', sourceMap[med] || "8");
+          const medMap = {
+            UHD: "10",
+            "Blu-ray": "1",
+            Remux: "3",
+            Encode: "7",
+            HDTV: "5",
+            CD: "8",
+            "WEB-DL": "11"
+          };
+          setVal$2('select[name="medium_sel"]', /MiniBD/i.test(title) ? "4" : medMap[med] || "7");
+          const codecMap = {
+            H264: "1",
+            X264: "1",
+            H265: "2",
+            X265: "2",
+            "VC-1": "3",
+            "MPEG-2": "4",
+            "MPEG-4": "4"
+          };
+          setVal$2('select[name="codec_sel"]', codecMap[meta.codecSel || ""] || "5");
+          const audioMap = {
+            "DTS-HDMA:X 7.1": "17",
+            "DTS-X": "17",
+            Atmos: "12",
+            "DTS-HDMA": "11",
+            "DTS-HD": "11",
+            "DTS-HDHR": "18",
+            TrueHD: "13",
+            LPCM: "14",
+            DTS: "3",
+            AC3: "15",
+            AAC: "6",
+            Flac: "1",
+            APE: "2",
+            WAV: "16"
+          };
+          setVal$2('select[name="audiocodec_sel"]', audioMap[meta.audioCodecSel || ""] || "7");
+          const stdMap = { "8K": "10", "4K": "1", "1080p": "2", "1080i": "3", "720p": "4", SD: "5" };
+          setVal$2('select[name="standard_sel"]', stdMap[std] || "2");
+          setVal$2('select[name="processing_sel"]', ["UHD", "Blu-ray", "Remux", "DVD"].includes(med) ? "1" : "2");
+          setVal$2('select[name="team_sel"]', "11");
+          try {
+            const labels = getMetaLabels(meta);
+            const checkTag = (selector, on) => {
+              if (!on)
+                return;
+              const el = document.querySelector(selector);
+              if (el && !el.checked) {
+                el.checked = true;
+                el.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            };
+            checkTag('#tag_ybyp, input[name="tags[]"][value="ybyp"]', !labels.diy && !!labels.yp);
+            checkTag('input[name="tags[]"][value="tx"]', /特效字幕/.test(`${meta.smallDescr || meta.subtitle || ""} ${descr}`));
+          } catch {
+          }
+        });
       }
     }
-    const retry = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    const retry$1 = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    function setVal$1(selector, val) {
+      const el = document.querySelector(selector);
+      if (!el || !val)
+        return;
+      if (!Array.from(el.options).some((o2) => o2.value === val))
+        return;
+      el.value = val;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
     const setById = (id, on) => {
       if (!on)
         return;
       const el = document.getElementById(id);
       if (!el || el.type !== "checkbox")
         return;
-      el.checked = true;
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-      el.dispatchEvent(new Event("input", { bubbles: true }));
+      if (!el.checked) {
+        el.checked = true;
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+      }
     };
     class OurBitsEngine extends NexusPHPEngine {
       async afterFill(meta) {
-        try {
-          const labels = getMetaLabels(meta);
-          retry(() => {
+        retry$1(() => {
+          const title = meta.title || "";
+          const std = meta.standardSel || "";
+          const med = meta.mediumSel || "";
+          let cat = "401";
+          switch (meta.type || "电影") {
+            case "电影":
+              cat = /(?:^|[.\s])3D(?:[.\s]|$)/i.test(title) ? "402" : "401";
+              break;
+            case "剧集":
+              cat = /S\d{1,2}E\d{1,3}/i.test(title) ? "412" : "405";
+              break;
+            case "综艺":
+              cat = "413";
+              break;
+            case "纪录":
+              cat = "410";
+              break;
+            case "动漫":
+              cat = "411";
+              break;
+            case "体育":
+              cat = "415";
+              break;
+            case "MV":
+              cat = "414";
+              break;
+            case "音乐":
+              cat = /演唱会|concert/i.test(`${meta.smallDescr || ""} ${title}`) ? "419" : "416";
+              break;
+          }
+          setVal$1('#browsecat, select[name="type"]', cat);
+          const medMap = {
+            UHD: "12",
+            "Blu-ray": "1",
+            Remux: std === "4K" ? "12" : "1",
+            Encode: "7",
+            "WEB-DL": "9",
+            HDTV: std === "4K" ? "13" : "5",
+            DVD: "2",
+            CD: "8"
+          };
+          setVal$1('select[name="medium_sel"]', medMap[med] || "7");
+          const codecMap = {
+            H264: "12",
+            X264: "12",
+            H265: "14",
+            X265: "14",
+            "MPEG-2": "15",
+            "MPEG-4": "15",
+            "VC-1": "16",
+            XVID: "17",
+            AV1: "19"
+          };
+          setVal$1('select[name="codec_sel"]', codecMap[meta.codecSel || ""] || "18");
+          const audioMap = {
+            Atmos: "14",
+            "DTS-X": "21",
+            "DTS-HDMA:X 7.1": "21",
+            "DTS-HDMA": "1",
+            "DTS-HD": "1",
+            "DTS-HDHR": "1",
+            TrueHD: "2",
+            DTS: "4",
+            LPCM: "5",
+            Flac: "13",
+            APE: "12",
+            AAC: "7",
+            AC3: "6",
+            WAV: "11",
+            MP3: "32",
+            OPUS: "33"
+          };
+          setVal$1('select[name="audiocodec_sel"]', audioMap[meta.audioCodecSel || ""] || "6");
+          const stdMap = { "4K": "5", "1080p": "1", "1080i": "2", "720p": "3", SD: "4" };
+          setVal$1('select[name="standard_sel"]', stdMap[std] || "1");
+          const region = (meta.sourceSel || getSourceSelFromDescr(meta.description || "") || "").trim();
+          const regionMap = {
+            大陆: "1",
+            欧美: "2",
+            香港: "3",
+            台湾: "3",
+            港台: "3",
+            日本: "4",
+            韩国: "5"
+          };
+          setVal$1('select[name="processing_sel"]', regionMap[region] || "6");
+          try {
+            const labels = getMetaLabels(meta);
             setById("tag_gy", !!labels.gy);
             setById("tag_zz", !!labels.zz);
             setById("tag_diy", !!labels.diy);
             setById("tag_hdr", !!labels.hdr10);
             setById("tag_hdrp", !!labels.hdr10plus);
             setById("tag_db", !!labels.db);
-            setById("tag_hlg", /HLG/i.test(meta.title || ""));
-          });
+            setById("tag_hlg", /HLG/i.test(title));
+            setById("tag_hdrvivid", /HDR\s*Vivid/i.test(`${title} ${meta.description || ""}`));
+          } catch {
+          }
+        });
+      }
+    }
+    class FRDSEngine extends NexusPHPEngine {
+      async afterParse(meta) {
+        const out = { ...meta };
+        const rawTitle = (out.title || "").trim();
+        const rawSub = (out.subtitle || out.smallDescr || "").trim();
+        const subLooksRelease = /\b(?:2160p|1080[pi]|720p|480p|Blu-?Ray|WEB-?DL|WEBRip|Remux|HDTV|x26[45]|H\.?26[45]|HEVC|AVC|AV1)\b|@FRDS/i.test(rawSub);
+        const titleHasCjk = /[\u4e00-\u9fff]/.test(rawTitle);
+        if (rawSub && subLooksRelease && (titleHasCjk || !rawTitle)) {
+          out.title = rawSub;
+          out.subtitle = rawTitle;
+          out.smallDescr = rawTitle;
+        }
+        return out;
+      }
+    }
+    const retry = (fn, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+    function setVal(selector, val) {
+      const el = document.querySelector(selector);
+      if (!el || !val)
+        return;
+      if (!Array.from(el.options).some((o2) => o2.value === val))
+        return;
+      el.value = val;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    class HDChinaEngine extends NexusPHPEngine {
+      async afterFill(meta) {
+        retry(() => {
+          const title = meta.title || "";
+          const small = meta.smallDescr || meta.subtitle || "";
+          const std = meta.standardSel || "";
+          const med = meta.mediumSel || "";
+          const src = meta.sourceSel || "";
+          let cat = "409";
+          if (/(?:pad|ipad)$/i.test(title)) {
+            cat = "27";
+          } else {
+            switch (meta.type || "电影") {
+              case "电影":
+                if (med === "UHD" || std === "4K")
+                  cat = "410";
+                else if (med === "Blu-ray")
+                  cat = "20";
+                else if (std === "720p")
+                  cat = "9";
+                else if (std === "1080i")
+                  cat = "16";
+                else
+                  cat = "17";
+                break;
+              case "剧集": {
+                const isPack = /(?:complete|S\d{1,2}(?!E))/i.test(title) && !/E\d{1,3}/i.test(title);
+                if (["大陆", "台湾", "香港", "港台"].includes(src))
+                  cat = isPack ? "22" : "25";
+                else if (src === "日本")
+                  cat = isPack ? "23" : "24";
+                else if (src === "韩国")
+                  cat = isPack ? "23" : "26";
+                else
+                  cat = /S\d{1,2}E\d{1,3}/i.test(title) ? "13" : "21";
+                break;
+              }
+              case "音乐":
+                cat = /音乐会|演唱会|concert/i.test(`${small} ${title}`) ? "402" : "408";
+                break;
+              case "MV":
+                cat = "406";
+                break;
+              case "综艺":
+                cat = "401";
+                break;
+              case "动漫":
+                cat = "14";
+                break;
+              case "纪录":
+                cat = "5";
+                break;
+              case "体育":
+                cat = "15";
+                break;
+              case "学习":
+              case "书籍":
+                cat = "404";
+                break;
+            }
+          }
+          setVal('#browsecat, select[name="type"]', cat);
+          setVal('#share_rule, select[name="share_rule"]', "3");
+          const stdMap = { "8K": "19", "4K": "17", "1080p": "11", "1080i": "12", "720p": "13", SD: "15" };
+          setVal('select[name="standard_sel"]', stdMap[std] || "10");
+          let medVal = "15";
+          if (/MiniBD/i.test(title))
+            medVal = "2";
+          else {
+            const medMap = {
+              UHD: "11",
+              "Blu-ray": "11",
+              Remux: "6",
+              Encode: "5",
+              "WEB-DL": "21",
+              HDTV: "13",
+              DVD: "14",
+              CD: "1"
+            };
+            medVal = medMap[med] || "15";
+          }
+          setVal('select[name="medium_sel"]', medVal);
+          const codecMap = {
+            H264: "1",
+            X264: "6",
+            H265: "10",
+            X265: "10",
+            "VC-1": "2",
+            "MPEG-2": "4",
+            "MPEG-4": "4",
+            XVID: "3"
+          };
+          setVal('select[name="codec_sel"]', codecMap[meta.codecSel || ""] || "5");
+          const audioMap = {
+            Atmos: "15",
+            "DTS-X": "14",
+            "DTS-HDMA:X 7.1": "14",
+            TrueHD: "13",
+            "DTS-HDMA": "12",
+            LPCM: "11",
+            DTS: "3",
+            "DTS-HD": "3",
+            "DTS-HDHR": "3",
+            AC3: "8",
+            AAC: "6",
+            Flac: "1",
+            APE: "2",
+            WAV: "9",
+            MP3: "4"
+          };
+          setVal('select[name="audiocodec_sel"]', audioMap[meta.audioCodecSel || ""] || "7");
+          setVal('select[name="team_sel"]', "5");
+        });
+      }
+    }
+    class NPUPTEngine extends NexusPHPEngine {
+      async afterFill(meta) {
+        var _a, _b;
+        const typeDict = {
+          电影: "401",
+          剧集: "402",
+          纪录: "404",
+          动漫: "405",
+          综艺: "403",
+          学习: "411",
+          音乐: "414",
+          体育: "407",
+          软件: "408"
+        };
+        const browsecat = document.getElementById("browsecat");
+        if (browsecat) {
+          browsecat.value = typeDict[meta.type || ""] || "409";
+          dispatchFormEvents(browsecat);
+        }
+        const cb = document.getElementById("torrent_name_checkbox");
+        if (cb && !cb.checked) {
+          cb.checked = true;
+          dispatchFormEvents(cb);
+        }
+        const title = meta.targetTitle || meta.title || "";
+        const src = meta.sourceSel || "";
+        const sourceSelEl = document.getElementById("source_sel");
+        if (meta.type === "电影") {
+          if (sourceSelEl) {
+            if (["大陆", "台湾", "香港", "港台"].includes(src))
+              sourceSelEl.value = "6";
+            else if (src === "欧美")
+              sourceSelEl.value = "5";
+            else if (["日本", "韩国", "日韩"].includes(src))
+              sourceSelEl.value = "4";
+            else
+              sourceSelEl.value = "7";
+            dispatchFormEvents(sourceSelEl);
+          }
+          setFirstFormValue("#torrent_name_field0", getSearchName(title));
+          const year = ((_a = title.match(/(19|20)\d{2}/)) == null ? void 0 : _a[0]) || "";
+          if (year)
+            setFirstFormValue("#torrent_name_field1", year);
+        } else if (meta.type === "剧集") {
+          if (sourceSelEl) {
+            if (src === "大陆")
+              sourceSelEl.value = "23";
+            else if (["台湾", "香港", "港台"].includes(src))
+              sourceSelEl.value = "24";
+            else if (src === "欧美")
+              sourceSelEl.value = "25";
+            else if (src === "日本")
+              sourceSelEl.value = "26";
+            else if (src === "韩国")
+              sourceSelEl.value = "27";
+            else
+              sourceSelEl.value = "63";
+            dispatchFormEvents(sourceSelEl);
+          }
+          setFirstFormValue("#torrent_name_field0", getSearchName(title));
+          const se = ((_b = title.match(/S\d+(?:-S\d+)?|S\d+(?:E\d+)?|EP?\d+(?:-E?\d+)?/i)) == null ? void 0 : _b[0]) || "";
+          if (se)
+            setFirstFormValue("#torrent_name_field1", se);
+        }
+        const medMap = {
+          UHD: "BluRay",
+          "Blu-ray": "BluRay",
+          DVD: "DVD",
+          Remux: "Remux",
+          HDTV: "HDTV",
+          "WEB-DL": "WEB-DL",
+          Encode: "Encode"
+        };
+        if (meta.mediumSel && medMap[meta.mediumSel]) {
+          setFirstFormValue("#torrent_name_field2", medMap[meta.mediumSel]);
+        }
+        const stdMap = {
+          "4K": "2160p",
+          "1080p": "1080p",
+          "1080i": "1080i",
+          "720p": "720p",
+          SD: "480p"
+        };
+        if (meta.standardSel && stdMap[meta.standardSel]) {
+          setFirstFormValue("#torrent_name_field3", stdMap[meta.standardSel]);
+        }
+        const codecMap = {
+          H264: "H264",
+          X264: "x264",
+          H265: "x265",
+          X265: "x265",
+          "VC-1": "WMV",
+          "MPEG-2": "MPEG2",
+          XVID: "Xvid"
+        };
+        if (meta.codecSel && codecMap[meta.codecSel]) {
+          setFirstFormValue("#torrent_name_field4", codecMap[meta.codecSel]);
+        }
+        const teamMatch = title.trim().match(/(wiki|cmct|mteam|epic|HDChina|hds|beast|ctrlhd|chd)/i);
+        if (teamMatch == null ? void 0 : teamMatch[1]) {
+          setFirstFormValue("#torrent_name_field5", teamMatch[1]);
+        }
+      }
+    }
+    class HaiDanEngine extends NexusPHPEngine {
+      async afterFill(meta) {
+        const setIdx = (name2, idx) => {
+          const sel = document.getElementsByName(name2)[0];
+          if (!sel || !sel.options[idx])
+            return;
+          sel.selectedIndex = idx;
+          sel.options[idx].selected = true;
+          dispatchFormEvents(sel);
+        };
+        const typeIdx = {
+          电影: 2,
+          剧集: 4,
+          动漫: 3,
+          综艺: 5,
+          音乐: 9,
+          纪录: 1,
+          体育: 7,
+          MV: 6
+        };
+        setIdx("type", typeIdx[meta.type || ""] ?? 8);
+        const title = meta.targetTitle || meta.title || "";
+        const small = meta.smallDescr || meta.subtitle || "";
+        if (meta.type === "剧集") {
+          const se = title.match(/S(\d+)E(\d+)/i);
+          const sOnly = title.match(/S(\d+)/i);
+          const epOnly = title.match(/E\d+(?:-E\d+)?/);
+          if (se) {
+            setAllFormValues("#season", se[1]);
+            setAllFormValues("#episode", se[2]);
+          } else if (sOnly) {
+            setAllFormValues("#season", sOnly[1]);
+          } else if (/COMPLETE/i.test(title) || /全\d+集/.test(small)) {
+            setAllFormValues("#season", "1");
+          } else if (epOnly) {
+            setAllFormValues("#season", "1");
+            setAllFormValues("#episode", epOnly[0].replace(/E/g, ""));
+          }
+        }
+        const medIdx = {
+          UHD: 1,
+          "Blu-ray": 2,
+          Remux: 3,
+          Encode: 4,
+          HDTV: 5,
+          "WEB-DL": 6,
+          DVD: 7,
+          CD: 8
+        };
+        if (meta.mediumSel && medIdx[meta.mediumSel] !== void 0) {
+          setIdx("medium_sel", medIdx[meta.mediumSel]);
+        }
+        const codecIdx = {
+          H264: 1,
+          X264: 1,
+          "VC-1": 2,
+          "MPEG-2": 3,
+          H265: 5,
+          X265: 5,
+          XVID: 6
+        };
+        setIdx("codec_sel", codecIdx[meta.codecSel || ""] ?? 4);
+        const audioIdx = {
+          Flac: 1,
+          APE: 2,
+          DTS: 3,
+          AAC: 5,
+          "DTS-HD": 6,
+          AC3: 7,
+          LPCM: 8,
+          "DTS-HDMA": 9,
+          "DTS-HDMA:X 7.1": 9,
+          "DTS-HDHR": 9,
+          TrueHD: 10,
+          Atmos: 10,
+          MP3: 10,
+          "": 6
+        };
+        if (audioIdx[meta.audioCodecSel || ""] !== void 0) {
+          setIdx("audiocodec_sel", audioIdx[meta.audioCodecSel || ""]);
+        }
+        const stdIdx = {
+          "4K": 1,
+          "1080p": 2,
+          "1080i": 3,
+          "720p": 4,
+          SD: 5,
+          "": 5
+        };
+        setIdx("standard_sel", stdIdx[meta.standardSel || ""] ?? 5);
+        const teamMatch = title.match(/-([^-]*?)$/);
+        if (teamMatch == null ? void 0 : teamMatch[1]) {
+          setAllFormValues("#team_suffix", teamMatch[1].trim());
+        }
+        try {
+          const info = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+          const mi = (meta.fullMediaInfo || info.mediainfo || "").trim();
+          if (mi)
+            setAllFormValues('textarea[name="nfo-string"]', mi);
+          if (info.picInfo) {
+            const urls = Array.from(info.picInfo.matchAll(/\[img\](.*?)\[\/img\]/gi)).map((m2) => m2[1].trim()).filter(Boolean);
+            const picVal = urls.length ? Array.from(new Set(urls)).join("\n") : info.picInfo;
+            setAllFormValues('textarea[name="preview-pics"]', picVal);
+          }
+          const boxes = $$1('textarea[name="descr"], textarea[name="nfo-string"], textarea[name="preview-pics"]');
+          if (boxes.length)
+            boxes.css({ minHeight: "160px" });
         } catch {
         }
       }
     }
-    class FRDSEngine extends NexusPHPEngine {
+    function extractTeamFromTitle(title) {
+      var _a;
+      const m2 = String(title || "").match(/-(.*)$/);
+      if (!m2)
+        return "";
+      return ((_a = m2[1].split(/x264|x265|ac3|aac|dts|-/i).pop()) == null ? void 0 : _a.trim()) || "";
+    }
+    function getCleanMediaInfo(meta) {
+      const info = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+      const mediainfo = (meta.fullMediaInfo || info.mediainfo || "").replace(/\[\/?(?:quote|code|size|font|color)[^\]]*\]/gi, "").trim();
+      return { mediainfo, picInfo: info.picInfo || "" };
+    }
+    async function resolveTmdbByImdb(imdbId) {
+      var _a, _b, _c, _d, _e, _f;
+      if (!imdbId)
+        return {};
+      try {
+        const settings = await SettingsService.load();
+        const apiKey = getEffectiveTmdbApiKey(settings);
+        if (!apiKey)
+          return {};
+        const resp = await GMAdapter.xmlHttpRequest({
+          method: "GET",
+          url: `https://api.themoviedb.org/3/find/${encodeURIComponent(imdbId)}?api_key=${encodeURIComponent(apiKey)}&external_source=imdb_id&include_adult=false&language=en-US`,
+          timeout: 1e4
+        });
+        const data = JSON.parse((resp == null ? void 0 : resp.responseText) || "{}");
+        const movieId = ((_b = (_a = data == null ? void 0 : data.movie_results) == null ? void 0 : _a[0]) == null ? void 0 : _b.id) ? String(data.movie_results[0].id) : void 0;
+        const tvId = ((_d = (_c = data == null ? void 0 : data.tv_results) == null ? void 0 : _c[0]) == null ? void 0 : _d.id) ? String(data.tv_results[0].id) : ((_f = (_e = data == null ? void 0 : data.tv_episode_results) == null ? void 0 : _e[0]) == null ? void 0 : _f.show_id) ? String(data.tv_episode_results[0].show_id) : void 0;
+        return { movieId, tvId };
+      } catch {
+        return {};
+      }
+    }
+    async function injectGazelleTorrent(meta, siteName) {
+      var _a;
+      if (!meta.torrentBase64 && !meta.torrentUrl)
+        return;
+      try {
+        const announce = ((_a = document.querySelector('input[value*="announce"]')) == null ? void 0 : _a.value) || null;
+        const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+        const result = await TorrentService2.buildForwardTorrentFile(meta, siteName, announce);
+        if (result)
+          TorrentService2.injectTorrentForSite(siteName, result.file, result.filename);
+      } catch (e2) {
+        console.error(`[Auto-Feed][${siteName}] Torrent inject failed:`, e2);
+      }
+    }
+    class HDFEngine extends GazelleEngine {
+      async fill(meta) {
+        await injectGazelleTorrent(meta, this.siteName);
+        const title = meta.targetTitle || meta.title || "";
+        const codecMap = {
+          H265: "H265",
+          X265: "x265",
+          H264: "H264",
+          X264: "x264",
+          "VC-1": "VC-1",
+          "MPEG-2": "MPEG-2"
+        };
+        let fmt = codecMap[meta.codecSel || ""] || "";
+        if (/AVC/.test(title))
+          fmt = "AVC";
+        if (fmt)
+          setAllFormValues('#format, select[name="format"]', fmt);
+        const stdMap = {
+          "720p": "720p",
+          "1080i": "1080i",
+          "1080p": "1080p",
+          "4K": "2160p",
+          "": "Other"
+        };
+        const bitrate = stdMap[meta.standardSel || ""];
+        if (bitrate)
+          setAllFormValues('#bitrate, select[name="bitrate"]', bitrate);
+        let mediaVal = "";
+        if (meta.mediumSel === "UHD" || meta.mediumSel === "Blu-ray")
+          mediaVal = "Blu-Ray Original";
+        else if (meta.mediumSel === "Encode")
+          mediaVal = "Blu-Ray Rip";
+        else if (meta.mediumSel === "Remux")
+          mediaVal = "Blu-Ray Remux";
+        else if (meta.mediumSel === "WEB-DL")
+          mediaVal = "WEB-DL";
+        if (/hd-dvd/i.test(title))
+          mediaVal = "HD-DVD";
+        if (mediaVal)
+          setAllFormValues('select[name="media"], #media', mediaVal);
+        const team = extractTeamFromTitle(title);
+        if (team)
+          setFirstFormValue('#team, input[name="team"]', team);
+        const { mediainfo } = getCleanMediaInfo(meta);
+        setFirstFormValue('#release_desc, textarea[name="release_desc"]', mediainfo || (meta.description || "").replace(/\[.*?\]/g, ""), { force: true });
+        if (meta.type === "剧集") {
+          const isAnime = /类[\s\S]{0,5}别[\s\S]{0,30}动画/.test(meta.description || "");
+          setAllFormValues("#categories", isAnime ? "5" : "4");
+        } else if (meta.type === "纪录") {
+          setAllFormValues("#categories", "6");
+        }
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId) {
+          const tmdb = await resolveTmdbByImdb(imdbId);
+          const url = tmdb.movieId ? `https://www.themoviedb.org/movie/${tmdb.movieId}` : tmdb.tvId ? `https://www.themoviedb.org/tv/${tmdb.tvId}` : "";
+          if (url)
+            setFirstFormValue("#allocine_url", url, { force: false });
+        }
+      }
+    }
+    class ANTEngine extends GazelleEngine {
+      async fill(meta) {
+        var _a;
+        await injectGazelleTorrent(meta, this.siteName);
+        const settings = await SettingsService.load();
+        const title = meta.targetTitle || meta.title || "";
+        const { mediainfo, picInfo } = getCleanMediaInfo(meta);
+        setFirstFormValue('#mediainfo, textarea[name="mediainfo"]', mediainfo || (meta.description || "").replace(/\[.*?\]/g, ""), { force: true });
+        if (picInfo) {
+          const urls = Array.from(picInfo.matchAll(/\[img\](.*?)\[\/img\]/gi)).map((m2) => m2[1].trim()).filter(Boolean);
+          setFirstFormValue('#screenshots, textarea[name="screenshots"]', urls.length ? Array.from(new Set(urls)).join("\n") : picInfo);
+        }
+        const catEl = document.getElementById("categories");
+        if (catEl && $$1(catEl).is(":visible")) {
+          setFirstFormValue('#title, input[name="title"]', getSearchName(title), { force: false });
+          const year = ((_a = title.match(/(?:19|20)\d{2}/)) == null ? void 0 : _a[0]) || "";
+          if (year)
+            setFirstFormValue('#year, input[name="year"]', year, { force: false });
+          if (meta.type === "剧集") {
+            catEl.value = "2";
+            dispatchFormEvents(catEl);
+          }
+        }
+        let mediaVal = "";
+        if (["UHD", "Blu-ray", "Encode", "Remux"].includes(meta.mediumSel || ""))
+          mediaVal = "Blu-ray";
+        else if (meta.mediumSel === "HDTV")
+          mediaVal = "HDTV";
+        else if (meta.mediumSel === "WEB-DL")
+          mediaVal = "WEB";
+        else if (meta.mediumSel === "DVD")
+          mediaVal = "DVD";
+        else if (meta.mediumSel === "TV")
+          mediaVal = "TV";
+        if (/hd-dvd/i.test(title))
+          mediaVal = "HD-DVD";
+        if (mediaVal)
+          setAllFormValues('select[name="media"], #media', mediaVal);
+        const codecMap = {
+          H265: "H265",
+          X265: "H265",
+          H264: "H264",
+          X264: "H264",
+          "VC-1": "VC-1",
+          Xvid: "XviD",
+          XVID: "XviD",
+          "MPEG-2": "MPEG-2"
+        };
+        if (meta.codecSel && codecMap[meta.codecSel]) {
+          setAllFormValues('select[name="codec"], #codec', codecMap[meta.codecSel]);
+        }
+        const audioMap = {
+          "DTS-HD": "DTS",
+          "DTS-HDMA:X 7.1": "DTS",
+          "DTS-HDMA": "DTS",
+          DTS: "DTS",
+          TrueHD: "True-HD",
+          Atmos: "True-HD",
+          LPCM: "PCM",
+          AC3: /E-AC-3|DD[P+]/i.test(`${title}
+${meta.description || ""}`) ? "EAC3" : "AC3",
+          AAC: "AAC",
+          Flac: "FLAC",
+          MP3: "MP3"
+        };
+        if (meta.audioCodecSel && audioMap[meta.audioCodecSel]) {
+          setAllFormValues('select[name="audioformat"]', audioMap[meta.audioCodecSel]);
+        }
+        if (/Atmos/i.test(title)) {
+          const cb = document.querySelector('input[value="Atmos"]');
+          if (cb) {
+            cb.checked = true;
+            dispatchFormEvents(cb);
+          }
+        }
+        if (/Remux/i.test(title)) {
+          const cb = document.querySelector('input[value="Remux"]');
+          if (cb) {
+            cb.checked = true;
+            dispatchFormEvents(cb);
+          }
+        }
+        const stdMap = {
+          SD: "480p",
+          "720p": "720p",
+          "1080i": "1080i",
+          "1080p": "1080p",
+          "4K": "2160p",
+          "": "Other"
+        };
+        if (stdMap[meta.standardSel || ""]) {
+          setAllFormValues('#ressel, select[name="resolution"]', stdMap[meta.standardSel || ""]);
+        }
+        const team = extractTeamFromTitle(title);
+        if (team)
+          setFirstFormValue('#releasegroup, input[name="releasegroup"]', team);
+        if (settings.defaultAnonymous) {
+          const anon = document.querySelector('input[name="anonymous"]');
+          if (anon && !anon.checked) {
+            anon.checked = true;
+            dispatchFormEvents(anon);
+          }
+        }
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId) {
+          const tmdb = await resolveTmdbByImdb(imdbId);
+          if (tmdb.movieId) {
+            setFirstFormValue('#tmdbid, input[name="tmdbid"]', tmdb.movieId, { force: false });
+          }
+        }
+      }
+    }
+    class TVVEngine extends GazelleEngine {
+      async fill(meta) {
+        var _a, _b, _c, _d, _e;
+        await injectGazelleTorrent(meta, this.siteName);
+        const title = meta.targetTitle || meta.title || "";
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId)
+          setFirstFormValue('input[name="imdb_link"]', imdbId);
+        const year = ((_a = title.match(/(?:19|20)\d{2}/g)) == null ? void 0 : _a.pop()) || "";
+        if (year)
+          setFirstFormValue('#year, input[name="year"]', year, { force: false });
+        const showInfo = ((_b = title.match(/S\d+(?:E\d+)?/i)) == null ? void 0 : _b[0]) || "";
+        if (showInfo) {
+          let tvvTitle = "";
+          const s2 = (_c = showInfo.match(/S(\d+)/i)) == null ? void 0 : _c[1];
+          const e2 = (_d = showInfo.match(/E(\d+)/i)) == null ? void 0 : _d[1];
+          if (s2)
+            tvvTitle += `Season ${parseInt(s2, 10)}`;
+          if (e2)
+            tvvTitle += `, Episodes ${e2}`;
+          const res = (_e = title.match(/(?:720|1080|2160|576|480|4k)[pi]/i)) == null ? void 0 : _e[0];
+          if (res)
+            tvvTitle += ` (${res})`;
+          if (tvvTitle)
+            setFirstFormValue('#title, input[name="title"]', tvvTitle, { force: false });
+        }
+        const { mediainfo, picInfo } = getCleanMediaInfo(meta);
+        const relDesc = [mediainfo, picInfo].filter(Boolean).join("\n\n") || (meta.description || "").replace(/\[\/?.{1,20}\]\n?/g, "");
+        setFirstFormValue('#release_desc, textarea[name="release_desc"]', relDesc, { force: true });
+        if (/Audio Video Interleave|AVI/i.test(relDesc))
+          setAllFormValues("#container", "AVI");
+        else if (/mp4|\.mp4/i.test(relDesc))
+          setAllFormValues("#container", "MP4");
+        else if (/Matroska|\.mkv/i.test(relDesc))
+          setAllFormValues("#container", "MKV");
+        else if (/\.mpg/i.test(relDesc))
+          setAllFormValues("#container", "MPG");
+        else if (/MPLS/i.test(meta.description || ""))
+          setAllFormValues("#container", "m2ts");
+        let mediaVal = "";
+        if (["UHD", "Blu-ray", "Encode", "Remux"].includes(meta.mediumSel || ""))
+          mediaVal = "Blu-ray";
+        else if (meta.mediumSel === "HDTV")
+          mediaVal = "HDTV";
+        else if (meta.mediumSel === "WEB-DL")
+          mediaVal = "Web";
+        else if (meta.mediumSel === "DVD")
+          mediaVal = /hd.?dvd/i.test(title) ? "HD-DVD" : "DVD";
+        else if (meta.mediumSel === "TV")
+          mediaVal = "TV";
+        if (mediaVal)
+          setAllFormValues('select[name="media"]', mediaVal);
+        if (/hd-dvd/i.test(title))
+          setAllFormValues("#source", "HD-DVD");
+        const fmtMap = {
+          H264: "H.264",
+          X264: "H.264",
+          H265: "Other",
+          X265: "Other",
+          "VC-1": "Other",
+          Xvid: "XviD",
+          XVID: "XviD"
+        };
+        if (meta.codecSel && fmtMap[meta.codecSel])
+          setAllFormValues('select[name="format"]', fmtMap[meta.codecSel]);
+        if (/dvd5/i.test(title))
+          setAllFormValues("#codec", "DVD5");
+        else if (/dvd9/i.test(title))
+          setAllFormValues("#codec", "DVD9");
+        const aformat = document.getElementsByName("aformat")[0];
+        if (aformat) {
+          const idxMap = {
+            AC3: 1,
+            MP3: 2,
+            AAC: 6,
+            DTS: 7,
+            "DTS-HD": 7,
+            "DTS-HDMA": 7,
+            "DTS-HDMA:X 7.1": 7,
+            Flac: 8,
+            LPCM: 9,
+            TrueHD: 12,
+            Atmos: 12,
+            APE: 12,
+            WAV: 12
+          };
+          const idx = idxMap[meta.audioCodecSel || ""] ?? 12;
+          if (aformat.options[idx]) {
+            aformat.selectedIndex = idx;
+            dispatchFormEvents(aformat);
+          }
+        }
+        setAllFormValues('select[name="tvdb_link_type"]', meta.type === "电影" ? "movies" : "series");
+      }
+    }
+    class NBLEngine extends GazelleEngine {
+      async fill(meta) {
+        var _a, _b;
+        await injectGazelleTorrent(meta, this.siteName);
+        const title = meta.targetTitle || meta.title || "";
+        $$1("#categorywrap, #tvmaze, #mediainfowrap, #checkbutton").show();
+        setAllFormValues("#category", /S\d+E\d+/i.test(title) ? "1" : "3");
+        const { mediainfo } = getCleanMediaInfo(meta);
+        setFirstFormValue('#media, textarea[name="media"]', mediainfo || (meta.description || "").replace(/\[.*?\]/g, ""), { force: true });
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        const searchName = getSearchName(title);
+        if (imdbId || searchName) {
+          try {
+            const url = imdbId ? `https://api.tvmaze.com/lookup/shows?imdb=${encodeURIComponent(imdbId)}` : `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(searchName)}`;
+            const resp = await GMAdapter.xmlHttpRequest({ method: "GET", url, timeout: 1e4 });
+            const data = JSON.parse((resp == null ? void 0 : resp.responseText) || "null");
+            const showId = imdbId ? data == null ? void 0 : data.id : Array.isArray(data) ? (_b = (_a = data[0]) == null ? void 0 : _a.show) == null ? void 0 : _b.id : void 0;
+            if (showId)
+              setFirstFormValue('#tvmazeid, input[name="tvmazeid"]', String(showId), { force: false });
+          } catch {
+          }
+        }
+      }
+    }
+    class HDOnlyEngine extends GazelleEngine {
+      async fill(meta) {
+        await injectGazelleTorrent(meta, this.siteName);
+        const title = meta.targetTitle || meta.title || "";
+        const isTv = meta.type === "剧集" || meta.type === "纪录" || meta.type === "综艺";
+        if (isTv) {
+          setAllFormValues("#categories", "1");
+        }
+        const applyFields = () => {
+          var _a;
+          const isAnim = /类.{0,5}型.*动画/.test(meta.description || "");
+          if (meta.type === "电影")
+            setAllFormValues("#releasetype", isAnim ? "7" : "1");
+          else if (meta.type === "剧集" || meta.type === "综艺")
+            setAllFormValues("#releasetype", isAnim ? "6" : "5");
+          else if (meta.type === "纪录")
+            setAllFormValues("#releasetype", "11");
+          const codecMap = {
+            H265: "HEVC",
+            X265: "x265",
+            H264: "AVC",
+            X264: "x264",
+            "VC-1": "VC-1",
+            "MPEG-2": "MPEG-2",
+            "MPEG-4": "MPEG-2"
+          };
+          if (meta.codecSel && codecMap[meta.codecSel]) {
+            setAllFormValues('select[name="format"]', codecMap[meta.codecSel]);
+          }
+          const bitrateEl = document.getElementsByName("bitrate")[0];
+          const stdIdx = { "4K": 6, "1080p": 1, "1080i": 3, "720p": 2, SD: 6, "": 6, "8K": 5 };
+          if (bitrateEl && stdIdx[meta.standardSel || ""] !== void 0) {
+            const idx = stdIdx[meta.standardSel || ""];
+            if (bitrateEl.options[idx]) {
+              bitrateEl.selectedIndex = idx;
+              dispatchFormEvents(bitrateEl);
+            }
+          }
+          let mediaVal = "";
+          const is4K = meta.standardSel === "4K";
+          if (meta.mediumSel === "UHD")
+            mediaVal = "Blu-ray 4K";
+          else if (meta.mediumSel === "Blu-ray")
+            mediaVal = "Blu-ray HD";
+          else if (meta.mediumSel === "Remux")
+            mediaVal = is4K ? "Blu-ray Remux 4K" : "Blu-ray Remux HD";
+          else if (meta.mediumSel === "HDTV")
+            mediaVal = "HDTV";
+          else if (meta.mediumSel === "Encode")
+            mediaVal = is4K ? "Blu-ray Rip 4K" : "Blu-ray Rip HD";
+          else if (meta.mediumSel === "WEB-DL")
+            mediaVal = is4K ? "Web-DL/Rip 4K" : "Web-DL/Rip HD";
+          if (mediaVal)
+            setAllFormValues('select[name="media"]', mediaVal);
+          const team = ((_a = title.split("-").pop()) == null ? void 0 : _a.trim()) || "";
+          if (team)
+            setFirstFormValue("#team", team);
+          const { mediainfo } = getCleanMediaInfo(meta);
+          setFirstFormValue('textarea[name="release_desc"]', mediainfo || meta.description || "", { force: true });
+        };
+        applyFields();
+        if (isTv)
+          window.setTimeout(applyFields, 1500);
+      }
     }
     function getScTorrentId(currentUrl) {
       var _a, _b, _c;
@@ -19290,6 +31526,13 @@ ${body}
         }
         await populateScFromImdb(imdbId, meta);
         setAllFormValues('#media, select[name="media"]', normalizeMediaValue(meta));
+        if (meta.mediumSel === "Remux" || /remux/i.test(meta.title || "")) {
+          const remuxCb = document.querySelector('#remux, input[name="remux"]');
+          if (remuxCb && !remuxCb.checked) {
+            remuxCb.checked = true;
+            remuxCb.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
         const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ""}
 ${meta.description || ""}`, { mediumSel: meta.mediumSel });
         const screenshotTags = ((_a = (info.picInfo || "").match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/gi)) == null ? void 0 : _a.slice(0, 3)) || [];
@@ -19392,7 +31635,7 @@ ${meta.description || ""}`, { mediumSel: meta.mediumSel });
         };
       }
       async afterFill(meta) {
-        var _a;
+        var _a, _b;
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
         const imdbUrl = meta.imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : "");
         const doubanId = meta.doubanId || extractDoubanId(meta.doubanUrl || "");
@@ -19408,27 +31651,100 @@ ${meta.description || ""}`, { mediumSel: meta.mediumSel });
           音乐: "406",
           MV: "406",
           体育: "407",
-          软件: "408"
+          软件: "408",
+          游戏: "409"
         };
-        selectValue('select[name="browsecat"], select#browsecat', typeMap[meta.type || ""] || "410");
+        const title = meta.targetTitle || meta.title || "";
+        const catVal = /(?:pad$|ipad)/i.test(title) ? "412" : typeMap[meta.type || ""] || "410";
+        selectValue('select[name="browsecat"], select#browsecat', catVal);
         try {
           (_a = window.getcategory) == null ? void 0 : _a.call(window, "class2", "browsecat");
         } catch {
         }
+        try {
+          const isChineseOrigin = /大陆|香港|台湾|港台/.test(meta.sourceSel || "");
+          const hasCnSub = Boolean(((_b = meta.labelInfo) == null ? void 0 : _b.zz) || /中字|简体|繁体/.test(`${meta.smallDescr || meta.subtitle || ""} ${meta.description || ""}`));
+          if (hasCnSub && !isChineseOrigin) {
+            const cb = document.querySelector('input[name="chinese"][type="checkbox"]');
+            if (cb && !cb.checked) {
+              cb.checked = true;
+              dispatchFormEvents(cb);
+            }
+          }
+        } catch {
+        }
         const fillDependent = () => {
-          var _a2, _b, _c, _d, _e, _f, _g, _h, _i, _j;
-          setValue("#ename", (meta.targetTitle || meta.title || "").replace(/\s+/g, "."));
+          var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
+          setValue("#ename", title.replace(/\s+/g, "."));
           const source = `${meta.description || ""}
 ${meta.synopsis || ""}`.replace(/\[\/?.+?\]/g, "");
-          const cname = ((_b = (_a2 = source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _a2[1]) == null ? void 0 : _b.trim()) || ((_f = (_e = (_d = (_c = source.match(/(?:译\s*名|譯\s*名)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _c[1]) == null ? void 0 : _d.split("/")) == null ? void 0 : _e[0]) == null ? void 0 : _f.trim()) || "";
+          const cname = meta.sourceSel === "大陆" ? ((_d = (_c = (_b2 = (_a2 = source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _a2[1]) == null ? void 0 : _b2.split("/")) == null ? void 0 : _c[0]) == null ? void 0 : _d.trim()) || "" : ((_h = (_g = (_f = (_e = source.match(/(?:译\s*名|譯\s*名)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _e[1]) == null ? void 0 : _f.split("/")) == null ? void 0 : _g[0]) == null ? void 0 : _h.trim()) || ((_l = (_k = (_j = (_i = source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _i[1]) == null ? void 0 : _j.split("/")) == null ? void 0 : _k[0]) == null ? void 0 : _l.trim()) || "";
           setValue("#cname", cname);
-          const district = ((_h = (_g = source.match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|產.{0,5}?地)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _g[1]) == null ? void 0 : _h.trim()) || meta.sourceSel || "";
+          const district = ((_n = (_m = source.match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|產.{0,5}?地)\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _m[1]) == null ? void 0 : _n.trim()) || meta.sourceSel || "";
           setValue("#district", district.replace(/\s+/g, "").replace(/中国大陆|中国/g, "大陆"));
-          const language = ((_j = (_i = source.match(/语.{0,5}?言\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _i[1]) == null ? void 0 : _j.trim()) || "";
+          const language = ((_p = (_o = source.match(/语.{0,5}?言\s*[:：]?\s*([^\r\n]+)/)) == null ? void 0 : _o[1]) == null ? void 0 : _p.trim()) || "";
           setValue("#language", language);
+          if (meta.type === "剧集") {
+            const src = meta.sourceSel || "";
+            let specId = "";
+            if (src === "大陆")
+              specId = "specificcat1";
+            else if (["台湾", "香港", "港台"].includes(src))
+              specId = "specificcat2";
+            else if (src === "日本")
+              specId = "specificcat4";
+            else if (src === "韩国")
+              specId = "specificcat5";
+            else if (src === "欧美")
+              specId = /^英国/.test(district) ? "specificcat6" : "specificcat3";
+            if (specId) {
+              const cb = document.getElementById(specId);
+              if (cb) {
+                cb.checked = true;
+                dispatchFormEvents(cb);
+              }
+              try {
+                (_q = window.getcheckboxvalue) == null ? void 0 : _q.call(window, "specificcat", 7);
+              } catch {
+              }
+            }
+            const specInput = document.getElementById("specificcat");
+            if (specInput && !specInput.value && src) {
+              setValue("#specificcat", `${src}剧`);
+            }
+          }
+          if (meta.type === "综艺" || meta.type === "纪录") {
+            if (((_r = meta.labelInfo) == null ? void 0 : _r.zz) || /中字|简体|繁体/.test(`${meta.smallDescr || ""}${meta.description || ""}`)) {
+              const subs = document.getElementsByName("subsinfo")[0];
+              if (subs && subs.options[2]) {
+                subs.selectedIndex = 2;
+                dispatchFormEvents(subs);
+              }
+            }
+          }
+          if (meta.type === "纪录") {
+            let fmtId = "";
+            if (meta.standardSel === "1080p" || meta.standardSel === "1080i")
+              fmtId = "format1";
+            else if (meta.standardSel === "720p")
+              fmtId = "format2";
+            else if (/BDRIP/i.test(title))
+              fmtId = "format3";
+            else if (/DVDRIP/i.test(title))
+              fmtId = "format4";
+            else if (/TVRIP/i.test(title))
+              fmtId = "format5";
+            if (fmtId) {
+              const cb = document.getElementById(fmtId);
+              if (cb) {
+                cb.checked = true;
+                dispatchFormEvents(cb);
+              }
+            }
+          }
         };
         fillDependent();
-        [300, 900, 1800].forEach((ms) => window.setTimeout(fillDependent, ms));
+        [300, 900, 1800, 3e3].forEach((ms) => window.setTimeout(fillDependent, ms));
       }
     }
     const HDT_ANNOUNCE = "https://hdts-announce.ru/announce.php";
@@ -19472,6 +31788,19 @@ ${meta.synopsis || ""}`.replace(/\[\/?.+?\]/g, "");
       const medium = meta.mediumSel || "";
       const standard = meta.standardSel || "";
       const isUhd = /UHD|4K/i.test(medium) || /UHD/i.test(title);
+      if (type2 === "音乐" || type2 === "MV") {
+        if (medium === "Blu-ray" || medium === "UHD")
+          return "61";
+        if (medium === "Remux")
+          return "62";
+        if (standard === "4K")
+          return "66";
+        if (standard === "1080p" || standard === "1080i")
+          return "57";
+        if (standard === "720p")
+          return "45";
+        return "44";
+      }
       const isSeries = ["剧集", "纪录", "综艺", "动漫"].includes(type2) && title.match(/[^T]S\d+|E\d+|Complete/i);
       if (!isSeries) {
         if (medium === "UHD")
@@ -19522,7 +31851,7 @@ ${meta.synopsis || ""}`.replace(/\[\/?.+?\]/g, "");
         super(config, url);
       }
       isSourcePage(url) {
-        return isPage(url, "torrents.php", "details.php") && hasIdQuery(url);
+        return isPage(url, "torrents.php", "details.php") && /[?&]id=[a-f0-9]+/i.test(url.search || "");
       }
       isFillComplete() {
         const filename = readFieldValue(['input[name="filename"]']);
@@ -19532,13 +31861,13 @@ ${meta.synopsis || ""}`.replace(/\[\/?.+?\]/g, "");
       }
       async parse() {
         var _a;
-        const rawTitle = (((_a = document.querySelector("h1, .torrentname, .title")) == null ? void 0 : _a.textContent) || document.title).replace(/HD-Torrents\.org\s*-/gi, "").replace(/\s*-\s*HD-Torrents\.org\s*/gi, "").trim();
+        const torrentRowTitle = detailsValue("Torrent");
+        const rawTitle = (torrentRowTitle || ((_a = document.querySelector("h1, .torrentname, .title")) == null ? void 0 : _a.textContent) || document.title).replace(/HD-Torrents\.org\s*-/gi, "").replace(/\s*-\s*HD-Torrents\.org\s*/gi, "").trim();
         const category = detailsValue("Category");
         const genre = detailsValue("Genre");
         const sizeText = detailsValue("Size");
         const detailsText = `${rawTitle} ${category} ${genre}`;
-        const imdbBox = $$1("#IMDBDetailsInfoHideShowTR .imdbnew2").first();
-        const imdbUrl = imdbBox.find('>a[href*="imdb.com/title/tt"], a[href*="imdb.com/title/tt"]').first().attr("href") || "";
+        const imdbUrl = $$1('#IMDBDetailsInfoHideShowTR .imdbnew2 a[href*="imdb.com/title/tt"], #IMDBDetailsInfoHideShowTR a[href*="imdb.com/title/tt"], a[href*="imdb.com/title/tt"]').first().attr("href") || "";
         const imdbId = extractImdbId(imdbUrl);
         const descrEl = document.querySelector("#technicalInfoHideShowTR, #technicalInfo, #torrent_info, #detailsInfoHideShowTR, .technicalInfo");
         let description = descrEl ? htmlToBBCode(descrEl) : "";
@@ -19643,6 +31972,2135 @@ ${picInfo}`.trim();
         }
       }
     }
+    function buildBtnSceneName(rawName, tvTitle, tvSeries, searchName, descBlob) {
+      var _a, _b, _c, _d, _e;
+      let name2 = rawName.trim();
+      if (name2.match(/S\d+E\d+-E?\d+/)) {
+        name2 = name2.replace(name2.match(/S\d+E\d+-E?\d+/)[0], tvTitle);
+      } else if (name2.match(/E\d+-E?\d+/)) {
+        name2 = name2.replace(name2.match(/E\d+-E?\d+/)[0], tvTitle);
+      } else if (!name2.match(/S\d+/) && tvTitle && !tvTitle.match(/Season/i)) {
+        name2 = name2.replace(searchName, `${searchName} ${tvTitle} `).replace(/ +/g, " ");
+      } else if (!name2.match(/S\d+/i) && tvTitle.match(/Season/i)) {
+        const season = ((_a = tvTitle.match(/\d+/)) == null ? void 0 : _a[0]) || "";
+        if (season) {
+          const sTag = season.length < 2 ? `S0${season}` : `S${season}`;
+          name2 = name2.replace(searchName, `${searchName} ${sTag} `).replace(/ +/g, " ");
+        }
+      } else if (name2.match(/S\d+/) && tvTitle && !tvTitle.match(/Season/i)) {
+        name2 = name2.replace(/S\d+(E\d+)?/, tvTitle).replace(/ +/g, " ");
+      }
+      if (tvTitle && tvTitle === name2.replace(/ /g, ".")) {
+        if (name2.match(/E\d+/i) && !name2.match(/S\d+E\d+/i)) {
+          name2 = name2.replace(/(E\d+)/, "S01$1");
+        }
+      }
+      if (tvSeries) {
+        if (!tvSeries.match(/(19|20)\d{2}/) && name2.match(/[^S](19|20)\d{2}[^pP]/i)) {
+          name2 = name2.replace(/([^S])(19|20)\d{2}/i, "$1").replace(/ +/g, " ");
+        }
+        if (tvSeries.match(/(19|20)\d{2}/) && !name2.match(/(19|20)\d{2}[^pP]/)) {
+          name2 = name2.replace(searchName, tvSeries.replace(/[()]/g, " ") + " ").replace(/ +/g, " ");
+        } else if (tvSeries.match(/\(.*\)/)) {
+          const country = ((_b = tvSeries.match(/\((.*)\)/)) == null ? void 0 : _b[1]) || "";
+          if (country && !name2.includes(country)) {
+            name2 = name2.replace(searchName, tvSeries.replace(/[()]/g, " ") + " ").replace(/ +/g, " ");
+          }
+        } else if (searchName) {
+          name2 = name2.replace(searchName, tvSeries.replace(/[()]/g, " ") + " ").replace(/ +/g, " ");
+        }
+      }
+      name2 = name2.replace(/4k/i, "2160p");
+      const applyChannels = (channels, input) => {
+        const map = {
+          "1": { re: /1\.0/, str: "1.0" },
+          "2": { re: /2\.0/, str: "2.0" },
+          "6": { re: /5\.1/, str: "5.1" },
+          "8": { re: /7\.1/, str: "7.1" }
+        };
+        const target = map[channels];
+        if (!target)
+          return input;
+        let out = input;
+        if (!out.match(target.re)) {
+          out = out.replace(/(DDPA|AAC|DDP|FLAC|DTS|LPCM|TrueHD)/, `$1${target.str}`);
+        }
+        out = out.replace(
+          /(H\.?265|H\.?264|x264|x265)(.*?)(DDPA|AAC|DDP|FLAC|DTS|LPCM|TrueHD)(2\.0|1\.0|5\.1|7\.1)/i,
+          "$3 $4 $1 $2"
+        );
+        return out;
+      };
+      const chFromMi = (_c = descBlob.match(/Channel[^\n]*?(\d)/i)) == null ? void 0 : _c[1];
+      if (chFromMi) {
+        name2 = applyChannels(chFromMi, name2);
+      } else {
+        const chFromAudio = (_d = descBlob.match(/(?:AUDIO.*CODEC.*?|音频编码.*?)(2\.0|1\.0|5\.1|7\.1)/i)) == null ? void 0 : _d[1];
+        if (chFromAudio) {
+          if (!name2.includes(chFromAudio)) {
+            name2 = name2.replace(/(DDPA|AAC|DDP|FLAC|DTS|LPCM|TrueHD)/, `$1${chFromAudio}`);
+          }
+          name2 = name2.replace(
+            /(H\.?265|H\.?264|x264|x265)(.*?)(DDPA|AAC|DDP|FLAC|DTS|LPCM|TrueHD)(2\.0|1\.0|5\.1|7\.1)/i,
+            "$3 $4 $1 $2"
+          );
+        } else {
+          const chPlain = (_e = descBlob.match(/(\d)\s*channels/i)) == null ? void 0 : _e[1];
+          if (chPlain)
+            name2 = applyChannels(chPlain, name2);
+        }
+      }
+      if (name2.match(/(WEB-DL|Bluray|HDTV).(1080p|4K|2160p|720p|480p)/i)) {
+        name2 = name2.replace(/(WEB-DL|Bluray|HDTV).(1080p|4K|2160p|720p|480p)/i, "$2 $1");
+      }
+      name2 = name2.replace(/['’]/g, "").replace(/ +/g, " ").replace(" -", "-");
+      return name2.replace(/ /g, ".").replace(/([,!?';\\:])\./g, "$1");
+    }
+    const _BTNEngine = class _BTNEngine extends GazelleEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isFillComplete() {
+        const scene = readFieldValue(["#scenename", 'input[name="scenename"]']);
+        const desc = readFieldValue(["#release_desc", 'textarea[name="release_desc"]']);
+        if (scene && desc.length > 20)
+          return true;
+        if (!document.getElementById("scenename") && document.getElementById("autofill")) {
+          return !!readFieldValue(["#autofill"]);
+        }
+        return false;
+      }
+      async recoverForwardMeta() {
+        try {
+          const raw = await GMAdapter.getValue(_BTNEngine.STEP_META_KEY, null);
+          if (!raw)
+            return null;
+          const parsed = JSON.parse(raw);
+          if (!(parsed == null ? void 0 : parsed.meta) || !parsed.ts || Date.now() - parsed.ts > 15 * 6e4) {
+            await GMAdapter.deleteValue(_BTNEngine.STEP_META_KEY);
+            return null;
+          }
+          return parsed.meta;
+        } catch {
+          return null;
+        }
+      }
+      async onNonUploadPage() {
+        try {
+          await GMAdapter.deleteValue(_BTNEngine.STEP_META_KEY);
+        } catch {
+        }
+      }
+      async fetchSeriesLinks(seriesHref) {
+        if (!seriesHref)
+          return {};
+        let targetUrl = seriesHref;
+        try {
+          targetUrl = new URL(seriesHref, this.currentUrl).href;
+        } catch {
+        }
+        try {
+          const res = await GMAdapter.xmlHttpRequest({
+            method: "GET",
+            url: targetUrl,
+            timeout: 6e3
+          });
+          const html = String((res == null ? void 0 : res.responseText) || "");
+          if (!html)
+            return {};
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const links = Array.from(doc.querySelectorAll('.box a, a[href*="imdb.com"], a[href*="thetvdb.com"]'));
+          let imdbUrl = "";
+          let tvdbUrl = "";
+          for (const a2 of links) {
+            const href = a2.href || a2.getAttribute("href") || "";
+            if (!imdbUrl && /imdb\.com\/title\/tt\d+/i.test(href))
+              imdbUrl = href;
+            if (!tvdbUrl && /thetvdb\.com/i.test(href))
+              tvdbUrl = href;
+          }
+          return { imdbUrl: imdbUrl || void 0, tvdbUrl: tvdbUrl || void 0 };
+        } catch {
+          return {};
+        }
+      }
+      async parse() {
+        this.log("Parsing BTN page...");
+        const u2 = new URL(this.currentUrl);
+        const tid = (u2.searchParams.get("torrentid") || "").trim();
+        const torrentTr = tid ? document.getElementById(`torrent_${tid}`) : null;
+        let title = "";
+        if (torrentTr == null ? void 0 : torrentTr.previousElementSibling) {
+          const td = torrentTr.previousElementSibling.querySelector("td");
+          title = ((td == null ? void 0 : td.textContent) || "").replace(/^»\s*/, "").replace(/\s+/g, " ").trim();
+        }
+        if (!title) {
+          title = ($$1(".thin h2").first().text() || document.title || "").replace(/\s*::\s*BroadcasTheNet.*$/i, "").trim();
+        }
+        let mediainfo = "";
+        const images = [];
+        let imgBbcode = "";
+        const scope = torrentTr || document.getElementById("torrent_details") || document.body;
+        const blockquotes = Array.from(scope.querySelectorAll("blockquote"));
+        const miBox = blockquotes.find((bq) => /Unique ID|DISC INFO:|\.MPLS|General/i.test(bq.textContent || "")) || blockquotes[0] || null;
+        if (miBox) {
+          mediainfo = (miBox.textContent || "").trim();
+          Array.from(miBox.querySelectorAll("img")).forEach((img) => {
+            const src = img.getAttribute("src") || img.src || "";
+            if (!src || /favicon|logo|avatar|icon|smiley/i.test(src))
+              return;
+            images.push(src);
+            const parent = img.parentElement;
+            if (parent && parent.tagName === "A" && parent.href) {
+              imgBbcode += `[url=${parent.href}][img]${src}[/img][/url]`;
+            } else {
+              imgBbcode += `[img]${src}[/img]`;
+            }
+          });
+        }
+        const description = `${mediainfo ? `[quote]
+${mediainfo}
+[/quote]
+
+` : ""}${imgBbcode}`.trim();
+        let torrentHref = (tid ? $$1(`a[href*="download&id=${tid}"]`).first().attr("href") : "") || $$1('a[href*="action=download"]').first().attr("href") || "";
+        let torrentUrl = "";
+        if (torrentHref) {
+          try {
+            torrentUrl = new URL(torrentHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = torrentHref;
+          }
+        }
+        let imdbUrl = matchLink("imdb", document.body.innerHTML) || "";
+        let tvdbUrl = "";
+        const seriesHref = $$1('.thin a[href*="series.php"]').first().attr("href") || $$1(".thin a").first().attr("href") || "";
+        if (!imdbUrl && seriesHref) {
+          const seriesLinks = await this.fetchSeriesLinks(seriesHref);
+          if (seriesLinks.imdbUrl)
+            imdbUrl = seriesLinks.imdbUrl;
+          if (seriesLinks.tvdbUrl)
+            tvdbUrl = seriesLinks.tvdbUrl;
+        }
+        const imdbId = extractImdbId(imdbUrl);
+        const blob = `${title} ${mediainfo}`;
+        const torrentFilename = title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0;
+        const meta = {
+          title,
+          description,
+          fullMediaInfo: mediainfo || void 0,
+          type: "剧集",
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(blob),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          tvdbUrl: tvdbUrl || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename,
+          torrentName: torrentFilename
+        };
+        this.log(`Parsed BTN: ${meta.title}`);
+        return meta;
+      }
+      async fill(meta) {
+        var _a;
+        this.log("Filling BTN upload form...");
+        $$1("#dnu_header").parent().hide();
+        let normalizedName = (meta.targetTitle || meta.title || "").trim();
+        if (/S\d+ E\d+/i.test(normalizedName)) {
+          normalizedName = normalizedName.replace(/(S\d+) (E\d+)/i, "$1$2");
+        }
+        const searchName = getSearchName(normalizedName, meta.type || "剧集");
+        if (/complete/i.test(normalizedName) && !/S\d+/i.test(normalizedName)) {
+          normalizedName = normalizedName.replace(/complete/i, "S01");
+        } else if (/complete/i.test(normalizedName) && /S\d+/i.test(normalizedName)) {
+          normalizedName = normalizedName.replace(/complete/i, "");
+        }
+        normalizedName = normalizedName.replace(/ +/g, " ").trim();
+        const manualTable = document.getElementById("table_manual_upload_2");
+        const isManualHidden = !!manualTable && window.getComputedStyle(manualTable).display === "none";
+        const hasSceneForm = !!document.getElementById("scenename") || !!document.getElementById("release_desc");
+        if (isManualHidden || !hasSceneForm) {
+          try {
+            await GMAdapter.setValue(_BTNEngine.STEP_META_KEY, JSON.stringify({ meta, ts: Date.now() }));
+          } catch {
+          }
+          const autofillEl = document.getElementById("autofill");
+          if (autofillEl && normalizedName) {
+            autofillEl.value = normalizedName;
+            dispatchFormEvents(autofillEl);
+          }
+          const seriesEl = document.getElementById("auto_series");
+          if (seriesEl && searchName && !seriesEl.value) {
+            seriesEl.value = searchName;
+            dispatchFormEvents(seriesEl);
+          }
+          const seasonNum = ((_a = normalizedName.match(/\bS0?(\d{1,2})\b/i)) == null ? void 0 : _a[1]) || "";
+          const seasonEl = document.getElementById("auto_season");
+          if (seasonEl && seasonNum && !seasonEl.value) {
+            seasonEl.value = seasonNum;
+            dispatchFormEvents(seasonEl);
+          }
+          this.log("Prefilled BTN Step 1 Autofill and preserved meta for Step 2.");
+          return;
+        }
+        try {
+          await GMAdapter.deleteValue(_BTNEngine.STEP_META_KEY);
+        } catch {
+        }
+        if (meta.torrentBase64 || meta.torrentUrl) {
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const announce = String($$1('input[value*="announce"]').first().val() || "").trim() || null;
+            const result = await TorrentService2.buildForwardTorrentFile(meta, "BTN", announce);
+            if (result) {
+              TorrentService2.injectTorrentForSite("BTN", result.file, result.filename);
+            }
+          } catch (e2) {
+            console.error("[Auto-Feed][BTN] File Injection Failed:", e2);
+          }
+        }
+        if (!document.getElementById("autofeed-btn-helper-row")) {
+          const releaseLabel = $$1("td.label:contains(Release Name)").last().parent();
+          if (releaseLabel.length) {
+            releaseLabel.before(
+              `<tr id="autofeed-btn-helper-row"><td class="label">Links</td><td><input type="text" id="imdbid" name="imdbid" size="60" /> <input id="fill" type="button" value="辅助发布"></td></tr>`
+            );
+          }
+        }
+        const linkVal = meta.imdbUrl || meta.tmdbUrl || meta.tvdbUrl || "";
+        if (linkVal) {
+          $$1("#imdbid").val(linkVal);
+        }
+        const sceneInput = document.getElementById("scenename");
+        if (sceneInput && normalizedName) {
+          sceneInput.value = normalizedName;
+          dispatchFormEvents(sceneInput);
+          if (!document.getElementById("remind_scenename")) {
+            $$1(sceneInput).after(
+              `<div id="remind_scenename" style="display:inline-block; margin-left:5px"><font color="red">请点击辅助发布后检查！！</font></div>`
+            );
+          }
+        }
+        if ($$1("#tags").length && !$$1("#tags").val() && !document.getElementById("remind_tags")) {
+          $$1("#tags").after(
+            `<div id="remind_tags" style="display:inline-block; margin-left:5px"><font color="red">请选择对应的标签！！</font></div>`
+          );
+        }
+        let descr = meta.description || "";
+        const quoteIdx = descr.search(/\[quote\]/i);
+        if (quoteIdx >= 0)
+          descr = descr.slice(quoteIdx);
+        const parsed = getMediainfoPictureFromDescr(descr, { mediumSel: meta.mediumSel });
+        let mediainfo = (meta.fullMediaInfo || parsed.mediainfo || "").trim();
+        if (!mediainfo) {
+          mediainfo = descr.replace(/\[\/?(quote|code)\]/gi, "").trim();
+        }
+        mediainfo = mediainfo.replace(/\[\/?(quote|code)\]/gi, "").trim();
+        const descEl = document.getElementById("release_desc");
+        if (descEl && mediainfo) {
+          descEl.value = mediainfo;
+          dispatchFormEvents(descEl);
+        }
+        if (!/Video[\s\S]{0,10}?ID/i.test(mediainfo) && !document.getElementById("remind_desc")) {
+          $$1("#fill").after(`<div id="remind_desc"><font color="red">请先将mediainfo补充完整后点击辅助发布！！</font></div>`);
+        }
+        $$1("#fill").off("click.autofeed").on("click.autofeed", () => {
+          var _a2, _b, _c;
+          $$1("#remind_scenename").find("font").css("color", "yellow").text("已经点击辅助发布，请检查！！");
+          const currentName = String($$1("#scenename").val() || normalizedName).trim();
+          const tvTitle = String($$1("#title").val() || "").trim();
+          const tvSeries = String($$1("#artist").val() || "").trim();
+          const descBlob = `${meta.description || ""}
+${String($$1("#release_desc").val() || "")}`;
+          const built = buildBtnSceneName(currentName, tvTitle, tvSeries, searchName, descBlob);
+          if (tvTitle && tvTitle === currentName.replace(/ /g, ".") && /E\d+/i.test(currentName) && !/S\d+E\d+/i.test(currentName)) {
+            const ep = (_a2 = tvTitle.match(/E\d+/i)) == null ? void 0 : _a2[0];
+            if (ep)
+              $$1("#title").val(`S01${ep}`);
+          }
+          $$1("#scenename").val(built);
+          if (sceneInput)
+            dispatchFormEvents(sceneInput);
+          $$1("#origin").val("P2P");
+          const albumDesc = String($$1("#album_desc").val() || "");
+          if (!/Season/i.test(albumDesc)) {
+            const sNum = (_b = built.match(/S(\d+)/i)) == null ? void 0 : _b[1];
+            const eNum = (_c = built.match(/E(\d+)/i)) == null ? void 0 : _c[1];
+            if (sNum) {
+              const tpl = `[b]Episode Name: [/b]
+[b]Season: ${parseInt(sNum, 10)} [/b]
+[b]Episode: ${eNum ? parseInt(eNum, 10) : ""} [/b]
+[b]Aired: [/b]
+
+[b]Episode Overview: [/b]`;
+              $$1("#album_desc").val(tpl);
+            }
+          }
+          const codec = getCodecSel(built);
+          if (codec === "H264" || codec === "X264")
+            $$1("#bitrate").val("H.264");
+          else if (codec === "H265" || codec === "X265")
+            $$1("#bitrate").val("H.265");
+          const medium = getMediumSel(built, built);
+          if (medium === "HDTV")
+            $$1("#media").val("HDTV");
+          else if (medium === "WEB-DL")
+            $$1("#media").val("WEB-DL");
+          else if (medium === "Blu-ray" || medium === "UHD")
+            $$1("#media").val("Bluray");
+          const standard = getStandardSel(built);
+          if (standard === "720p")
+            $$1("#resolution").val("720p");
+          else if (standard === "1080p")
+            $$1("#resolution").val("1080p");
+          else if (standard === "1080i")
+            $$1("#resolution").val("1080i");
+          else if (standard === "4K")
+            $$1("#resolution").val("2160p");
+        });
+      }
+    };
+    __publicField(_BTNEngine, "STEP_META_KEY", "autofeed_btn_step_meta");
+    let BTNEngine = _BTNEngine;
+    const HDROUTE_TYPE_MAP = {
+      电影: 1,
+      剧集: 3,
+      动漫: 4,
+      综艺: 9,
+      音乐: 8,
+      纪录: 2,
+      体育: 6,
+      软件: 9,
+      学习: 9
+    };
+    const HDROUTE_AUDIO_MAP = {
+      TrueHD: 3,
+      Atmos: 3,
+      DTS: 4,
+      "DTS-HD": 2,
+      "DTS-HDMA": 2,
+      "DTS-HDMA:X 7.1": 2,
+      AC3: 5,
+      LPCM: 1,
+      Flac: 7,
+      MP3: 6,
+      AAC: 9,
+      APE: 6,
+      "": 8
+    };
+    const HDROUTE_STANDARD_MAP = {
+      "4K": 5,
+      "1080p": 1,
+      "1080i": 2,
+      "720p": 3,
+      SD: 4,
+      "": 4
+    };
+    function setSelectIndex(id, index) {
+      const el = document.getElementById(id);
+      if (!el || !el.options[index])
+        return;
+      el.selectedIndex = index;
+      el.options[index].selected = true;
+      dispatchFormEvents(el);
+    }
+    function extractChineseTitleFromMeta(meta) {
+      var _a, _b;
+      const descr = meta.description || "";
+      const lines = descr.match(/(?:译|片)\s*?名[^\r\n]*/g) || [];
+      for (const line of lines) {
+        const name2 = ((_b = (_a = line.split(/(?:译|片).*?名/).pop()) == null ? void 0 : _a.split("/")[0]) == null ? void 0 : _b.trim()) || "";
+        if (/[\u4e00-\u9fa5]/.test(name2))
+          return name2;
+      }
+      const sub = (meta.smallDescr || meta.subtitle || "").trim();
+      if (sub)
+        return sub.split("/", 1)[0].trim();
+      return "";
+    }
+    function stripLeadingPostersForHdroute(rawDescr) {
+      const parts = rawDescr.split(/◎/);
+      if (parts.length > 1) {
+        parts.splice(0, 1);
+        return "◎" + parts.join("◎");
+      }
+      let out = rawDescr.trim();
+      while (out.indexOf("[img]") > -1 && out.indexOf("[img]") < 90) {
+        const end = out.indexOf("[/img]");
+        if (end < 0)
+          break;
+        out = out.slice(end + 6).trim();
+      }
+      return out;
+    }
+    class HDRouteEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      isFillComplete() {
+        const eng = readFieldValue(["#title_eng", 'input[name="title_eng"]']);
+        const descr = readFieldValue(['textarea[name="descr"]', "#descr"]);
+        return !!eng && descr.length > 20;
+      }
+      async parse() {
+        var _a;
+        this.log("Parsing HDRoute page...");
+        const title = $$1(".details-title-eng").first().text().trim() || $$1(".torrent-title-eng, h1").first().text().trim() || document.title.replace(/\s*-\s*HDRoute.*$/i, "").trim();
+        const chsTitle = $$1(".details-title-chs").first().text().trim();
+        const subTitle = $$1(".details-title-sub").first().text().trim();
+        const smallDescr = [chsTitle, subTitle].filter(Boolean).join(" / ") || subTitle || chsTitle;
+        const html = document.body.innerHTML || "";
+        const imdbUrl = matchLink("imdb", html) || "";
+        const imdbId = extractImdbId(imdbUrl);
+        const doubanUrl = matchLink("douban", html) || "";
+        const doubanId = extractDoubanId(doubanUrl);
+        let torrentUrl = "";
+        const onclick = String($$1(".buttonDownload").first().attr("onclick") || "");
+        const onclickMatch = onclick.match(/download[^'"\s)]*id=\d+/i);
+        const dlHref = (onclickMatch == null ? void 0 : onclickMatch[0]) || $$1('a[href*="download.php"]').first().attr("href") || "";
+        if (dlHref) {
+          try {
+            torrentUrl = new URL(dlHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = dlHref;
+          }
+        }
+        const descrEl = document.getElementById("kdescr") || document.querySelector(".details-descr, .torrent-descr, .details-main, #details-descr");
+        let description = descrEl ? htmlToBBCode(descrEl) : "";
+        if (!description) {
+          const quoted = Array.from(document.querySelectorAll(".quoted, blockquote, pre")).map((el) => (el.textContent || "").trim()).filter((t2) => /General|Unique ID|DISC INFO|Video/i.test(t2));
+          if (quoted.length) {
+            description = `[quote]
+${quoted[0]}
+[/quote]`;
+          }
+        }
+        const images = [];
+        const imgScope = descrEl || document.body;
+        Array.from(imgScope.querySelectorAll("img")).forEach((img) => {
+          const src = img.getAttribute("data-src") || img.getAttribute("src") || img.src || "";
+          if (!src || /favicon|logo|avatar|icon|smiley|button|star/i.test(src))
+            return;
+          if (!images.includes(src))
+            images.push(src);
+        });
+        const info = getMediainfoPictureFromDescr(description);
+        const blob = `${title} ${smallDescr} ${((_a = document.querySelector(".details-info, .torrent-info")) == null ? void 0 : _a.textContent) || ""} ${description}`;
+        const torrentFilename = title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0;
+        return {
+          title,
+          subtitle: smallDescr || void 0,
+          smallDescr: smallDescr || void 0,
+          description,
+          fullMediaInfo: info.mediainfo || void 0,
+          type: getType(blob) || "电影",
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(blob),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          doubanUrl: doubanUrl || void 0,
+          doubanId: doubanId || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename,
+          torrentName: torrentFilename
+        };
+      }
+      async fill(meta) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        this.log("Filling HDRoute upload form...");
+        const titleChsEl = document.getElementById("title_chs");
+        if (titleChsEl && !titleChsEl.value) {
+          const chs = extractChineseTitleFromMeta(meta);
+          if (chs) {
+            titleChsEl.value = chs;
+            dispatchFormEvents(titleChsEl);
+          }
+        }
+        const smallDescr = (meta.smallDescr || meta.subtitle || "").trim();
+        if (smallDescr) {
+          setFirstFormValue('input[name="title_sub"]', smallDescr, { force: true });
+          const oneSentence = ((_a = smallDescr.match(/【(.*?版原盘)】/)) == null ? void 0 : _a[1]) || ((_b = smallDescr.match(/.版原盘/)) == null ? void 0 : _b[0]) || "";
+          if (oneSentence) {
+            setFirstFormValue('input[name="title_one_sentence"]', oneSentence, { force: true });
+          }
+        }
+        const engTitle = (meta.targetTitle || meta.title || "").trim();
+        if (engTitle) {
+          setFirstFormValue('#title_eng, input[name="title_eng"]', engTitle, { force: true });
+        }
+        const cleanedDescr = stripLeadingPostersForHdroute(meta.description || "");
+        if (cleanedDescr) {
+          setFirstFormValue('textarea[name="descr"], #descr', cleanedDescr, { force: true });
+          if (!document.getElementById("copy_intro")) {
+            const header = $$1("div.upload-title-name:contains(资源描述)").last();
+            if (header.length) {
+              header.append(
+                ` <a href="#" style="text-decoration:none" id="copy_intro">=>复制描述</a><font color="red"> 提示：如果描述填写失败请复制之后转换源码手动填写再预览。</font>`
+              );
+              $$1("#copy_intro").on("click", (e2) => {
+                e2.preventDefault();
+                GMAdapter.setClipboard(cleanedDescr);
+                $$1("#copy_intro").text("=>复制成功");
+              });
+            }
+          }
+        }
+        if (meta.type && HDROUTE_TYPE_MAP[meta.type] !== void 0) {
+          setSelectIndex("type_category", HDROUTE_TYPE_MAP[meta.type]);
+        }
+        const audioKey = meta.audioCodecSel || "";
+        if (HDROUTE_AUDIO_MAP[audioKey] !== void 0) {
+          setSelectIndex("type_audio", HDROUTE_AUDIO_MAP[audioKey]);
+        }
+        const codecIdxMap = {
+          H264: 1,
+          X264: 1,
+          "VC-1": 2,
+          "MPEG-2": 3,
+          XVID: 4,
+          H265: 7,
+          X265: 7
+        };
+        setSelectIndex("type_codec", codecIdxMap[meta.codecSel || ""] ?? 5);
+        const mediumIdxMap = {
+          UHD: 1,
+          "Blu-ray": 1,
+          Remux: 2,
+          HDTV: 3,
+          Encode: 4,
+          CD: 5,
+          DVD: 6,
+          "WEB-DL": 6
+        };
+        setSelectIndex("type_medium", mediumIdxMap[meta.mediumSel || ""] ?? 6);
+        const stdKey = meta.standardSel || "";
+        if (HDROUTE_STANDARD_MAP[stdKey] !== void 0) {
+          setSelectIndex("type_resolution", HDROUTE_STANDARD_MAP[stdKey]);
+        }
+        const introEl = document.getElementById("upload_introduction");
+        const introMatch = (meta.description || "").match(/简\s*?介([\s\S]+?)\[quote\]/i);
+        if (introEl && (introMatch == null ? void 0 : introMatch[1])) {
+          let intro = introMatch[1].trim();
+          if (/◎获奖情况|\[size=3\]\[color=#ff0000\]/.test(intro)) {
+            intro = intro.split(/◎获奖情况|\[size=3\]\[color=#ff0000\]/)[0].trim();
+          }
+          intro = intro.replace(/\[.*?\]/g, "").trim();
+          if (intro) {
+            introEl.value = "　　" + intro;
+            dispatchFormEvents(introEl);
+          }
+        }
+        const firstImg = ((_c = (meta.description || "").match(/\[img\](\S*?)\[\/img\]/i)) == null ? void 0 : _c[1]) || ((_d = meta.images) == null ? void 0 : _d[0]) || "";
+        if (firstImg) {
+          setFirstFormValue('input[name="poster_big"]', firstImg, { force: true });
+          setFirstFormValue('input[name="poster"]', firstImg, { force: true });
+        }
+        const rating = (_f = (_e = (meta.description || "").match(/IMDb评分.*?(\d+(?:\.\d)?)\/10/)) == null ? void 0 : _e[1]) == null ? void 0 : _f.trim();
+        if (rating) {
+          setFirstFormValue('#upload-imdb, input[name="imdb"]', rating, { force: true });
+        }
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        const imdbNo = ((_g = imdbId.match(/tt(\d+)/i)) == null ? void 0 : _g[1]) || "";
+        if (imdbNo) {
+          setFirstFormValue('#upload-imdb_url, input[name="imdb_url"]', imdbNo, { force: true });
+        }
+        const labels = meta.labelInfo || getLabel(`${meta.title || ""} ${smallDescr} ${meta.description || ""}`);
+        const checkByName = (name2, on) => {
+          if (!on)
+            return;
+          const el = document.getElementsByName(name2)[0];
+          if (el) {
+            el.checked = true;
+            dispatchFormEvents(el);
+          }
+        };
+        checkByName("is_mandrain", !!labels.gy);
+        checkByName("is_cantonese", !!labels.yy);
+        checkByName("is_diyed", !!labels.diy);
+        if (meta.torrentBase64 || meta.torrentUrl) {
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const announce = $$1('input[value*="announce"]').first().val();
+            const result = await TorrentService2.buildForwardTorrentFile(meta, "HDRoute", announce || null);
+            if (result) {
+              TorrentService2.injectTorrentForSite("HDRoute", result.file, result.filename);
+            }
+          } catch (e2) {
+            console.error("[Auto-Feed][HDRoute] File Injection Failed:", e2);
+          }
+        }
+      }
+    }
+    function decodeCloudflareEmails(root) {
+      const links = Array.from(root.querySelectorAll("a.__cf_email__, a[data-cfemail]"));
+      for (const el of links) {
+        const hex = el.getAttribute("data-cfemail") || "";
+        if (hex.length < 4)
+          continue;
+        const key = parseInt(hex.slice(0, 2), 16);
+        let decoded = "";
+        for (let i2 = 2; i2 < hex.length; i2 += 2) {
+          decoded += String.fromCharCode(parseInt(hex.slice(i2, i2 + 2), 16) ^ key);
+        }
+        el.replaceWith(document.createTextNode(decoded));
+      }
+    }
+    function mapFileListType(text) {
+      if (/Filme/i.test(text))
+        return "电影";
+      if (/Seriale/i.test(text))
+        return "剧集";
+      if (/Anime|Desene/i.test(text))
+        return "动漫";
+      return getType(text) || "电影";
+    }
+    class FileListEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      async fetchMediaInfo(torrentId) {
+        if (!torrentId)
+          return "";
+        try {
+          const url = new URL(`mediainfo.php?id=${encodeURIComponent(torrentId)}`, this.currentUrl).href;
+          const res = await GMAdapter.xmlHttpRequest({
+            method: "GET",
+            url,
+            timeout: 8e3
+          });
+          const html = String((res == null ? void 0 : res.responseText) || "");
+          if (!html)
+            return "";
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const box = doc.querySelector("#maincolumn div.cblock-innercontent") || doc.querySelector("div.cblock-innercontent");
+          if (!box)
+            return "";
+          const clone = box.cloneNode(true);
+          decodeCloudflareEmails(clone);
+          const text = htmlToBBCode(clone).replace(/\[\/?font[^\]]*\]/gi, "").trim();
+          return text;
+        } catch {
+          return "";
+        }
+      }
+      async parse() {
+        this.log("Parsing FileList page...");
+        const title = ($$1("h4").first().text() || document.title || "").trim();
+        const inner = document.querySelector(".cblock-innercontent");
+        const innerHtml = (inner == null ? void 0 : inner.innerHTML) || document.body.innerHTML || "";
+        const imdbUrl = matchLink("imdb", innerHtml) || "";
+        const imdbId = extractImdbId(imdbUrl);
+        const tmdbUrl = matchLink("tmdb", innerHtml) || "";
+        const tmdbId = extractTmdbId(tmdbUrl);
+        let categoryText = "";
+        const descrDiv = document.getElementById("descr");
+        if (tmdbUrl && descrDiv) {
+          const bolds = Array.from(document.querySelectorAll("b"));
+          const catLabel = bolds.find((b) => (b.textContent || "").trim() === "Category");
+          if (catLabel == null ? void 0 : catLabel.parentElement) {
+            categoryText = catLabel.parentElement.textContent || "";
+          }
+        } else {
+          const tds = Array.from(document.querySelectorAll("td"));
+          for (let i2 = 0; i2 < tds.length - 1; i2++) {
+            if ((tds[i2].textContent || "").trim() === "Type") {
+              categoryText = tds[i2 + 1].textContent || "";
+              break;
+            }
+          }
+        }
+        const type2 = mapFileListType(`${categoryText} ${title}`);
+        const imgScope = descrDiv || document.querySelector("center") || inner || document.body;
+        const images = [];
+        let imgBbcode = "";
+        Array.from(imgScope.querySelectorAll("img")).forEach((img) => {
+          const src = (img.getAttribute("src") || img.src || "").trim();
+          if (!src || /tvdb|imdb|tmdb|favicon|logo|avatar|icon|star/i.test(src))
+            return;
+          const cleanSrc = src.replace(/https?:\/\/filelist\.io\/redir\.php\?/gi, "");
+          images.push(cleanSrc);
+          const parent = img.parentElement;
+          if (parent && parent.tagName === "A" && parent.href) {
+            const cleanHref = parent.href.replace(/https?:\/\/filelist\.io\/redir\.php\?/gi, "");
+            imgBbcode += `[url=${cleanHref}][img]${cleanSrc}[/img][/url]`;
+          } else {
+            imgBbcode += `[img]${cleanSrc}[/img]`;
+          }
+        });
+        const tid = new URL(this.currentUrl).searchParams.get("id") || "";
+        const mediainfo = await this.fetchMediaInfo(tid);
+        let description = "";
+        if (mediainfo) {
+          description = `[quote]
+${mediainfo}
+[/quote]`;
+        } else if (descrDiv) {
+          description = htmlToBBCode(descrDiv).trim();
+        }
+        if (imgBbcode) {
+          description = `${description}${description ? "\n\n" : ""}${imgBbcode}`.trim();
+        }
+        const dlAnchor = $$1('a[href^="download.php"], a[href*="download.php?id="]').first();
+        const dlHref = dlAnchor.attr("href") || "";
+        let torrentUrl = "";
+        if (dlHref) {
+          try {
+            torrentUrl = new URL(dlHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = dlHref;
+          }
+        }
+        const torrentName = dlAnchor.text().trim() || (title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0);
+        const blob = `${title} ${categoryText} ${mediainfo}`;
+        return {
+          title,
+          description,
+          fullMediaInfo: mediainfo || void 0,
+          type: type2,
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(blob),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          tmdbUrl: tmdbUrl || void 0,
+          tmdbId: tmdbId || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename: torrentName,
+          torrentName
+        };
+      }
+      async fill(_meta) {
+      }
+    }
+    class TorrentLeechEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return /^\/torrent\/\d+/i.test(url.pathname);
+      }
+      async parse() {
+        this.log("Parsing TorrentLeech page...");
+        const rawTitle = $$1("#torrentnameid").text() || $$1("h1, h3").first().text() || document.title || "";
+        const title = rawTitle.replace(/freeleech/gi, "").replace(/\s+/g, " ").trim();
+        const imdbBox = document.querySelector(".torrent-main.row.mt-30") || document.body;
+        const imdbUrl = matchLink("imdb", imdbBox.innerHTML || "") || "";
+        const imdbId = extractImdbId(imdbUrl);
+        let categoryText = "";
+        const table = document.querySelector("table.table.borderless");
+        if (table) {
+          const tds = Array.from(table.querySelectorAll("td"));
+          for (let i2 = 0; i2 < tds.length - 1; i2++) {
+            if ((tds[i2].textContent || "").trim() === "Category") {
+              categoryText = (tds[i2 + 1].textContent || "").trim();
+              break;
+            }
+          }
+        }
+        let type2 = getType(`${categoryText} ${title}`) || "电影";
+        if (/(DVDRip|webrip|HDRIP|BLURAY|DVDR|4K)/i.test(categoryText))
+          type2 = "电影";
+        else if (/Episodes/i.test(categoryText))
+          type2 = "剧集";
+        else if (/documentaries/i.test(categoryText))
+          type2 = "纪录";
+        if (/S\d+/i.test(title))
+          type2 = "剧集";
+        const nfoBox = document.getElementById("nfo_text");
+        const mediainfo = nfoBox ? htmlToBBCode(nfoBox.cloneNode(true)).trim() : "";
+        const images = [];
+        let imgBbcode = "";
+        const gallery = document.querySelector(".galleryContents");
+        if (gallery) {
+          Array.from(gallery.querySelectorAll("img")).forEach((img) => {
+            const src = (img.getAttribute("src") || img.src || "").trim();
+            if (!src)
+              return;
+            if (/i\.ibb\.co.*\.png|i\.imgur\.com.*\.(png|jpg)|funkyimg\.com\/i\/38aAB\.png/i.test(src))
+              return;
+            images.push(src);
+            const parent = img.parentElement;
+            if (parent && parent.tagName === "A" && parent.href) {
+              imgBbcode += `[url=${parent.href}][img]${src}[/img][/url]
+`;
+            } else {
+              imgBbcode += `[img]${src}[/img]
+`;
+            }
+          });
+        }
+        const description = `${mediainfo ? `[quote]
+${mediainfo}
+[/quote]
+
+` : ""}${imgBbcode}`.replace(/\[\/?color[^\]]*\]/gi, "").replace(/\n{3,}/g, "\n\n").trim();
+        const dlHref = $$1("#detailsDownloadButton").attr("href") || $$1('a[href*="/download/"]').first().attr("href") || "";
+        let torrentUrl = "";
+        if (dlHref) {
+          try {
+            torrentUrl = new URL(dlHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = dlHref;
+          }
+        }
+        const torrentFilename = title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0;
+        const blob = `${title} ${categoryText} ${mediainfo}`;
+        return {
+          title,
+          description,
+          fullMediaInfo: mediainfo || void 0,
+          type: type2,
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(blob),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename,
+          torrentName: torrentFilename
+        };
+      }
+      async fill(_meta) {
+      }
+    }
+    class DarkLandEngine extends Unit3DClassicEngine {
+      getClassicAutoResolutionMap() {
+        return { "4K": 2, "1080p": 3, "1080i": 4, "720p": 5, SD: 6, "": 10, "8K": 1 };
+      }
+      getClassicResolutionFallbackMap() {
+        return { "4K": 2, "1080p": 3, "1080i": 4, "720p": 5, SD: 6, "": 10, "8K": 1 };
+      }
+      async fill(meta) {
+        await super.fill(meta);
+        try {
+          const small = (meta.smallDescr || meta.subtitle || "").trim();
+          const kw = document.querySelector('input[name="keywords"]');
+          if (kw && small && !kw.value) {
+            kw.value = small;
+            dispatchFormEvents(kw);
+          }
+          const automal = document.getElementById("automal");
+          if (automal) {
+            automal.value = "0";
+            dispatchFormEvents(automal);
+          }
+          if (meta.standardSel === "SD") {
+            $$1('input[name="sd"]:eq(0)').prop("checked", true);
+          }
+        } catch {
+        }
+      }
+    }
+    const _AvistazEngine = class _AvistazEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return /\/torrent\/\d+/i.test(url.pathname || "");
+      }
+      isFillComplete() {
+        if (document.getElementById("file_name")) {
+          return !!readFieldValue(["#file_name"]);
+        }
+        if (document.getElementById("form_upload_torrent")) {
+          const mi = readFieldValue(["#media_info", 'textarea[name="media_info"]']);
+          return mi.length > 20;
+        }
+        return false;
+      }
+      async recoverForwardMeta() {
+        try {
+          const raw = await GMAdapter.getValue(_AvistazEngine.STEP_META_KEY, null);
+          if (!raw)
+            return null;
+          const parsed = JSON.parse(raw);
+          if (!(parsed == null ? void 0 : parsed.meta) || !parsed.ts || Date.now() - parsed.ts > 15 * 6e4) {
+            await GMAdapter.deleteValue(_AvistazEngine.STEP_META_KEY);
+            return null;
+          }
+          return parsed.meta;
+        } catch {
+          return null;
+        }
+      }
+      async onNonUploadPage() {
+        try {
+          await GMAdapter.deleteValue(_AvistazEngine.STEP_META_KEY);
+        } catch {
+        }
+      }
+      async parse() {
+        var _a;
+        this.log(`Parsing ${this.siteName} page...`);
+        const readTableField = (label) => {
+          const wanted = label.toLowerCase();
+          const rows = Array.from(document.querySelectorAll("div.table-responsive table tr"));
+          for (const tr of rows) {
+            const cells = tr.querySelectorAll("td, th");
+            if (cells.length < 2)
+              continue;
+            const k2 = (cells[0].textContent || "").replace(/:/g, "").trim().toLowerCase();
+            if (k2 === wanted)
+              return (cells[1].textContent || "").replace(/\s+/g, " ").trim();
+          }
+          return "";
+        };
+        const title = readTableField("Title") || $$1("h1, .block-titled h3, h3.movie-title").first().text().trim() || document.title.trim();
+        const typeRaw = readTableField("Type");
+        const ripType = readTableField("Rip Type");
+        const quality = readTableField("Video Quality");
+        let type2 = getType(`${typeRaw} ${title}`) || "电影";
+        if (/TV/i.test(typeRaw))
+          type2 = "剧集";
+        else if (/Movie/i.test(typeRaw))
+          type2 = "电影";
+        const miRaw = (((_a = document.getElementById("collapseMediaInfo")) == null ? void 0 : _a.textContent) || "").trim();
+        const mediainfo = cleanMediaInfoText(miRaw);
+        const images = [];
+        let imgBbcode = "";
+        const screenBox = document.getElementById("collapseScreens");
+        if (screenBox) {
+          Array.from(screenBox.querySelectorAll("img")).forEach((img) => {
+            const src = (img.getAttribute("data-src") || img.getAttribute("src") || img.src || "").trim();
+            if (!src)
+              return;
+            const parent = img.parentElement;
+            const fullHref = parent && parent.tagName === "A" && parent.href ? parent.href : src;
+            images.push(fullHref);
+            imgBbcode += parent && parent.tagName === "A" && parent.href ? `[url=${parent.href}][img]${src}[/img][/url] ` : `[img]${src}[/img] `;
+          });
+        }
+        const description = `${mediainfo ? `[quote]
+${mediainfo}
+[/quote]
+
+` : ""}${imgBbcode}`.trim();
+        const movieDetails = document.querySelector(".movie-details") || document.body;
+        const detailsHtml = movieDetails.innerHTML || "";
+        const rawImdbUrl = matchLink("imdb", detailsHtml) || matchLink("imdb", document.body.innerHTML) || "";
+        const imdbId = extractImdbId(rawImdbUrl);
+        const imdbUrl = imdbId ? `https://www.imdb.com/title/${imdbId}/` : rawImdbUrl;
+        const tmdbUrl = matchLink("tmdb", detailsHtml) || "";
+        const tmdbId = extractTmdbId(tmdbUrl);
+        const dlHref = $$1('a[href*="download/torrent"]').last().attr("href") || "";
+        let torrentUrl = "";
+        if (dlHref) {
+          try {
+            torrentUrl = new URL(dlHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = dlHref;
+          }
+        }
+        const torrentFilename = title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0;
+        const blob = `${title} ${ripType} ${quality} ${mediainfo}`;
+        return {
+          title,
+          description,
+          fullMediaInfo: mediainfo || void 0,
+          type: type2,
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(`${quality} ${blob}`),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          tmdbUrl: tmdbUrl || void 0,
+          tmdbId: tmdbId || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename,
+          torrentName: torrentFilename
+        };
+      }
+      async fill(meta) {
+        var _a, _b;
+        this.log(`Filling ${this.siteName} upload form...`);
+        const fileNameInput = document.getElementById("file_name");
+        if (fileNameInput) {
+          const title = (meta.targetTitle || meta.title || "").trim();
+          if (title) {
+            fileNameInput.value = title;
+            dispatchFormEvents(fileNameInput);
+          }
+          const settings = await SettingsService.load();
+          const anon = document.querySelector('input[name="anon_upload"]');
+          if (settings.defaultAnonymous && anon && !anon.checked) {
+            anon.checked = true;
+            dispatchFormEvents(anon);
+          }
+          try {
+            await GMAdapter.deleteValue(_AvistazEngine.STEP_META_KEY);
+          } catch {
+          }
+          return;
+        }
+        try {
+          await GMAdapter.setValue(_AvistazEngine.STEP_META_KEY, JSON.stringify({ meta, ts: Date.now() }));
+        } catch {
+        }
+        const form = document.getElementById("form_upload_torrent");
+        if (form && !document.getElementById("autofeed-avz-summary")) {
+          const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
+          const imdbHref = meta.imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : "");
+          const banner = document.createElement("div");
+          banner.id = "autofeed-avz-summary";
+          banner.className = "form-group";
+          banner.style.padding = "8px 15px";
+          banner.style.background = "rgba(0, 113, 227, 0.08)";
+          banner.style.borderRadius = "6px";
+          banner.style.marginBottom = "12px";
+          const titleRow = document.createElement("div");
+          titleRow.textContent = `Name: ${meta.targetTitle || meta.title || ""}`;
+          banner.appendChild(titleRow);
+          if (imdbHref) {
+            const imdbRow = document.createElement("div");
+            imdbRow.textContent = "IMDb: ";
+            const a2 = document.createElement("a");
+            a2.href = imdbHref;
+            a2.target = "_blank";
+            a2.rel = "noopener noreferrer";
+            a2.textContent = imdbId || imdbHref;
+            imdbRow.appendChild(a2);
+            banner.appendChild(imdbRow);
+          }
+          form.prepend(banner);
+        }
+        const miInput = document.querySelector('#media_info, textarea[name="media_info"]');
+        if (miInput && !miInput.value.trim()) {
+          const infos = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+          const mi = (meta.fullMediaInfo || infos.mediainfo || "").replace(/\[\/?(quote|code)[^\]]*\]/gi, "").trim();
+          if (mi) {
+            miInput.value = mi;
+            dispatchFormEvents(miInput);
+          }
+        }
+        if (meta.torrentBase64 || meta.torrentUrl) {
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const announce = ((_b = (_a = document.body.textContent) == null ? void 0 : _a.match(/https?:\/\/[^\s"'<>]*announce[^\s"'<>]*/i)) == null ? void 0 : _b[0]) || null;
+            const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, announce);
+            const fileInput = document.querySelector('input[type="file"]#torrent_file, input[type="file"][name="torrent_file"]');
+            if (result && fileInput) {
+              TorrentService2.injectFileIntoInput(fileInput, result.file);
+            }
+          } catch (e2) {
+            console.error(`[Auto-Feed][${this.siteName}] File Injection Failed:`, e2);
+          }
+        }
+      }
+    };
+    __publicField(_AvistazEngine, "STEP_META_KEY", "autofeed_avz_step_meta");
+    let AvistazEngine = _AvistazEngine;
+    const CG_ANNOUNCE = "http://tracker.cinemageddon.net:2086/announce.php";
+    class CGEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      isFillComplete() {
+        const name2 = readFieldValue(['input[name="name"]']);
+        const mi = readFieldValue(['textarea[name="mediainfo"]']);
+        const descr = readFieldValue(['textarea[name="descr"]']);
+        return !!name2 && (mi.length > 20 || descr.length > 20);
+      }
+      async parse() {
+        this.log("Parsing CG page...");
+        const title = ($$1("h1").first().text() || document.title || "").replace(/Cinemageddon\s*\/\/\s*/i, "").trim();
+        const detailsEl = document.getElementById("torrent_details") || document.body;
+        const detailsHtml = detailsEl.innerHTML || "";
+        const imdbUrl = matchLink("imdb", detailsHtml) || matchLink("imdb", document.body.innerHTML) || "";
+        const imdbId = extractImdbId(imdbUrl);
+        const description = htmlToBBCode(detailsEl).trim();
+        const infos = getMediainfoPictureFromDescr(description);
+        const images = [];
+        Array.from(detailsEl.querySelectorAll("img")).forEach((img) => {
+          const src = (img.getAttribute("src") || img.src || "").trim();
+          if (!src || /cinemageddon\.net\/(?:pic|styles|images)/i.test(src))
+            return;
+          if (!images.includes(src))
+            images.push(src);
+        });
+        const dlHref = $$1("#torrent_details").parent().find('a[href*="download.php?id="]').first().attr("href") || $$1('a[href*="download.php?id="]').first().attr("href") || "";
+        let torrentUrl = "";
+        if (dlHref) {
+          try {
+            torrentUrl = new URL(dlHref, this.currentUrl).href;
+          } catch {
+            torrentUrl = dlHref;
+          }
+        }
+        const torrentFilename = title ? `${title.replace(/\s+/g, ".")}.torrent` : void 0;
+        const blob = `${title} ${description}`;
+        return {
+          title,
+          description,
+          fullMediaInfo: infos.mediainfo || void 0,
+          type: "电影",
+          mediumSel: getMediumSel(blob, title),
+          standardSel: getStandardSel(blob),
+          codecSel: getCodecSel(blob),
+          audioCodecSel: getAudioCodecSel(blob),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbId || void 0,
+          images,
+          torrentUrl: torrentUrl || void 0,
+          torrentFilename,
+          torrentName: torrentFilename
+        };
+      }
+      async fill(meta) {
+        var _a, _b;
+        this.log("Filling CG upload form...");
+        const title = (meta.targetTitle || meta.title || "").trim();
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
+        const year = ((_a = title.match(/\b((?:19|20)\d{2})\b/)) == null ? void 0 : _a[1]) || ((_b = (meta.description || "").match(/年代[^\d]*((?:19|20)\d{2})/)) == null ? void 0 : _b[1]) || "";
+        if (title)
+          setFirstFormValue('input[name="name"]', title, { force: true });
+        if (year)
+          setFirstFormValue('input[name="year"]', year, { force: true });
+        if (imdbId)
+          setFirstFormValue('input[name="imdb"]', imdbId, { force: true });
+        const setSelect = (name2, val) => {
+          const sel = document.querySelector(`select[name="${name2}"]`);
+          if (!sel || !val)
+            return;
+          const opt = Array.from(sel.options).find(
+            (o2) => {
+              var _a2;
+              return o2.value.toLowerCase() === val.toLowerCase() || ((_a2 = o2.textContent) == null ? void 0 : _a2.trim().toLowerCase()) === val.toLowerCase();
+            }
+          );
+          if (opt) {
+            sel.value = opt.value;
+            dispatchFormEvents(sel);
+          }
+        };
+        const medium = meta.mediumSel || "";
+        if (/webrip/i.test(title))
+          setSelect("source", "WEBRIP");
+        else if (medium === "UHD" || medium === "Blu-ray")
+          setSelect("source", "Other");
+        else if (medium === "Encode" || medium === "Remux")
+          setSelect("source", "BDRIP");
+        else if (medium === "HDTV")
+          setSelect("source", "TVRIP");
+        else if (medium === "WEB-DL")
+          setSelect("source", "WEB-DL");
+        else if (medium === "DVD")
+          setSelect("source", "DVDRIP");
+        const codec = meta.codecSel || "";
+        if (medium === "Blu-ray" || medium === "UHD") {
+          setSelect("fmt", /bd25/i.test(title) ? "BD25" : "BD50");
+        } else if (medium === "DVD" && !/dvdrip/i.test(title)) {
+          setSelect("fmt", "DVD-R");
+        } else if (codec === "H264" || codec === "X264") {
+          setSelect("fmt", "x264");
+        } else if (codec === "H265" || codec === "X265") {
+          setSelect("fmt", "Other");
+        } else if (codec === "XVID") {
+          setSelect("fmt", "XViD");
+        } else if (codec === "MPEG-2") {
+          setSelect("fmt", "MPEG2");
+        }
+        if (meta.type === "纪录")
+          setSelect("type", "15");
+        else if (meta.type === "书籍")
+          setSelect("type", "19");
+        else if (meta.type === "音乐")
+          setSelect("type", "11");
+        const countryMap = {
+          大陆: "China",
+          香港: "Hong Kong",
+          日本: "Japan",
+          韩国: "South Korea",
+          印度: "India",
+          泰国: "Thailand"
+        };
+        if (meta.sourceSel && countryMap[meta.sourceSel]) {
+          setSelect("country", countryMap[meta.sourceSel]);
+        }
+        if (meta.standardSel === "720p")
+          setSelect("hd", "720p");
+        else if (meta.standardSel === "1080p" || meta.standardSel === "1080i")
+          setSelect("hd", "1080p");
+        const infos = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+        const mi = (meta.fullMediaInfo || infos.mediainfo || "").replace(/\[\/?(quote|code)[^\]]*\]/gi, "").trim();
+        if (mi)
+          setFirstFormValue('textarea[name="mediainfo"]', mi, { force: true });
+        const pics = (infos.picInfo || "").trim();
+        const descrBody = pics || (meta.description || "").trim();
+        if (descrBody)
+          setFirstFormValue('textarea[name="descr"]', descrBody, { force: true });
+        if (meta.torrentBase64 || meta.torrentUrl) {
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, CG_ANNOUNCE);
+            const fileInput = document.querySelector('input[type="file"][name="file"]');
+            if (result && fileInput) {
+              TorrentService2.injectFileIntoInput(fileInput, result.file);
+            }
+          } catch (e2) {
+            console.error("[Auto-Feed][CG] File Injection Failed:", e2);
+          }
+        }
+      }
+    }
+    class MusicGazelleSourceEngine extends GazelleEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      async parse() {
+        this.log(`Parsing ${this.siteName} music page...`);
+        return parseMusicGazelle(this.config, this.currentUrl);
+      }
+      async fill(_meta) {
+      }
+    }
+    function absUrl(href, base) {
+      if (!href)
+        return "";
+      try {
+        return new URL(href, base).href;
+      } catch {
+        return href;
+      }
+    }
+    function enrichVideoMeta(base, text) {
+      const combined = `${base.title} ${text}`;
+      return {
+        ...base,
+        type: base.type || getType(combined) || "电影",
+        mediumSel: base.mediumSel || getMediumSel(combined, base.title),
+        standardSel: base.standardSel || getStandardSel(combined),
+        codecSel: base.codecSel || getCodecSel(combined),
+        audioCodecSel: base.audioCodecSel || getAudioCodecSel(combined)
+      };
+    }
+    function decodeBibliotikCover(rawHref) {
+      const trimmed = (rawHref || "").trim();
+      if (!trimmed)
+        return "";
+      try {
+        const u2 = new URL(trimmed, "https://bibliotik.me/");
+        if (/imagecache\.bibliotik\.me/i.test(u2.hostname)) {
+          const inner = u2.searchParams.get("url") || "";
+          if (inner) {
+            const decoded = decodeURIComponent(inner).trim();
+            if (/^ssl:/i.test(decoded))
+              return `https://${decoded.slice(4)}`;
+            if (/^https?:\/\//i.test(decoded))
+              return decoded;
+            return `https://${decoded.replace(/^\/+/, "")}`;
+          }
+        }
+      } catch {
+      }
+      return trimmed;
+    }
+    class BibEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return /^\/torrents\/\d+(?:\/)?$/i.test(url.pathname || "");
+      }
+      async parse() {
+        var _a;
+        const title = ($$1("#title").text() || ((_a = document.querySelector("h1")) == null ? void 0 : _a.textContent) || document.title).trim();
+        const contentInfo = $$1("#details_content_info").text().trim();
+        const creator = $$1("#creatorlist").text().trim();
+        const smallDescr = [contentInfo, creator].filter(Boolean).join(" | ");
+        const published = $$1("#published").text().trim();
+        const tags = $$1("#details_tags").text().trim();
+        const rawCover = $$1("#sidebar a").has("img").first().attr("href") || $$1("#sidebar img").first().attr("src") || "";
+        const cover = decodeBibliotikCover(rawCover);
+        const parts = [];
+        if (cover)
+          parts.push(`[img]${cover}[/img]`);
+        if (published)
+          parts.push(published);
+        if (tags)
+          parts.push(tags);
+        const descLines = [];
+        $$1("#description p").each((_2, el) => {
+          const t2 = ($$1(el).text() || "").replace(/\s+/g, " ").trim();
+          if (t2)
+            descLines.push(t2);
+        });
+        $$1("#description li").each((_2, el) => {
+          const t2 = ($$1(el).text() || "").replace(/\s+/g, " ").trim();
+          if (t2)
+            descLines.push(`[*]${t2}`);
+        });
+        if (descLines.length) {
+          parts.push(`[size=3][b]Description[/b][/size]
+
+${descLines.join("\n\n")}`);
+        } else {
+          const rawDesc = document.getElementById("description");
+          if (rawDesc)
+            parts.push(htmlToBBCode(rawDesc).trim());
+        }
+        const dlHref = $$1('a[title="Download"], a[href*="/download"]').first().attr("href") || "";
+        return {
+          title,
+          smallDescr: smallDescr || void 0,
+          subtitle: smallDescr || void 0,
+          description: parts.join("\n\n").trim(),
+          type: "书籍",
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          images: cover ? [cover] : [],
+          torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0
+        };
+      }
+      async fill(_meta) {
+      }
+    }
+    class IPTEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "torrent.php") && hasIdQuery(url) || /^\/t\/\d+/i.test(url.pathname || "");
+      }
+      async parse() {
+        const title = ($$1("h1").first().text() || document.title).trim();
+        const descrEl = $$1(".des").has("blockquote")[0] || $$1(".des")[0];
+        const description = descrEl ? htmlToBBCode(descrEl).trim() : "";
+        const imdbUrl = matchLink("imdb", (descrEl == null ? void 0 : descrEl.innerHTML) || "") || matchLink("imdb", $$1("#media").html() || "") || matchLink("imdb", document.body.innerHTML) || "";
+        const tagsText = $$1("div.tags").text().trim();
+        const dlHref = $$1('a[href*="download.php"], a[href*="/download.php"]').first().attr("href") || "";
+        const info = getMediainfoPictureFromDescr(description);
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: info.mediainfo || void 0,
+            type: getType(`${tagsText} ${title}`) || "电影",
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          `${tagsText} ${description}`
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    class BitHDTVEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      async parse() {
+        const title = ($$1('td.detail:contains("Torrent"):first').next().text() || $$1("h1").first().text() || document.title).trim();
+        const imdbUrl = matchLink("imdb", document.body.innerHTML) || "";
+        const parts = [];
+        const poster = $$1('td.detail:contains("Poster"):first').next().find("img").attr("src") || "";
+        if (poster)
+          parts.push(`[img]${absUrl(poster, this.currentUrl)}[/img]`);
+        const mi = ($$1("#mediainfo").text() || "").trim();
+        if (mi)
+          parts.push(`[quote]
+${mi}
+[/quote]`);
+        const shots = [];
+        $$1('td.detail:contains("Screenshots"):first').next().find("a").each((_2, el) => {
+          const rawHref = ($$1(el).attr("href") || "").split("url=").pop() || "";
+          const href = decodeURIComponent(rawHref);
+          const img = $$1(el).find("img").attr("src") || "";
+          if (href && img)
+            shots.push(`[url=${href}][img]${img}[/img][/url]`);
+        });
+        if (shots.length)
+          parts.push(shots.join(" "));
+        const description = parts.join("\n\n").trim();
+        const dlHref = $$1('a[href^="download.php"], a[href*="download.php"]').first().attr("href") || "";
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: mi || void 0,
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: poster ? [absUrl(poster, this.currentUrl)] : []
+          },
+          description
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    class BlueBirdEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      async parse() {
+        var _a;
+        const dlText = $$1('#highlighted a[href*="download"]').first().text().trim();
+        const title = (dlText ? (_a = dlText.split("/").pop()) == null ? void 0 : _a.trim() : "") || $$1("h1").first().text().trim() || document.title;
+        const imdbUrl = matchLink("imdb", $$1("#highlighted").html() || document.body.innerHTML) || "";
+        const descrTd = $$1("td:contains(Description)").next();
+        let mediainfo = "";
+        descrTd.find("div.spoiler-wrap").each((_2, el) => {
+          if (/mediainfo|BDInfo|minfo/i.test($$1(el).find(".spoiler-head").text() || "")) {
+            mediainfo = ($$1(el).find(".spoiler-body").text() || "").trim();
+          }
+        });
+        const shots = [];
+        descrTd.find("a").has("img").each((_2, el) => {
+          const src = $$1(el).find("img").attr("src") || "";
+          const href = $$1(el).attr("href") || src;
+          if (/https?:\/\/.*\.(jpg|jpeg|png|webp)/i.test(src)) {
+            shots.push(`[url=${href}][img]${src}[/img][/url]`);
+          }
+        });
+        const description = [mediainfo ? `[quote]
+${mediainfo}
+[/quote]` : "", shots.join(" ")].filter(Boolean).join("\n\n");
+        const typeText = $$1("td:contains(Type)").last().next().text().trim();
+        const dlHref = $$1('#highlighted a[href*="download"], a[href*="download.php"]').first().attr("href") || "";
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: mediainfo || void 0,
+            type: getType(`${typeText} ${title}`) || "电影",
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          `${typeText} ${description}`
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    class BwTorrentsEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      async parse() {
+        const title = ($$1("#title_tt").text() || $$1("h1").first().text() || document.title).trim();
+        const imdbUrl = matchLink("imdb", $$1("table.mainouter").html() || document.body.innerHTML) || "";
+        const descrEl = document.getElementById("aeonsystems2017details2");
+        const description = (descrEl ? htmlToBBCode(descrEl) : "").replace(/\n\n+/g, "\n").trim();
+        const dlHref = $$1('a[href^="download.php"], a[href*="download.php"]').first().attr("href") || "";
+        const info = getMediainfoPictureFromDescr(description);
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: info.mediainfo || void 0,
+            type: /S\d+|E\d+/i.test(title) ? "剧集" : "电影",
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          description
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    class DigitalCoreEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return /^\/torrent\/\d+/i.test(url.pathname || "");
+      }
+      async parse() {
+        const title = ($$1("torrent a").first().text() || $$1("h1, h2").first().text() || document.title).trim();
+        const imdbContainer = $$1(".imdbinfotext").closest("div").parent().parent();
+        const imdbUrl = matchLink("imdb", imdbContainer.html() || document.body.innerHTML) || "";
+        const infoTd = $$1("td:contains(Information)").next()[0];
+        const description = infoTd ? htmlToBBCode(infoTd).trim() : "";
+        const dlHref = $$1('a[href*="download"]').first().attr("href") || "";
+        const info = getMediainfoPictureFromDescr(description);
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: info.mediainfo || void 0,
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          description
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    const HDSPACE_ANNOUNCE = "http://hd-space.pw/announce.php";
+    class HDSpaceEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "index.php") && /page=torrent-details/i.test(url.search || "");
+      }
+      async parse() {
+        const table = $$1("#mcol table").filter((_2, el) => /Info Hash/i.test(el.textContent || "")).first();
+        const title = (table.find('td:contains("Name"):first').next().text() || $$1("h1").first().text() || document.title).trim();
+        const imdbUrl = matchLink("imdb", table.html() || document.body.innerHTML) || "";
+        let descrEl = null;
+        table.find("td").each((_2, el) => {
+          if ($$1(el).text().trim() === "Description") {
+            descrEl = $$1(el).next()[0] || null;
+          }
+        });
+        let description = descrEl ? htmlToBBCode(descrEl) : "";
+        description = description.replace(/#[\s\S]*?Nfo hack/i, "").replace(/# End[\s\S]*?#+/i, "").trim();
+        const imgs = description.match(/(?:\[url=[^\]]+\])?\[img\][\s\S]*?\[\/img\](?:\[\/url\])?/gi) || [];
+        let body = description;
+        imgs.forEach((im) => {
+          body = body.replace(im, "");
+        });
+        description = [body.trim() ? `[quote]
+${body.trim()}
+[/quote]` : "", imgs.join("\n")].filter(Boolean).join("\n\n").trim();
+        const dlHref = $$1('a[href*="download.php"]').first().attr("href") || "";
+        const info = getMediainfoPictureFromDescr(description);
+        return enrichVideoMeta(
+          {
+            title,
+            description,
+            fullMediaInfo: info.mediainfo || void 0,
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          description
+        );
+      }
+      async fill(meta) {
+        setFirstFormValue('#filename, input[name="filename"]', meta.targetTitle || meta.title || "");
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId)
+          setAllFormValues('input[name="imdb"]', imdbId.replace(/^tt/i, ""));
+        const rawDescr = `${meta.fullMediaInfo || ""}
+${meta.description || ""}`.trim();
+        const info = getMediainfoPictureFromDescr(rawDescr, { mediumSel: meta.mediumSel });
+        const mi = (meta.fullMediaInfo || info.mediainfo || "").trim();
+        const formatted = [mi ? `[quote]
+${mi}
+[/quote]` : "", info.picInfo || ""].filter(Boolean).join("\n\n");
+        setFirstFormValue('textarea[name="info"]', formatted || meta.description || "", { force: true });
+        const medium = meta.mediumSel || "";
+        const std = meta.standardSel || "";
+        const type2 = meta.type || "电影";
+        let cat = "19";
+        if (medium === "UHD" || medium === "Blu-ray")
+          cat = "15";
+        else if (medium === "Remux")
+          cat = "40";
+        else if (medium === "DVD")
+          cat = "16";
+        else if (type2 === "纪录")
+          cat = std === "4K" ? "47" : std === "720p" ? "24" : "25";
+        else if (type2 === "动漫")
+          cat = std === "720p" ? "27" : "28";
+        else if (type2 === "剧集" || /S\d{2,3}/i.test(meta.title || ""))
+          cat = std === "4K" ? "45" : std === "720p" ? "21" : "22";
+        else
+          cat = std === "4K" ? "41" : std === "720p" ? "18" : "19";
+        setAllFormValues('select[name="category"]', cat);
+        try {
+          const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+          const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, HDSPACE_ANNOUNCE);
+          if (result)
+            TorrentService2.injectTorrentForSite(this.siteName, result.file, result.filename);
+        } catch (e2) {
+          console.error("[Auto-Feed][HDSpace] File Injection Failed:", e2);
+        }
+      }
+    }
+    class ITSEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return isPage(url, "details.php") && hasIdQuery(url);
+      }
+      async parse() {
+        var _a;
+        const title = ($$1("h1").first().text() || document.title).trim();
+        const imdbHtml = ((_a = document.querySelector(".IMDBtable")) == null ? void 0 : _a.innerHTML) || document.body.innerHTML;
+        const imdbUrl = matchLink("imdb", imdbHtml) || "";
+        const dlHref = $$1('a[href*="download.php"]').first().attr("href") || "";
+        return enrichVideoMeta(
+          {
+            title,
+            description: "",
+            sourceSite: this.siteName,
+            sourceUrl: this.currentUrl,
+            imdbUrl: imdbUrl || void 0,
+            imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+            torrentUrl: dlHref ? absUrl(dlHref, this.currentUrl) : void 0,
+            images: []
+          },
+          title
+        );
+      }
+      async fill(_meta) {
+      }
+    }
+    const sleep = (ms) => new Promise((r2) => window.setTimeout(r2, ms));
+    function bbcodeToMarkdown(text) {
+      return String(text || "").replace(/\[size=\d+\]|\[\/size\]/gi, "").replace(/\[font=[^\]]+\]|\[\/font\]/gi, "").replace(/\[color=[^\]]+\]|\[\/color\]/gi, "").replace(/\[img\]([\s\S]*?)\[\/img\]/gi, "![]($1)").replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, "[$2]($1)").replace(/\[url\]([\s\S]*?)\[\/url\]/gi, "<$1>").replace(/\[b\]\s*/gi, "**").replace(/\s*\[\/b\]/gi, "**").replace(/\[i\]\s*/gi, "*").replace(/\s*\[\/i\]/gi, "*").replace(
+        /\[quote(?:=[^\]]+)?\]([\s\S]*?)\[\/quote\]/gi,
+        (_2, body) => "\n" + String(body || "").trim().split(/\r?\n/).map((line) => `> ${line}`).join("\n") + "\n"
+      ).trim();
+    }
+    function setReactInput(el, value) {
+      var _a;
+      if (!el)
+        return;
+      const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+      const setter = (_a = Object.getOwnPropertyDescriptor(proto, "value")) == null ? void 0 : _a.set;
+      if (setter)
+        setter.call(el, value);
+      else
+        el.value = value;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    async function waitForEl(finder, timeout = 12e3) {
+      const end = Date.now() + timeout;
+      while (Date.now() < end) {
+        const found = finder();
+        if (found)
+          return found;
+        await sleep(100);
+      }
+      return null;
+    }
+    class ZhuqueEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(url) {
+        return /^\/torrent\/(?:info|list)\/\d+/i.test(url.pathname || "");
+      }
+      async parse() {
+        const card0 = $$1("div.ant-card-body").eq(0);
+        const title = (card0.find("span").first().text() || document.title).trim();
+        const smallDescr = card0.find("span").eq(1).text().trim();
+        const infoText = card0.text();
+        const imdbUrl = matchLink("imdb", document.body.innerHTML) || "";
+        const dlHref = $$1('a[href*="/api/torrent/download/"]').first().attr("href") || "";
+        const mediainfo = $$1("div.ant-collapse-content-box").eq(1).find("span").eq(0).text().trim();
+        const imgs = [];
+        $$1("div.ant-card-body").eq(2).find("img").each((_2, el) => {
+          const src = $$1(el).attr("src") || "";
+          if (src)
+            imgs.push(src);
+        });
+        const parts = [];
+        if (mediainfo)
+          parts.push(`[quote]
+${mediainfo}
+[/quote]`);
+        if (imgs.length)
+          parts.push(imgs.map((s2) => `[img]${s2}[/img]`).join("\n"));
+        const description = parts.join("\n\n").trim();
+        const combined = `${title} ${infoText} ${description}`;
+        return {
+          title,
+          smallDescr: smallDescr || void 0,
+          subtitle: smallDescr || void 0,
+          description,
+          fullMediaInfo: mediainfo || void 0,
+          type: getType(combined) || "电影",
+          mediumSel: getMediumSel(combined, title),
+          standardSel: getStandardSel(combined),
+          codecSel: getCodecSel(combined),
+          audioCodecSel: getAudioCodecSel(combined),
+          sourceSite: this.siteName,
+          sourceUrl: this.currentUrl,
+          imdbUrl: imdbUrl || void 0,
+          imdbId: imdbUrl ? extractImdbId(imdbUrl) : void 0,
+          torrentUrl: dlHref ? new URL(dlHref, this.currentUrl).href : void 0,
+          images: imgs
+        };
+      }
+      async fill(meta) {
+        const titleEl = await waitForEl(() => document.getElementById("form_item_title"), 1e4);
+        if (!titleEl)
+          return;
+        setReactInput(titleEl, meta.targetTitle || meta.title || "");
+        setReactInput(document.getElementById("form_item_subtitle"), meta.smallDescr || meta.subtitle || "");
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
+        if (imdbId) {
+          const imdbEl = document.querySelector('input[placeholder="tt123456"]');
+          setReactInput(imdbEl, imdbId);
+        }
+        const rawDescr = `${meta.fullMediaInfo || ""}
+${meta.description || ""}`.trim();
+        const info = getMediainfoPictureFromDescr(rawDescr, { mediumSel: meta.mediumSel });
+        const mi = (meta.fullMediaInfo || info.mediainfo || "").trim();
+        setReactInput(document.getElementById("form_item_mediainfo"), mi || meta.description || "");
+        const triggerAntSelect = async (id, value, delay = 250) => {
+          const el = document.getElementById(id);
+          if (!el || !value)
+            return;
+          el.dispatchEvent(new Event("mousedown", { bubbles: true }));
+          el.click();
+          await sleep(delay);
+          const opts = Array.from(document.querySelectorAll("div.ant-select-item-option-content"));
+          const match = opts.find((o2) => (o2.textContent || "").trim() === value) || opts.find((o2) => (o2.textContent || "").includes(value));
+          if (match)
+            match.click();
+        };
+        const typeMap = { 电影: "电影", 剧集: "剧集", 动漫: "动画", 综艺: "节目" };
+        await triggerAntSelect("form_item_category", typeMap[meta.type || ""] || "其它", 300);
+        let med = "Encode";
+        if (meta.mediumSel === "UHD")
+          med = /DIY|@/i.test(meta.title || "") ? "UHD Blu-ray DIY" : "UHD Blu-ray";
+        else if (meta.mediumSel === "Blu-ray")
+          med = /DIY|@/i.test(meta.title || "") ? "Blu-ray DIY" : "Blu-ray";
+        else if (meta.mediumSel && ["Remux", "HDTV", "Encode", "WEB-DL"].includes(meta.mediumSel))
+          med = meta.mediumSel;
+        else if (meta.mediumSel === "DVD")
+          med = "Other";
+        if (/HDTV/i.test(meta.title || "") && meta.standardSel === "4K")
+          med = "UHDTV";
+        await triggerAntSelect("rc_select_1", med, 300);
+        const codecMap = { H265: "H265", H264: "H264", X265: "x265", X264: "x264" };
+        await triggerAntSelect("rc_select_2", codecMap[meta.codecSel || ""] || "Other", 300);
+        const stdMap = { "4K": "2160p", "1080p": "1080p", "1080i": "1080i", "720p": "720p" };
+        await triggerAntSelect("rc_select_3", stdMap[meta.standardSel || ""] || "Other", 300);
+        try {
+          const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+          const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, null);
+          if (result)
+            TorrentService2.injectTorrentForSite(this.siteName, result.file, result.filename);
+        } catch (e2) {
+          console.error("[Auto-Feed][ZHUQUE] File Injection Failed:", e2);
+        }
+      }
+    }
+    class YemaPTEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(_url) {
+        return false;
+      }
+      async parse() {
+        return { title: document.title, description: "", sourceSite: this.siteName, sourceUrl: this.currentUrl, images: [] };
+      }
+      async fill(meta) {
+        const settings = await SettingsService.load();
+        const applyToForm = async (form) => {
+          var _a, _b;
+          if (!(form == null ? void 0 : form.setFieldsValue))
+            return;
+          const rawDescr = meta.description || "";
+          const info = getMediainfoPictureFromDescr(rawDescr, { mediumSel: meta.mediumSel });
+          const poster = ((_a = meta.images) == null ? void 0 : _a[0]) || ((_b = rawDescr.match(/\[img\](.*?)\[\/img\]/i)) == null ? void 0 : _b[1]) || "";
+          const payload = {
+            showName: meta.targetTitle || meta.title || "",
+            shortDesc: meta.smallDescr || meta.subtitle || "",
+            longDesc: bbcodeToMarkdown(rawDescr)
+          };
+          if (poster)
+            payload.picture = poster;
+          if (settings.defaultAnonymous)
+            payload.uploadUserAnonymous = "y";
+          const dbId = extractDoubanId(meta.doubanUrl || "");
+          if (dbId)
+            payload.douban = dbId;
+          const imdbId = (meta.imdbId || extractImdbId(meta.imdbUrl || "") || "").replace(/^tt/i, "");
+          if (imdbId)
+            payload.imdb = imdbId;
+          const seasonMatch = (meta.title || "").match(/S(\d+)/i);
+          if (seasonMatch && ["剧集", "综艺", "动漫", "纪录"].includes(meta.type || "")) {
+            payload.season = parseInt(seasonMatch[1], 10);
+          }
+          if (info.picInfo) {
+            const urls = Array.from(info.picInfo.matchAll(/\[img\](.*?)\[\/img\]/gi)).map((m2) => m2[1].trim()).filter(Boolean);
+            if (urls.length)
+              payload.screenshotList = Array.from(new Set(urls));
+          }
+          form.setFieldsValue(payload);
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, null);
+            if (result)
+              TorrentService2.injectTorrentForSite(this.siteName, result.file, result.filename);
+          } catch {
+          }
+        };
+        window.addEventListener("torrentAddPageReady", (e2) => {
+          var _a;
+          applyToForm((_a = e2 == null ? void 0 : e2.detail) == null ? void 0 : _a.form).catch(() => {
+          });
+        }, { once: true });
+        const nameInput = document.querySelector('input[id*="showName"], input[name="showName"]');
+        if (nameInput) {
+          setReactInput(nameInput, meta.targetTitle || meta.title || "");
+        }
+      }
+    }
+    class RouSiEngine extends BaseEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      isSourcePage(_url) {
+        return false;
+      }
+      async parse() {
+        return { title: document.title, description: "", sourceSite: this.siteName, sourceUrl: this.currentUrl, images: [] };
+      }
+      async fill(meta) {
+        const titleEl = await waitForEl(() => document.querySelector("#torrent-title"), 1e4);
+        if (!titleEl)
+          return;
+        const settings = await SettingsService.load();
+        setReactInput(titleEl, meta.targetTitle || meta.title || "");
+        setReactInput(document.querySelector("#torrent-subtitle"), meta.smallDescr || meta.subtitle || "");
+        if (meta.imdbUrl || meta.imdbId) {
+          setReactInput(document.querySelector("#torrent-imdb-id"), meta.imdbUrl || `https://www.imdb.com/title/${meta.imdbId}/`);
+        }
+        if (meta.doubanUrl) {
+          setReactInput(document.querySelector("#torrent-douban-id"), meta.doubanUrl);
+        }
+        const selectRadix = async (selector, label) => {
+          var _a;
+          const trigger = document.querySelector(selector);
+          if (!trigger || !label)
+            return;
+          if ((((_a = trigger.querySelector('[data-slot="select-value"]')) == null ? void 0 : _a.textContent) || "").trim() === label)
+            return;
+          trigger.click();
+          await sleep(150);
+          const listboxId = trigger.getAttribute("aria-controls") || "";
+          const container = listboxId && document.getElementById(listboxId) || document;
+          const opt = Array.from(container.querySelectorAll('[role="option"]')).find((o2) => (o2.textContent || "").trim() === label);
+          opt == null ? void 0 : opt.click();
+          await sleep(80);
+        };
+        const typeMap = { 电影: "电影", 剧集: "电视剧", 动漫: "动漫", 综艺: "综艺", 音乐: "音乐", 纪录: "纪录片", 体育: "体育", MV: "音乐", 软件: "软件" };
+        await selectRadix("#torrent-category", typeMap[meta.type || ""] || "其他");
+        const stdMap = { "4K": "4K / 2160p", "2160p": "4K / 2160p", "1080p": "1080p", "1080i": "1080i", "720p": "720p", SD: "SD" };
+        await selectRadix("#torrent-facet-resolution", stdMap[meta.standardSel || ""] || "其他");
+        const medMap = { "Blu-ray": "Blu-ray", UHD: "UHD Blu-ray", Remux: "Blu-ray", Encode: "Blu-ray", "WEB-DL": "WEB-DL", HDTV: "HDTV", DVD: "DVDRip" };
+        await selectRadix("#torrent-facet-source", medMap[meta.mediumSel || ""] || "其他");
+        setReactInput(document.querySelector("#torrent-description"), bbcodeToMarkdown(meta.description || ""));
+        const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ""}
+${meta.description || ""}`);
+        setReactInput(document.querySelector("#torrent-media-info"), (meta.fullMediaInfo || info.mediainfo || "").trim());
+        if (settings.defaultAnonymous) {
+          const cb = document.querySelector('[role="checkbox"][aria-labelledby="torrent-anonymous-label"]');
+          if (cb && cb.getAttribute("aria-checked") !== "true")
+            cb.click();
+        }
+        try {
+          const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+          const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, null);
+          if (result)
+            TorrentService2.injectTorrentForSite(this.siteName, result.file, result.filename);
+        } catch {
+        }
+      }
+    }
+    const _HDCityEngine = class _HDCityEngine extends NexusPHPEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      async recoverForwardMeta() {
+        if (!document.getElementById("bigname"))
+          return null;
+        try {
+          const raw = await GMAdapter.getValue(_HDCityEngine.STEP_META_KEY, null);
+          if (!raw)
+            return null;
+          const parsed = JSON.parse(raw);
+          if (!(parsed == null ? void 0 : parsed.meta) || !parsed.ts || Date.now() - parsed.ts > 15 * 6e4) {
+            await GMAdapter.deleteValue(_HDCityEngine.STEP_META_KEY);
+            return null;
+          }
+          return parsed.meta;
+        } catch {
+          return null;
+        }
+      }
+      async onNonUploadPage() {
+        try {
+          await GMAdapter.deleteValue(_HDCityEngine.STEP_META_KEY);
+        } catch {
+        }
+      }
+      async fill(meta) {
+        var _a, _b;
+        const settings = await SettingsService.load();
+        const isStep2 = !!document.getElementById("bigname");
+        if (!isStep2) {
+          await GMAdapter.setValue(_HDCityEngine.STEP_META_KEY, JSON.stringify({ meta, ts: Date.now() }));
+          const qr = document.getElementById("qr");
+          if (qr)
+            qr.disabled = false;
+          setFirstFormValue('#name, input[name="name"]', meta.targetTitle || meta.title || "");
+          try {
+            const { TorrentService: TorrentService2 } = await __vitePreload(() => Promise.resolve().then(() => TorrentService$1), false ? "__VITE_PRELOAD__" : void 0);
+            const result = await TorrentService2.buildForwardTorrentFile(meta, this.siteName, null);
+            if (result)
+              TorrentService2.injectTorrentForSite(this.siteName, result.file, result.filename);
+          } catch {
+          }
+          return;
+        }
+        setFirstFormValue("#bigname", meta.targetTitle || meta.title || "");
+        setAllFormValues('input[name="small_descr"]', meta.smallDescr || meta.subtitle || "");
+        setAllFormValues('input[name="url"]', meta.imdbUrl || "");
+        const poster = ((_a = meta.images) == null ? void 0 : _a[0]) || ((_b = (meta.description || "").match(/\[img\](\S+?)\[\/img\]/i)) == null ? void 0 : _b[1]) || "";
+        if (poster)
+          setAllFormValues('input[name="posterimg"]', poster);
+        const info = getMediainfoPictureFromDescr(meta.description || "", { mediumSel: meta.mediumSel });
+        const mi = (meta.fullMediaInfo || info.mediainfo || "").trim();
+        if (mi)
+          setFirstFormValue("#mediainfo", mi, { force: true });
+        setFirstFormValue('#descr, textarea[name="descr"]', meta.description || "", { force: true });
+        const selectIndex = (name2, idx) => {
+          const sel = name2 === "browsecat" ? document.getElementById("browsecat") : document.getElementsByName(name2)[0];
+          if (sel && sel.options[idx]) {
+            sel.selectedIndex = idx;
+            dispatchFormEvents(sel);
+          }
+        };
+        const typeIdx = {
+          电影: 1,
+          剧集: 2,
+          纪录: 3,
+          动漫: 4,
+          综艺: 5,
+          MV: 6,
+          体育: 7,
+          音乐: 8,
+          学习: 10,
+          软件: 11,
+          "": 12
+        };
+        if (typeIdx[meta.type || ""] !== void 0)
+          selectIndex("browsecat", typeIdx[meta.type || ""]);
+        const medIdx = { UHD: 1, "Blu-ray": 1, DVD: 2, Remux: 3, Encode: 4, HDTV: 6, "WEB-DL": 6 };
+        if (meta.mediumSel && medIdx[meta.mediumSel] !== void 0)
+          selectIndex("medium_sel", medIdx[meta.mediumSel]);
+        const codecIdx = { H264: 1, X264: 1, H265: 2, X265: 2, "MPEG-2": 3, "MPEG-4": 3, XVID: 4, "VC-1": 5 };
+        if (meta.codecSel && codecIdx[meta.codecSel] !== void 0)
+          selectIndex("codec_sel", codecIdx[meta.codecSel]);
+        const stdIdx = { "4K": 3, "1080p": 5, "1080i": 6, "720p": 7, SD: 11 };
+        if (meta.standardSel && stdIdx[meta.standardSel] !== void 0)
+          selectIndex("standard_sel", stdIdx[meta.standardSel]);
+        if (settings.defaultAnonymous) {
+          const uplver = document.getElementsByName("uplver")[0];
+          if (uplver) {
+            uplver.checked = true;
+            dispatchFormEvents(uplver);
+          }
+        }
+        await GMAdapter.deleteValue(_HDCityEngine.STEP_META_KEY);
+      }
+    };
+    __publicField(_HDCityEngine, "STEP_META_KEY", "autofeed_hdcity_step_meta");
+    let HDCityEngine = _HDCityEngine;
+    class BYREngine extends NexusPHPEngine {
+      constructor(config, url) {
+        super(config, url);
+      }
+      async fill(meta) {
+        var _a, _b, _c, _d;
+        await super.fill(meta);
+        const origDescr = meta.description || "";
+        let htmlDescr = origDescr.replace(/^\n+/, "").replace(/\n/g, "<br />").replace(/\[(quote|quote=.+?|hide=.+?)\]/gi, '<fieldset style="font-family: Consolas,sans-serif"><legend><span style="color:white;background-color:black">&nbsp;引用&nbsp;</span></legend>').replace(/\[(\/)?(quote|hide)\]/gi, "<$1fieldset>").replace(/\[color=(.+?)\]/gi, '<span style="color: $1">').replace(/\[\/color\]/gi, "</span>").replace(/\[size=(.+?)\]/gi, '<font size="$1">').replace(/\[\/size\]/gi, "</font>").replace(/\[url=(.+?)\](.+?)\[\/url\]/gi, '<a href="$1">$2</a>').replace(/\[(\/)?b\]/gi, "<$1strong>").replace(/\[img\](.+?)\[\/img\]/gi, '<img src="$1"/>');
+        setFirstFormValue("textarea", htmlDescr, { force: true });
+        if ((meta.type || "电影") === "电影") {
+          const src = meta.sourceSel || "";
+          if (["大陆", "台湾", "香港", "港台"].includes(src)) {
+            setAllFormValues('select[name="second_type"]', "11");
+            setAllFormValues('input[name="movie_country"]', "华语");
+          } else if (["日本", "韩国", "印度"].includes(src)) {
+            setAllFormValues('select[name="second_type"]', "14");
+            setAllFormValues('input[name="movie_country"]', "亚洲");
+          } else if (src === "欧美") {
+            const isUs = /(?:◎产.*地|◎地.*区|◎国.*家)[^\n]*(?:美国|北美)/.test(origDescr);
+            setAllFormValues('select[name="second_type"]', isUs ? "13" : "12");
+            setAllFormValues('input[name="movie_country"]', isUs ? "北美" : "欧洲");
+          }
+          setAllFormValues('input[name="movie_ename0day"]', (meta.targetTitle || meta.title || "").replace(/ /g, "."));
+          const cnameLine = ((_b = (_a = origDescr.match(/(?:◎译.*名|◎片.*名)([^\n]+)/)) == null ? void 0 : _a[1]) == null ? void 0 : _b.trim()) || "";
+          if (/[\u4e00-\u9fa5]/.test(cnameLine)) {
+            const cname = cnameLine.replace(/\s+/g, "").split("/").slice(0, 2).join("/");
+            setAllFormValues('input[name="movie_cname"]', cname);
+          }
+          const genreLine = ((_d = (_c = origDescr.match(/◎类.*别([^\n]+)/)) == null ? void 0 : _c[1]) == null ? void 0 : _d.replace(/\s+/g, "")) || "";
+          if (genreLine) {
+            setAllFormValues('input[name="movie_type"]', genreLine.split("/").slice(0, 3).join("/"));
+          }
+        }
+      }
+    }
     const siteConfigs = [
       ...NexusSites,
       ...GazelleSites,
@@ -19660,35 +34118,73 @@ ${picInfo}`.trim();
       [SiteType.PTP]: PTPEngine,
       [SiteType.HDB]: HDBEngine,
       [SiteType.KG]: KGEngine,
-      [SiteType.HDT]: HDTEngine
+      [SiteType.HDT]: HDTEngine,
+      [SiteType.BTN]: BTNEngine,
+      [SiteType.HDRoute]: HDRouteEngine,
+      [SiteType.FileList]: FileListEngine,
+      [SiteType.TorrentLeech]: TorrentLeechEngine,
+      [SiteType.Avistaz]: AvistazEngine,
+      [SiteType.CG]: CGEngine
     };
     const siteEngineMap = {
       ACM: ACMEngine,
+      ANT: ANTEngine,
       Audiences: AudiencesEngine,
+      AvistaZ: AvistazEngine,
+      bib: BibEngine,
+      "bit-hdtv": BitHDTVEngine,
+      BlueBird: BlueBirdEngine,
+      BTN: BTNEngine,
+      bwtorrents: BwTorrentsEngine,
+      BYR: BYREngine,
+      CG: CGEngine,
       CHDBits: CHDBitsEngine,
+      CinemaZ: AvistazEngine,
       BLU: BLUEngine,
       CMCT: CMCTEngine,
+      DarkLand: DarkLandEngine,
+      digitalcore: DigitalCoreEngine,
+      FileList: FileListEngine,
       FRDS: FRDSEngine,
+      HaiDan: HaiDanEngine,
       HDB: HDBEngine,
+      HDChina: HDChinaEngine,
+      HDCity: HDCityEngine,
+      HDF: HDFEngine,
       HDHome: HDHomeEngine,
+      "HD-Only": HDOnlyEngine,
+      HDRoute: HDRouteEngine,
       HDSky: HDSkyEngine,
+      HDSpace: HDSpaceEngine,
+      IPT: IPTEngine,
+      iTS: ITSEngine,
       KG: KGEngine,
       MTeam: MTeamEngine,
       Monika: MonikaEngine,
+      NBL: NBLEngine,
+      NPUPT: NPUPTEngine,
       OpenCD: OpenCDEngine,
       OnlyEncodes: OnlyEncodesEngine,
       OurBits: OurBitsEngine,
+      PrivateHD: AvistazEngine,
       PTP: PTPEngine,
       PTer: PTerEngine,
+      RouSi: RouSiEngine,
       TTG: TTGEngine,
+      TVV: TVVEngine,
       GPW: GPWEngine,
       RED: REDEngine,
       OPS: OPSEngine,
       DIC: DICEngine,
+      jpop: MusicGazelleSourceEngine,
+      lztr: MusicGazelleSourceEngine,
       Tik: TikEngine,
+      TorrentLeech: TorrentLeechEngine,
       SC: SCEngine,
       TJUPT: TJUPTEngine,
-      HDT: HDTEngine
+      HDT: HDTEngine,
+      YemaPT: YemaPTEngine,
+      ZHUQUE: ZhuqueEngine
     };
     class SiteRegistry {
       static registerConfig(config) {
@@ -19728,240 +34224,6 @@ ${picInfo}`.trim();
         return null;
       }
     }
-    class DoubanService {
-      static async getByImdb(imdbId, options) {
-        var _a;
-        const query = encodeURIComponent(String(imdbId || "").trim());
-        if (!query)
-          return null;
-        let id = "";
-        try {
-          const searchUrl = `https://m.douban.com/search/?query=${query}&type=movie`;
-          const doc = await HtmlFetchService.getDocument(searchUrl, this.buildFetchOptions(options));
-          id = this.findDoubanId(doc);
-        } catch {
-        }
-        if (!id) {
-          try {
-            const suggestUrl = `https://movie.douban.com/j/subject_suggest?q=${query}`;
-            const text = await HtmlFetchService.getText(suggestUrl, this.buildFetchOptions(options));
-            id = extractDoubanId(text) || ((_a = text.match(/(?:subject\/|"id"\s*:\s*")([0-9]{5,})/i)) == null ? void 0 : _a[1]) || "";
-          } catch {
-          }
-        }
-        if (!id || id === "35580200")
-          return null;
-        return this.getById(id, options);
-      }
-      static async getById(id, options) {
-        const url = `https://movie.douban.com/subject/${id}/`;
-        const doc = await HtmlFetchService.getDocument(url, this.buildFetchOptions(options));
-        return this.parseDoubanDoc(doc, id);
-      }
-      static findDoubanId(doc) {
-        var _a, _b;
-        const links = Array.from(doc.querySelectorAll("a[href]"));
-        for (const link of links) {
-          const id = extractDoubanId(link.getAttribute("href") || "");
-          if (id)
-            return id;
-        }
-        const html = ((_a = doc.documentElement) == null ? void 0 : _a.outerHTML) || "";
-        return ((_b = html.match(/(?:douban\.com\/subject\/|subject\/)(\d{5,})/i)) == null ? void 0 : _b[1]) || "";
-      }
-      static async resolvePosterDisplayUrl(url, mode = "raw") {
-        const normalized = String(url || "").trim();
-        if (!normalized)
-          return "";
-        if (mode !== "inline")
-          return normalized;
-        if (!/doubanio\.com/i.test(normalized))
-          return normalized;
-        if (!this.posterDataUrlCache.has(normalized)) {
-          this.posterDataUrlCache.set(
-            normalized,
-            this.fetchPosterDataUrl(normalized).catch(() => normalized)
-          );
-        }
-        return await this.posterDataUrlCache.get(normalized);
-      }
-      static parseDoubanDoc(doc, id) {
-        var _a, _b, _c, _d, _e, _f;
-        const title = (((_a = doc.querySelector("title")) == null ? void 0 : _a.textContent) || "").replace("(豆瓣)", "").trim();
-        let image = "";
-        const img = doc.querySelector("#mainpic img");
-        if (img == null ? void 0 : img.src) {
-          const match = img.src.match(/(p\d+).+$/);
-          if (match == null ? void 0 : match[1]) {
-            image = `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${match[1]}.jpg`;
-          } else {
-            image = img.src;
-          }
-        }
-        const yearText = ((_b = doc.querySelector("#content > h1 > span.year")) == null ? void 0 : _b.textContent) || "";
-        const year = yearText ? parseInt(yearText.replace(/[()]/g, ""), 10) : "";
-        const average = ((_c = doc.querySelector('#interest_sectl [property="v:average"]')) == null ? void 0 : _c.textContent) || "";
-        const votes = ((_d = doc.querySelector('#interest_sectl [property="v:votes"]')) == null ? void 0 : _d.textContent) || "";
-        const genre = Array.from(doc.querySelectorAll('#info span[property="v:genre"]')).map((e2) => {
-          var _a2;
-          return (_a2 = e2.textContent) == null ? void 0 : _a2.trim();
-        }).filter(Boolean).join("/");
-        const releaseDate = Array.from(doc.querySelectorAll('#info span[property="v:initialReleaseDate"]')).map((e2) => {
-          var _a2;
-          return (_a2 = e2.textContent) == null ? void 0 : _a2.trim();
-        }).filter(Boolean).sort((a2, b) => new Date(a2 || "").getTime() - new Date(b || "").getTime()).join("/");
-        const runtime = ((_f = (_e = doc.querySelector('#info span[property="v:runtime"]')) == null ? void 0 : _e.textContent) == null ? void 0 : _f.trim()) || "";
-        const aka = this.getInfoByLabel(doc, "又名");
-        const region = this.getInfoByLabel(doc, "制片国家/地区");
-        const director = this.getInfoByLabel(doc, "导演");
-        const language = this.getInfoByLabel(doc, "语言");
-        const cast = this.getInfoByLabel(doc, "主演");
-        const summaryEl = doc.querySelector('#link-report-intra [property="v:summary"]') || doc.querySelector("#link-report-intra span.all.hidden");
-        const summary = this.getSummary(summaryEl);
-        return {
-          id,
-          title,
-          year,
-          aka,
-          average,
-          votes,
-          genre,
-          region,
-          director,
-          language,
-          releaseDate,
-          runtime,
-          cast,
-          summary,
-          image
-        };
-      }
-      static getSummary(summaryEl) {
-        var _a;
-        if (!summaryEl)
-          return "";
-        const directText = Array.from(summaryEl.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => {
-          var _a2;
-          return ((_a2 = node.textContent) == null ? void 0 : _a2.trim()) || "";
-        }).filter(Boolean).join("\n").trim();
-        return directText || ((_a = summaryEl.textContent) == null ? void 0 : _a.trim()) || "";
-      }
-      static getInfoByLabel(doc, label) {
-        const spans = Array.from(doc.querySelectorAll("#info span.pl"));
-        const span = spans.find((s2) => (s2.textContent || "").includes(label));
-        if (!span)
-          return "";
-        const chunks = [];
-        let node = span.nextSibling;
-        while (node) {
-          if (node.nodeName === "BR")
-            break;
-          const text = node.textContent || "";
-          if (text.trim())
-            chunks.push(text.trim());
-          node = node.nextSibling;
-        }
-        return chunks.join(" ").replace(/^[：:\s]+/, "").replace(/\s*\/\s*/g, "/").replace(/\s{2,}/g, " ").trim();
-      }
-      static buildFetchOptions(options) {
-        const headers = {};
-        if (options == null ? void 0 : options.cookie)
-          headers["cookie"] = options.cookie;
-        return { headers: Object.keys(headers).length ? headers : void 0, withCredentials: (options == null ? void 0 : options.withCredentials) ?? true };
-      }
-      static async fetchPosterDataUrl(url) {
-        var _a, _b;
-        const response = await GMAdapter.xmlHttpRequest({
-          method: "GET",
-          url,
-          responseType: "arraybuffer",
-          anonymous: true,
-          headers: {
-            Referer: "https://movie.douban.com/",
-            Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
-          }
-        });
-        const body = response == null ? void 0 : response.response;
-        if (!(body instanceof ArrayBuffer) || !body.byteLength) {
-          throw new Error("Empty Douban poster response");
-        }
-        const mime = ((_b = (_a = String((response == null ? void 0 : response.responseHeaders) || "").match(/content-type:\s*([^\s;]+)/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.trim()) || "image/jpeg";
-        return `data:${mime};base64,${this.arrayBufferToBase64(body)}`;
-      }
-      static arrayBufferToBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        const chunkSize = 32768;
-        let binary = "";
-        for (let index = 0; index < bytes.length; index += chunkSize) {
-          const chunk = bytes.subarray(index, index + chunkSize);
-          binary += String.fromCharCode(...chunk);
-        }
-        return btoa(binary);
-      }
-      static async getLetterboxdRatingByImdb(imdbId) {
-        var _a, _b, _c, _d, _e;
-        const imdbKey = imdbId.replace(/^tt/, "");
-        const imdbUrl = `https://letterboxd.com/imdb/tt${imdbKey}/`;
-        const headers = {
-          "accept-language": "en-US,en;q=0.9",
-          referer: "https://letterboxd.com/"
-        };
-        const toTenScale = (raw) => {
-          const n2 = parseFloat(raw);
-          if (!Number.isFinite(n2) || n2 <= 0)
-            return "";
-          const v2 = n2 <= 5 ? n2 * 2 : n2;
-          return v2.toFixed(1);
-        };
-        const pickFromText = (text) => {
-          if (!text)
-            return null;
-          const weighted = text.match(/Weighted average of\s*([0-9.]+)\s*based on\s*([0-9,]+).*?ratings/i);
-          if (weighted) {
-            const rating = toTenScale(weighted[1]);
-            const votes = weighted[2].replace(/,/g, "");
-            if (rating && votes)
-              return { rating, votes };
-          }
-          const aggregate = text.match(/"aggregateRating"\s*:\s*\{[\s\S]{0,280}?"ratingValue"\s*:\s*"?([0-9.]+)"?[\s\S]{0,180}?"ratingCount"\s*:\s*"?([0-9,]+)"?/i);
-          if (aggregate) {
-            const rating = toTenScale(aggregate[1]);
-            const votes = aggregate[2].replace(/,/g, "");
-            if (rating && votes)
-              return { rating, votes };
-          }
-          const avg = text.match(/class=["']average-rating["'][^>]*>\s*([0-9.]+)\s*</i);
-          const cnt = text.match(/data-rating-count=["']([0-9,]+)["']/i) || text.match(/([0-9,]+)\s+ratings?/i);
-          if ((avg == null ? void 0 : avg[1]) && (cnt == null ? void 0 : cnt[1])) {
-            const rating = toTenScale(avg[1]);
-            const votes = cnt[1].replace(/,/g, "");
-            if (rating && votes)
-              return { rating, votes };
-          }
-          return null;
-        };
-        const doc = await HtmlFetchService.getDocument(imdbUrl, { headers });
-        const html = ((_a = doc.documentElement) == null ? void 0 : _a.outerHTML) || "";
-        let baseUrl = ((_b = doc.querySelector('meta[property="og:url"]')) == null ? void 0 : _b.getAttribute("content")) || "";
-        if (!baseUrl) {
-          const relCanonical = ((_c = doc.querySelector('link[rel="canonical"]')) == null ? void 0 : _c.getAttribute("href")) || "";
-          baseUrl = relCanonical || "";
-        }
-        if (!baseUrl)
-          return null;
-        const ratingUrl = baseUrl.replace(".com/", ".com/csi/") + "ratings-summary/";
-        const ratingDoc = await HtmlFetchService.getDocument(ratingUrl, { headers });
-        const ratingHtml = ((_d = ratingDoc.documentElement) == null ? void 0 : _d.outerHTML) || "";
-        const ratingInfo = ((_e = ratingDoc.body) == null ? void 0 : _e.textContent) || "";
-        const picked = pickFromText(`${ratingHtml}
-${ratingInfo}`) || pickFromText(html);
-        if (!picked)
-          return null;
-        return { url: baseUrl, rating: picked.rating, votes: picked.votes };
-      }
-    }
-    __publicField(DoubanService, "posterDataUrlCache", /* @__PURE__ */ new Map());
     function getGroupName(name2, torrentInfo = "") {
       var _a;
       if (typeof name2 !== "string")
@@ -20484,7 +34746,7 @@ ${ratingInfo}`) || pickFromText(html);
       static async tryInject() {
         const url = window.location.href;
         const settings = await SettingsService.load();
-        if (url.match(/^https?:\/\/movie\.douban\.com\/subject\/\d+/i) && settings.showQuickSearchOnDouban) {
+        if (url.match(/^https?:\/\/movie\.douban\.com\/subject\/\d+/i)) {
           this.injectDoubanTools(settings);
         }
         if (/imdb\.com$/i.test(window.location.hostname) && extractImdbId(url) && settings.showQuickSearchOnImdb) {
@@ -20673,25 +34935,66 @@ ${ratingInfo}`) || pickFromText(html);
         }
         const posterImg = $$1("#mainpic img").first().attr("src") || "";
         const poster = posterImg.replace(/^.+(p\d+).+$/, (_2, p1) => `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`);
+        const doubanId = extractDoubanId(window.location.href) || "";
+        const rehostPosterUrl = async (url) => {
+          if (!url)
+            return "";
+          const currentSettings = await SettingsService.load();
+          let result = [];
+          if (currentSettings.ptpImgApiKey) {
+            result = await ImageHostService.uploadToPtpImg([url], currentSettings.ptpImgApiKey);
+          } else if (currentSettings.freeimageApiKey) {
+            result = await ImageHostService.uploadToFreeimage([url], currentSettings.freeimageApiKey);
+          } else if (currentSettings.imgbbApiKey) {
+            result = await ImageHostService.uploadToImgbb([url], currentSettings.imgbbApiKey);
+          } else {
+            result = await ImageHostService.uploadToPixhost([url]);
+          }
+          return result[0] || "";
+        };
+        if (!$$1("#copy").length) {
+          const endsWithBr = /<br\s*\/?>\s*$/i.test($info.html() || "");
+          $info.append(
+            `${endsWithBr ? "" : "<br>"}<span class="pl">${uiText("描述信息", "Info BBCode")}: </span><a href="javascript:void(0);" id="copy">${uiText("复制", "Copy")}</a> / <a href="javascript:void(0);" id="autofeed-copy-rehost">${uiText("复制(转存海报)", "Copy (rehost poster)")}</a>`
+          );
+          const runCopy = async ($btn, withRehost) => {
+            const origText = $btn.text();
+            $btn.text(withRehost ? uiText("转存中...", "Rehosting...") : uiText("复制中...", "Copying..."));
+            try {
+              const info = DoubanService.parseDoubanDoc(document, doubanId);
+              if (withRehost && info.image) {
+                const hosted = await rehostPosterUrl(info.image);
+                if (hosted)
+                  info.image = hosted;
+              }
+              const bbcode = buildDoubanFormat(info, imdbId || info.imdbId);
+              await GMAdapter.setClipboard(bbcode);
+              $btn.text(uiText("已复制", "Copied"));
+              window.setTimeout(() => $btn.text(origText), 2500);
+            } catch (err) {
+              console.error("[Auto-Feed][Douban] Copy info failed:", err);
+              $btn.text(uiText("失败", "Failed"));
+              window.setTimeout(() => $btn.text(origText), 2500);
+            }
+          };
+          $$1("#copy").on("click", (e2) => {
+            e2.preventDefault();
+            runCopy($$1(e2.currentTarget), false);
+          });
+          $$1("#autofeed-copy-rehost").on("click", (e2) => {
+            e2.preventDefault();
+            runCopy($$1(e2.currentTarget), true);
+          });
+        }
         $$1("#mainpic").append(`<br><a href="#" id="autofeed-rehost-poster">${uiText("海报转存", "Rehost poster")}</a>`);
         $$1("#autofeed-rehost-poster").on("click", async (e2) => {
           e2.preventDefault();
           if (!poster)
             return;
-          const settings2 = await SettingsService.load();
           try {
-            let result = [];
-            if (settings2.ptpImgApiKey) {
-              result = await ImageHostService.uploadToPtpImg([poster], settings2.ptpImgApiKey);
-            } else if (settings2.freeimageApiKey) {
-              result = await ImageHostService.uploadToFreeimage([poster], settings2.freeimageApiKey);
-            } else if (settings2.imgbbApiKey) {
-              result = await ImageHostService.uploadToImgbb([poster], settings2.imgbbApiKey);
-            } else {
-              result = await ImageHostService.uploadToPixhost([poster]);
-            }
-            if (result.length) {
-              await GMAdapter.setClipboard(result[0]);
+            const hosted = await rehostPosterUrl(poster);
+            if (hosted) {
+              await GMAdapter.setClipboard(hosted);
               alert(uiText("海报已转存并复制到剪贴板", "Poster rehosted and copied to the clipboard."));
             }
           } catch (err) {
@@ -20699,23 +35002,25 @@ ${ratingInfo}`) || pickFromText(html);
             alert(uiText("海报转存失败", "Could not rehost the poster."));
           }
         });
-        const searchName = (((_a = $title.text().trim().match(/[a-z ]{2,200}/i)) == null ? void 0 : _a[0]) || $title.text().trim()).replace(/season/i, "");
-        const quickSearchOpts = settings ? resolveQuickSearchSetting(settings) : void 0;
-        this.injectQuickSearch(
-          $title,
-          { title: searchName, imdbId },
-          6,
-          quickSearchOpts,
-          {
-            className: "autofeed-search-links autofeed-search-links--douban",
-            alignCenter: false,
-            bordered: false,
-            fontColor: "red",
-            labelText: "",
-            fontSize: "12px"
-          }
-        ).catch(() => {
-        });
+        if (settings == null ? void 0 : settings.showQuickSearchOnDouban) {
+          const searchName = (((_a = $title.text().trim().match(/[a-z ]{2,200}/i)) == null ? void 0 : _a[0]) || $title.text().trim()).replace(/season/i, "");
+          const quickSearchOpts = resolveQuickSearchSetting(settings);
+          this.injectQuickSearch(
+            $title,
+            { title: searchName, imdbId },
+            6,
+            quickSearchOpts,
+            {
+              className: "autofeed-search-links autofeed-search-links--douban",
+              alignCenter: false,
+              bordered: false,
+              fontColor: "red",
+              labelText: "",
+              fontSize: "12px"
+            }
+          ).catch(() => {
+          });
+        }
         document.body.dataset.autofeedDouban = "1";
       }
       static injectImdbTools(settings) {
@@ -20903,7 +35208,7 @@ ${ratingInfo}`) || pickFromText(html);
       }
       static async canBindCurrentTorrent(engine, currentUrl) {
         const siteName = String((engine == null ? void 0 : engine.siteName) || "");
-        if (!["PTP", "GPW", "RED", "OPS", "DIC"].includes(siteName))
+        if (!["PTP", "GPW", "RED", "OPS", "DIC", "BTN", "jpop", "lztr"].includes(siteName))
           return true;
         const currentTid = extractPageTorrentId(currentUrl);
         if (!currentTid) {
@@ -22056,247 +36361,6 @@ ${ratingInfo}`) || pickFromText(html);
     __publicField(RemoteDownloadService, "delugeSessionId", "");
     __publicField(RemoteDownloadService, "qbSessionId", "");
     __publicField(RemoteDownloadService, "delugeMsgId", 0);
-    const IYUU_API = "https://api.iyuu.cn/App.Movie.Ptgen";
-    const TJU_API = "https://ptgen.tju.pt/infogen";
-    const buildDoubanFormat = (info, imdbId) => {
-      const lines = [];
-      if (info.image)
-        lines.push(`[img]${info.image}[/img]`, "");
-      const title = info.title || "";
-      if (info.aka)
-        lines.push(`◎译　　名　${title} / ${info.aka}`);
-      else if (title)
-        lines.push(`◎译　　名　${title}`);
-      if (title)
-        lines.push(`◎片　　名　${title}`);
-      if (info.year)
-        lines.push(`◎年　　代　${info.year}`);
-      if (info.region)
-        lines.push(`◎产　　地　${info.region}`);
-      if (info.genre)
-        lines.push(`◎类　　别　${info.genre}`);
-      if (info.language)
-        lines.push(`◎语　　言　${info.language}`);
-      if (info.releaseDate)
-        lines.push(`◎上映日期　${info.releaseDate}`);
-      if (imdbId)
-        lines.push(`◎IMDb链接  https://www.imdb.com/title/${imdbId}/`);
-      if (info.average) {
-        const votes = info.votes ? ` from ${info.votes} users` : "";
-        lines.push(`◎豆瓣评分　${info.average}/10${votes}`);
-      }
-      if (info.id)
-        lines.push(`◎豆瓣链接　https://movie.douban.com/subject/${info.id}/`);
-      if (info.runtime)
-        lines.push(`◎片　　长　${info.runtime}`);
-      if (info.director)
-        lines.push(`◎导　　演　${info.director}`);
-      if (info.cast)
-        lines.push(`◎主　　演　${info.cast}`);
-      lines.push("");
-      lines.push("◎简　　介");
-      if (info.summary) {
-        lines.push(info.summary.replace(/^|\n/g, "\n　　").trim());
-      } else {
-        lines.push("　　暂无相关剧情介绍");
-      }
-      return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
-    };
-    class PtgenService {
-      static extractSubtitleFromFormat(format) {
-        const lines = format.split("\n").map((line) => line.trim()).filter(Boolean);
-        const getLineValue = (pattern) => {
-          const line = lines.find((l2) => pattern.test(l2));
-          if (!line)
-            return "";
-          const parts = line.split(/[:：]/);
-          const value = parts.length > 1 ? parts.slice(1).join(":").trim() : line.replace(pattern, "").trim();
-          return value;
-        };
-        const pickChinese = (value) => {
-          if (!value)
-            return "";
-          const first = value.split("/")[0].trim();
-          return /[\u4e00-\u9fa5]/.test(first) ? first : "";
-        };
-        const translated = pickChinese(getLineValue(/译.*名/));
-        if (translated)
-          return translated;
-        const mainTitle = pickChinese(getLineValue(/片.*名/));
-        if (mainTitle)
-          return mainTitle;
-        return "";
-      }
-      static async resolveDoubanId(meta, method, doubanCookie) {
-        var _a, _b;
-        if (meta.doubanId)
-          return meta.doubanId;
-        const doubanIdFromUrl = extractDoubanId(meta.doubanUrl || "");
-        if (doubanIdFromUrl)
-          return doubanIdFromUrl;
-        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "");
-        if (!imdbId)
-          return null;
-        if (method === 0) {
-          const url = `https://movie.douban.com/j/subject_suggest?q=${imdbId}`;
-          try {
-            const text = await HtmlFetchService.getText(url, {
-              headers: doubanCookie ? { cookie: doubanCookie } : void 0,
-              withCredentials: true
-            });
-            const json = JSON.parse(text);
-            if (Array.isArray(json) && json.length) {
-              const id = (_b = (_a = json[0]) == null ? void 0 : _a.id) == null ? void 0 : _b.toString();
-              if (id && id !== "35580200")
-                return id;
-            }
-          } catch {
-          }
-          return null;
-        }
-        try {
-          const info = await DoubanService.getByImdb(imdbId, { cookie: doubanCookie, withCredentials: true });
-          return (info == null ? void 0 : info.id) || null;
-        } catch {
-          return null;
-        }
-      }
-      static async fetchPtgenOnce(meta, options) {
-        var _a;
-        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || "") || "";
-        const doubanId = await this.resolveDoubanId(meta, options.imdbToDoubanMethod, options.doubanCookie);
-        if (options.ptgenApi === 3) {
-          const info = (doubanId ? await DoubanService.getById(doubanId, { cookie: options.doubanCookie, withCredentials: true }) : null) || (imdbId ? await DoubanService.getByImdb(imdbId, { cookie: options.doubanCookie, withCredentials: true }) : null);
-          if (!info)
-            return null;
-          return {
-            format: buildDoubanFormat(info, imdbId || void 0),
-            doubanId: info.id,
-            synopsis: info.summary || ""
-          };
-        }
-        const base = options.ptgenApi === 0 ? IYUU_API : TJU_API;
-        let query = "";
-        if (doubanId) {
-          query = `?url=${encodeURIComponent(`https://movie.douban.com/subject/${doubanId}/`)}`;
-        } else if (meta.doubanUrl) {
-          query = `?url=${encodeURIComponent(meta.doubanUrl)}`;
-        } else if (meta.imdbUrl) {
-          if (options.ptgenApi === 1) {
-            query = `?site=douban&sid=${imdbId}`;
-          } else {
-            query = `?url=${encodeURIComponent(meta.imdbUrl)}`;
-          }
-        } else if (imdbId) {
-          if (options.ptgenApi === 1) {
-            query = `?site=douban&sid=${imdbId}`;
-          } else {
-            query = `?url=${encodeURIComponent(`https://www.imdb.com/title/${imdbId}/`)}`;
-          }
-        } else {
-          return null;
-        }
-        try {
-          const text = await HtmlFetchService.getText(`${base}${query}`, { withCredentials: true });
-          let format = "";
-          try {
-            const json = JSON.parse(text);
-            format = ((_a = json == null ? void 0 : json.data) == null ? void 0 : _a.format) || (json == null ? void 0 : json.format) || (json == null ? void 0 : json.data) || "";
-          } catch {
-            format = text || "";
-          }
-          if (!format || typeof format !== "string")
-            return null;
-          if (!format.match(/◎简\s*介|◎译\s*名|douban\.com\/subject\/\d+|imdb\.com\/title\/tt\d+/i))
-            return null;
-          format = format.replace("hongleyou.cn", "doubanio.com").replace(/\[\/img\]\[\/center\]/g, "[/img]");
-          return { format };
-        } catch {
-          return null;
-        }
-      }
-      static async fetchPtgen(meta, options) {
-        const order = options.ptgenApi === 3 ? [3, 1, 0] : options.ptgenApi === 1 ? [1, 0] : options.ptgenApi === 0 ? [0, 1] : [options.ptgenApi];
-        const uniq2 = Array.from(new Set(order));
-        for (const api of uniq2) {
-          try {
-            const r2 = await this.fetchPtgenOnce(meta, { ...options, ptgenApi: api });
-            if (r2 == null ? void 0 : r2.format)
-              return r2;
-          } catch {
-          }
-        }
-        return null;
-      }
-      static async applyPtgen(meta, options, flags) {
-        const result = await this.fetchPtgen(meta, options);
-        if (!result || !result.format)
-          return meta;
-        const updated = { ...meta };
-        const overwrite = !!(flags == null ? void 0 : flags.overwrite);
-        const mergeDescription = (flags == null ? void 0 : flags.mergeDescription) ?? true;
-        const updateSubtitle = (flags == null ? void 0 : flags.updateSubtitle) ?? true;
-        const updateRegion = (flags == null ? void 0 : flags.updateRegion) ?? true;
-        const updateIds = (flags == null ? void 0 : flags.updateIds) ?? true;
-        const updateSynopsis = (flags == null ? void 0 : flags.updateSynopsis) ?? true;
-        if (mergeDescription) {
-          updated.description = `${result.format}
-
-${updated.description || ""}`.trim();
-        }
-        if (updateSubtitle) {
-          const legacySmall = getSmallDescrFromDescr(result.format, updated.title || meta.title || "");
-          const fallback = this.extractSubtitleFromFormat(result.format);
-          const subtitle = legacySmall || fallback;
-          if (subtitle) {
-            if (overwrite || !updated.subtitle)
-              updated.subtitle = subtitle;
-            if (overwrite || !updated.smallDescr)
-              updated.smallDescr = subtitle;
-          }
-        }
-        if (updateRegion) {
-          try {
-            const region = getSourceSelFromDescr(result.format);
-            if (region && (overwrite || !updated.sourceSel))
-              updated.sourceSel = region;
-          } catch {
-          }
-        }
-        if (updateIds) {
-          const imdbMatch = extractImdbId(result.format);
-          if (imdbMatch) {
-            if (overwrite || !updated.imdbId)
-              updated.imdbId = imdbMatch;
-            if (overwrite || !updated.imdbUrl)
-              updated.imdbUrl = `https://www.imdb.com/title/${imdbMatch}/`;
-          }
-          const doubanMatch = extractDoubanId(result.format);
-          if (doubanMatch) {
-            if (overwrite || !updated.doubanId)
-              updated.doubanId = doubanMatch;
-            if (overwrite || !updated.doubanUrl)
-              updated.doubanUrl = `https://movie.douban.com/subject/${doubanMatch}/`;
-          }
-          if (result.doubanId) {
-            if (overwrite || !updated.doubanId)
-              updated.doubanId = result.doubanId;
-            if (overwrite || !updated.doubanUrl)
-              updated.doubanUrl = `https://movie.douban.com/subject/${result.doubanId}/`;
-          }
-        }
-        if (updateSynopsis) {
-          if (result.synopsis && (overwrite || !updated.synopsis)) {
-            updated.synopsis = result.synopsis;
-          }
-        }
-        return updated;
-      }
-    }
-    const PtgenService$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-      __proto__: null,
-      PtgenService
-    }, Symbol.toStringTag, { value: "Module" }));
     class UploadMetaFetchService {
       static async tryInject(adapter) {
         if (document.body.dataset.autofeedUploadFetch === "1")
@@ -22307,16 +36371,17 @@ ${updated.description || ""}`.trim();
         if (!$descr.length)
           return;
         const text = getUiText((await SettingsService.load()).uiLanguage);
+        const isCmct = adapter.siteName === "CMCT";
         const bar = $$1(`
-            <div id="autofeed-upload-fetch" style="margin: 6px 0; display: inline-flex; gap: 8px; align-items: center;">
-                <button style="background: #2c3e50; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">${text("点击获取", "Fetch metadata")}</button>
+            <div id="autofeed-upload-fetch" style="margin: 6px 0; display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button type="button" style="background: #2c3e50; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">${text("点击获取", "Fetch metadata")}</button>
                 <span style="font-size: 12px; color: #666;">${text("(外站豆瓣/ptgen)", "(Douban / PTGen metadata)")}</span>
             </div>
         `);
         const optWrap = $$1(`
             <span style="display:inline-flex; gap:8px; align-items:center; margin-left: 6px; font-size: 12px; color: #444;">
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
-                    <input type="checkbox" data-k="mergeDescription" checked />${text("简介", "Description")}
+                    <input type="checkbox" data-k="mergeDescription" ${isCmct ? "" : "checked"} />${text("简介", "Description")}
                 </label>
                 <label style="display:inline-flex; gap:4px; align-items:center; cursor:pointer;">
                     <input type="checkbox" data-k="updateSubtitle" checked />${text("副标题", "Subtitle")}
@@ -22354,19 +36419,18 @@ ${updated.description || ""}`.trim();
               });
             } catch {
             }
-            const updated = await PtgenService.applyPtgen(merged, {
+            const result = await PtgenService.fetchPtgen(merged, {
               imdbToDoubanMethod: settings.imdbToDoubanMethod || 0,
               ptgenApi: settings.ptgenApi ?? 3,
               doubanCookie: settings.doubanCookie || void 0
-            }, flags);
-            const changed = (updated.description || "") !== (merged.description || "") || (updated.subtitle || "") !== (merged.subtitle || "") || (updated.sourceSel || "") !== (merged.sourceSel || "") || (updated.doubanId || "") !== (merged.doubanId || "") || (updated.imdbId || "") !== (merged.imdbId || "");
-            if (!changed) {
+            });
+            if (!result || !result.format) {
               throw new Error("No external meta fetched (missing IDs/blocked provider)");
             }
-            await StorageService.save(updated);
-            const { normalizeMeta: normalizeMeta2 } = await __vitePreload(() => Promise.resolve().then(() => normalize), false ? "__VITE_PRELOAD__" : void 0);
-            const normalized = normalizeMeta2(updated, adapter.siteName);
-            await adapter.fill(normalized);
+            const appliedCount = this.applyPtgenToForm(adapter, merged, result, flags);
+            if (appliedCount === 0) {
+              throw new Error("No target fields updated");
+            }
             btn.text(text("已更新", "Metadata updated"));
           } catch (err) {
             console.error("[Auto-Feed] Upload fetch error:", err);
@@ -22378,19 +36442,234 @@ ${updated.description || ""}`.trim();
             }, 1500);
           }
         });
-        $descr.before(bar);
+        const editorWrap = $descr.closest(".bbcode-editor");
+        if (editorWrap.length) {
+          editorWrap.before(bar);
+        } else {
+          $descr.before(bar);
+        }
         document.body.dataset.autofeedUploadFetch = "1";
       }
-      static applyInputs(meta) {
+      static readActiveDescr(descrEl) {
+        var _a, _b, _c, _d, _e, _f;
+        if (!descrEl)
+          return "";
+        try {
+          const pageWin = typeof globalThis.unsafeWindow !== "undefined" ? globalThis.unsafeWindow : window;
+          const inst = ((_b = (_a = pageWin == null ? void 0 : pageWin.sceditor) == null ? void 0 : _a.instance) == null ? void 0 : _b.call(_a, descrEl)) || (pageWin == null ? void 0 : pageWin.jQuery) && ((_d = (_c = pageWin.jQuery(descrEl)) == null ? void 0 : _c.sceditor) == null ? void 0 : _d.call(_c, "instance")) || ((_f = (_e = window.sceditor) == null ? void 0 : _e.instance) == null ? void 0 : _f.call(_e, descrEl));
+          if (inst && typeof inst.val === "function") {
+            return String(inst.val() || "");
+          }
+        } catch {
+        }
+        return descrEl.value || "";
+      }
+      static applyPtgenToForm(adapter, merged, result, flags) {
         var _a, _b, _c, _d;
+        const siteName = adapter.siteName;
+        const config = adapter.getConfig();
+        let changes = 0;
+        const imdbId = extractImdbId(result.format) || merged.imdbId || "";
+        const imdbUrl = imdbId ? `https://www.imdb.com/title/${imdbId}/` : merged.imdbUrl || "";
+        const doubanId = result.doubanId || extractDoubanId(result.format) || merged.doubanId || "";
+        const doubanUrl = doubanId ? `https://movie.douban.com/subject/${doubanId}/` : merged.doubanUrl || "";
+        if (flags.updateIds !== false) {
+          if (siteName === "CMCT") {
+            const preferred = doubanUrl || imdbUrl;
+            if (preferred) {
+              const urlInputs = Array.from(document.querySelectorAll('input[name="url"], input#url'));
+              urlInputs.forEach((input) => {
+                input.value = preferred;
+                dispatchFormEvents(input);
+                changes += 1;
+              });
+            }
+          } else {
+            const imdbSel = ((_a = config.selectors) == null ? void 0 : _a.imdbInput) || 'input[name="imdb_id"], input[name="imdbid"], input[name="imdb"], input[name="imdb_url"], input[name="imdburl"], input[name="pt_gen[imdb][link]"], input[name="url"][type="text"], input[name="url"][type="url"]';
+            if (imdbUrl || imdbId) {
+              document.querySelectorAll(imdbSel).forEach((node) => {
+                const input = node;
+                const nm = (input.getAttribute("name") || "").toLowerCase();
+                input.value = nm === "imdb_id" || nm === "imdbid" ? imdbId || imdbUrl : imdbUrl || imdbId;
+                dispatchFormEvents(input);
+                changes += 1;
+              });
+            }
+            const doubanSel = ((_b = config.selectors) == null ? void 0 : _b.doubanInput) || 'input[name="douban"], input[name="douban_id"], input[name="doubanid"], input[name="douban_url"], input[name="dburl"], input[name="url_douban"], input[name="durl"], input[name="pt_gen[douban][link]"]';
+            const preferNumeric = ["TTG", "HDDolby", "BTSchool"].includes(siteName);
+            if (doubanUrl || doubanId) {
+              document.querySelectorAll(doubanSel).forEach((node) => {
+                const input = node;
+                const nm = (input.getAttribute("name") || "").toLowerCase();
+                input.value = nm === "doubanid" || preferNumeric && nm.includes("douban") && nm.includes("id") ? doubanId || doubanUrl : doubanUrl || doubanId;
+                dispatchFormEvents(input);
+                changes += 1;
+              });
+            }
+            const ptGenVal = doubanUrl || imdbUrl;
+            if (ptGenVal) {
+              document.querySelectorAll('input[name="pt_gen"]').forEach((node) => {
+                const input = node;
+                input.value = ptGenVal;
+                dispatchFormEvents(input);
+                changes += 1;
+              });
+            }
+          }
+        }
+        if (flags.updateSubtitle !== false) {
+          let subtitle = PtgenService.extractSubtitle(result.format, merged.title || "");
+          if (subtitle) {
+            if (siteName === "CMCT") {
+              subtitle = subtitle.replace(/【/g, "[").replace(/】/g, "]");
+            }
+            const subSel = ((_c = config.selectors) == null ? void 0 : _c.smallDescrInput) || 'input[name="small_descr"], input[name="small_desc"], input[name="subhead"]';
+            const subInput = document.querySelector(subSel);
+            if (subInput) {
+              subInput.value = subtitle;
+              dispatchFormEvents(subInput);
+              changes += 1;
+            }
+          }
+        }
+        if (flags.updateRegion !== false) {
+          const region = getSourceSelFromDescr(result.format);
+          if (region) {
+            if (this.applyRegionSelectOnly(siteName, config, region, result.format)) {
+              changes += 1;
+            }
+          }
+        }
+        if (flags.mergeDescription !== false) {
+          const descrSel = ((_d = config.selectors) == null ? void 0 : _d.descrInput) || 'textarea[name="descr"], textarea[name="description"], #descr, #description';
+          const descrEl = document.querySelector(descrSel);
+          if (descrEl) {
+            const cur = this.readActiveDescr(descrEl).trim();
+            const rest = hasPtgenBlock(cur) ? stripLeadingPtgenBlock(cur) : cur;
+            const nextDescr = rest ? `${result.format}
+
+${rest}` : result.format;
+            if (siteName === "CMCT") {
+              setCmctDescrValue(nextDescr);
+            } else {
+              descrEl.value = nextDescr;
+              dispatchFormEvents(descrEl);
+            }
+            changes += 1;
+          }
+        }
+        if (siteName !== "CMCT" && result.poster) {
+          const coverEl = document.querySelector('input[name="tr_cover_url"], input[name="cover"]');
+          if (coverEl && !coverEl.value.trim()) {
+            coverEl.value = result.poster;
+            dispatchFormEvents(coverEl);
+            changes += 1;
+          }
+        }
+        return changes;
+      }
+      static applyRegionSelectOnly(siteName, config, region, format) {
+        var _a;
+        const setSelect = (sel, val) => {
+          if (!sel)
+            return false;
+          const opt = Array.from(sel.options).find((o2) => o2.value === val);
+          if (!opt)
+            return false;
+          sel.value = opt.value;
+          dispatchFormEvents(sel);
+          return true;
+        };
+        if (siteName === "CMCT") {
+          let normalizedRegion = region;
+          if (normalizedRegion === "港台")
+            normalizedRegion = /台湾|臺灣/.test(format) ? "台湾" : "香港";
+          else if (normalizedRegion === "日韩")
+            normalizedRegion = /日本/.test(format) ? "日本" : "韩国";
+          const sourceDict = { 欧美: 4, 大陆: 1, 香港: 2, 台湾: 3, 日本: 5, 韩国: 6, 印度: 7, 泰国: 9 };
+          let val = sourceDict[normalizedRegion] ?? 99;
+          if (/◎(地.{0,10}?区|国.{0,10}?家|产.{0,10}?地|◎產.{0,5}?地).*(俄罗斯|苏联)/i.test(format))
+            val = 8;
+          return setSelect(document.querySelector('select[name="source_sel"], #source_sel'), String(val));
+        }
+        if (siteName === "PTer") {
+          const teamDict = { 欧美: 4, 大陆: 1, 香港: 2, 台湾: 3, 日本: 6, 韩国: 5, 印度: 7 };
+          const val = teamDict[region] ?? 8;
+          const sel = document.querySelector('select[name="team_sel"]') || document.querySelector('select[name="team"]');
+          return setSelect(sel, String(val));
+        }
+        if ((_a = config.nexusProfile) == null ? void 0 : _a.source) {
+          const items = resolveNexusProfileValues(
+            { sourceSel: region, description: format },
+            { source: config.nexusProfile.source }
+          );
+          for (const item of items) {
+            const sel = document.querySelector(`select[name="${item.selector}"]`) || document.querySelector(`select[name^="${item.selector}"]`);
+            if (!sel)
+              continue;
+            if (typeof item.value === "string") {
+              if (setSelect(sel, item.value))
+                return true;
+            } else {
+              const opt = sel.options[item.value.index];
+              if (opt) {
+                sel.selectedIndex = item.value.index;
+                opt.selected = true;
+                dispatchFormEvents(sel);
+                return true;
+              }
+            }
+          }
+        }
+        const regionMap = {
+          大陆: [/大陆|内地|中国|Mainland|China/i],
+          香港: [/香港|HK|Hong/i],
+          台湾: [/台湾|台灣|TW|Taiwan/i],
+          港台: [/港台|香港|台湾/i],
+          欧美: [/欧美|歐美|美国|英国|West|Europe|US/i],
+          日本: [/日本|JP|Japan/i],
+          韩国: [/韩国|韓國|KR|Korea/i],
+          日韩: [/日韩|日本|韩国/i],
+          印度: [/印度|India/i],
+          泰国: [/泰国|Thailand/i]
+        };
+        const patterns = regionMap[region];
+        if (!patterns)
+          return false;
+        const candidates = [
+          document.querySelector('select[name="source_sel"]'),
+          document.querySelector('select[name="source_sel[4]"]'),
+          document.querySelector('select[name="area"]')
+        ].filter(Boolean);
+        for (const sel of candidates) {
+          const allText = Array.from(sel.options).map((o2) => o2.textContent || "").join(" ");
+          if (!/欧美|大陆|香港|台湾|日本|韩国|Mainland|West/i.test(allText))
+            continue;
+          const hit = Array.from(sel.options).find((o2) => patterns.some((re) => re.test(o2.textContent || "")));
+          if (hit) {
+            sel.value = hit.value;
+            dispatchFormEvents(sel);
+            return true;
+          }
+        }
+        return false;
+      }
+      static applyInputs(meta) {
+        var _a;
         const next = { ...meta };
         const rawInputs = Array.from(document.querySelectorAll("input"));
         const rawTextareas = Array.from(document.querySelectorAll("textarea"));
-        const currentDescr = ((_a = document.querySelector('textarea[name="descr"]')) == null ? void 0 : _a.value) || ((_b = document.querySelector('textarea[name="description"]')) == null ? void 0 : _b.value) || ((_c = document.getElementById("descr")) == null ? void 0 : _c.value) || ((_d = document.getElementById("description")) == null ? void 0 : _d.value) || "";
+        const titleInput = document.querySelector('input[name="name"], #name');
+        if ((_a = titleInput == null ? void 0 : titleInput.value) == null ? void 0 : _a.trim()) {
+          next.title = titleInput.value.trim();
+        }
+        const descrEl = document.querySelector('textarea[name="descr"]') || document.querySelector('textarea[name="description"]') || document.getElementById("descr") || document.getElementById("description");
+        const currentDescr = this.readActiveDescr(descrEl);
         const values = [
           ...rawInputs.map((input) => input.value || ""),
           // Legacy parity: users often paste IMDb/Douban links into the description textarea.
-          ...rawTextareas.map((ta) => ta.value || "")
+          ...rawTextareas.map((ta) => ta.value || ""),
+          currentDescr
         ].filter(Boolean);
         if (currentDescr.trim()) {
           next.description = currentDescr;
@@ -23633,6 +37912,119 @@ ${updated.description || ""}`.trim();
         container.append(toolsDiv);
       }
     }
+    const GENERAL_VIDEO_DOMAINS = [
+      "movie",
+      "tv",
+      "miniseries",
+      "anime",
+      "doc",
+      "misc"
+    ];
+    function getSiteDomains(site) {
+      if ((site == null ? void 0 : site.contentDomains) && site.contentDomains.length > 0) {
+        return site.contentDomains;
+      }
+      return GENERAL_VIDEO_DOMAINS;
+    }
+    function hasVideoSignal(meta) {
+      if (meta.standardSel && /^(?:8K|4K|1080p|1080i|720p|SD)$/i.test(meta.standardSel))
+        return true;
+      if (meta.codecSel && /^(?:H264|X264|H265|X265|H266|VC-1|MPEG-2|MPEG-4|AV1|VP9|XVID)$/i.test(meta.codecSel))
+        return true;
+      const text = `${meta.title || ""} ${meta.subtitle || ""} ${meta.smallDescr || ""}`;
+      if (/(?:2160p|1080[pi]|720p|480p|576p|x26[45]|H\.?26[45]|HEVC|AVC|REMUX|WEB-?DL|HDTV|DVD[59]|演唱会|音乐会|concert)/i.test(text)) {
+        return true;
+      }
+      return false;
+    }
+    function inferTorrentDomains(meta, sourceSite) {
+      const srcDomains = sourceSite == null ? void 0 : sourceSite.contentDomains;
+      if (srcDomains && srcDomains.length === 1 && (srcDomains[0] === "music" || srcDomains[0] === "book" || srcDomains[0] === "game")) {
+        return [srcDomains[0]];
+      }
+      if (meta.musicMedia || meta.tracklist) {
+        return ["music"];
+      }
+      if (meta.type === "音乐" && !hasVideoSignal(meta)) {
+        return ["music"];
+      }
+      if (meta.type === "书籍" || meta.type === "学习") {
+        return ["book"];
+      }
+      if (meta.type === "游戏") {
+        return ["game"];
+      }
+      const titleAndSub = [meta.title, meta.subtitle, meta.smallDescr, meta.editionInfo].filter(Boolean).join("\n");
+      const headDescr = String(meta.description || "").slice(0, 600);
+      const explicitMiniseries = /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b|迷你[剧劇]/i.test(titleAndSub) || /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b|迷你[剧劇]/i.test(headDescr);
+      const hasMultiSeason = /\bS0?[2-9]\b|\bS[1-9]\d\b|\bS0?1\s*[-–]\s*S?0?[2-9]\b|\bSeasons?\s*0?1\s*[-–]\s*0?[2-9]\b|\bSeason\s*[2-9]\b|第[二三四五六七八九十2-9]季/i.test(titleAndSub);
+      const hasSingleEpisode = /\bS\d{1,2}E\d{1,3}(?!\s*[-–]\s*E?\d)\b|\bEP?0?\d{1,3}(?!\s*[-–]\s*(?:EP?)?\d)\b|第\d+集/i.test(titleAndSub);
+      const hasSeason1Pack = /\bS0?1\b(?!E\d)|\bSeason\s*0?1\b|第一季|全\d+集|\bComplete\b/i.test(titleAndSub);
+      const hasTvMarker = /\bS\d{1,2}(?:E\d{1,3})?\b|\bSeason\s*\d+\b|第[一二三四五六七八九十\d]+季|全\d+集/i.test(titleAndSub);
+      const isPureTvSource = !!srcDomains && srcDomains.includes("tv") && !srcDomains.includes("movie");
+      if (meta.type === "剧集" || isPureTvSource) {
+        if (explicitMiniseries && !hasMultiSeason && !hasSingleEpisode) {
+          return ["miniseries", "tv"];
+        }
+        if (hasMultiSeason || hasSingleEpisode) {
+          return ["tv"];
+        }
+        if (hasSeason1Pack || isPureTvSource && (srcDomains == null ? void 0 : srcDomains.includes("miniseries"))) {
+          return ["tv", "miniseries"];
+        }
+        return ["tv"];
+      }
+      if (explicitMiniseries && !hasMultiSeason) {
+        return ["miniseries", "tv"];
+      }
+      if (meta.type === "电影") {
+        if ((sourceSite == null ? void 0 : sourceSite.name) === "PTP" && hasTvMarker && !hasMultiSeason && !hasSingleEpisode) {
+          return ["miniseries", "tv"];
+        }
+        return ["movie"];
+      }
+      if (meta.type === "纪录") {
+        if (hasMultiSeason || hasSingleEpisode)
+          return ["doc", "tv"];
+        if (hasSeason1Pack)
+          return ["doc", "tv", "miniseries"];
+        return ["doc", "movie"];
+      }
+      if (meta.type === "动漫") {
+        if (hasMultiSeason || hasSingleEpisode)
+          return ["anime", "tv"];
+        if (hasSeason1Pack)
+          return ["anime", "tv", "miniseries"];
+        return ["anime", "movie"];
+      }
+      if (meta.type === "综艺") {
+        return ["tv"];
+      }
+      if (meta.type === "MV" || meta.type === "体育") {
+        return ["misc"];
+      }
+      return [...getSiteDomains(sourceSite)];
+    }
+    function isTargetSiteCompatible(targetSite, torrentDomains) {
+      const targetDomains = getSiteDomains(targetSite);
+      return torrentDomains.some((d2) => targetDomains.includes(d2));
+    }
+    function filterForwardTargets(targets, meta, sourceSite, enabled = true) {
+      const domains = inferTorrentDomains(meta, sourceSite);
+      if (!enabled) {
+        return { visible: [...targets], hidden: [], domains };
+      }
+      const visible = [];
+      const hidden = [];
+      for (const site of targets) {
+        if (isTargetSiteCompatible(site, domains)) {
+          visible.push(site);
+        } else {
+          hidden.push(site);
+        }
+      }
+      return { visible, hidden, domains };
+    }
     function getColSpanForRow(tr) {
       try {
         const tds = Array.from(tr.querySelectorAll("td,th"));
@@ -23816,13 +38208,111 @@ ${updated.description || ""}`.trim();
       const base = ForwardLinkService.getBaseUrl(site, { chdBaseUrl: settings.chdBaseUrl, tlBaseUrl: settings.tlBaseUrl });
       return base ? `${base}favicon.ico` : "";
     }
+    const TARGET_BAN_ALIASES = {
+      ptt: "PTT",
+      pttime: "PTT",
+      ssd: "CMCT",
+      cmct: "CMCT",
+      springsunday: "CMCT",
+      chd: "CHDBits",
+      chdbits: "CHDBits",
+      hdc: "HDChina",
+      hdchina: "HDChina",
+      hds: "HDSky",
+      hdsky: "HDSky",
+      ob: "OurBits",
+      ourbits: "OurBits",
+      hdh: "HDHome",
+      hdhome: "HDHome",
+      pth: "PThome",
+      pthome: "PThome",
+      hdv: "HDVideo",
+      hdvideo: "HDVideo",
+      opencd: "OpenCD",
+      hddolby: "HDDolby",
+      pter: "PTer",
+      pterclub: "PTer",
+      mt: "MTeam",
+      mteam: "MTeam",
+      ttg: "TTG",
+      audiences: "Audiences",
+      audies: "Audiences",
+      btschool: "BTSchool",
+      frds: "FRDS",
+      ubits: "UBits",
+      hhclub: "HHClub",
+      piggo: "PigGo",
+      tjupt: "TJUPT",
+      gpw: "GPW",
+      ptp: "PTP",
+      hdb: "HDB",
+      btn: "BTN",
+      blu: "BLU",
+      bhd: "BHD",
+      red: "RED",
+      ops: "OPS"
+    };
+    const GLOBAL_BAN_TARGET_RE = /(其他|他站|别站|別站|外站|任何|全站|公网|公網|任意|所有|国内|国外|他处|它站|\bother\b|\bany\b|\ball\b|\btrackers?\b|\bsites?\b)/i;
+    function extractSiteSpecificBans(text) {
+      const raw = String(text || "");
+      const restricted = /* @__PURE__ */ new Set();
+      const normalizeTargetToken = (tok) => {
+        const cleaned = tok.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+        if (!cleaned)
+          return "";
+        return TARGET_BAN_ALIASES[cleaned] || "";
+      };
+      const parseTargets = (segment) => {
+        if (!segment || GLOBAL_BAN_TARGET_RE.test(segment))
+          return [];
+        const parts = segment.split(/[\s\/、，,&+]+/).map((p2) => p2.trim()).filter(Boolean);
+        const hits = [];
+        for (const p2 of parts) {
+          const norm2 = normalizeTargetToken(p2);
+          if (norm2)
+            hits.push(norm2);
+        }
+        return Array.from(new Set(hits));
+      };
+      let sanitized = raw.replace(
+        /(?:严禁|嚴禁|谢绝|謝絕|拒绝|拒絕|不允许|不允許|禁止|禁)\s*(?:二次)?\s*(?:转|轉)(?:载|載|发|發)?\s*(?:至|到|往)\s*([A-Za-z0-9\u4e00-\u9fa5][A-Za-z0-9\u4e00-\u9fa5._\-\/\s、，,&+]{0,50})/gi,
+        (match, targetSeg) => {
+          const targets = parseTargets(targetSeg);
+          if (!targets.length)
+            return match;
+          targets.forEach((t2) => restricted.add(t2));
+          return " ";
+        }
+      );
+      sanitized = sanitized.replace(
+        /(?:严禁|嚴禁|谢绝|謝絕|拒绝|拒絕|不允许|不允許|禁止|禁)\s*(?:转|轉)(?:载|載|发|發)?\s*(PTT(?:ime)?)\b/gi,
+        () => {
+          restricted.add("PTT");
+          return " ";
+        }
+      );
+      return {
+        sanitizedText: sanitized,
+        restrictedTargets: Array.from(restricted)
+      };
+    }
     function getForwardWarnings(siteName, meta, lang = "zh") {
       const text = getUiText(lang);
       const warnings = [];
       const blob = `${meta.title || ""}
 ${meta.smallDescr || ""}
+${meta.subtitle || ""}
 ${meta.description || ""}`;
       warnings.push(...getExclusiveSourceWarnings(meta, lang));
+      const { restrictedTargets } = extractSiteSpecificBans(blob.replace(/\[.*?\]/g, " "));
+      if (restrictedTargets.includes(siteName)) {
+        warnings.push(
+          text(
+            `简介注明禁转至 ${siteName}，请核对后决定是否继续。`,
+            `The description states no re-upload to ${siteName}. Verify before continuing.`
+          )
+        );
+      }
       if (siteName === "KG") {
         if (meta.standardSel === "4K" || /\b(?:4K|2160p)\b/i.test(blob)) {
           warnings.push(text("KG 不允许 4K / 2160p 资源。", "KG does not allow 4K / 2160p releases."));
@@ -23831,6 +38321,9 @@ ${meta.description || ""}`;
           warnings.push(text("KG 不允许 Remux 资源。", "KG does not allow remuxes."));
         }
       }
+      if (siteName === "HDChina" && /chd$|chdbits|chdweb|chdtv|chdpad|chdhktv/i.test(String(meta.title || ""))) {
+        warnings.push(text("该资源可能触发禁转规则（CHD 岛资源禁转到 HDChina）。", "CHD releases may be prohibited on HDChina."));
+      }
       return Array.from(new Set(warnings.filter(Boolean)));
     }
     function getExclusiveSourceWarnings(meta, lang = "zh") {
@@ -23838,37 +38331,42 @@ ${meta.description || ""}`;
       const text = getUiText(lang);
       const warnings = [];
       const source = String(meta.sourceSite || meta.originSite || "").trim();
-      const title = String(meta.title || "").trim();
-      const blob = `${meta.title || ""}
+      const rawBlob = `${meta.title || ""}
 ${meta.smallDescr || ""}
 ${meta.subtitle || ""}
 ${meta.description || ""}`.replace(/\[.*?\]/g, " ");
-      const bodyText = String(((_a = document.body) == null ? void 0 : _a.innerText) || "");
+      const { sanitizedText: blob } = extractSiteSpecificBans(rawBlob);
+      const hasDoc = typeof document !== "undefined" && !!document.body;
+      const bodyText = hasDoc ? String(((_a = document.body) == null ? void 0 : _a.innerText) || "") : "";
+      const hasExclusiveTagSpan = (pattern) => {
+        if (!hasDoc)
+          return false;
+        return Array.from(document.querySelectorAll("span")).some((s2) => {
+          if (s2.closest("#kdescr, .torrent_description, [data-autofeed-embed]"))
+            return false;
+          return pattern.test((s2.textContent || "").trim());
+        });
+      };
       if (blob.match(/(拒绝转发|不允许转发|严禁转发|谢绝.*?转载|禁转|禁止转载|禁止轉載|禁止转发|謝絕.*?轉載|exclusive|独占|獨占|no[\s-]?reupload|do not reupload|forbid.*reupload|禁止二次转载)/i)) {
         warnings.push(text("资源命中禁转关键词（禁转/禁止转载/exclusive/no-reupload）。", "The release contains an exclusive / no re-upload notice."));
       }
-      if (title.match(/Audies$|-ADE$|-ADWeb$|@Audies|@ADWeb/i)) {
-        warnings.push(text("资源命中观众系后缀（Audies/ADE/ADWeb），请按站点规则核查是否可转载。", "Audies / ADE / ADWeb release: check the source tracker rules before forwarding."));
+      if (source === "PigGo" && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
+        warnings.push(text("PigGo 页面标记为禁转资源。", "PigGo marks this release as not for re-upload."));
       }
-      if (source === "PigGo" && !!document.querySelector("span")) {
-        const has = Array.from(document.querySelectorAll("span")).some((s2) => (s2.textContent || "").includes("禁转"));
-        if (has)
-          warnings.push(text("PigGo 页面标记为禁转资源。", "PigGo marks this release as not for re-upload."));
-      }
-      if (source === "HHClub" && Array.from(document.querySelectorAll("span")).some((s2) => (s2.textContent || "").includes("禁转"))) {
+      if (source === "HHClub" && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
         warnings.push(text("HHClub 页面标记为禁转资源。", "HHClub marks this release as not for re-upload."));
       }
-      if (source === "TJUPT" && !!document.querySelector("#tag .tag-exclusive")) {
+      if (source === "TJUPT" && hasDoc && !!document.querySelector("#tag .tag-exclusive")) {
         warnings.push(text("TJUPT 标签包含 exclusive（禁转）。", "TJUPT marks this release as exclusive."));
       }
-      if (source === "PTer") {
+      if (source === "PTer" && hasDoc) {
         const exclusiveSelect = document.querySelector('select[name="tag_exclusive"]');
         const exclusiveValue = String((exclusiveSelect == null ? void 0 : exclusiveSelect.value) || "").trim().toLowerCase();
         if (exclusiveValue === "yes") {
           warnings.push(text("PTer 标签 `tag_exclusive` 标记为 `yes`（禁转）。", "PTer marks tag_exclusive as yes (no re-upload)."));
         }
       }
-      if (["HDDolby", "HDHome", "PThome", "Audiences"].includes(source)) {
+      if (["HDDolby", "HDHome", "PThome", "Audiences"].includes(source) && hasDoc) {
         const hasTag = !!document.querySelector("span.txz, span.tjz");
         if (hasTag)
           warnings.push(`${source}: ${text("页面标签包含限转/禁转标记（txz/tjz）。", "restricted / no re-upload tag (txz/tjz).")}`);
@@ -23876,14 +38374,21 @@ ${meta.description || ""}`.replace(/\[.*?\]/g, " ");
       if (source === "BHD" && /THIS IS A BEYONDHD EXCLUSIVE\./i.test(bodyText)) {
         warnings.push(text("BHD 页面标记为 EXCLUSIVE。", "BHD marks this release as exclusive."));
       }
-      if (source === "HDB" && !!document.querySelector("div.torrent-title > span.exclusive")) {
+      if (source === "HDB" && hasDoc && !!document.querySelector("div.torrent-title > span.exclusive")) {
         warnings.push(text("HDB 页面存在 exclusive 标记。", "HDB marks this release as exclusive."));
       }
-      if (source === "CMCT" && bodyText.includes("禁转")) {
+      if (source === "CMCT" && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
         warnings.push(text("CMCT 页面出现禁转标记。", "CMCT displays a no re-upload notice."));
       }
-      if (source === "OpenCD" && bodyText.includes("禁止轉載")) {
-        warnings.push(text("OpenCD 页面出现“禁止轉載”标记。", "OpenCD displays a no re-upload notice."));
+      if (source === "OpenCD" && hasDoc) {
+        const hasOpenCdBan = Array.from(document.querySelectorAll("td, span")).some((el) => {
+          if (el.closest("#kdescr, [data-autofeed-embed]"))
+            return false;
+          return (el.textContent || "").trim() === "禁止轉載";
+        });
+        if (hasOpenCdBan) {
+          warnings.push(text("OpenCD 页面出现“禁止轉載”标记。", "OpenCD displays a no re-upload notice."));
+        }
       }
       return Array.from(new Set(warnings.filter(Boolean)));
     }
@@ -23892,11 +38397,23 @@ ${meta.description || ""}`.replace(/\[.*?\]/g, " ");
       const title = String(meta.title || "");
       const source = String(meta.sourceSite || meta.originSite || "");
       const medium = String(meta.mediumSel || "");
-      if ((source === "FRDS" || /frds/i.test(title)) && ["CMCT", "OurBits", "HDSky"].includes(targetSite)) {
-        return text("FRDS 资源不支持转发到 CMCT / OurBits / HDSky。", "FRDS releases cannot be forwarded to CMCT / OurBits / HDSky.");
+      if ((source === "FRDS" || /frds/i.test(title)) && ["CMCT", "OurBits", "HDChina", "HDSky"].includes(targetSite)) {
+        return text("FRDS 资源不支持转发到 CMCT / OurBits / HDChina / HDSky。", "FRDS releases cannot be forwarded to CMCT / OurBits / HDChina / HDSky.");
       }
-      if (/Audies$|-ADE$|-ADWeb$/i.test(title) && targetSite === "PTT") {
-        return text("该资源触发观众系禁转规则（Audies/ADE/ADWeb -> PTT）。", "Audies / ADE / ADWeb releases cannot be forwarded to PTT.");
+      if (/Audies$|-ADE$|-ADWeb$|UBits$|HHWEB$|-beAst$|-beAstTV$/i.test(title) && targetSite === "PTT") {
+        return text("该资源触发禁转规则（禁止转发至 PTT）。", "This release group cannot be forwarded to PTT.");
+      }
+      if (/UBits$/i.test(title) && ["HDSky", "CMCT"].includes(targetSite)) {
+        return text("UBits 官组资源禁转至 HDSky / CMCT。", "UBits releases cannot be forwarded to HDSky / CMCT.");
+      }
+      if (/Dream$|DBTV$|QHstudIo$|CornerMV$/i.test(title) && ["HDVideo", "OpenCD"].includes(targetSite)) {
+        return text("该官组资源禁转至 HDVideo / OpenCD。", "This release group cannot be forwarded to HDVideo / OpenCD.");
+      }
+      if (/HDVWEB$|HDVMV$/i.test(title) && targetSite === "HDDolby") {
+        return text("HDVWEB / HDVMV 资源禁转至 HDDolby。", "HDVWEB / HDVMV releases cannot be forwarded to HDDolby.");
+      }
+      if (/HDH(ome|TV|PAD|WEB)$|-HDH$/i.test(title) && targetSite === "PThome") {
+        return text("HDHome 官组资源禁转至 PThome。", "HDHome releases cannot be forwarded to PThome.");
       }
       if (targetSite === "OurBits" && (medium === "Remux" || /Remux/i.test(title))) {
         return text("OurBits 禁止 Remux 资源转发。", "OurBits does not allow forwarding remuxes.");
@@ -24022,8 +38539,39 @@ ${meta.description || ""}`.replace(/\[.*?\]/g, " ");
     async function renderForwardRow(container, meta, settings) {
       const text = getUiText(settings.uiLanguage);
       container.empty();
+      const hostEl = container.get(0);
+      if (hostEl) {
+        if (hostEl.__autofeedSettingsListener) {
+          window.removeEventListener("autofeed:settings-updated", hostEl.__autofeedSettingsListener);
+        }
+        const onSettingsUpdated = (ev) => {
+          if (!document.contains(hostEl)) {
+            window.removeEventListener("autofeed:settings-updated", onSettingsUpdated);
+            return;
+          }
+          const nextSettings = ev.detail;
+          if (nextSettings) {
+            void renderForwardRow(container, meta, nextSettings);
+          }
+        };
+        hostEl.__autofeedSettingsListener = onSettingsUpdated;
+        window.addEventListener("autofeed:settings-updated", onSettingsUpdated);
+      }
       const enabledSet = new Set(settings.enabledSites || []);
-      const supported = SiteCatalogService.getSupportedSites().filter((s2) => enabledSet.has(s2.name));
+      const supported = SiteCatalogService.getSupportedSites().filter(
+        (s2) => {
+          var _a;
+          return enabledSet.has(s2.name) && ((_a = s2.capabilities) == null ? void 0 : _a.target) !== false;
+        }
+      );
+      const sourceSiteName = String(meta.sourceSite || meta.originSite || "").trim();
+      const sourceSiteConfig = SiteCatalogService.getAllSites().find((s2) => s2.name === sourceSiteName) || null;
+      const { visible, hidden } = filterForwardTargets(
+        supported,
+        meta,
+        sourceSiteConfig,
+        settings.filterForwardTargetsByType !== false
+      );
       const exclusiveWarnings = getExclusiveSourceWarnings(meta, settings.uiLanguage);
       const forwardLine = document.createElement("div");
       forwardLine.style.whiteSpace = "normal";
@@ -24038,9 +38586,7 @@ ${meta.description || ""}`.replace(/\[.*?\]/g, " ");
           el.href = wantUpload ? upload : search;
         });
       };
-      supported.forEach((site, idx) => {
-        if (idx > 0)
-          forwardLine.appendChild(document.createTextNode(" | "));
+      const createSiteAnchor = (site) => {
         const a2 = document.createElement("a");
         a2.className = "forward_a";
         a2.id = site.name;
@@ -24138,8 +38684,28 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
             }
           })();
         });
-        forwardLine.appendChild(a2);
+        return a2;
+      };
+      visible.forEach((site, idx) => {
+        if (idx > 0)
+          forwardLine.appendChild(document.createTextNode(" | "));
+        forwardLine.appendChild(createSiteAnchor(site));
       });
+      let hiddenSpan = null;
+      if (hidden.length > 0) {
+        hiddenSpan = document.createElement("span");
+        hiddenSpan.className = "autofeed-hidden-targets";
+        hiddenSpan.style.display = "none";
+        if (visible.length > 0) {
+          hiddenSpan.appendChild(document.createTextNode(" | "));
+        }
+        hidden.forEach((site, idx) => {
+          if (idx > 0)
+            hiddenSpan.appendChild(document.createTextNode(" | "));
+          hiddenSpan.appendChild(createSiteAnchor(site));
+        });
+        forwardLine.appendChild(hiddenSpan);
+      }
       const modeWrap = document.createElement("label");
       modeWrap.style.marginLeft = "10px";
       const check = document.createElement("input");
@@ -24152,6 +38718,37 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       });
       modeWrap.append(check, label);
       forwardLine.appendChild(modeWrap);
+      if (hiddenSpan && hidden.length > 0) {
+        let expanded = false;
+        const toggleOther = document.createElement("a");
+        toggleOther.href = "#";
+        toggleOther.className = "autofeed-toggle-other-sites";
+        toggleOther.style.marginLeft = "10px";
+        toggleOther.style.fontSize = "12px";
+        toggleOther.style.opacity = "0.82";
+        const updateLabel = () => {
+          if (expanded) {
+            toggleOther.textContent = text("收起其他", "Hide other");
+          } else if (visible.length === 0) {
+            toggleOther.textContent = text(`无同类型站点，展开全部 (${hidden.length})`, `No matching sites, show all (${hidden.length})`);
+          } else {
+            toggleOther.textContent = text(`+${hidden.length} 其他`, `+${hidden.length} other`);
+          }
+        };
+        toggleOther.title = text(
+          `已按站点内容类型隐藏：${hidden.map((s2) => s2.name).join(", ")}（点击一键展开）`,
+          `Filtered by content type: ${hidden.map((s2) => s2.name).join(", ")} (click to expand)`
+        );
+        updateLabel();
+        toggleOther.addEventListener("click", (e2) => {
+          e2.preventDefault();
+          e2.stopPropagation();
+          expanded = !expanded;
+          hiddenSpan.style.display = expanded ? "inline" : "none";
+          updateLabel();
+        });
+        forwardLine.appendChild(toggleOther);
+      }
       if (exclusiveWarnings.length) {
         const tip = document.createElement("div");
         tip.style.color = "#c0392b";
@@ -24262,7 +38859,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       input.className = "input";
       input.id = "input_box";
       input.setAttribute("aria-label", text("IMDb / 豆瓣链接", "IMDb / Douban URL"));
-      input.value = meta.imdbUrl || meta.doubanUrl || "";
+      input.value = meta.doubanUrl || meta.imdbUrl || "";
       if (site === "PTP")
         input.style.width = "320px";
       else
@@ -24270,7 +38867,20 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       input.style.maxWidth = "100%";
       input.style.boxSizing = "border-box";
       container.append(input);
-      const enableFetchButton = isChineseNexusSite(site);
+      const NO_DOUBAN_FETCH_SITES = /* @__PURE__ */ new Set([
+        "RED",
+        "OPS",
+        "DIC",
+        "OpenCD",
+        "lztr",
+        "jpop",
+        "SugoiMusic",
+        "bib",
+        "mam",
+        "GGPT",
+        "SportsCult"
+      ]);
+      const enableFetchButton = !NO_DOUBAN_FETCH_SITES.has(site);
       let apiCb = null;
       if (enableFetchButton) {
         apiCb = document.createElement("input");
@@ -24349,12 +38959,26 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
             }
             const s2 = await SettingsService2.load();
             const imdbToDoubanMethod = (apiCb == null ? void 0 : apiCb.checked) ? 0 : s2.imdbToDoubanMethod || 0;
-            const updated = await PtgenService2.applyPtgen(cur, {
+            const result = await PtgenService2.fetchPtgen(cur, {
               imdbToDoubanMethod,
               ptgenApi: s2.ptgenApi ?? 3,
               doubanCookie: s2.doubanCookie || void 0
-            }, { mergeDescription: true, updateSubtitle: true, updateRegion: true, updateIds: true });
+            });
+            if (!result || !result.format) {
+              throw new Error("No PTGen/Douban metadata returned");
+            }
+            const updated = PtgenService2.applyPtgenResult(cur, result, {
+              mergeDescription: true,
+              updateSubtitle: true,
+              updateRegion: true,
+              updateIds: true
+            });
             Object.assign(meta, updated);
+            if (updated.doubanUrl)
+              input.value = updated.doubanUrl;
+            else if (updated.imdbUrl && !input.value.trim())
+              input.value = updated.imdbUrl;
+            textarea.value = result.format;
             await StorageService.save(meta);
             fetchBtn.value = text("获取成功", "Metadata updated");
             setTimeout(() => {
@@ -24362,6 +38986,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                 fetchBtn.value = text("点击获取", "Fetch metadata");
             }, 1200);
           } catch (e2) {
+            console.warn("[Auto-Feed] Source PTGen fetch failed:", e2);
             fetchBtn.value = text("获取失败", "Fetch failed");
             setTimeout(() => {
               if (fetchBtn)
@@ -24634,7 +39259,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         return `${adapter.siteName}:page`;
       }
       static findInsertPoint(adapter, scopeKey) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
         if (adapter.siteName === "MTeam") {
           const tbody = document.querySelector(".ant-descriptions-view table tbody");
           if (tbody)
@@ -24957,6 +39582,191 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
           } catch {
           }
         }
+        if (adapter.siteName === "FileList") {
+          const existing = document.getElementById("autofeed-filelist-host");
+          if (existing) {
+            const tb = existing.querySelector("tbody");
+            if (tb)
+              return { kind: "table-body", tableBody: tb, leftClass: "" };
+          }
+          const descr = document.getElementById("descr");
+          if (descr == null ? void 0 : descr.parentElement) {
+            const host = document.createElement("div");
+            host.id = "autofeed-filelist-host";
+            host.dataset.autofeedEmbed = scopeKey;
+            host.style.margin = "12px 0";
+            const table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            host.appendChild(table);
+            const anchor = descr.previousElementSibling || descr;
+            (_h = anchor.parentElement) == null ? void 0 : _h.insertBefore(host, anchor);
+            return { kind: "table-body", tableBody: tbody, leftClass: "" };
+          }
+          const innerTbody = document.querySelector(".cblock-innercontent tbody");
+          if (innerTbody) {
+            const firstTr = innerTbody.querySelector("tr");
+            if (firstTr)
+              return { kind: "after-tr", afterTr: firstTr, colSpan: getColSpanForRow(firstTr) };
+            return { kind: "table-body", tableBody: innerTbody, leftClass: "" };
+          }
+        }
+        if (adapter.siteName === "TorrentLeech") {
+          const table = document.querySelector("table.table.borderless");
+          if (table) {
+            const rows = Array.from(table.querySelectorAll("tr"));
+            const addedRow = rows.find((tr) => {
+              var _a2;
+              return (((_a2 = tr.querySelector("td")) == null ? void 0 : _a2.textContent) || "").trim() === "Added";
+            }) || rows[0];
+            if (addedRow)
+              return { kind: "after-tr", afterTr: addedRow, colSpan: getColSpanForRow(addedRow) };
+          }
+        }
+        if (adapter.siteName === "HDRoute") {
+          const existing = document.getElementById("autofeed-hdroute-host");
+          if (existing) {
+            const tb = existing.querySelector("tbody");
+            if (tb)
+              return { kind: "table-body", tableBody: tb, leftClass: "" };
+          }
+          const anchor = document.querySelector(".details-info, .torrent-info, .details-main, .details-title-eng");
+          if (anchor == null ? void 0 : anchor.parentElement) {
+            const host = document.createElement("div");
+            host.id = "autofeed-hdroute-host";
+            host.dataset.autofeedEmbed = scopeKey;
+            host.style.margin = "10px 0";
+            const table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            host.appendChild(table);
+            anchor.insertAdjacentElement("afterend", host);
+            return { kind: "table-body", tableBody: tbody, leftClass: "" };
+          }
+        }
+        if (["AvistaZ", "CinemaZ", "PrivateHD"].includes(adapter.siteName)) {
+          const tables = Array.from(document.querySelectorAll("div.table-responsive table"));
+          const detailsTable = tables.find((t2) => /Title/i.test(t2.textContent || "")) || tables[0] || null;
+          if (detailsTable) {
+            const rows = Array.from(detailsTable.querySelectorAll("tr"));
+            const anchor = rows.find((tr) => {
+              var _a2;
+              return /^Download$/i.test((((_a2 = tr.querySelector("td,th")) == null ? void 0 : _a2.textContent) || "").trim());
+            }) || rows.find((tr) => {
+              var _a2;
+              return /^Title$/i.test((((_a2 = tr.querySelector("td,th")) == null ? void 0 : _a2.textContent) || "").trim());
+            }) || rows[0];
+            if (anchor)
+              return { kind: "after-tr", afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+          }
+        }
+        if (adapter.siteName === "CG") {
+          const details = document.getElementById("torrent_details");
+          const table = (_i = details == null ? void 0 : details.parentElement) == null ? void 0 : _i.querySelector("table");
+          if (table) {
+            const firstTr = table.querySelector("tr");
+            if (firstTr)
+              return { kind: "after-tr", afterTr: firstTr, colSpan: getColSpanForRow(firstTr) };
+          }
+        }
+        if (adapter.siteName === "HDT") {
+          const table = document.querySelector("table.listadetails");
+          if (table) {
+            const rows = Array.from(table.querySelectorAll("tr"));
+            const anchor = rows.find((tr) => {
+              var _a2;
+              return /^Tools:?$/i.test((((_a2 = tr.querySelector("td,th")) == null ? void 0 : _a2.textContent) || "").trim());
+            }) || rows.find((tr) => {
+              var _a2;
+              return /^Info Hash:?$/i.test((((_a2 = tr.querySelector("td,th")) == null ? void 0 : _a2.textContent) || "").trim());
+            }) || rows.find((tr) => {
+              var _a2;
+              return /^Torrent:?$/i.test((((_a2 = tr.querySelector("td,th")) == null ? void 0 : _a2.textContent) || "").trim());
+            }) || rows[0];
+            if (anchor)
+              return { kind: "after-tr", afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+          }
+        }
+        if (["bib", "IPT", "ZHUQUE", "BlueBird", "HDSpace", "digitalcore"].includes(adapter.siteName)) {
+          const hostId = `autofeed-${adapter.siteName.toLowerCase()}-host`;
+          const existing = document.getElementById(hostId);
+          if (existing) {
+            const tb = existing.querySelector("tbody");
+            if (tb)
+              return { kind: "table-body", tableBody: tb, leftClass: "" };
+          }
+          const mountHostAfter = (anchor, before = false) => {
+            if (!(anchor == null ? void 0 : anchor.parentElement))
+              return null;
+            const host = document.createElement("div");
+            host.id = hostId;
+            host.dataset.autofeedEmbed = scopeKey;
+            host.style.margin = "10px 0";
+            const table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            host.appendChild(table);
+            anchor.insertAdjacentElement(before ? "beforebegin" : "afterend", host);
+            return { kind: "table-body", tableBody: tbody, leftClass: "" };
+          };
+          if (adapter.siteName === "bib") {
+            const pt = mountHostAfter(document.getElementById("title") || document.querySelector("h1"));
+            if (pt)
+              return pt;
+          } else if (adapter.siteName === "IPT") {
+            const pt = mountHostAfter(document.getElementById("media") || document.querySelector("div.info"), !!document.getElementById("media"));
+            if (pt)
+              return pt;
+          } else if (adapter.siteName === "ZHUQUE") {
+            const card = ((_j = document.querySelector("div.ant-card-body")) == null ? void 0 : _j.parentElement) || null;
+            const pt = mountHostAfter(card);
+            if (pt)
+              return pt;
+          } else if (adapter.siteName === "BlueBird") {
+            const tr = document.querySelectorAll("#highlighted tr")[1];
+            if (tr)
+              return { kind: "after-tr", afterTr: tr, colSpan: getColSpanForRow(tr) };
+          } else if (adapter.siteName === "HDSpace") {
+            const tables = Array.from(document.querySelectorAll("#mcol table"));
+            const t2 = tables.find((el) => /Info Hash/i.test(el.textContent || ""));
+            const tr = t2 == null ? void 0 : t2.querySelectorAll("tr")[2];
+            if (tr)
+              return { kind: "after-tr", afterTr: tr, colSpan: getColSpanForRow(tr) };
+          } else if (adapter.siteName === "digitalcore") {
+            const pt = mountHostAfter(((_k = document.querySelector(".imdbinfotext")) == null ? void 0 : _k.closest("div")) || document.querySelector("h1"));
+            if (pt)
+              return pt;
+          }
+        }
+        if (adapter.siteName === "HONE") {
+          const existing = document.getElementById("autofeed-hone-host");
+          if (existing) {
+            const tb = existing.querySelector("tbody");
+            if (tb)
+              return { kind: "table-body", tableBody: tb, leftClass: "" };
+          }
+          const anchor = document.querySelector(".button-block, #meta-info");
+          if (anchor == null ? void 0 : anchor.parentElement) {
+            const host = document.createElement("div");
+            host.id = "autofeed-hone-host";
+            host.dataset.autofeedEmbed = scopeKey;
+            host.style.margin = "12px 0";
+            const table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            host.appendChild(table);
+            anchor.insertAdjacentElement("afterend", host);
+            return { kind: "table-body", tableBody: tbody, leftClass: "" };
+          }
+        }
         const unit3dMenu = document.querySelector("menu.torrent__buttons, .torrent__buttons, menu.form__group--short-horizontal");
         if (unit3dMenu) {
           const existing = document.getElementById("autofeed-unit3d-host");
@@ -25211,6 +40021,17 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
           const { normalizeMeta: normalizeMeta2 } = await __vitePreload(() => Promise.resolve().then(() => normalize), false ? "__VITE_PRELOAD__" : void 0);
           meta = this.cleanMeta(meta);
           meta = normalizeMeta2(meta, adapter.siteName);
+          if (meta.imdbId && !meta.doubanId) {
+            try {
+              const { DoubanService: DoubanService2 } = await __vitePreload(() => Promise.resolve().then(() => DoubanService$1), false ? "__VITE_PRELOAD__" : void 0);
+              const cached = DoubanService2.getCachedByImdb(meta.imdbId);
+              if (cached == null ? void 0 : cached.id) {
+                meta.doubanId = cached.id;
+                meta.doubanUrl = `https://movie.douban.com/subject/${cached.id}/`;
+              }
+            } catch {
+            }
+          }
           await StorageService.save(meta);
         } catch (e2) {
           console.error("[Auto-Feed] Parse failed for embed, fallback to cached/minimal meta:", e2);
@@ -25361,6 +40182,10 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
           "input#catalogue_number",
           "input#cataloguenumber",
           'textarea[name="release_desc"]',
+          "input#scenename",
+          "input#autofill",
+          "input#title_eng",
+          "input#title_chs",
           "textarea#album_desc",
           'input[name="infosite"]',
           "input#ename",
@@ -25370,10 +40195,19 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
           'select[name="browsecat"]',
           'input[name="torrentfile"]',
           'input[type="file"]#torrent',
+          'input[type="file"]#torrent_file',
+          "input#file_name",
+          "textarea#media_info",
+          "input#artist_0",
+          "input#resource_name",
           'input[name="torrent"]',
           'input[name="file"]',
           'input[type="file"][name*="file"]',
-          "#torrent-input"
+          "#torrent-input",
+          "#form_item_title",
+          "#torrent-title",
+          "#bigname",
+          "#filename"
         ];
         for (let i2 = 0; i2 < 30; i2++) {
           if (selectors.some((sel) => document.querySelector(sel)))
@@ -26068,6 +40902,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       return "function" == typeof t2 ? t2(n2) : t2;
     }
     const App = () => {
+      var _a;
       const [isOpen, setIsOpen] = d(false);
       const [activeTab, setActiveTab] = d("dashboard");
       const [panelPos, setPanelPos] = d(null);
@@ -26089,6 +40924,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         showQuickSearchOnImdb: true,
         defaultAnonymous: false,
         autoDownloadAfterUpload: true,
+        filterForwardTargetsByType: true,
         remoteSidebarOpacity: 0.92,
         settingsPanelOpacity: 0.95,
         popupOpacity: 0.96,
@@ -26112,6 +40948,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         uiLanguage: "zh"
       });
       const [saveState, setSaveState] = d("idle");
+      const [hasUnsavedChanges, setHasUnsavedChanges] = d(false);
       const [remoteModalOpen, setRemoteModalOpen] = d(false);
       const [remoteSaving, setRemoteSaving] = d(false);
       const [remoteForm, setRemoteForm] = d({
@@ -26124,38 +40961,57 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       });
       const [quickPreset, setQuickPreset] = d("");
       d("");
+      const [siteSearch, setSiteSearch] = d("");
+      const [showEnabledOnly, setShowEnabledOnly] = d(false);
+      const [showExperimentalSites, setShowExperimentalSites] = d(false);
       const settingsRef = A(settings);
       const saveQueueRef = A(Promise.resolve());
+      const saveTimerRef = A(null);
+      const [saveNotice, setSaveNotice] = d("");
       const clamp = (v2, min, max) => Math.min(max, Math.max(min, v2));
       const getPanelSize = () => {
         const w2 = Math.min(880, Math.min(980, window.innerWidth - 24));
         const h2 = Math.min(760, window.innerHeight - 24);
         return { w: Math.max(660, w2), h: Math.max(540, h2) };
       };
-      y(() => {
-        const handleKey = (e2) => {
-          if (e2.altKey && e2.code === "KeyS") {
-            setIsOpen((prev) => !prev);
-          }
-        };
-        window.addEventListener("keydown", handleKey);
-        const openSettings = () => {
-          setIsOpen(true);
-          setActiveTab("dashboard");
-        };
-        window.addEventListener("autofeed:open-settings", openSettings);
+      const refreshSettingsFromStorage = () => {
         SettingsService.load().then((loaded) => {
           setSettings(loaded);
           settingsRef.current = loaded;
+          setHasUnsavedChanges(false);
+          setSaveState("idle");
+          setSaveNotice("");
           if (loaded.quickSearchList && loaded.quickSearchList.length) {
             setQuickPreset(loaded.quickSearchList[0]);
           } else if (DEFAULT_QUICK_SEARCH_TEMPLATES.length) {
             setQuickPreset(DEFAULT_QUICK_SEARCH_TEMPLATES[0]);
           }
         });
+      };
+      y(() => {
+        const handleKey = (e2) => {
+          if (e2.altKey && e2.code === "KeyS") {
+            setIsOpen((prev) => {
+              const nextOpen = !prev;
+              if (nextOpen)
+                refreshSettingsFromStorage();
+              return nextOpen;
+            });
+          }
+        };
+        window.addEventListener("keydown", handleKey);
+        const openSettings = () => {
+          refreshSettingsFromStorage();
+          setIsOpen(true);
+          setActiveTab("dashboard");
+        };
+        window.addEventListener("autofeed:open-settings", openSettings);
+        refreshSettingsFromStorage();
         return () => {
           window.removeEventListener("keydown", handleKey);
           window.removeEventListener("autofeed:open-settings", openSettings);
+          if (saveTimerRef.current)
+            window.clearTimeout(saveTimerRef.current);
         };
       }, []);
       y(() => {
@@ -26214,37 +41070,85 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       y(() => {
         settingsRef.current = settings;
       }, [settings]);
+      const flashSaveState = (state, notice) => {
+        setSaveState(state);
+        setSaveNotice(notice || "");
+        if (saveTimerRef.current)
+          window.clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = window.setTimeout(() => {
+          setSaveState("idle");
+          setSaveNotice("");
+        }, state === "error" ? 2800 : 1800);
+      };
       const handleSaveSettings = async () => {
         setSaveState("saving");
+        setSaveNotice("");
         try {
-          const ok = await persistSettings(settingsRef.current);
+          const ok = await persistSettings(settingsRef.current, { silentBadge: true });
           if (!ok)
             throw new Error("save failed");
-          setSaveState("saved");
-          window.setTimeout(() => setSaveState("idle"), 1500);
+          setHasUnsavedChanges(false);
+          flashSaveState(
+            "saved",
+            settingsRef.current.uiLanguage === "en" ? "Saved" : "已保存"
+          );
         } catch {
-          setSaveState("error");
-          window.setTimeout(() => setSaveState("idle"), 1800);
+          flashSaveState(
+            "error",
+            settingsRef.current.uiLanguage === "en" ? "Save failed" : "保存失败"
+          );
         }
       };
-      const persistSettings = async (next) => {
-        setSettings(next);
-        settingsRef.current = next;
+      const persistSettings = async (next, opts) => {
+        const normalized = SettingsService.migrate(next);
+        setSettings(normalized);
+        settingsRef.current = normalized;
+        if (!(opts == null ? void 0 : opts.silentBadge)) {
+          setSaveState("saving");
+        }
         let ok = true;
         const run = async () => {
           try {
-            await SettingsService.save(next);
-          } catch {
+            await SettingsService.save(normalized);
+          } catch (err) {
+            console.error("[Auto-Feed] Failed to persist settings:", err);
             ok = false;
           }
         };
         const queued = saveQueueRef.current.catch(() => void 0).then(run);
         saveQueueRef.current = queued;
         await queued;
+        if (ok) {
+          setHasUnsavedChanges(false);
+        }
+        if (!(opts == null ? void 0 : opts.silentBadge)) {
+          if (ok) {
+            flashSaveState(
+              "saved",
+              normalized.uiLanguage === "en" ? "Saved" : "已保存"
+            );
+          } else {
+            flashSaveState(
+              "error",
+              normalized.uiLanguage === "en" ? "Save failed" : "保存失败"
+            );
+          }
+        }
         return ok;
       };
       const setAndPersist = (next) => {
         void persistSettings(next);
+      };
+      const patchSettings = (patch) => {
+        const cur = settingsRef.current;
+        const next = typeof patch === "function" ? patch(cur) : { ...cur, ...patch };
+        setSettings(next);
+        settingsRef.current = next;
+        setHasUnsavedChanges(true);
+        if (saveState === "saved" || saveState === "error") {
+          setSaveState("idle");
+          setSaveNotice("");
+        }
       };
       const normalizeRemoteUrl = (url) => {
         let u2 = String(url || "").trim();
@@ -26286,10 +41190,17 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         sidebar.style.opacity = String(opacity);
       };
       const toggleLanguage = () => {
-        const next = settings.uiLanguage === "zh" ? "en" : "zh";
-        setAndPersist({ ...settings, uiLanguage: next });
+        patchSettings((cur) => ({ ...cur, uiLanguage: cur.uiLanguage === "zh" ? "en" : "zh" }));
       };
       const allSites = SiteCatalogService.getSupportedSites();
+      const targetSites = allSites.filter((s2) => {
+        var _a2;
+        return ((_a2 = s2.capabilities) == null ? void 0 : _a2.target) !== false;
+      });
+      const sourceOnlySites = allSites.filter((s2) => {
+        var _a2;
+        return ((_a2 = s2.capabilities) == null ? void 0 : _a2.target) === false;
+      });
       const t2 = i18n[settings.uiLanguage] || i18n.en;
       const sortSites = (sites) => sites.slice().sort((a2, b) => String(a2.name).localeCompare(String(b.name)));
       const getSiteFavicon = (site) => {
@@ -26317,27 +41228,34 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         ...settings.quickSearchPresets || []
       ]));
       const toggleSite = (name2) => {
-        const set = new Set(settings.enabledSites || []);
-        if (set.has(name2))
-          set.delete(name2);
-        else
-          set.add(name2);
-        const enabledSites = Array.from(set);
-        const favoriteSites = (settings.favoriteSites || []).filter((x2) => enabledSites.includes(x2));
-        setAndPersist({ ...settings, enabledSites, favoriteSites });
+        patchSettings((cur) => {
+          const set = new Set(cur.enabledSites || []);
+          if (set.has(name2))
+            set.delete(name2);
+          else
+            set.add(name2);
+          const enabledSites = Array.from(set);
+          const favoriteSites = (cur.favoriteSites || []).filter((x2) => enabledSites.includes(x2));
+          return { ...cur, enabledSites, favoriteSites };
+        });
       };
       const toggleFavoriteSite = (name2) => {
-        if (!(settings.enabledSites || []).includes(name2))
-          return;
-        const set = new Set(settings.favoriteSites || []);
-        if (set.has(name2))
-          set.delete(name2);
-        else
-          set.add(name2);
-        setAndPersist({ ...settings, favoriteSites: Array.from(set) });
+        patchSettings((cur) => {
+          if (!(cur.enabledSites || []).includes(name2))
+            return cur;
+          const set = new Set(cur.favoriteSites || []);
+          if (set.has(name2))
+            set.delete(name2);
+          else
+            set.add(name2);
+          return { ...cur, favoriteSites: Array.from(set) };
+        });
       };
-      const selectAllSites = () => setAndPersist({ ...settings, enabledSites: SiteCatalogService.getSupportedSiteNames() });
-      const clearAllSites = () => setAndPersist({ ...settings, enabledSites: [], favoriteSites: [] });
+      const selectAllSites = () => {
+        const coreNames = targetSites.filter((s2) => !s2.experimental).map((s2) => s2.name);
+        patchSettings((cur) => ({ ...cur, enabledSites: Array.from(/* @__PURE__ */ new Set([...cur.enabledSites || [], ...coreNames])) }));
+      };
+      const clearAllSites = () => patchSettings({ enabledSites: [], favoriteSites: [] });
       const CheckboxRow = ({ label, checked, onChange, desc }) => /* @__PURE__ */ u$1("label", { className: "af-row", style: { cursor: "pointer" }, children: [
         /* @__PURE__ */ u$1("div", { className: "af-label", children: [
           /* @__PURE__ */ u$1("div", { children: label }),
@@ -26414,8 +41332,17 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                       }
                     )
                   ] }),
-                  /* @__PURE__ */ u$1("div", { style: { display: "flex", gap: "10px" }, children: [
-                    /* @__PURE__ */ u$1("button", { type: "button", className: "af-btn af-btn-primary", onClick: handleSaveSettings, children: saveState === "saving" ? t2.saving : saveState === "saved" ? t2.saved : saveState === "error" ? t2.saveFailed : t2.save }),
+                  /* @__PURE__ */ u$1("div", { style: { display: "flex", alignItems: "center", gap: "10px" }, children: [
+                    saveState !== "idle" ? /* @__PURE__ */ u$1("span", { className: `af-save-badge ${saveState}`, children: saveState === "saving" ? t2.saving : saveState === "saved" ? `✓ ${saveNotice || t2.saved}` : `✕ ${saveNotice || t2.saveFailed}` }) : hasUnsavedChanges ? /* @__PURE__ */ u$1("span", { className: "af-save-badge dirty", children: t2.unsaved }) : null,
+                    /* @__PURE__ */ u$1(
+                      "button",
+                      {
+                        type: "button",
+                        className: `af-btn ${saveState === "saved" ? "af-btn-success" : "af-btn-primary"}`,
+                        onClick: handleSaveSettings,
+                        children: saveState === "saving" ? t2.saving : saveState === "saved" ? `✓ ${t2.saved}` : saveState === "error" ? t2.saveFailed : t2.save
+                      }
+                    ),
                     /* @__PURE__ */ u$1(
                       "button",
                       {
@@ -26467,7 +41394,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                     ] }),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
                       /* @__PURE__ */ u$1("span", { className: "af-label", children: t2.version }),
-                      /* @__PURE__ */ u$1("span", { style: { color: "var(--af-text-secondary)" }, children: "Refactor v1.0" })
+                      /* @__PURE__ */ u$1("span", { style: { color: "var(--af-text-secondary)" }, children: `v${typeof GM_info !== "undefined" && ((_a = GM_info == null ? void 0 : GM_info.script) == null ? void 0 : _a.version) || "5.2.0"}` })
                     ] })
                   ] }),
                   /* @__PURE__ */ u$1("div", { className: "af-card", children: [
@@ -26487,7 +41414,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           max: "1",
                           step: "0.01",
                           value: String(settings.settingsPanelOpacity ?? 0.95),
-                          onInput: (e2) => setAndPersist({ ...settings, settingsPanelOpacity: Number(e2.currentTarget.value) })
+                          onInput: (e2) => patchSettings({ settingsPanelOpacity: Number(e2.currentTarget.value) })
                         }
                       )
                     ] }),
@@ -26506,7 +41433,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           max: "1",
                           step: "0.01",
                           value: String(settings.popupOpacity ?? 0.96),
-                          onInput: (e2) => setAndPersist({ ...settings, popupOpacity: Number(e2.currentTarget.value) })
+                          onInput: (e2) => patchSettings({ popupOpacity: Number(e2.currentTarget.value) })
                         }
                       )
                     ] }),
@@ -26525,7 +41452,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           max: "0.8",
                           step: "0.01",
                           value: String(settings.maskOpacity ?? 0.25),
-                          onInput: (e2) => setAndPersist({ ...settings, maskOpacity: Number(e2.currentTarget.value) })
+                          onInput: (e2) => patchSettings({ maskOpacity: Number(e2.currentTarget.value) })
                         }
                       )
                     ] }),
@@ -26544,7 +41471,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           max: "1",
                           step: "0.01",
                           value: String(settings.toastOpacity ?? 0.95),
-                          onInput: (e2) => setAndPersist({ ...settings, toastOpacity: Number(e2.currentTarget.value) })
+                          onInput: (e2) => patchSettings({ toastOpacity: Number(e2.currentTarget.value) })
                         }
                       )
                     ] })
@@ -26563,33 +41490,42 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                   /* @__PURE__ */ u$1("div", { className: "af-card", children: [
                     /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.pageFeatures }),
                     /* @__PURE__ */ u$1("div", { className: "af-two-col", children: [
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.ptpShowDouban, checked: !!settings.ptpShowDouban, onChange: () => setSettings({ ...settings, ptpShowDouban: !settings.ptpShowDouban }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.ptpShowGroupName, checked: !!settings.ptpShowGroupName, onChange: () => setSettings({ ...settings, ptpShowGroupName: !settings.ptpShowGroupName }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.hdbShowDouban, checked: !!settings.hdbShowDouban, onChange: () => setSettings({ ...settings, hdbShowDouban: !settings.hdbShowDouban }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.hdbCollapseDouban, checked: !!settings.hdbHideDouban, onChange: () => setSettings({ ...settings, hdbHideDouban: !settings.hdbHideDouban }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.doubanQuickSearch, checked: !!settings.showQuickSearchOnDouban, onChange: () => setSettings({ ...settings, showQuickSearchOnDouban: !settings.showQuickSearchOnDouban }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.imdbQuickSearch, checked: !!settings.showQuickSearchOnImdb, onChange: () => setSettings({ ...settings, showQuickSearchOnImdb: !settings.showQuickSearchOnImdb }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.defaultAnonymous, checked: !!settings.defaultAnonymous, onChange: () => setSettings({ ...settings, defaultAnonymous: !settings.defaultAnonymous }) }),
-                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.autoDownloadAfterUpload, checked: !!settings.autoDownloadAfterUpload, onChange: () => setSettings({ ...settings, autoDownloadAfterUpload: !settings.autoDownloadAfterUpload }) })
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.ptpShowDouban, checked: !!settings.ptpShowDouban, onChange: () => patchSettings((cur) => ({ ...cur, ptpShowDouban: !cur.ptpShowDouban })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.ptpShowGroupName, checked: !!settings.ptpShowGroupName, onChange: () => patchSettings((cur) => ({ ...cur, ptpShowGroupName: !cur.ptpShowGroupName })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.hdbShowDouban, checked: !!settings.hdbShowDouban, onChange: () => patchSettings((cur) => ({ ...cur, hdbShowDouban: !cur.hdbShowDouban })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.hdbCollapseDouban, checked: !!settings.hdbHideDouban, onChange: () => patchSettings((cur) => ({ ...cur, hdbHideDouban: !cur.hdbHideDouban })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.doubanQuickSearch, checked: !!settings.showQuickSearchOnDouban, onChange: () => patchSettings((cur) => ({ ...cur, showQuickSearchOnDouban: !cur.showQuickSearchOnDouban })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.imdbQuickSearch, checked: !!settings.showQuickSearchOnImdb, onChange: () => patchSettings((cur) => ({ ...cur, showQuickSearchOnImdb: !cur.showQuickSearchOnImdb })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.defaultAnonymous, checked: !!settings.defaultAnonymous, onChange: () => patchSettings((cur) => ({ ...cur, defaultAnonymous: !cur.defaultAnonymous })) }),
+                      /* @__PURE__ */ u$1(CheckboxRow, { label: t2.autoDownloadAfterUpload, checked: !!settings.autoDownloadAfterUpload, onChange: () => patchSettings((cur) => ({ ...cur, autoDownloadAfterUpload: !cur.autoDownloadAfterUpload })) })
                     ] }),
+                    /* @__PURE__ */ u$1(
+                      CheckboxRow,
+                      {
+                        label: t2.filterForwardTargetsByType,
+                        desc: t2.filterForwardTargetsByTypeDesc,
+                        checked: settings.filterForwardTargetsByType !== false,
+                        onChange: () => patchSettings((cur) => ({ ...cur, filterForwardTargetsByType: !(cur.filterForwardTargetsByType !== false) }))
+                      }
+                    ),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
                       /* @__PURE__ */ u$1("span", { className: "af-label", children: t2.listPageQuickSearch }),
                       /* @__PURE__ */ u$1("div", { className: "af-segmented", children: ["PTP", "HDB", "HDT"].map((key) => {
-                        var _a;
+                        var _a2;
                         return /* @__PURE__ */ u$1(
                           "div",
                           {
-                            className: `af-segment-opt ${((_a = settings.showSearchOnList) == null ? void 0 : _a[key]) ? "active" : ""}`,
-                            onClick: () => {
-                              var _a2;
-                              return setSettings({
-                                ...settings,
+                            className: `af-segment-opt ${((_a2 = settings.showSearchOnList) == null ? void 0 : _a2[key]) ? "active" : ""}`,
+                            onClick: () => patchSettings((cur) => {
+                              var _a3;
+                              return {
+                                ...cur,
                                 showSearchOnList: {
-                                  ...settings.showSearchOnList,
-                                  [key]: !((_a2 = settings.showSearchOnList) == null ? void 0 : _a2[key])
+                                  ...cur.showSearchOnList,
+                                  [key]: !((_a3 = cur.showSearchOnList) == null ? void 0 : _a3[key])
                                 }
-                              });
-                            },
+                              };
+                            }),
                             children: key
                           },
                           key
@@ -26602,7 +41538,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                         "div",
                         {
                           className: `af-segment-opt ${settings.ptpNameLocation === v2 ? "active" : ""}`,
-                          onClick: () => setSettings({ ...settings, ptpNameLocation: v2 }),
+                          onClick: () => patchSettings({ ptpNameLocation: v2 }),
                           children: v2 === 0 ? t2.before : t2.after
                         },
                         v2
@@ -26614,14 +41550,14 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                     /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.externalSources }),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
                       /* @__PURE__ */ u$1("span", { className: "af-label", children: t2.imdbToDoubanMethod }),
-                      /* @__PURE__ */ u$1("div", { className: "af-segmented", children: [t2.api, t2.scrape].map((l2, i2) => /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.imdbToDoubanMethod === i2 ? "active" : ""}`, onClick: () => setSettings({ ...settings, imdbToDoubanMethod: i2 }), children: l2 })) })
+                      /* @__PURE__ */ u$1("div", { className: "af-segmented", children: [t2.api, t2.scrape].map((l2, i2) => /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.imdbToDoubanMethod === i2 ? "active" : ""}`, onClick: () => patchSettings({ imdbToDoubanMethod: i2 }), children: l2 })) })
                     ] }),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
                       /* @__PURE__ */ u$1("span", { className: "af-label", children: t2.ptgenSource }),
                       /* @__PURE__ */ u$1("div", { className: "af-segmented", children: [
-                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 0 ? "active" : ""}`, onClick: () => setSettings({ ...settings, ptgenApi: 0 }), children: "IYUU" }),
-                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 1 ? "active" : ""}`, onClick: () => setSettings({ ...settings, ptgenApi: 1 }), children: "PTGen" }),
-                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 3 ? "active" : ""}`, onClick: () => setSettings({ ...settings, ptgenApi: 3 }), children: "Douban" })
+                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 0 ? "active" : ""}`, onClick: () => patchSettings({ ptgenApi: 0 }), children: "IYUU" }),
+                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 1 ? "active" : ""}`, onClick: () => patchSettings({ ptgenApi: 1 }), children: "PTGen" }),
+                        /* @__PURE__ */ u$1("div", { className: `af-segment-opt ${settings.ptgenApi === 3 ? "active" : ""}`, onClick: () => patchSettings({ ptgenApi: 3 }), children: "Douban" })
                       ] })
                     ] }),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
@@ -26632,7 +41568,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           className: "af-input",
                           style: { width: "340px", maxWidth: "100%" },
                           value: settings.chdBaseUrl,
-                          onChange: (e2) => setAndPersist({ ...settings, chdBaseUrl: e2.currentTarget.value.endsWith("/") ? e2.currentTarget.value : e2.currentTarget.value + "/" }),
+                          onChange: (e2) => patchSettings({ chdBaseUrl: e2.currentTarget.value.endsWith("/") ? e2.currentTarget.value : e2.currentTarget.value + "/" }),
                           children: [
                             /* @__PURE__ */ u$1("option", { value: "https://chdbits.co/", children: "chdbits.co" }),
                             /* @__PURE__ */ u$1("option", { value: "https://ptchdbits.co/", children: "ptchdbits.co" }),
@@ -26650,7 +41586,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           className: "af-input",
                           style: { width: "340px", maxWidth: "100%" },
                           value: settings.tlBaseUrl,
-                          onChange: (e2) => setAndPersist({ ...settings, tlBaseUrl: e2.currentTarget.value.endsWith("/") ? e2.currentTarget.value : e2.currentTarget.value + "/" }),
+                          onChange: (e2) => patchSettings({ tlBaseUrl: e2.currentTarget.value.endsWith("/") ? e2.currentTarget.value : e2.currentTarget.value + "/" }),
                           children: [
                             /* @__PURE__ */ u$1("option", { value: "https://www.torrentleech.org/", children: "torrentleech.org" }),
                             /* @__PURE__ */ u$1("option", { value: "https://www.torrentleech.cc/", children: "torrentleech.cc" })
@@ -26667,9 +41603,11 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                         /* @__PURE__ */ u$1("button", { className: "af-btn", onClick: () => {
                           if (!quickPreset)
                             return;
-                          const set = new Set(settings.quickSearchList || []);
-                          set.add(quickPreset);
-                          setAndPersist({ ...settings, quickSearchList: Array.from(set) });
+                          patchSettings((cur) => {
+                            const set = new Set(cur.quickSearchList || []);
+                            set.add(quickPreset);
+                            return { ...cur, quickSearchList: Array.from(set) };
+                          });
                         }, children: t2.add })
                       ] }),
                       /* @__PURE__ */ u$1(
@@ -26678,34 +41616,43 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           className: "af-input",
                           style: { width: "100%", height: "150px", fontFamily: "monospace" },
                           value: (settings.quickSearchList || []).join("\n"),
-                          onInput: (e2) => setAndPersist({ ...settings, quickSearchList: e2.currentTarget.value.split("\n").filter(Boolean) })
+                          onInput: (e2) => patchSettings({ quickSearchList: e2.currentTarget.value.split("\n").filter(Boolean) })
                         }
                       )
                     ] })
                   ] }),
                   /* @__PURE__ */ u$1("div", { className: "af-card", children: [
                     /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.servicesApiKeys }),
-                    /* @__PURE__ */ u$1(InputRow, { label: "PtpImg API Key", value: settings.ptpImgApiKey, onInput: (v2) => setAndPersist({ ...settings, ptpImgApiKey: v2 }) }),
-                    /* @__PURE__ */ u$1(InputRow, { label: "Freeimage API Key", value: settings.freeimageApiKey, onInput: (v2) => setAndPersist({ ...settings, freeimageApiKey: v2 }) }),
-                    /* @__PURE__ */ u$1(InputRow, { label: "ImgBB API Key", value: settings.imgbbApiKey, onInput: (v2) => setAndPersist({ ...settings, imgbbApiKey: v2 }) })
+                    /* @__PURE__ */ u$1(InputRow, { label: "PtpImg API Key", value: settings.ptpImgApiKey, onInput: (v2) => patchSettings({ ptpImgApiKey: v2 }) }),
+                    /* @__PURE__ */ u$1(InputRow, { label: "Freeimage API Key", value: settings.freeimageApiKey, onInput: (v2) => patchSettings({ freeimageApiKey: v2 }) }),
+                    /* @__PURE__ */ u$1(InputRow, { label: "ImgBB API Key", value: settings.imgbbApiKey, onInput: (v2) => patchSettings({ imgbbApiKey: v2 }) })
                   ] })
                 ] }),
-                activeTab === "sites" && /* @__PURE__ */ u$1("div", { children: [
-                  /* @__PURE__ */ u$1("div", { style: { display: "flex", gap: "10px", marginBottom: "16px" }, children: [
-                    /* @__PURE__ */ u$1("button", { className: "af-btn af-btn-primary", onClick: selectAllSites, children: t2.selectAll }),
-                    /* @__PURE__ */ u$1("button", { className: "af-btn", onClick: clearAllSites, children: t2.clearAll })
-                  ] }),
-                  /* @__PURE__ */ u$1("div", { className: "af-card", children: [
-                    /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.enabledSites }),
-                    /* @__PURE__ */ u$1("div", { style: { padding: "0 10px 10px" }, children: /* @__PURE__ */ u$1("div", { className: "af-grid", children: sortSites(allSites).map((site) => /* @__PURE__ */ u$1(
+                activeTab === "sites" && (() => {
+                  const q2 = siteSearch.trim().toLowerCase();
+                  const enabledSet = new Set(settings.enabledSites || []);
+                  const matchFilter = (site) => {
+                    if (showEnabledOnly && !enabledSet.has(site.name))
+                      return false;
+                    if (!q2)
+                      return true;
+                    const hay = `${site.name} ${site.description || ""} ${(site.keywords || []).join(" ")}`.toLowerCase();
+                    return hay.includes(q2);
+                  };
+                  const coreSites = sortSites(targetSites.filter((s2) => !s2.experimental || enabledSet.has(s2.name))).filter(matchFilter);
+                  const experimentalSites = sortSites(targetSites.filter((s2) => !!s2.experimental && !enabledSet.has(s2.name))).filter(matchFilter);
+                  const expExpanded = showExperimentalSites || !!q2;
+                  const renderTile = (site, keyPrefix = "", isFav = false) => {
+                    const checked = isFav ? (settings.favoriteSites || []).includes(site.name) : enabledSet.has(site.name);
+                    return /* @__PURE__ */ u$1(
                       "div",
                       {
                         className: "af-site-tile",
-                        onClick: () => toggleSite(site.name),
-                        style: { background: (settings.enabledSites || []).includes(site.name) ? "rgba(0,113,227,0.1)" : void 0 },
-                        title: site.name,
+                        onClick: () => isFav ? toggleFavoriteSite(site.name) : toggleSite(site.name),
+                        style: { background: checked ? "rgba(0,113,227,0.1)" : void 0 },
+                        title: `${site.name}${site.description ? ` (${site.description})` : ""}${site.experimental ? settings.uiLanguage === "zh" ? " [实验性/未完全测试]" : " [Experimental / Untested]" : ""}`,
                         children: [
-                          /* @__PURE__ */ u$1("input", { className: "af-site-check", type: "checkbox", checked: (settings.enabledSites || []).includes(site.name), readOnly: true }),
+                          /* @__PURE__ */ u$1("input", { className: "af-site-check", type: "checkbox", checked, readOnly: true }),
                           /* @__PURE__ */ u$1("div", { className: "af-site-icon", children: [
                             /* @__PURE__ */ u$1("span", { children: getSiteAbbr(site.name).slice(0, 1) }),
                             getSiteFavicon(site) ? /* @__PURE__ */ u$1(
@@ -26722,47 +41669,69 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           /* @__PURE__ */ u$1("div", { className: "af-site-label", children: getSiteAbbr(site.name) })
                         ]
                       },
-                      site.name
-                    )) }) })
-                  ] }),
-                  /* @__PURE__ */ u$1("div", { className: "af-card", children: [
-                    /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.favoriteSites }),
-                    /* @__PURE__ */ u$1("div", { style: { padding: "0 10px 10px" }, children: /* @__PURE__ */ u$1("div", { className: "af-grid", children: sortSites(allSites.filter((s2) => (settings.enabledSites || []).includes(s2.name))).map((site) => /* @__PURE__ */ u$1(
-                      "div",
-                      {
-                        className: "af-site-tile",
-                        onClick: () => toggleFavoriteSite(site.name),
-                        style: { background: (settings.favoriteSites || []).includes(site.name) ? "rgba(0,113,227,0.1)" : void 0 },
-                        title: site.name,
-                        children: [
-                          /* @__PURE__ */ u$1("input", { className: "af-site-check", type: "checkbox", checked: (settings.favoriteSites || []).includes(site.name), readOnly: true }),
-                          /* @__PURE__ */ u$1("div", { className: "af-site-icon", children: [
-                            /* @__PURE__ */ u$1("span", { children: getSiteAbbr(site.name).slice(0, 1) }),
-                            getSiteFavicon(site) ? /* @__PURE__ */ u$1(
-                              "img",
-                              {
-                                src: getSiteFavicon(site),
-                                onError: (e2) => {
-                                  const img = e2.currentTarget;
-                                  img.style.display = "none";
-                                }
-                              }
-                            ) : null
-                          ] }),
-                          /* @__PURE__ */ u$1("div", { className: "af-site-label", children: getSiteAbbr(site.name) })
-                        ]
-                      },
-                      "fav-" + site.name
-                    )) }) })
-                  ] })
-                ] }),
+                      keyPrefix + site.name
+                    );
+                  };
+                  return /* @__PURE__ */ u$1("div", { children: [
+                    /* @__PURE__ */ u$1("div", { style: { display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap", alignItems: "center" }, children: [
+                      /* @__PURE__ */ u$1("button", { className: "af-btn af-btn-primary", onClick: selectAllSites, children: t2.selectAll }),
+                      /* @__PURE__ */ u$1("button", { className: "af-btn", onClick: clearAllSites, children: t2.clearAll }),
+                      /* @__PURE__ */ u$1(
+                        "input",
+                        {
+                          className: "af-input",
+                          style: { flex: "1 1 180px", maxWidth: "260px", padding: "5px 10px" },
+                          placeholder: settings.uiLanguage === "zh" ? "搜索站点名 / 域名（自动展开实验性站点）..." : "Filter sites (auto-expands experimental)...",
+                          value: siteSearch,
+                          onInput: (e2) => setSiteSearch(e2.currentTarget.value)
+                        }
+                      ),
+                      /* @__PURE__ */ u$1("label", { style: { display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", cursor: "pointer", userSelect: "none" }, children: [
+                        /* @__PURE__ */ u$1("input", { type: "checkbox", checked: showEnabledOnly, onChange: () => setShowEnabledOnly(!showEnabledOnly) }),
+                        settings.uiLanguage === "zh" ? `仅看已启用 (${enabledSet.size}/${targetSites.length})` : `Enabled only (${enabledSet.size}/${targetSites.length})`
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ u$1("div", { className: "af-card", children: [
+                      /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.enabledSites }),
+                      /* @__PURE__ */ u$1("div", { style: { padding: "0 10px 10px" }, children: [
+                        /* @__PURE__ */ u$1("div", { className: "af-grid", children: coreSites.map((site) => renderTile(site)) }),
+                        sourceOnlySites.length > 0 && /* @__PURE__ */ u$1("div", { style: { marginTop: "8px", fontSize: "11px", color: "#6b7280" }, children: settings.uiLanguage === "zh" ? `仅源站自动生效（无需勾选转发目标）：${sourceOnlySites.map((s2) => s2.name).join(" / ")}` : `Source-only (always active on detail pages): ${sourceOnlySites.map((s2) => s2.name).join(" / ")}` })
+                      ] })
+                    ] }),
+                    experimentalSites.length > 0 && /* @__PURE__ */ u$1("div", { className: "af-card", children: [
+                      /* @__PURE__ */ u$1(
+                        "div",
+                        {
+                          className: "af-card-header",
+                          style: { cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none" },
+                          onClick: () => setShowExperimentalSites(!expExpanded),
+                          children: [
+                            /* @__PURE__ */ u$1("span", { children: [
+                              expExpanded ? "▾ " : "▸ ",
+                              settings.uiLanguage === "zh" ? `实验性适配站点（未完全测试，欢迎反馈） (${experimentalSites.length})` : `Experimental / Untested Sites — Feedback Welcome (${experimentalSites.length})`
+                            ] }),
+                            /* @__PURE__ */ u$1("span", { style: { fontSize: "11px", fontWeight: "normal", color: "#6b7280" }, children: expExpanded ? settings.uiLanguage === "zh" ? "收起" : "Collapse" : settings.uiLanguage === "zh" ? "展开" : "Expand" })
+                          ]
+                        }
+                      ),
+                      expExpanded && /* @__PURE__ */ u$1("div", { style: { padding: "0 10px 10px" }, children: [
+                        /* @__PURE__ */ u$1("div", { style: { fontSize: "11px", color: "#6b7280", marginBottom: "8px", lineHeight: "1.5" }, children: settings.uiLanguage === "zh" ? "以下站点已按旧版规则完成适配，但暂未逐一实测；勾选后将移入上方已启用列表。如遇字段或下拉项偏差，欢迎在 GitHub / GreasyFork 反馈。" : "Adapted from legacy rules without full live verification. Checked sites appear in the enabled list above; please report any mapping mismatches." }),
+                        /* @__PURE__ */ u$1("div", { className: "af-grid", children: experimentalSites.map((site) => renderTile(site, "exp-")) })
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ u$1("div", { className: "af-card", children: [
+                      /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.favoriteSites }),
+                      /* @__PURE__ */ u$1("div", { style: { padding: "0 10px 10px" }, children: /* @__PURE__ */ u$1("div", { className: "af-grid", children: sortSites(targetSites.filter((s2) => enabledSet.has(s2.name))).map((site) => renderTile(site, "fav-", true)) }) })
+                    ] })
+                  ] });
+                })(),
                 activeTab === "remote" && /* @__PURE__ */ u$1("div", { children: [
                   /* @__PURE__ */ u$1("div", { className: "af-card", style: { padding: "14px 16px", color: "#4b5563", fontSize: "12px", lineHeight: "1.6" }, children: t2.remoteHelp }),
                   /* @__PURE__ */ u$1("div", { className: "af-card", children: [
                     /* @__PURE__ */ u$1("div", { className: "af-card-header", children: t2.globalSettings }),
-                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.enableSidebar, checked: !!settings.enableRemoteSidebar, onChange: () => setAndPersist({ ...settings, enableRemoteSidebar: !settings.enableRemoteSidebar }) }),
-                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.skipCheckingDefault, checked: !!settings.remoteSkipCheckingDefault, onChange: () => setAndPersist({ ...settings, remoteSkipCheckingDefault: !settings.remoteSkipCheckingDefault }) }),
-                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.askConfirmBeforePush, checked: !!settings.remoteAskSkipConfirm, onChange: () => setAndPersist({ ...settings, remoteAskSkipConfirm: !settings.remoteAskSkipConfirm }) }),
+                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.enableSidebar, checked: !!settings.enableRemoteSidebar, onChange: () => patchSettings((cur) => ({ ...cur, enableRemoteSidebar: !cur.enableRemoteSidebar })) }),
+                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.skipCheckingDefault, checked: !!settings.remoteSkipCheckingDefault, onChange: () => patchSettings((cur) => ({ ...cur, remoteSkipCheckingDefault: !cur.remoteSkipCheckingDefault })) }),
+                    /* @__PURE__ */ u$1(CheckboxRow, { label: t2.askConfirmBeforePush, checked: !!settings.remoteAskSkipConfirm, onChange: () => patchSettings((cur) => ({ ...cur, remoteAskSkipConfirm: !cur.remoteAskSkipConfirm })) }),
                     /* @__PURE__ */ u$1("div", { className: "af-row", children: [
                       /* @__PURE__ */ u$1("div", { className: "af-label", children: [
                         /* @__PURE__ */ u$1("div", { children: t2.remoteSidebarOpacity }),
@@ -26781,7 +41750,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                           onInput: (e2) => {
                             const value = Number(e2.currentTarget.value);
                             applyRemoteSidebarOpacity(value);
-                            setAndPersist({ ...settings, remoteSidebarOpacity: value });
+                            patchSettings({ remoteSidebarOpacity: value });
                           }
                         }
                       )
@@ -26804,15 +41773,15 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                               style: { display: "none" },
                               accept: ".json",
                               onChange: (e2) => {
-                                var _a;
-                                const f2 = (_a = e2.currentTarget.files) == null ? void 0 : _a[0];
+                                var _a2;
+                                const f2 = (_a2 = e2.currentTarget.files) == null ? void 0 : _a2[0];
                                 if (!f2)
                                   return;
                                 const r2 = new FileReader();
                                 r2.onload = (ev) => {
-                                  var _a2;
+                                  var _a3;
                                   try {
-                                    const json = JSON.parse((_a2 = ev.target) == null ? void 0 : _a2.result);
+                                    const json = JSON.parse((_a3 = ev.target) == null ? void 0 : _a3.result);
                                     setAndPersist({ ...settingsRef.current, remoteServer: json });
                                     alert("Config loaded");
                                   } catch {
@@ -26854,12 +41823,12 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                               setRemoteModalOpen(true);
                             }, children: t2.edit }),
                             /* @__PURE__ */ u$1("button", { type: "button", className: "af-btn af-btn-danger", onClick: async () => {
-                              var _a;
+                              var _a2;
                               if (!confirm(`Delete QB client "${name2}"?`))
                                 return;
                               const base = settingsRef.current;
                               const next = { ...base, remoteServer: cloneRemoteServer(base.remoteServer) };
-                              if ((_a = next.remoteServer) == null ? void 0 : _a.qbittorrent) {
+                              if ((_a2 = next.remoteServer) == null ? void 0 : _a2.qbittorrent) {
                                 delete next.remoteServer.qbittorrent[name2];
                                 const ok = await persistSettings(next);
                                 if (!ok)
@@ -26896,12 +41865,12 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                               setRemoteModalOpen(true);
                             }, children: t2.edit }),
                             /* @__PURE__ */ u$1("button", { type: "button", className: "af-btn af-btn-danger", onClick: async () => {
-                              var _a;
+                              var _a2;
                               if (!confirm(`Delete TR client "${name2}"?`))
                                 return;
                               const base = settingsRef.current;
                               const next = { ...base, remoteServer: cloneRemoteServer(base.remoteServer) };
-                              if ((_a = next.remoteServer) == null ? void 0 : _a.transmission) {
+                              if ((_a2 = next.remoteServer) == null ? void 0 : _a2.transmission) {
                                 delete next.remoteServer.transmission[name2];
                                 const ok = await persistSettings(next);
                                 if (!ok)
@@ -26938,12 +41907,12 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
                               setRemoteModalOpen(true);
                             }, children: t2.edit }),
                             /* @__PURE__ */ u$1("button", { type: "button", className: "af-btn af-btn-danger", onClick: async () => {
-                              var _a;
+                              var _a2;
                               if (!confirm(`Delete DE client "${name2}"?`))
                                 return;
                               const base = settingsRef.current;
                               const next = { ...base, remoteServer: cloneRemoteServer(base.remoteServer) };
-                              if ((_a = next.remoteServer) == null ? void 0 : _a.deluge) {
+                              if ((_a2 = next.remoteServer) == null ? void 0 : _a2.deluge) {
                                 delete next.remoteServer.deluge[name2];
                                 const ok = await persistSettings(next);
                                 if (!ok)
@@ -27391,6 +42360,40 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
 .af-btn-danger:hover {
     background: rgba(255,59,48,0.2);
 }
+.af-btn-success {
+    background: var(--af-success);
+    color: #fff;
+}
+.af-btn-success:hover {
+    background: #2db84e;
+}
+.af-save-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.af-save-badge.saving {
+    background: rgba(0,113,227,0.12);
+    color: var(--af-accent);
+}
+.af-save-badge.dirty {
+    background: rgba(255,149,0,0.16);
+    color: #b25e00;
+}
+.af-save-badge.saved {
+    background: rgba(52,199,89,0.16);
+    color: #1f8f3d;
+}
+.af-save-badge.error {
+    background: rgba(255,59,48,0.14);
+    color: var(--af-danger);
+}
 
 /* iOS Toggle Switch */
 .af-toggle {
@@ -27624,7 +42627,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
     };
     const name = "auto-feed-refactor";
     const author = "tomorrow505, Gawain";
-    const version = "5.1.1";
+    const version = "5.2.0";
     const type = "module";
     const scripts = {
       dev: "node scripts/dev-full.js --watch",
@@ -27688,8 +42691,7 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
       "Dragon",
       "QingWa",
       "NanYang",
-      "iTS",
-      "xthor"
+      "iTS"
     ]);
     function getBlurayNameFromDescr(descr, name2, currentName) {
       var _a, _b, _c, _d;
@@ -27779,11 +42781,11 @@ ${text("是否仍继续发布？", "Continue to the upload form?")}`);
         return "AC3";
       if (/True.?HD/i.test(section))
         return "TrueHD";
-      if (/DTS[- .]?X/i.test(section))
+      if (/DTS[\s\S]{0,40}XLL\s*X\b|DTS[- .:]?X\b/i.test(section))
         return "DTS-HDMA:X 7.1";
-      if (/DTS[- .]?HD[\s\S]{0,30}(MA|Master)/i.test(section))
+      if (/DTS[- .]?HD[\s\S]{0,30}(MA|Master)|\bDTS\s+XLL\b|Format\s+profile\s*:\s*MA\b/i.test(section))
         return "DTS-HDMA";
-      if (/DTS[- .]?HD[\s\S]{0,30}(HR|HRA)/i.test(section))
+      if (/DTS[- .]?HD[\s\S]{0,30}(HR|HRA)|\bDTS\s+XBR\b|Format\s+profile\s*:\s*HRA\b/i.test(section))
         return "DTS-HDHR";
       if (/DTS[- .]?HD/i.test(section))
         return "DTS-HD";
@@ -27822,8 +42824,8 @@ ${out.fullMediaInfo || ""}`;
       name2 = name2.replace(/DDPA?/gi, "DD+").replace(/\bAC-?3\b/gi, "DD").replace(/DTS(\d+(?:\.\d+)?)/gi, "DTS $1");
       name2 = name2.replace(/[\\/]+/g, " ").replace(/\.(mkv|mp4|m2ts|avi|ts)$/i, "").trim();
       try {
-        const missingMediaCore = !name2.match(/(2160p|1080p|1080i|720p|4K)/i) || !name2.match(/(Blu-?ray|UHD|WEB[- .]?DL|Remux|HDTV|DVD|Encode)/i) || !name2.match(/(TrueHD|DTS|AAC|DDP|DD\+|FLAC|LPCM)/i);
-        if (originalLooksRaw || missingMediaCore) {
+        const missingMediaCore = !name2.match(/(2160p|1080p|1080i|720p|4K)/i) || !name2.match(/(Blu-?ray|UHD|WEB[- .]?DL|Remux|HDTV|DVD|Encode)/i) || !name2.match(/(TrueHD|DTS|AAC|DDP|DD\+|DD\s*[12567]\.[01]|AC-?3|FLAC|LPCM|OPUS)/i);
+        if (missingMediaCore) {
           const rebuilt = rebuildReleaseTitleFromMedia(
             { title: name2, description: out.description || "", fullMediaInfo: out.fullMediaInfo || "" },
             { defaultGroup: "" }
@@ -28030,16 +43032,21 @@ ${out.fullMediaInfo || ""}`;
         if (!out.codecSel)
           out.codecSel = getCodecSel(descr);
       }
+      const titleAudioCodec = getAudioCodecSel(out.title || "");
       if (!out.audioCodecSel) {
-        out.audioCodecSel = getAudioCodecSel(out.title || "");
+        out.audioCodecSel = titleAudioCodec;
         if (!out.audioCodecSel)
           out.audioCodecSel = getAudioCodecSel(descr);
       }
       try {
         const primaryAudio = getPrimaryAudioCodecSel(`${out.fullMediaInfo || ""}
 ${descr}`);
-        if (primaryAudio)
-          out.audioCodecSel = primaryAudio;
+        if (primaryAudio) {
+          const isDowngrade = titleAudioCodec === "DTS-HDMA:X 7.1" && /^(DTS-HDMA|DTS-HDHR|DTS-HD|DTS|AC3)$/.test(primaryAudio) || titleAudioCodec === "DTS-X" && /^(DTS-HDMA|DTS-HDHR|DTS-HD|DTS|AC3)$/.test(primaryAudio) || titleAudioCodec === "DTS-HDMA" && /^(DTS-HD|DTS|AC3)$/.test(primaryAudio) || titleAudioCodec === "DTS-HDHR" && /^(DTS-HD|DTS|AC3)$/.test(primaryAudio) || titleAudioCodec === "DTS-HD" && /^(DTS|AC3)$/.test(primaryAudio) || titleAudioCodec === "Atmos" && /^(TrueHD|AC3)$/.test(primaryAudio) || titleAudioCodec === "TrueHD" && primaryAudio === "AC3";
+          if (!isDowngrade) {
+            out.audioCodecSel = primaryAudio;
+          }
+        }
       } catch {
       }
       if (!out.standardSel) {
