@@ -90,19 +90,11 @@ export const Unit3DSites: SiteConfig[] = [
     {
         name: 'ReelFliX',
         type: SiteType.Unit3DClassic,
-        keywords: ['reelflix.xyz', 'reelflix.cc'],
-        baseUrl: 'https://reelflix.xyz/',
-        mirrorUrl: 'https://reelflix.cc/',
+        keywords: ['reelflix.cc', 'reelflix.xyz'],
+        baseUrl: 'https://reelflix.cc/',
+        mirrorUrl: 'https://reelflix.xyz/',
         experimental: true,
         description: 'ReelFliX'
-    },
-    {
-        name: 'FNP',
-        type: SiteType.Unit3DClassic,
-        keywords: ['fearnopeer.com'],
-        baseUrl: 'https://fearnopeer.com/',
-        experimental: true,
-        description: 'FearNoPeer (FNP)'
     },
     {
         name: 'HDOli',

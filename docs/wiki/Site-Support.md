@@ -15,10 +15,10 @@
 - **中文 NexusPHP 现网核对与修复**：`HDChina`、`PThome`、`BTSchool`、`HDArea`、`HDTime`、`HDDolby`、`TCCF`、`HDfans`、`TLFbits`、`FRDS`、`Audiences`、`CMCT`、`PTer`、`HDSky`、`HDHome`、`OurBits`、`CHDBits`、`TTG`
 
 ## 已实现（待真机测试 / 实验性折叠分组）
-设置页默认折叠实验性站点并支持关键词搜索按需开启（已覆盖原版 `v2.1.1.6` 全部活跃站，移除已永久关站的 `MTV` / `xthor` / `SugoiMusic`）：
-- **中文 NexusPHP / 教育网**：全量声明式 `NexusFillProfile` 站点 + `NPUPT` / `HaiDan` / `BYR` / `HDCity` 专用引擎（含 `影`、`慕雪阁`、`NJTUPT`、`HUDBT`、`NanYang`、`PuTao`、`HITPT`、`RS`、`LemonHD`、`GGPT`、`UBits`、`HDVideo`、`HDU`、`PigGo`、`QingWa`、`PTLGS`、`ZMPT`、`ICC`、`AGSV`、`SoulVoice`、`PTT`、`PTsbao`、`WT-Sakura`、`CrabPt`、`DiscFan`、`FreeFarm`、`Panda`、`CarPt`、`1PTBA`、`52PT`、`PTCafe`、`PTFans`、`CyanBug`、`Dragon`、`OKPT`、`KuFei`、`iloli`、`Oshen`、`JoyHD`、`UltraHD`、`YDY`、`麒麟`、`海棠`、`杏林`、`雨`、`PTzone` 及 `HHClub`、`U2` 仅源站等）
+设置页默认折叠实验性站点并支持关键词搜索按需开启（已覆盖原版 `v2.1.1.6` 活跃站点，并移除已永久关站/失效域名的 `MTV` / `xthor` / `SugoiMusic` / `FNP` / `AFUN` / `樱花` / `DevTracker` / `JoyHD` / `CDFile` / `未来幻境` / `雨`）：
+- **中文 NexusPHP / 教育网**：全量声明式 `NexusFillProfile` 站点 + `NPUPT` / `HaiDan` / `BYR` / `HDCity` 专用引擎（含 `影`、`慕雪阁`、`NJTUPT`、`HUDBT`、`NanYang`、`PuTao`、`HITPT`、`RS`、`LemonHD`、`GGPT`、`UBits`、`HDVideo`、`HDU`、`PigGo`、`QingWa`、`PTLGS`、`ZMPT`、`ICC`、`AGSV`、`SoulVoice`、`PTT`、`PTsbao`、`WT-Sakura`、`CrabPt`、`DiscFan`、`FreeFarm`、`Panda`、`CarPt`、`1PTBA`、`52PT`、`PTCafe`、`PTFans`、`CyanBug`、`Dragon`、`OKPT`、`KuFei`、`iloli`、`Oshen`、`UltraHD`、`YDY`、`麒麟`、`海棠`、`杏林`、`PTzone` 及 `HHClub`、`U2` 仅源站等）
 - **中文新框架 SPA**：`ZHUQUE`、`YemaPT`、`RouSi`
-- **外站与 Unit3D / Gazelle 家族**：`HDRoute`、`HDSpace`、`TorrentLeech`、`IPT`、`bit-hdtv`、`BlueBird`、`bwtorrents`、`digitalcore`、`iTS`、`OnlyEncodes`、`DarkLand`、`ReelFliX`、`FNP`、`HDOli`、`HONE`、`DesiTorrents`、`Aither`、`ACM`、`HDF`、`ANT`、`TVV`、`NBL`、`HD-Only`
+- **外站与 Unit3D / Gazelle 家族**：`HDRoute`、`HDSpace`、`TorrentLeech`、`IPT`、`bit-hdtv`、`BlueBird`、`bwtorrents`、`digitalcore`、`iTS`、`OnlyEncodes`、`DarkLand`、`ReelFliX`、`HDOli`、`HONE`、`DesiTorrents`、`Aither`、`ACM`、`HDF`、`ANT`、`TVV`、`NBL`、`HD-Only`
 
 ## 代码位置
 - 站点配置：`src/config/`（含声明式映射 `src/config/nexus_profiles.ts`）

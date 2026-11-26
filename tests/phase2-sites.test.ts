@@ -17,10 +17,21 @@ test('Phase 2 sites are registered with expected capabilities and engines', () =
     }
 
     // Bidirectional sites must remain target-capable.
-    for (const name of ['BTN', 'HDRoute', 'OnlyEncodes', 'DarkLand', 'ReelFliX', 'FNP', 'HDOli', 'DesiTorrents']) {
+    for (const name of ['BTN', 'HDRoute', 'OnlyEncodes', 'DarkLand', 'ReelFliX', 'HDOli', 'DesiTorrents']) {
         const cfg = sites.get(name);
         assert.ok(cfg, `Missing site config: ${name}`);
         assert.notEqual(cfg.capabilities?.target, false, `${name} should support target`);
+    }
+
+    // Regression checks for custom upload paths, migrated domains, and removed dead domains.
+    (globalThis as any).window = { location: { host: 'example.org', protocol: 'https:', href: 'https://example.org/' } };
+    assert.equal(ForwardLinkService.getUploadUrl(sites.get('影')!), 'https://star-space.net/p_torrent/video_upload.php');
+    assert.equal(ForwardLinkService.getUploadUrl(sites.get('QingWa')!), 'https://www.qingwapt.com/upload.php');
+    assert.equal(ForwardLinkService.getUploadUrl(sites.get('自然')!), 'https://naturept.top/upload.php');
+    assert.equal(ForwardLinkService.getUploadUrl(sites.get('ReelFliX')!), 'https://reelflix.cc/torrents/create');
+    assert.equal(sites.get('HHClub')?.baseUrl, 'https://hhanclub.net/');
+    for (const dead of ['樱花', 'FNP', 'AFUN', 'DevTracker', 'JoyHD', 'CDFile', '未来幻境', '雨']) {
+        assert.equal(sites.has(dead), false, `Dead site should be removed: ${dead}`);
     }
 
     assert.equal(SiteRegistry.getEngine('https://broadcasthe.net/upload.php')?.siteName, 'BTN');

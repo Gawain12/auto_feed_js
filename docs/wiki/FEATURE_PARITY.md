@@ -162,7 +162,7 @@
 | DiscFan | https://discfan.net/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 碟粉 |
 | Dragon | https://www.dragonhd.xyz/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 龙之家 |
 | FileList | https://filelist.io/ | :x: | :heavy_check_mark: | ✅ | 已实测（仅源站） | 宇宙第二影视站，罗马尼亚站 |
-| FNP | https://fearnopeer.com/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 外站，unit3d |
+| FNP | https://fearnopeer.com/ | :heavy_check_mark: | :heavy_check_mark: | 🗄️ | 已永久关站（2026-05） | 已移除 |
 | FRDS | https://pt.keepfrds.com/ | :x: | :heavy_check_mark: | ✅ | 待测试 | 月月，x265压制 |
 | FreeFarm | https://pt.0ff.cc/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 自由农场 |
 | GGPT | https://www.gamegamept.com/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 实验性（待测试） | 国内游戏站，不了解 |
@@ -198,7 +198,7 @@
 | IPT | https://iptorrents.com/ | :x: | :heavy_check_mark: | ✅ | 实验性（仅源站） | 宇宙第一，HR长 |
 | ITZMX | https://pt.itzmx.com/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 新小站，不温不火 |
 | iTS | https://shadowthein.net/ | :heavy_check_mark: | :x: | ✅ | 实验性（仅源站） | 逼格站，曾经PTP跳板 |
-| JoyHD | https://www.joyhd.net/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 待测试 | 小站，不明 |
+| JoyHD | https://www.joyhd.net/ | :heavy_check_mark: | :heavy_check_mark: | 🗄️ | 域名失效（NXDOMAIN） | 已移除 |
 | jpop | https://jpopsuki.eu/ | :x: | :heavy_check_mark: | ✅ | 已实测（仅源站） | 亚洲音乐站，保种即可 |
 | ~~JPTV~~ | ~~https://jptv.club/~~ | :heavy_check_mark: | :heavy_check_mark: | 🗄️ | 已关站/上游移除 | 日本影视站，unit3d |
 | KG | https://karagarga.in/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 已测试 | 外站，小众影视站点 |
@@ -265,7 +265,7 @@
 | ~~象岛~~ | ~~https://ptvicomo.net/login.php~~ | :heavy_check_mark: | :heavy_check_mark: | 🗄️ | 已关站/上游移除 | 国内新站 |
 | 杏林 | https://xingtan.one/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 实验性（待测试） | 医学等教育资源 |
 | 影 | https://star-space.net/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 实验性（待测试） | 一般用户无发布权限 |
-| 雨 | https://raingfh.top/ | :heavy_check_mark: | :heavy_check_mark: | ✅ | 实验性（待测试） | 国内新站 |
+| 雨 | https://raingfh.top/ | :heavy_check_mark: | :heavy_check_mark: | 🗄️ | DNS 失效（SERVFAIL） | 已移除 |
 
 
 
