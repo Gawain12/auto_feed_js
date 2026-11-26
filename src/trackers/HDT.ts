@@ -7,7 +7,7 @@ import { extractImdbId } from '../common/rules/links';
 import { getAudioCodecSel, getCodecSel, getLabel, getMediumSel, getStandardSel, getType } from '../common/rules/text';
 import { getMediainfoPictureFromDescr } from '../common/rules/media';
 import { dispatchFormEvents, setAllFormValues, setFirstFormValue, readFieldValue } from '../common/dom/form';
-import { hasIdQuery, isPage } from '../common/rules/pages';
+import { isPage } from '../common/rules/pages';
 
 const HDT_ANNOUNCE = 'https://hdts-announce.ru/announce.php';
 
@@ -48,6 +48,14 @@ function hdtCategory(meta: TorrentMeta): string {
     const medium = meta.mediumSel || '';
     const standard = meta.standardSel || '';
     const isUhd = /UHD|4K/i.test(medium) || /UHD/i.test(title);
+    if (type === '音乐' || type === 'MV') {
+        if (medium === 'Blu-ray' || medium === 'UHD') return '61';
+        if (medium === 'Remux') return '62';
+        if (standard === '4K') return '66';
+        if (standard === '1080p' || standard === '1080i') return '57';
+        if (standard === '720p') return '45';
+        return '44';
+    }
     const isSeries = ['剧集', '纪录', '综艺', '动漫'].includes(type) && title.match(/[^T]S\d+|E\d+|Complete/i);
 
     if (!isSeries) {
@@ -93,7 +101,8 @@ export class HDTEngine extends BaseEngine {
     }
 
     isSourcePage(url: URL): boolean {
-        return isPage(url, 'torrents.php', 'details.php') && hasIdQuery(url);
+        // HDT details.php uses a 40-char hex infohash (?id=a073...), not only numeric IDs.
+        return isPage(url, 'torrents.php', 'details.php') && /[?&]id=[a-f0-9]+/i.test(url.search || '');
     }
 
     isFillComplete(): boolean {
@@ -104,7 +113,8 @@ export class HDTEngine extends BaseEngine {
     }
 
     async parse(): Promise<TorrentMeta> {
-        const rawTitle = (document.querySelector('h1, .torrentname, .title')?.textContent || document.title)
+        const torrentRowTitle = detailsValue('Torrent');
+        const rawTitle = (torrentRowTitle || document.querySelector('h1, .torrentname, .title')?.textContent || document.title)
             .replace(/HD-Torrents\.org\s*-/gi, '')
             .replace(/\s*-\s*HD-Torrents\.org\s*/gi, '')
             .trim();
@@ -113,8 +123,10 @@ export class HDTEngine extends BaseEngine {
         const sizeText = detailsValue('Size');
         const detailsText = `${rawTitle} ${category} ${genre}`;
 
-        const imdbBox = $('#IMDBDetailsInfoHideShowTR .imdbnew2').first();
-        const imdbUrl = imdbBox.find('>a[href*="imdb.com/title/tt"], a[href*="imdb.com/title/tt"]').first().attr('href') || '';
+        const imdbUrl =
+            $('#IMDBDetailsInfoHideShowTR .imdbnew2 a[href*="imdb.com/title/tt"], #IMDBDetailsInfoHideShowTR a[href*="imdb.com/title/tt"], a[href*="imdb.com/title/tt"]')
+                .first()
+                .attr('href') || '';
         const imdbId = extractImdbId(imdbUrl);
 
         const descrEl = document.querySelector('#technicalInfoHideShowTR, #technicalInfo, #torrent_info, #detailsInfoHideShowTR, .technicalInfo') as HTMLElement | null;

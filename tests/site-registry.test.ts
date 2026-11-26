@@ -17,6 +17,9 @@ test('mirror domains resolve to the same site', () => {
     assert.equal(siteOf('https://ptchdbits.co/details.php?id=1'), 'CHDBits');
     assert.equal(siteOf('https://hdts.ru/details.php?id=1'), 'HDT');
     assert.equal(siteOf('https://beyond-hd.me/torrents/x.1'), 'BHD');
+    assert.equal(siteOf('https://backup.landof.tv/torrents.php?id=1&torrentid=2'), 'BTN');
+    assert.equal(siteOf('https://www.tlgetin.cc/torrent/12345'), 'TorrentLeech');
+    assert.equal(siteOf('https://reelflix.cc/torrents/99'), 'ReelFliX');
 });
 
 test('a tracker domain in the query string does not select that tracker', () => {
@@ -36,6 +39,16 @@ test('source-page detection per engine', () => {
     assert.equal(isSource('https://hdsky.me/details.php?id=1'), true);
     assert.equal(isSource('https://hdsky.me/torrents.php'), false);
     assert.equal(isSource('https://blutopia.cc/torrents/123'), true);
+    assert.equal(isSource('https://broadcasthe.net/torrents.php?id=10&torrentid=20'), true);
+    assert.equal(isSource('https://broadcasthe.net/torrents.php?id=10'), false);
+    assert.equal(isSource('https://hdroute.org/details.php?id=12345'), true);
+    assert.equal(isSource('https://hdroute.org/browse.php'), false);
+    assert.equal(isSource('https://filelist.io/details.php?id=999'), true);
+    assert.equal(isSource('https://filelist.io/browse.php'), false);
+    assert.equal(isSource('https://www.torrentleech.org/torrent/241234'), true);
+    assert.equal(isSource('https://www.torrentleech.org/torrents/browse'), false);
+    assert.equal(isSource('https://onlyencodes.cc/torrents/123'), true);
+    assert.equal(isSource('https://hawke.uno/torrents/123'), true);
 });
 
 test('forum threads and other non-torrent pages are not source pages', () => {

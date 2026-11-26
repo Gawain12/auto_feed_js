@@ -194,12 +194,116 @@ export function resolveFaviconUrl(siteName: string, settings: AppSettings): stri
     return base ? `${base}favicon.ico` : '';
 }
 
+const TARGET_BAN_ALIASES: Record<string, string> = {
+    ptt: 'PTT',
+    pttime: 'PTT',
+    ssd: 'CMCT',
+    cmct: 'CMCT',
+    springsunday: 'CMCT',
+    chd: 'CHDBits',
+    chdbits: 'CHDBits',
+    hdc: 'HDChina',
+    hdchina: 'HDChina',
+    hds: 'HDSky',
+    hdsky: 'HDSky',
+    ob: 'OurBits',
+    ourbits: 'OurBits',
+    hdh: 'HDHome',
+    hdhome: 'HDHome',
+    pth: 'PThome',
+    pthome: 'PThome',
+    hdv: 'HDVideo',
+    hdvideo: 'HDVideo',
+    opencd: 'OpenCD',
+    hddolby: 'HDDolby',
+    pter: 'PTer',
+    pterclub: 'PTer',
+    mt: 'MTeam',
+    mteam: 'MTeam',
+    ttg: 'TTG',
+    audiences: 'Audiences',
+    audies: 'Audiences',
+    btschool: 'BTSchool',
+    frds: 'FRDS',
+    ubits: 'UBits',
+    hhclub: 'HHClub',
+    piggo: 'PigGo',
+    tjupt: 'TJUPT',
+    gpw: 'GPW',
+    ptp: 'PTP',
+    hdb: 'HDB',
+    btn: 'BTN',
+    blu: 'BLU',
+    bhd: 'BHD',
+    red: 'RED',
+    ops: 'OPS'
+};
+
+const GLOBAL_BAN_TARGET_RE = /(其他|他站|别站|別站|外站|任何|全站|公网|公網|任意|所有|国内|国外|他处|它站|\bother\b|\bany\b|\ball\b|\btrackers?\b|\bsites?\b)/i;
+
+export function extractSiteSpecificBans(text: string): { sanitizedText: string; restrictedTargets: string[] } {
+    const raw = String(text || '');
+    const restricted = new Set<string>();
+    const normalizeTargetToken = (tok: string): string => {
+        const cleaned = tok.replace(/[^A-Za-z0-9]/g, '').toLowerCase();
+        if (!cleaned) return '';
+        return TARGET_BAN_ALIASES[cleaned] || '';
+    };
+
+    const parseTargets = (segment: string): string[] => {
+        if (!segment || GLOBAL_BAN_TARGET_RE.test(segment)) return [];
+        const parts = segment
+            .split(/[\s\/、，,&+]+/)
+            .map((p) => p.trim())
+            .filter(Boolean);
+        const hits: string[] = [];
+        for (const p of parts) {
+            const norm = normalizeTargetToken(p);
+            if (norm) hits.push(norm);
+        }
+        return Array.from(new Set(hits));
+    };
+
+    let sanitized = raw.replace(
+        /(?:严禁|嚴禁|谢绝|謝絕|拒绝|拒絕|不允许|不允許|禁止|禁)\s*(?:二次)?\s*(?:转|轉)(?:载|載|发|發)?\s*(?:至|到|往)\s*([A-Za-z0-9\u4e00-\u9fa5][A-Za-z0-9\u4e00-\u9fa5._\-\/\s、，,&+]{0,50})/gi,
+        (match, targetSeg: string) => {
+            const targets = parseTargets(targetSeg);
+            if (!targets.length) return match;
+            targets.forEach((t) => restricted.add(t));
+            return ' ';
+        }
+    );
+
+    sanitized = sanitized.replace(
+        /(?:严禁|嚴禁|谢绝|謝絕|拒绝|拒絕|不允许|不允許|禁止|禁)\s*(?:转|轉)(?:载|載|发|發)?\s*(PTT(?:ime)?)\b/gi,
+        () => {
+            restricted.add('PTT');
+            return ' ';
+        }
+    );
+
+    return {
+        sanitizedText: sanitized,
+        restrictedTargets: Array.from(restricted)
+    };
+}
+
 export function getForwardWarnings(siteName: string, meta: TorrentMeta, lang: SupportedLang = 'zh'): string[] {
     const text = getUiText(lang);
     const warnings: string[] = [];
-    const blob = `${meta.title || ''}\n${meta.smallDescr || ''}\n${meta.description || ''}`;
+    const blob = `${meta.title || ''}\n${meta.smallDescr || ''}\n${meta.subtitle || ''}\n${meta.description || ''}`;
 
     warnings.push(...getExclusiveSourceWarnings(meta, lang));
+
+    const { restrictedTargets } = extractSiteSpecificBans(blob.replace(/\[.*?\]/g, ' '));
+    if (restrictedTargets.includes(siteName)) {
+        warnings.push(
+            text(
+                `简介注明禁转至 ${siteName}，请核对后决定是否继续。`,
+                `The description states no re-upload to ${siteName}. Verify before continuing.`
+            )
+        );
+    }
 
     if (siteName === 'KG') {
         if (meta.standardSel === '4K' || /\b(?:4K|2160p)\b/i.test(blob)) {
@@ -209,6 +313,9 @@ export function getForwardWarnings(siteName: string, meta: TorrentMeta, lang: Su
             warnings.push(text("KG 不允许 Remux 资源。", "KG does not allow remuxes."));
         }
     }
+    if (siteName === 'HDChina' && /chd$|chdbits|chdweb|chdtv|chdpad|chdhktv/i.test(String(meta.title || ''))) {
+        warnings.push(text("该资源可能触发禁转规则（CHD 岛资源禁转到 HDChina）。", "CHD releases may be prohibited on HDChina."));
+    }
 
     return Array.from(new Set(warnings.filter(Boolean)));
 }
@@ -217,51 +324,61 @@ export function getExclusiveSourceWarnings(meta: TorrentMeta, lang: SupportedLan
     const text = getUiText(lang);
     const warnings: string[] = [];
     const source = String(meta.sourceSite || meta.originSite || '').trim();
-    const title = String(meta.title || '').trim();
-    const blob = `${meta.title || ''}\n${meta.smallDescr || ''}\n${meta.subtitle || ''}\n${meta.description || ''}`.replace(/\[.*?\]/g, ' ');
-    const bodyText = String(document.body?.innerText || '');
+    const rawBlob = `${meta.title || ''}\n${meta.smallDescr || ''}\n${meta.subtitle || ''}\n${meta.description || ''}`.replace(/\[.*?\]/g, ' ');
+    const { sanitizedText: blob } = extractSiteSpecificBans(rawBlob);
+    const hasDoc = typeof document !== 'undefined' && !!document.body;
+    const bodyText = hasDoc ? String(document.body?.innerText || '') : '';
+    const hasExclusiveTagSpan = (pattern: RegExp): boolean => {
+        if (!hasDoc) return false;
+        return Array.from(document.querySelectorAll('span')).some((s) => {
+            if (s.closest('#kdescr, .torrent_description, [data-autofeed-embed]')) return false;
+            return pattern.test((s.textContent || '').trim());
+        });
+    };
 
-    // Legacy keyword guard (global).
+    // Legacy keyword guard (global) — after stripping site-specific exclusions like "禁转至PTT".
     if (blob.match(/(拒绝转发|不允许转发|严禁转发|谢绝.*?转载|禁转|禁止转载|禁止轉載|禁止转发|謝絕.*?轉載|exclusive|独占|獨占|no[\s-]?reupload|do not reupload|forbid.*reupload|禁止二次转载)/i)) {
         warnings.push(text("资源命中禁转关键词（禁转/禁止转载/exclusive/no-reupload）。", "The release contains an exclusive / no re-upload notice."));
     }
-    if (title.match(/Audies$|-ADE$|-ADWeb$|@Audies|@ADWeb/i)) {
-        warnings.push(text("资源命中观众系后缀（Audies/ADE/ADWeb），请按站点规则核查是否可转载。", "Audies / ADE / ADWeb release: check the source tracker rules before forwarding."));
-    }
 
-    // Legacy source-site DOM rules.
-    if (source === 'PigGo' && !!document.querySelector('span')) {
-        const has = Array.from(document.querySelectorAll('span')).some((s) => (s.textContent || '').includes('禁转'));
-        if (has) warnings.push(text("PigGo 页面标记为禁转资源。", "PigGo marks this release as not for re-upload."));
+    // Legacy source-site DOM rules (scoped to tag badges, avoiding false positives from description text like "禁转至PTT").
+    if (source === 'PigGo' && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
+        warnings.push(text("PigGo 页面标记为禁转资源。", "PigGo marks this release as not for re-upload."));
     }
-    if (source === 'HHClub' && Array.from(document.querySelectorAll('span')).some((s) => (s.textContent || '').includes('禁转'))) {
+    if (source === 'HHClub' && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
         warnings.push(text("HHClub 页面标记为禁转资源。", "HHClub marks this release as not for re-upload."));
     }
-    if (source === 'TJUPT' && !!document.querySelector('#tag .tag-exclusive')) {
+    if (source === 'TJUPT' && hasDoc && !!document.querySelector('#tag .tag-exclusive')) {
         warnings.push(text("TJUPT 标签包含 exclusive（禁转）。", "TJUPT marks this release as exclusive."));
     }
-    if (source === 'PTer') {
+    if (source === 'PTer' && hasDoc) {
         const exclusiveSelect = document.querySelector('select[name="tag_exclusive"]') as HTMLSelectElement | null;
         const exclusiveValue = String(exclusiveSelect?.value || '').trim().toLowerCase();
         if (exclusiveValue === 'yes') {
             warnings.push(text("PTer 标签 `tag_exclusive` 标记为 `yes`（禁转）。", "PTer marks tag_exclusive as yes (no re-upload)."));
         }
     }
-    if (['HDDolby', 'HDHome', 'PThome', 'Audiences'].includes(source)) {
+    if (['HDDolby', 'HDHome', 'PThome', 'Audiences'].includes(source) && hasDoc) {
         const hasTag = !!document.querySelector('span.txz, span.tjz');
         if (hasTag) warnings.push(`${source}: ${text("页面标签包含限转/禁转标记（txz/tjz）。", "restricted / no re-upload tag (txz/tjz).")}`);
     }
     if (source === 'BHD' && /THIS IS A BEYONDHD EXCLUSIVE\./i.test(bodyText)) {
         warnings.push(text("BHD 页面标记为 EXCLUSIVE。", "BHD marks this release as exclusive."));
     }
-    if (source === 'HDB' && !!document.querySelector('div.torrent-title > span.exclusive')) {
+    if (source === 'HDB' && hasDoc && !!document.querySelector('div.torrent-title > span.exclusive')) {
         warnings.push(text("HDB 页面存在 exclusive 标记。", "HDB marks this release as exclusive."));
     }
-    if (source === 'CMCT' && bodyText.includes('禁转')) {
+    if (source === 'CMCT' && hasExclusiveTagSpan(/^(?:官方|限时|限時)?禁转$/)) {
         warnings.push(text("CMCT 页面出现禁转标记。", "CMCT displays a no re-upload notice."));
     }
-    if (source === 'OpenCD' && bodyText.includes('禁止轉載')) {
-        warnings.push(text("OpenCD 页面出现“禁止轉載”标记。", "OpenCD displays a no re-upload notice."));
+    if (source === 'OpenCD' && hasDoc) {
+        const hasOpenCdBan = Array.from(document.querySelectorAll('td, span')).some((el) => {
+            if (el.closest('#kdescr, [data-autofeed-embed]')) return false;
+            return (el.textContent || '').trim() === '禁止轉載';
+        });
+        if (hasOpenCdBan) {
+            warnings.push(text("OpenCD 页面出现“禁止轉載”标记。", "OpenCD displays a no re-upload notice."));
+        }
     }
 
     return Array.from(new Set(warnings.filter(Boolean)));
@@ -273,11 +390,23 @@ export function getForwardTargetBlockReason(targetSite: string, meta: TorrentMet
     const source = String(meta.sourceSite || meta.originSite || '');
     const medium = String(meta.mediumSel || '');
 
-    if ((source === 'FRDS' || /frds/i.test(title)) && ['CMCT', 'OurBits', 'HDSky'].includes(targetSite)) {
-        return text("FRDS 资源不支持转发到 CMCT / OurBits / HDSky。", "FRDS releases cannot be forwarded to CMCT / OurBits / HDSky.");
+    if ((source === 'FRDS' || /frds/i.test(title)) && ['CMCT', 'OurBits', 'HDChina', 'HDSky'].includes(targetSite)) {
+        return text("FRDS 资源不支持转发到 CMCT / OurBits / HDChina / HDSky。", "FRDS releases cannot be forwarded to CMCT / OurBits / HDChina / HDSky.");
     }
-    if (/Audies$|-ADE$|-ADWeb$/i.test(title) && targetSite === 'PTT') {
-        return text("该资源触发观众系禁转规则（Audies/ADE/ADWeb -> PTT）。", "Audies / ADE / ADWeb releases cannot be forwarded to PTT.");
+    if (/Audies$|-ADE$|-ADWeb$|UBits$|HHWEB$|-beAst$|-beAstTV$/i.test(title) && targetSite === 'PTT') {
+        return text("该资源触发禁转规则（禁止转发至 PTT）。", "This release group cannot be forwarded to PTT.");
+    }
+    if (/UBits$/i.test(title) && ['HDSky', 'CMCT'].includes(targetSite)) {
+        return text("UBits 官组资源禁转至 HDSky / CMCT。", "UBits releases cannot be forwarded to HDSky / CMCT.");
+    }
+    if (/Dream$|DBTV$|QHstudIo$|CornerMV$/i.test(title) && ['HDVideo', 'OpenCD'].includes(targetSite)) {
+        return text("该官组资源禁转至 HDVideo / OpenCD。", "This release group cannot be forwarded to HDVideo / OpenCD.");
+    }
+    if (/HDVWEB$|HDVMV$/i.test(title) && targetSite === 'HDDolby') {
+        return text("HDVWEB / HDVMV 资源禁转至 HDDolby。", "HDVWEB / HDVMV releases cannot be forwarded to HDDolby.");
+    }
+    if (/HDH(ome|TV|PAD|WEB)$|-HDH$/i.test(title) && targetSite === 'PThome') {
+        return text("HDHome 官组资源禁转至 PThome。", "HDHome releases cannot be forwarded to PThome.");
     }
     if (targetSite === 'OurBits' && (medium === 'Remux' || /Remux/i.test(title))) {
         return text("OurBits 禁止 Remux 资源转发。", "OurBits does not allow forwarding remuxes.");

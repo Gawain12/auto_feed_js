@@ -2,12 +2,14 @@ import { getUiText } from '../../ui/i18n';
 import $ from 'jquery';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { AppSettings } from '../SettingsService';
-import { SiteCatalogService, isChineseNexusSite } from '../SiteCatalogService';
+import { SiteCatalogService } from '../SiteCatalogService';
 import { ForwardLinkService } from '../ForwardLinkService';
 import { QuickLinkService } from '../QuickLinkService';
 import { StorageService } from '../StorageService';
 import { extractDoubanId, extractImdbId } from '../../common/rules/links';
 import { renderQuickSearchHtml, resolveQuickSearchSetting } from '../../common/quickSearch';
+import { filterForwardTargets } from '../../common/rules/siteDomains';
+import { SiteConfig } from '../../types/SiteConfig';
 import {
     buildKgLegacyInfo,
     getExclusiveSourceWarnings,
@@ -36,8 +38,38 @@ import {
         const text = getUiText(settings.uiLanguage);
         container.empty();
 
+        // Keep forward bar in sync immediately when user changes enabled sites or smart-filter in Settings.
+        const hostEl = container.get(0) as (HTMLElement & { __autofeedSettingsListener?: EventListener }) | undefined;
+        if (hostEl) {
+            if (hostEl.__autofeedSettingsListener) {
+                window.removeEventListener('autofeed:settings-updated', hostEl.__autofeedSettingsListener);
+            }
+            const onSettingsUpdated: EventListener = (ev) => {
+                if (!document.contains(hostEl)) {
+                    window.removeEventListener('autofeed:settings-updated', onSettingsUpdated);
+                    return;
+                }
+                const nextSettings = (ev as CustomEvent<AppSettings>).detail;
+                if (nextSettings) {
+                    void renderForwardRow(container, meta, nextSettings);
+                }
+            };
+            hostEl.__autofeedSettingsListener = onSettingsUpdated;
+            window.addEventListener('autofeed:settings-updated', onSettingsUpdated);
+        }
+
         const enabledSet = new Set(settings.enabledSites || []);
-        const supported = SiteCatalogService.getSupportedSites().filter((s) => enabledSet.has(s.name));
+        const supported = SiteCatalogService.getSupportedSites().filter(
+            (s) => enabledSet.has(s.name) && s.capabilities?.target !== false
+        );
+        const sourceSiteName = String(meta.sourceSite || meta.originSite || '').trim();
+        const sourceSiteConfig = SiteCatalogService.getAllSites().find((s) => s.name === sourceSiteName) || null;
+        const { visible, hidden } = filterForwardTargets(
+            supported,
+            meta,
+            sourceSiteConfig,
+            settings.filterForwardTargetsByType !== false
+        );
         const exclusiveWarnings = getExclusiveSourceWarnings(meta, settings.uiLanguage);
 
         // --- Forward targets (one-line list with favicon, legacy-like) ---
@@ -57,9 +89,7 @@ import {
             });
         };
 
-        supported.forEach((site, idx) => {
-            if (idx > 0) forwardLine.appendChild(document.createTextNode(' | '));
-
+        const createSiteAnchor = (site: SiteConfig) => {
             const a = document.createElement('a');
             a.className = 'forward_a';
             a.id = site.name;
@@ -162,8 +192,28 @@ import {
                 })();
             });
 
-            forwardLine.appendChild(a);
+            return a;
+        };
+
+        visible.forEach((site, idx) => {
+            if (idx > 0) forwardLine.appendChild(document.createTextNode(' | '));
+            forwardLine.appendChild(createSiteAnchor(site));
         });
+
+        let hiddenSpan: HTMLSpanElement | null = null;
+        if (hidden.length > 0) {
+            hiddenSpan = document.createElement('span');
+            hiddenSpan.className = 'autofeed-hidden-targets';
+            hiddenSpan.style.display = 'none';
+            if (visible.length > 0) {
+                hiddenSpan.appendChild(document.createTextNode(' | '));
+            }
+            hidden.forEach((site, idx) => {
+                if (idx > 0) hiddenSpan!.appendChild(document.createTextNode(' | '));
+                hiddenSpan!.appendChild(createSiteAnchor(site));
+            });
+            forwardLine.appendChild(hiddenSpan);
+        }
 
         const modeWrap = document.createElement('label');
         modeWrap.style.marginLeft = '10px';
@@ -178,6 +228,38 @@ import {
         });
         modeWrap.append(check, label);
         forwardLine.appendChild(modeWrap);
+
+        if (hiddenSpan && hidden.length > 0) {
+            let expanded = false;
+            const toggleOther = document.createElement('a');
+            toggleOther.href = '#';
+            toggleOther.className = 'autofeed-toggle-other-sites';
+            toggleOther.style.marginLeft = '10px';
+            toggleOther.style.fontSize = '12px';
+            toggleOther.style.opacity = '0.82';
+            const updateLabel = () => {
+                if (expanded) {
+                    toggleOther.textContent = text('收起其他', 'Hide other');
+                } else if (visible.length === 0) {
+                    toggleOther.textContent = text(`无同类型站点，展开全部 (${hidden.length})`, `No matching sites, show all (${hidden.length})`);
+                } else {
+                    toggleOther.textContent = text(`+${hidden.length} 其他`, `+${hidden.length} other`);
+                }
+            };
+            toggleOther.title = text(
+                `已按站点内容类型隐藏：${hidden.map((s) => s.name).join(', ')}（点击一键展开）`,
+                `Filtered by content type: ${hidden.map((s) => s.name).join(', ')} (click to expand)`
+            );
+            updateLabel();
+            toggleOther.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                expanded = !expanded;
+                hiddenSpan!.style.display = expanded ? 'inline' : 'none';
+                updateLabel();
+            });
+            forwardLine.appendChild(toggleOther);
+        }
 
         if (exclusiveWarnings.length) {
             const tip = document.createElement('div');
@@ -308,7 +390,7 @@ import {
         input.className = 'input';
         input.id = 'input_box';
         input.setAttribute('aria-label', text('IMDb / 豆瓣链接', 'IMDb / Douban URL'));
-        input.value = meta.imdbUrl || meta.doubanUrl || '';
+        input.value = meta.doubanUrl || meta.imdbUrl || '';
 
         // width rules (legacy)
         if (site === 'PTP') (input.style as any).width = '320px';
@@ -320,7 +402,12 @@ import {
 
         // The old title-search button had no handler. Keep the working Quick Search links below.
 
-        const enableFetchButton = isChineseNexusSite(site);
+        // Show Douban/PTGen fetch controls on foreign video trackers (PTP/HDB/BTN/BLU/BHD/GPW/etc.)
+        // as well as Chinese trackers when the release needs metadata; hide on pure music/book/game sites.
+        const NO_DOUBAN_FETCH_SITES = new Set([
+            'RED', 'OPS', 'DIC', 'OpenCD', 'lztr', 'jpop', 'SugoiMusic', 'bib', 'mam', 'GGPT', 'SportsCult'
+        ]);
+        const enableFetchButton = !NO_DOUBAN_FETCH_SITES.has(site);
         let apiCb: HTMLInputElement | null = null;
         if (enableFetchButton) {
             apiCb = document.createElement('input');
@@ -411,19 +498,33 @@ import {
                     // API checkbox only overrides method for this click (legacy-ish feel).
                     const s = await SettingsService.load();
                     const imdbToDoubanMethod = apiCb?.checked ? 0 : (s.imdbToDoubanMethod || 0);
-                    const updated = await PtgenService.applyPtgen(cur as any, {
+                    const result = await PtgenService.fetchPtgen(cur as any, {
                         imdbToDoubanMethod,
                         ptgenApi: s.ptgenApi ?? 3,
                         doubanCookie: s.doubanCookie || undefined
-                    }, { mergeDescription: true, updateSubtitle: true, updateRegion: true, updateIds: true });
+                    });
+                    if (!result || !result.format) {
+                        throw new Error('No PTGen/Douban metadata returned');
+                    }
+
+                    const updated = PtgenService.applyPtgenResult(cur as any, result, {
+                        mergeDescription: true,
+                        updateSubtitle: true,
+                        updateRegion: true,
+                        updateIds: true
+                    });
 
                     Object.assign(meta, updated);
+                    if (updated.doubanUrl) input.value = updated.doubanUrl;
+                    else if (updated.imdbUrl && !input.value.trim()) input.value = updated.imdbUrl;
+                    textarea.value = result.format;
                     await StorageService.save(meta);
                     fetchBtn!.value = text("获取成功", "Metadata updated");
                     setTimeout(() => {
                         if (fetchBtn) fetchBtn.value = text("点击获取", "Fetch metadata");
                     }, 1200);
                 } catch (e: any) {
+                    console.warn('[Auto-Feed] Source PTGen fetch failed:', e);
                     fetchBtn!.value = text("获取失败", "Fetch failed");
                     setTimeout(() => {
                         if (fetchBtn) fetchBtn.value = text("点击获取", "Fetch metadata");

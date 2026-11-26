@@ -1,3 +1,9 @@
+export interface RipLogEntry {
+    filename: string;
+    base64?: string;
+    content?: string;
+}
+
 export interface TorrentMeta {
     // Basic Info
     title: string;
@@ -35,6 +41,7 @@ export interface TorrentMeta {
     imdbUrl?: string;
     doubanUrl?: string;
     tmdbUrl?: string;
+    tvdbUrl?: string;
 
     // Source Info
     sourceSite: string;
@@ -56,4 +63,5 @@ export interface TorrentMeta {
     // Extra raw fields (legacy parity)
     fullMediaInfo?: string;
     synopsis?: string;
+    ripLogs?: RipLogEntry[];
 }

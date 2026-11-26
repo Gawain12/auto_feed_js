@@ -2,12 +2,13 @@ import { getUiText } from '../ui/i18n';
 import $ from 'jquery';
 import { SettingsService } from './SettingsService';
 import { DoubanService } from './DoubanService';
+import { buildDoubanFormat } from './PtgenService';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { ImageHostService } from './ImageHostService';
 import { GMAdapter } from './GMAdapter';
 import { renderQuickSearchHtml, resolveQuickSearchSetting, QuickSearchRenderOptions } from '../common/quickSearch';
 import { getGroupName } from '../common/rules/groupName';
-import { extractImdbId } from '../common/rules/links';
+import { extractDoubanId, extractImdbId } from '../common/rules/links';
 import { getSearchName } from '../common/rules/search';
 
 export class PageEnhancerService {
@@ -497,7 +498,7 @@ export class QuickSearchService {
         const url = window.location.href;
         const settings = await SettingsService.load();
 
-        if (url.match(/^https?:\/\/movie\.douban\.com\/subject\/\d+/i) && settings.showQuickSearchOnDouban) {
+        if (url.match(/^https?:\/\/movie\.douban\.com\/subject\/\d+/i)) {
             this.injectDoubanTools(settings);
         }
 
@@ -678,26 +679,71 @@ export class QuickSearchService {
 
         const posterImg = $('#mainpic img').first().attr('src') || '';
         const poster = posterImg.replace(/^.+(p\d+).+$/, (_, p1) => `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${p1}.jpg`);
+        const doubanId = extractDoubanId(window.location.href) || '';
+
+        const rehostPosterUrl = async (url: string): Promise<string> => {
+            if (!url) return '';
+            const currentSettings = await SettingsService.load();
+            let result: string[] = [];
+            if (currentSettings.ptpImgApiKey) {
+                result = await ImageHostService.uploadToPtpImg([url], currentSettings.ptpImgApiKey);
+            } else if (currentSettings.freeimageApiKey) {
+                result = await ImageHostService.uploadToFreeimage([url], currentSettings.freeimageApiKey);
+            } else if (currentSettings.imgbbApiKey) {
+                result = await ImageHostService.uploadToImgbb([url], currentSettings.imgbbApiKey);
+            } else {
+                // No API key mode fallback: Pixhost remote upload does not require user API key.
+                result = await ImageHostService.uploadToPixhost([url]);
+            }
+            return result[0] || '';
+        };
+
+        if (!$('#copy').length) {
+            const endsWithBr = /<br\s*\/?>\s*$/i.test($info.html() || '');
+            $info.append(
+                `${endsWithBr ? '' : '<br>'}<span class="pl">${uiText('描述信息', 'Info BBCode')}: </span>` +
+                `<a href="javascript:void(0);" id="copy">${uiText('复制', 'Copy')}</a>` +
+                ` / <a href="javascript:void(0);" id="autofeed-copy-rehost">${uiText('复制(转存海报)', 'Copy (rehost poster)')}</a>`
+            );
+
+            const runCopy = async ($btn: JQuery<HTMLElement>, withRehost: boolean) => {
+                const origText = $btn.text();
+                $btn.text(withRehost ? uiText('转存中...', 'Rehosting...') : uiText('复制中...', 'Copying...'));
+                try {
+                    const info = DoubanService.parseDoubanDoc(document, doubanId);
+                    if (withRehost && info.image) {
+                        const hosted = await rehostPosterUrl(info.image);
+                        if (hosted) info.image = hosted;
+                    }
+                    const bbcode = buildDoubanFormat(info, imdbId || info.imdbId);
+                    await GMAdapter.setClipboard(bbcode);
+                    $btn.text(uiText('已复制', 'Copied'));
+                    window.setTimeout(() => $btn.text(origText), 2500);
+                } catch (err) {
+                    console.error('[Auto-Feed][Douban] Copy info failed:', err);
+                    $btn.text(uiText('失败', 'Failed'));
+                    window.setTimeout(() => $btn.text(origText), 2500);
+                }
+            };
+
+            $('#copy').on('click', (e) => {
+                e.preventDefault();
+                runCopy($(e.currentTarget), false);
+            });
+            $('#autofeed-copy-rehost').on('click', (e) => {
+                e.preventDefault();
+                runCopy($(e.currentTarget), true);
+            });
+        }
 
         $('#mainpic').append(`<br><a href="#" id="autofeed-rehost-poster">${uiText("海报转存", "Rehost poster")}</a>`);
         $('#autofeed-rehost-poster').on('click', async (e) => {
             e.preventDefault();
             if (!poster) return;
-            const settings = await SettingsService.load();
             try {
-                let result: string[] = [];
-                if (settings.ptpImgApiKey) {
-                    result = await ImageHostService.uploadToPtpImg([poster], settings.ptpImgApiKey);
-                } else if (settings.freeimageApiKey) {
-                    result = await ImageHostService.uploadToFreeimage([poster], settings.freeimageApiKey);
-                } else if (settings.imgbbApiKey) {
-                    result = await ImageHostService.uploadToImgbb([poster], settings.imgbbApiKey);
-                } else {
-                    // No API key mode fallback: Pixhost remote upload does not require user API key.
-                    result = await ImageHostService.uploadToPixhost([poster]);
-                }
-                if (result.length) {
-                    await GMAdapter.setClipboard(result[0]);
+                const hosted = await rehostPosterUrl(poster);
+                if (hosted) {
+                    await GMAdapter.setClipboard(hosted);
                     alert(uiText("海报已转存并复制到剪贴板", "Poster rehosted and copied to the clipboard."));
                 }
             } catch (err) {
@@ -706,24 +752,26 @@ export class QuickSearchService {
             }
         });
 
-        const searchName =
-            ($title.text().trim().match(/[a-z ]{2,200}/i)?.[0] || $title.text().trim()).replace(/season/i, '');
+        if (settings?.showQuickSearchOnDouban) {
+            const searchName =
+                ($title.text().trim().match(/[a-z ]{2,200}/i)?.[0] || $title.text().trim()).replace(/season/i, '');
 
-        const quickSearchOpts = settings ? resolveQuickSearchSetting(settings) : undefined;
-        this.injectQuickSearch(
-            $title,
-            { title: searchName, imdbId },
-            6,
-            quickSearchOpts,
-            {
-                className: 'autofeed-search-links autofeed-search-links--douban',
-                alignCenter: false,
-                bordered: false,
-                fontColor: 'red',
-                labelText: '',
-                fontSize: '12px'
-            }
-        ).catch(() => {});
+            const quickSearchOpts = resolveQuickSearchSetting(settings);
+            this.injectQuickSearch(
+                $title,
+                { title: searchName, imdbId },
+                6,
+                quickSearchOpts,
+                {
+                    className: 'autofeed-search-links autofeed-search-links--douban',
+                    alignCenter: false,
+                    bordered: false,
+                    fontColor: 'red',
+                    labelText: '',
+                    fontSize: '12px'
+                }
+            ).catch(() => {});
+        }
         document.body.dataset.autofeedDouban = '1';
     }
 

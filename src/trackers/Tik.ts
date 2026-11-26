@@ -1,4 +1,3 @@
-import { getUiText } from '../ui/i18n';
 import { Unit3DClassicEngine } from '../templates/unit3d_classic';
 import { TorrentMeta } from '../types/TorrentMeta';
 import { getSizeFromDescr } from '../common/rules/helpers';
@@ -222,8 +221,10 @@ async function fetchImdbBasics(imdbUrl: string): Promise<{
         const resp = await GMAdapter.xmlHttpRequest({
             method: 'GET',
             url,
-            timeout: 10000
+            withCredentials: true,
+            timeout: 8000
         });
+        if (resp?.status !== 200) return {};
         const html = resp?.responseText || '';
         if (!html) return {};
 
@@ -438,6 +439,11 @@ async function fetchTmdbBasicsByImdb(imdbId: string): Promise<{
 }
 
 export class TikEngine extends Unit3DClassicEngine {
+    protected applyClassicSiteTypeSelection(): boolean {
+        // Tik fills `#autotype` with BD100/BD66/BD50/BD25/DVD9/DVD5 in `fill()`; skip generic Unit3D type_id mapping.
+        return true;
+    }
+
     async parse(): Promise<TorrentMeta> {
         const meta = await super.parse();
 
@@ -479,27 +485,42 @@ export class TikEngine extends Unit3DClassicEngine {
         try {
             const title = meta.title || '';
             const descr = rawDescrForTitle;
-            const autotype = document.querySelector('#autotype') as HTMLSelectElement | HTMLInputElement | null;
-            if (autotype) {
-                let v = '';
-                if (/dvd5/i.test(title)) {
-                    v = /Standard.*?PAL/i.test(descr) ? '10' : '8';
-                } else if (/dvd9/i.test(title)) {
-                    v = /Standard.*?PAL/i.test(descr) ? '9' : '7';
-                } else if (/mpls/i.test(descr) && (meta.mediumSel === 'Blu-ray' || meta.mediumSel === 'UHD')) {
-                    const size = getSizeFromDescr(descr);
-                    if (0 <= size && size < 23.28) v = '6';
-                    else if (size < 46.57) v = '5';
-                    else if (size < 61.47) v = '4';
-                    else v = '3';
+            const applyTikAutotypeAndRes = () => {
+                const autotype = document.querySelector('#autotype') as HTMLSelectElement | HTMLInputElement | null;
+                if (autotype) {
+                    let v = '';
+                    const isDiscLike =
+                        meta.mediumSel === 'Blu-ray' ||
+                        meta.mediumSel === 'UHD' ||
+                        /mpls|DISC INFO|BDMV|COMPLETE[\s.]+(?:UHD[\s.]+)?BLURAY|\bBD(?:25|50|66|100)\b/i.test(`${title}\n${descr}`);
+                    if (/dvd5/i.test(title)) {
+                        v = /Standard.*?PAL/i.test(descr) ? '10' : '8';
+                    } else if (/dvd9/i.test(title)) {
+                        v = /Standard.*?PAL/i.test(descr) ? '9' : '7';
+                    } else if (isDiscLike) {
+                        const size = getSizeFromDescr(descr);
+                        if (size > 0 && size < 23.28) v = '6';
+                        else if (size >= 23.28 && size < 46.57) v = '5';
+                        else if (size >= 46.57 && size < 61.47) v = '4';
+                        else if (size >= 61.47) v = '3';
+                    }
+                    if (v && (autotype as any).value !== v) {
+                        (autotype as any).value = v;
+                        autotype.dispatchEvent(new Event('change', { bubbles: true }));
+                        autotype.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
-
-                if (v) {
-                    (autotype as any).value = v;
-                    autotype.dispatchEvent(new Event('change', { bubbles: true }));
-                    autotype.dispatchEvent(new Event('input', { bubbles: true }));
+                const autores = document.querySelector('#autores') as HTMLSelectElement | null;
+                if (autores && (meta.standardSel === '4K' || /\b2160p\b/i.test(`${title}\n${descr}`))) {
+                    if (autores.value !== '2') {
+                        autores.value = '2';
+                        autores.dispatchEvent(new Event('change', { bubbles: true }));
+                        autores.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
-            }
+            };
+            applyTikAutotypeAndRes();
+            [180, 500, 1200, 2500].forEach((ms) => window.setTimeout(applyTikAutotypeAndRes, ms));
         } catch {}
 
         try {
@@ -517,8 +538,12 @@ export class TikEngine extends Unit3DClassicEngine {
             const imdbId = extractImdbId(meta.imdbId || '') || extractImdbId(meta.imdbUrl || '') || '';
             const imdbUrl = meta.imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : '');
 
-            const imdbBasics = imdbUrl ? await fetchImdbBasics(imdbUrl) : {};
-            const tmdbBasics = imdbId ? await fetchTmdbBasicsByImdb(imdbId) : {};
+            const [imdbBasics, tmdbBasics, cachedImdbAspect, fetchedAspect] = await Promise.all([
+                imdbUrl ? fetchImdbBasics(imdbUrl) : Promise.resolve({} as Awaited<ReturnType<typeof fetchImdbBasics>>),
+                imdbId ? fetchTmdbBasicsByImdb(imdbId) : Promise.resolve({} as Awaited<ReturnType<typeof fetchTmdbBasicsByImdb>>),
+                imdbId ? ImdbAspectRatioService.getCachedAspectRatio(imdbId) : Promise.resolve(''),
+                imdbId || imdbUrl ? ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl) : Promise.resolve('')
+            ]);
             const en_descr = stripTikImages(imdbBasics.en_descr || tmdbBasics.en_descr || meta.synopsis || '');
             const country = imdbBasics.country || tmdbBasics.country || parseCountryFallback(rawDescr) || mapCountryName(meta.sourceSel || '') || '';
 
@@ -532,7 +557,11 @@ export class TikEngine extends Unit3DClassicEngine {
             const subtitles = parseLangListFromMedia(rawDescr, 'sub').join(' / ');
 
             const medium = meta.mediumSel || '';
-            const standard = meta.standardSel || '';
+            const effectiveStandard =
+                meta.standardSel === '4K' || /\b2160p\b/i.test(`${meta.title || ''}\n${rawDescr}`)
+                    ? '4K'
+                    : (meta.standardSel || '');
+            const standard = effectiveStandard;
             const codec = meta.codecSel || '';
             const size = getSizeFromDescr(rawDescr);
 
@@ -563,7 +592,7 @@ export class TikEngine extends Unit3DClassicEngine {
             let codecTag = standard === '4K' || medium === 'UHD' || format === '2160p' ? 'HEVC' : 'AVC';
             if (codec === 'MPEG-2') codecTag = 'MPEG-2';
             else if (codec === 'VC-1') codecTag = 'VC-1';
-            else if (codec === 'H265') codecTag = 'HEVC';
+            else if (codec === 'H265' || codec === 'X265') codecTag = 'HEVC';
 
             const sourceTitle = (meta.title || '').trim();
             const torrentName = expectedTikTitle;
@@ -591,9 +620,11 @@ export class TikEngine extends Unit3DClassicEngine {
             applyTikFallbackTitle();
             TITLE_REAPPLY_DELAYS.forEach((ms) => window.setTimeout(applyTikFallbackTitle, ms));
 
-            const cachedImdbAspect = await ImdbAspectRatioService.getCachedAspectRatio(imdbId);
-            const aspect_ratio = imdbBasics.aspect_ratio || cachedImdbAspect ||
-                await ImdbAspectRatioService.fetchAspectRatio(imdbId || imdbUrl);
+            const aspect_ratio =
+                imdbBasics.aspect_ratio ||
+                cachedImdbAspect ||
+                fetchedAspect ||
+                (meta.sourceSite === 'Tik' ? normalizeAspectRatioText(meta.aspectRatio || '') : '');
             if (aspect_ratio && aspect_ratio !== cachedImdbAspect) {
                 await ImdbAspectRatioService.saveCachedAspectRatio(imdbId, aspect_ratio, imdbUrl);
             }
@@ -620,45 +651,87 @@ export class TikEngine extends Unit3DClassicEngine {
                     bbcode.value = tpl;
                     fire(bbcode);
                 }
-                await this.renderUploadHelp(bbcode, meta, aspect_ratio);
+                await this.renderUploadHelp(bbcode, meta, aspect_ratio, imdbId, imdbUrl);
             }
         } catch (e) {
             console.warn('[Auto-Feed][Tik] Template fill skipped:', e);
         }
     }
 
-    private async renderUploadHelp(textarea: HTMLTextAreaElement, meta: TorrentMeta, ratio: string) {
+    private async renderUploadHelp(
+        textarea: HTMLTextAreaElement,
+        meta: TorrentMeta,
+        ratio: string,
+        imdbId = '',
+        imdbUrl = ''
+    ) {
         document.getElementById('autofeed-tik-upload-help')?.remove();
-        const text = getUiText((await SettingsService.load()).uiLanguage);
+        // Tik is an English tracker; always render helper instructions and controls in English.
         const help = document.createElement('div');
         help.id = 'autofeed-tik-upload-help';
         help.style.cssText = 'margin:10px 0;padding:12px;border:1px solid #9aa4b2;border-radius:6px;font-size:13px;line-height:1.6;';
         const note = document.createElement('div');
-        note.textContent = text(
-            'Tik 发布请使用 Hostik 图片。此处不会预填图片；点击下方按钮会用本次转种携带的图片打开 Hostik。到 Hostik 页面拉取并完成上传后，将生成的 BBCode 粘贴回下方简介。',
-            'Tik releases should use Hostik images. No image links are prefilled here. The button opens Hostik with images carried over from this torrent; fetch and upload them there, then paste the generated BBCode into the description below.'
-        );
+        note.textContent =
+            'Tik releases require Hostik images. Source image links are not prefilled here; click below to open Hostik with the carried-over images, upload them there, and paste the generated BBCode into the description below.';
         const tools = document.createElement('div');
         tools.style.cssText = 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;';
         const rehost = document.createElement('button');
         rehost.type = 'button';
-        rehost.textContent = text('准备 Hostik 图片', 'Prepare images for Hostik');
-        rehost.title = text('打开 Hostik 并载入本次转种的图片；仍需在 Hostik 完成上传并复制 BBCode。', 'Opens Hostik with this torrent’s images. Complete the upload there and copy the generated BBCode.');
+        rehost.textContent = 'Prepare images for Hostik';
+        rehost.title = 'Opens Hostik with this torrent’s images. Upload them there and copy the generated BBCode.';
         const status = document.createElement('span');
         status.setAttribute('role', 'status');
+        status.style.cssText = 'display:inline-block;margin-top:6px;font-size:12px;opacity:0.9;';
         const showRatio = (value: string) => {
             status.textContent = value
-                ? text('IMDb 电影画幅比：', 'IMDb film aspect ratio: ') + value
-                : text('未读取到 IMDb 电影画幅比，字段保持空白。', 'IMDb film aspect ratio was not found; the field was left blank.');
+                ? `Film aspect ratio: ${value}`
+                : 'Film aspect ratio not found automatically (IMDb blocks background fetch until session is active) — click "Fetch ratio from IMDb".';
         };
         showRatio(ratio);
         rehost.onclick = async () => {
             rehost.disabled = true;
             try { await ImageHostService.prepareAndOpen(meta, 'hostik'); }
-            catch { status.textContent = text('图片转存准备失败，请通过图片工具重试。', 'Could not prepare images. Try the image toolbox.'); }
+            catch { status.textContent = 'Could not prepare images for Hostik. Please try the image toolbox.'; }
             finally { rehost.disabled = false; }
         };
         tools.append(rehost);
+
+        const resolvedImdbUrl = imdbUrl || (imdbId ? `https://www.imdb.com/title/${imdbId}/` : '');
+        const resolvedImdbId = imdbId || extractImdbId(resolvedImdbUrl);
+        if (resolvedImdbId && resolvedImdbUrl) {
+            const fetchRatioBtn = document.createElement('button');
+            fetchRatioBtn.type = 'button';
+            fetchRatioBtn.textContent = ratio ? 'Refresh ratio from IMDb' : 'Fetch ratio from IMDb';
+            fetchRatioBtn.title = 'Opens IMDb Technical Specifications in a temporary tab to read and fill Film Aspect Ratio automatically.';
+            fetchRatioBtn.onclick = async () => {
+                fetchRatioBtn.disabled = true;
+                fetchRatioBtn.textContent = 'Reading IMDb...';
+                try {
+                    ImdbAspectRatioService.primeFromImdbUrl(resolvedImdbUrl);
+                    const fetched = await ImdbAspectRatioService.waitForCachedAspectRatio(resolvedImdbId, 18000);
+                    if (fetched) {
+                        const updated = updateTikFilmAspectRatio(textarea.value || '', fetched);
+                        if (updated !== textarea.value) {
+                            textarea.value = updated;
+                            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                            textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        showRatio(fetched);
+                        fetchRatioBtn.textContent = 'Refresh ratio from IMDb';
+                    } else {
+                        status.textContent = 'Could not read aspect ratio from IMDb tab (check if the movie lists an Aspect Ratio on IMDb).';
+                        fetchRatioBtn.textContent = 'Fetch ratio from IMDb';
+                    }
+                } catch {
+                    status.textContent = 'Failed to open IMDb Technical Specifications tab.';
+                    fetchRatioBtn.textContent = 'Fetch ratio from IMDb';
+                } finally {
+                    fetchRatioBtn.disabled = false;
+                }
+            };
+            tools.append(fetchRatioBtn);
+        }
+
         help.append(note, tools, status);
         (textarea.closest('label') || textarea).insertAdjacentElement('beforebegin', help);
     }
@@ -666,7 +739,10 @@ export class TikEngine extends Unit3DClassicEngine {
     private buildTikTargetTitle(meta: TorrentMeta, rawDescr: string): string {
         const year = (meta.title || '').match(/(19|20)\d{2}/g)?.pop() || '';
         const medium = meta.mediumSel || '';
-        const standard = meta.standardSel || '';
+        const standard =
+            meta.standardSel === '4K' || /\b2160p\b/i.test(`${meta.title || ''}\n${rawDescr}`)
+                ? '4K'
+                : (meta.standardSel || '');
         const codec = meta.codecSel || '';
         const size = getSizeFromDescr(rawDescr);
 

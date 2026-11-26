@@ -38,6 +38,7 @@ export class GMAdapter {
     }
 
     static async setValue(key: string, value: any): Promise<void> {
+        let gmErr: unknown = null;
         try {
             if (typeof GM_setValue !== 'undefined') {
                 GM_setValue(key, value);
@@ -47,11 +48,16 @@ export class GMAdapter {
                 await GM.setValue(key, value);
                 return;
             }
-        } catch {}
+        } catch (e) {
+            gmErr = e;
+        }
 
         try {
             localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
-        } catch {}
+            return;
+        } catch (lsErr) {
+            throw gmErr || lsErr;
+        }
     }
 
     static async setClipboard(text: string): Promise<void> {

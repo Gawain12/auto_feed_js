@@ -19,6 +19,7 @@ export interface AppSettings {
     showQuickSearchOnImdb: boolean;
     defaultAnonymous: boolean;
     autoDownloadAfterUpload: boolean;
+    filterForwardTargetsByType: boolean;
     remoteSidebarOpacity: number; // 0.3 - 1.0
     settingsPanelOpacity: number; // 0.3 - 1.0
     popupOpacity: number; // 0.3 - 1.0 (forward popup, toolbox panel, dialogs)
@@ -40,6 +41,7 @@ export interface AppSettings {
         HDT: boolean;
     };
     uiLanguage: 'zh' | 'en';
+    schemaVersion?: number;
 }
 
 // Built-in default (from v3 `used_tmdb_key`), used when user didn't configure one.
@@ -87,6 +89,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     showQuickSearchOnImdb: true,
     defaultAnonymous: false,
     autoDownloadAfterUpload: true,
+    filterForwardTargetsByType: true,
     remoteSidebarOpacity: 0.92,
     settingsPanelOpacity: 0.95,
     popupOpacity: 0.96,
@@ -108,13 +111,14 @@ const DEFAULT_SETTINGS: AppSettings = {
         HDB: false,
         HDT: false
     },
-    uiLanguage: 'zh'
+    uiLanguage: 'zh',
+    schemaVersion: 2
 };
 
 export class SettingsService {
     private static KEY = 'auto_feed_settings';
 
-    private static migrate(settings: AppSettings): AppSettings {
+    static migrate(settings: AppSettings): AppSettings {
         const migrated = settings as AppSettings & { gifyuApiKey?: string };
         if (!migrated.imgbbApiKey && migrated.gifyuApiKey) {
             migrated.imgbbApiKey = migrated.gifyuApiKey;
@@ -122,19 +126,27 @@ export class SettingsService {
         delete migrated.gifyuApiKey;
         // Rename site key: `pterclub` -> `PTer` (legacy parity + torrent `source` field correctness).
         const rename = (v: string) => (v === 'pterclub' ? 'PTer' : v);
-        const supported = new Set(SiteCatalogService.getSupportedSiteNames());
-        const enabledSet = new Set((settings.enabledSites || []).map(rename).filter((x) => supported.has(x)));
-        // Keep newly restored high-priority legacy sites enabled for users with older saved settings.
-        // Otherwise they are present in code but never appear in the source-page forwarding row.
-        ['KG', 'SC', 'TJUPT', 'HDT'].forEach((name) => {
-            if (supported.has(name)) enabledSet.add(name);
-        });
-        const enabledSites = Array.from(enabledSet);
-
+        const targetCapable = new Set(
+            SiteCatalogService.getSupportedSites()
+                .filter((s) => s.capabilities?.target !== false)
+                .map((s) => s.name)
+        );
+        const enabledSet = new Set((settings.enabledSites || []).map(rename).filter((x) => targetCapable.has(x)));
         const favoriteSet = new Set((settings.favoriteSites || []).map(rename).filter((x) => enabledSet.has(x)));
-        ['KG', 'SC', 'TJUPT', 'HDT'].forEach((name) => {
-            if (enabledSet.has(name)) favoriteSet.add(name);
-        });
+
+        // One-time migration for pre-v5.2 saved configs: enable KG/SC/TJUPT/HDT once,
+        // without overriding subsequent user unchecks or "Clear All".
+        const prevSchema = Number(migrated.schemaVersion || 0);
+        if (prevSchema < 2) {
+            ['KG', 'SC', 'TJUPT', 'HDT'].forEach((name) => {
+                if (targetCapable.has(name)) {
+                    enabledSet.add(name);
+                    favoriteSet.add(name);
+                }
+            });
+        }
+
+        const enabledSites = Array.from(enabledSet);
         const favoriteSites = Array.from(favoriteSet);
         const listQuickSearch = settings.showSearchOnList as any;
         const showSearchOnList = {
@@ -142,7 +154,11 @@ export class SettingsService {
             HDB: listQuickSearch?.HDB === undefined ? DEFAULT_SETTINGS.showSearchOnList.HDB : !!listQuickSearch.HDB,
             HDT: listQuickSearch?.HDT === undefined ? DEFAULT_SETTINGS.showSearchOnList.HDT : !!listQuickSearch.HDT
         };
-        return { ...migrated, enabledSites, favoriteSites, showSearchOnList };
+        const filterForwardTargetsByType =
+            settings.filterForwardTargetsByType === undefined
+                ? DEFAULT_SETTINGS.filterForwardTargetsByType
+                : !!settings.filterForwardTargetsByType;
+        return { ...migrated, enabledSites, favoriteSites, showSearchOnList, filterForwardTargetsByType, schemaVersion: 2 };
     }
 
     static async load(): Promise<AppSettings> {
@@ -150,7 +166,13 @@ export class SettingsService {
             try {
                 GMAdapter.getValue<string | null>(this.KEY, null).then((stored) => {
                     if (stored) {
-                        const merged = { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } as AppSettings;
+                        const raw = JSON.parse(stored) as Partial<AppSettings>;
+                        const merged = {
+                            ...DEFAULT_SETTINGS,
+                            ...raw,
+                            // Preserve missing schemaVersion from older configs so one-time migration runs once.
+                            schemaVersion: raw.schemaVersion ?? 1
+                        } as AppSettings;
                         resolve(this.migrate(merged));
                         return;
                     }
@@ -165,9 +187,13 @@ export class SettingsService {
     }
 
     static async save(settings: AppSettings): Promise<void> {
-        return new Promise((resolve) => {
-            const data = JSON.stringify(this.migrate(settings));
-            GMAdapter.setValue(this.KEY, data).then(() => resolve());
-        });
+        const normalized = this.migrate(settings);
+        const data = JSON.stringify(normalized);
+        await GMAdapter.setValue(this.KEY, data);
+        try {
+            if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('autofeed:settings-updated', { detail: normalized }));
+            }
+        } catch {}
     }
 }

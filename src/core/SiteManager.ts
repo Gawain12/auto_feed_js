@@ -219,6 +219,18 @@ export class SiteManager {
             const { normalizeMeta } = await import('../common/rules/normalize');
             meta = this.cleanMeta(meta);
             meta = normalizeMeta(meta, adapter.siteName);
+            // Reuse Douban ID already fetched by PageEnhancerService (e.g. PTP/HDB) without injecting
+            // Chinese PTGen into description (so foreign->foreign forwards stay clean English).
+            if (meta.imdbId && !meta.doubanId) {
+                try {
+                    const { DoubanService } = await import('../services/DoubanService');
+                    const cached = DoubanService.getCachedByImdb(meta.imdbId);
+                    if (cached?.id) {
+                        meta.doubanId = cached.id;
+                        meta.doubanUrl = `https://movie.douban.com/subject/${cached.id}/`;
+                    }
+                } catch {}
+            }
             await StorageService.save(meta);
         } catch (e) {
             console.error('[Auto-Feed] Parse failed for embed, fallback to cached/minimal meta:', e);
@@ -387,6 +399,10 @@ export class SiteManager {
             'input#catalogue_number',
             'input#cataloguenumber',
             'textarea[name="release_desc"]',
+            'input#scenename',
+            'input#autofill',
+            'input#title_eng',
+            'input#title_chs',
             'textarea#album_desc',
             'input[name="infosite"]',
             'input#ename',
@@ -396,10 +412,19 @@ export class SiteManager {
             'select[name="browsecat"]',
             'input[name="torrentfile"]',
             'input[type="file"]#torrent',
+            'input[type="file"]#torrent_file',
+            'input#file_name',
+            'textarea#media_info',
+            'input#artist_0',
+            'input#resource_name',
             'input[name="torrent"]',
             'input[name="file"]',
             'input[type="file"][name*="file"]',
-            '#torrent-input'
+            '#torrent-input',
+            '#form_item_title',
+            '#torrent-title',
+            '#bigname',
+            '#filename'
         ];
 
         for (let i = 0; i < 30; i++) {

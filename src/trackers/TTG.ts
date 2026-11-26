@@ -62,6 +62,12 @@ export class TTGEngine extends NexusPHPEngine {
                 meta.imdbUrl = imdbUrl;
             }
         }
+        if (!meta.torrentUrl) {
+            const dlHref = $('a[href*="/dl/"]').first().attr('href') || '';
+            if (dlHref) {
+                try { meta.torrentUrl = new URL(dlHref, this.currentUrl).href; } catch { meta.torrentUrl = dlHref; }
+            }
+        }
         return meta;
     }
 

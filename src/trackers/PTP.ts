@@ -405,7 +405,18 @@ export class PTPEngine extends BaseEngine {
         }
         if (aspectRatio) meta.aspectRatio = aspectRatio;
         if (torrentUrl) meta.torrentUrl = torrentUrl;
-        // PTP torrents are movies by definition in this script's workflow.
+        // PTP hosts movies plus miniseries/concerts/stand-ups; detect miniseries from page header/tags so BTN & NexusPHP TV routing work accurately.
+        const pageHeaderText = `${$('.page__title').first().text()} ${$('h2').first().text()}`;
+        const isPtpMiniseries =
+            /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b/i.test(pageHeaderText) ||
+            /\b(?:mini[\s.-]?series|limited[\s.-]?series)\b/i.test(meta.title || '') ||
+            /\bS0?1\b/i.test(meta.title || '');
+        if (isPtpMiniseries) {
+            meta.type = '剧集';
+            if (!/\bmini[\s.-]?series\b/i.test(meta.editionInfo || '')) {
+                meta.editionInfo = [meta.editionInfo, 'Miniseries'].filter(Boolean).join(' / ');
+            }
+        }
         meta.type = meta.type || '电影';
         if (!meta.type && meta.title) meta.type = getType(meta.title);
 
@@ -548,18 +559,17 @@ export class PTPEngine extends BaseEngine {
                 codecValue = 'x265';
                 break;
             case 'VC-1':
-                codecValue = 'VC-1';
+            case 'AV1':
+            case 'MPEG-2':
+            case 'MPEG-4':
+                codecValue = 'Other';
+                otherCodec = meta.codecSel || '';
                 break;
             case 'XVID':
                 codecValue = 'XviD';
                 break;
             case 'DIVX':
                 codecValue = 'DivX';
-                break;
-            case 'MPEG-2':
-            case 'MPEG-4':
-                codecValue = 'Other';
-                otherCodec = meta.codecSel || '';
                 break;
         }
         if ((meta.title || '').match(/dvd5/i)) {

@@ -26,6 +26,10 @@ export class CHDBitsEngine extends NexusPHPEngine {
             if (labels.gy) (document.getElementsByName('cnlang')[0] as HTMLInputElement).checked = true;
             if (labels.zz) (document.getElementsByName('cnsub')[0] as HTMLInputElement).checked = true;
             if (labels.diy) (document.getElementsByName('diy')[0] as HTMLInputElement).checked = true;
+            if (/特效字幕/.test(`${meta.smallDescr || meta.subtitle || ''} ${meta.description || ''}`)) {
+                const tx = document.getElementsByName('txsub')[0] as HTMLInputElement | undefined;
+                if (tx) tx.checked = true;
+            }
         } catch {}
         try {
             // CHD variants differ by skin; match by id/name/value/label text.
@@ -34,86 +38,77 @@ export class CHDBitsEngine extends NexusPHPEngine {
             this.checkByAlias(!!labels.db, ['dovi', 'dolbyvision', 'db', 'dv'], /(Dolby.?Vision|杜比视界|DoVi|\bDV\b)/i);
         } catch {}
 
+        const setSelectVal = (name: string, val: string) => {
+            const el = document.getElementsByName(name)[0] as HTMLSelectElement | undefined;
+            if (!el || !val) return;
+            if (!Array.from(el.options).some((o) => o.value === val)) return;
+            el.value = val;
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+
+        // Live-verified chdbits.co/upload.php values
         try {
-            const browsecat = document.getElementsByName('type')[0] as HTMLSelectElement;
-            const typeDict: Record<string, number> = {
-                电影: 1,
-                剧集: 4,
-                动漫: 3,
-                综艺: 5,
-                音乐: 6,
-                MV: 6,
-                纪录: 2,
-                体育: 7
+            const typeDict: Record<string, string> = {
+                电影: '401',
+                剧集: '402',
+                动漫: '405',
+                综艺: '403',
+                音乐: '406',
+                MV: '406',
+                纪录: '404',
+                体育: '407',
+                游戏: '410'
             };
-            if (typeDict.hasOwnProperty(meta.type || '')) {
-                const index = typeDict[meta.type || ''];
-                browsecat.options[index].selected = true;
-            }
-            if (meta.type === '书籍' && meta.description.match(/m4a|mp3/i)) {
-                browsecat.options[9].selected = true;
+            if (meta.type === '书籍' && /m4a|mp3/i.test(meta.description || '')) {
+                setSelectVal('type', '408');
+            } else if (meta.type && typeDict[meta.type]) {
+                setSelectVal('type', typeDict[meta.type]);
             }
 
-            const audiocodecBox = document.getElementsByName('audiocodec_sel')[0] as HTMLSelectElement;
-            const audiocodecDict: Record<string, number> = {
-                Flac: 6,
-                APE: 7,
-                AC3: 2,
-                WAV: 8,
-                Atmos: 4,
-                AAC: 9,
-                'DTS-HDMA': 3,
-                'DTS-HDHR': 3,
-                'TrueHD Atmos': 4,
-                TrueHD: 4,
-                DTS: 1,
-                LPCM: 5,
-                'DTS-HDMA:X 7.1': 3
+            const audioDict: Record<string, string> = {
+                Flac: '1', APE: '2', DTS: '3', AAC: '6', AC3: '7',
+                'DTS-HDMA': '10', 'DTS-HD': '10', 'DTS-HDHR': '10', 'DTS-HDMA:X 7.1': '10', 'DTS-X': '10',
+                TrueHD: '11', Atmos: '11', 'TrueHD Atmos': '11',
+                WAV: '12', LPCM: '13', ALAC: '14'
             };
-            if (audiocodecDict.hasOwnProperty(meta.audioCodecSel || '')) {
-                const index = audiocodecDict[meta.audioCodecSel || ''];
-                audiocodecBox.options[index].selected = true;
+            if (meta.audioCodecSel && audioDict[meta.audioCodecSel]) {
+                setSelectVal('audiocodec_sel', audioDict[meta.audioCodecSel]);
             }
 
-            const standardBox = document.getElementsByName('standard_sel')[0] as HTMLSelectElement;
-            const standardDict: Record<string, number> = {
-                '8K': 5,
-                '4K': 6,
-                '1080p': 1,
-                '1080i': 2,
-                '720p': 3,
-                SD: 4,
-                '': 4
+            const stdDict: Record<string, string> = {
+                '8K': '7', '4K': '6', '1080p': '1', '1080i': '2', '720p': '3', SD: '5', '': '5'
             };
-            if (standardDict.hasOwnProperty(meta.standardSel || '')) {
-                const index = standardDict[meta.standardSel || ''];
-                standardBox.options[index].selected = true;
+            setSelectVal('standard_sel', stdDict[meta.standardSel || ''] || '5');
+
+            const codecDict: Record<string, string> = {
+                H264: '1', X264: '1', H265: '5', X265: '5',
+                'VC-1': '2', AV1: '3', 'MPEG-2': '4', 'MPEG-4': '6'
+            };
+            if (meta.codecSel && codecDict[meta.codecSel]) {
+                setSelectVal('codec_sel', codecDict[meta.codecSel]);
             }
 
-            const codecBox = document.getElementsByName('codec_sel')[0] as HTMLSelectElement;
-            const codecDict: Record<string, number> = { H264: 1, X265: 2, X264: 1, H265: 2, 'VC-1': 5, 'MPEG-2': 4 };
-            if (codecDict.hasOwnProperty(meta.codecSel || '')) {
-                const index = codecDict[meta.codecSel || ''];
-                codecBox.options[index].selected = true;
+            const medDict: Record<string, string> = {
+                'Blu-ray': '1', UHD: '19', Remux: '3', Encode: '4', HDTV: '6', 'WEB-DL': '18', CD: '8'
+            };
+            if (meta.mediumSel && medDict[meta.mediumSel]) {
+                setSelectVal('medium_sel', medDict[meta.mediumSel]);
             }
 
-            const mediumBox = document.getElementsByName('medium_sel')[0] as HTMLSelectElement;
-            const mediumDict: Record<string, number> = { UHD: 2, 'Blu-ray': 1, Encode: 4, HDTV: 5, 'WEB-DL': 6, Remux: 3, CD: 7 };
-            if (mediumDict.hasOwnProperty(meta.mediumSel || '')) {
-                const index = mediumDict[meta.mediumSel || ''];
-                mediumBox.options[index].selected = true;
-            }
-            switch (meta.mediumSel) {
-                case 'UHD':
-                    if (meta.title.match(/(diy|@)/i)) {
-                        mediumBox.options[2].selected = true;
-                    }
-                    break;
-                case 'Blu-ray':
-                    if (meta.title.match(/(diy|@)/i)) {
-                        mediumBox.options[1].selected = true;
-                    }
-                    break;
+            // Processing (`processing_sel`: 1=3D, 3=美剧, 4=日剧, 5=港剧, 6=韩剧, 7=英剧, 8=国剧, 9=台剧, 13=合集)
+            const t = meta.title || '';
+            if (/(?:^|[.\s])3D(?:[.\s]|$)/i.test(t)) {
+                setSelectVal('processing_sel', '1');
+            } else if (meta.type === '剧集') {
+                const isPack = /(?:complete|S\d{1,2}(?!E))/i.test(t) && !/E\d{1,3}/i.test(t);
+                const src = meta.sourceSel || '';
+                if (isPack) setSelectVal('processing_sel', '13');
+                else if (src === '日本') setSelectVal('processing_sel', '4');
+                else if (src === '香港') setSelectVal('processing_sel', '5');
+                else if (src === '韩国') setSelectVal('processing_sel', '6');
+                else if (src === '大陆') setSelectVal('processing_sel', '8');
+                else if (src === '台湾') setSelectVal('processing_sel', '9');
+                else if (src === '欧美') setSelectVal('processing_sel', /英国/.test(meta.description || '') ? '7' : '3');
             }
         } catch (err) {
             console.error(err);

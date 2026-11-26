@@ -673,6 +673,181 @@ export class EmbedService {
             } catch {}
         }
 
+        // FileList: inject a clean host table right above `#descr` (or inside `.cblock-innercontent tbody`).
+        if (adapter.siteName === 'FileList') {
+            const existing = document.getElementById('autofeed-filelist-host') as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const descr = document.getElementById('descr');
+            if (descr?.parentElement) {
+                const host = document.createElement('div');
+                host.id = 'autofeed-filelist-host';
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '12px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                const anchor = descr.previousElementSibling || descr;
+                anchor.parentElement?.insertBefore(host, anchor);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            }
+            const innerTbody = document.querySelector('.cblock-innercontent tbody') as HTMLTableSectionElement | null;
+            if (innerTbody) {
+                const firstTr = innerTbody.querySelector('tr') as HTMLTableRowElement | null;
+                if (firstTr) return { kind: 'after-tr', afterTr: firstTr, colSpan: getColSpanForRow(firstTr) };
+                return { kind: 'table-body', tableBody: innerTbody, leftClass: '' };
+            }
+        }
+
+        // TorrentLeech: inject inside `.table.borderless` right after the `Added` row.
+        if (adapter.siteName === 'TorrentLeech') {
+            const table = document.querySelector('table.table.borderless') as HTMLTableElement | null;
+            if (table) {
+                const rows = Array.from(table.querySelectorAll('tr')) as HTMLTableRowElement[];
+                const addedRow = rows.find((tr) => (tr.querySelector('td')?.textContent || '').trim() === 'Added') || rows[0];
+                if (addedRow) return { kind: 'after-tr', afterTr: addedRow, colSpan: getColSpanForRow(addedRow) };
+            }
+        }
+
+        // HDRoute: inject near `.details-info` / `.details-title-eng` if not a standard Nexus details table.
+        if (adapter.siteName === 'HDRoute') {
+            const existing = document.getElementById('autofeed-hdroute-host') as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const anchor =
+                (document.querySelector('.details-info, .torrent-info, .details-main, .details-title-eng') as HTMLElement | null);
+            if (anchor?.parentElement) {
+                const host = document.createElement('div');
+                host.id = 'autofeed-hdroute-host';
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '10px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                anchor.insertAdjacentElement('afterend', host);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            }
+        }
+
+        // AvistaZ network (AvistaZ / CinemaZ / PrivateHD): inject inside the main details table after Download/Title row.
+        if (['AvistaZ', 'CinemaZ', 'PrivateHD'].includes(adapter.siteName)) {
+            const tables = Array.from(document.querySelectorAll('div.table-responsive table')) as HTMLTableElement[];
+            const detailsTable = tables.find((t) => /Title/i.test(t.textContent || '')) || tables[0] || null;
+            if (detailsTable) {
+                const rows = Array.from(detailsTable.querySelectorAll('tr')) as HTMLTableRowElement[];
+                const anchor =
+                    rows.find((tr) => /^Download$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows.find((tr) => /^Title$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows[0];
+                if (anchor) return { kind: 'after-tr', afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+            }
+        }
+
+        // CG (Cinemageddon): inject inside `#torrent_details` parent table after the first row.
+        if (adapter.siteName === 'CG') {
+            const details = document.getElementById('torrent_details');
+            const table = details?.parentElement?.querySelector('table') as HTMLTableElement | null;
+            if (table) {
+                const firstTr = table.querySelector('tr') as HTMLTableRowElement | null;
+                if (firstTr) return { kind: 'after-tr', afterTr: firstTr, colSpan: getColSpanForRow(firstTr) };
+            }
+        }
+
+        // HDT (HD-Torrents): inject inside `table.listadetails` after Tools / Info Hash / Torrent row.
+        if (adapter.siteName === 'HDT') {
+            const table = document.querySelector('table.listadetails') as HTMLTableElement | null;
+            if (table) {
+                const rows = Array.from(table.querySelectorAll('tr')) as HTMLTableRowElement[];
+                const anchor =
+                    rows.find((tr) => /^Tools:?$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows.find((tr) => /^Info Hash:?$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows.find((tr) => /^Torrent:?$/i.test((tr.querySelector('td,th')?.textContent || '').trim())) ||
+                    rows[0];
+                if (anchor) return { kind: 'after-tr', afterTr: anchor, colSpan: getColSpanForRow(anchor) };
+            }
+        }
+
+        // Legacy foreign & SPA sites: dedicated mount tables under main header/info block.
+        if (['bib', 'IPT', 'ZHUQUE', 'BlueBird', 'HDSpace', 'digitalcore'].includes(adapter.siteName)) {
+            const hostId = `autofeed-${adapter.siteName.toLowerCase()}-host`;
+            const existing = document.getElementById(hostId) as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const mountHostAfter = (anchor: Element | null, before = false): InsertPoint | null => {
+                if (!anchor?.parentElement) return null;
+                const host = document.createElement('div');
+                host.id = hostId;
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '10px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                anchor.insertAdjacentElement(before ? 'beforebegin' : 'afterend', host);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            };
+            if (adapter.siteName === 'bib') {
+                const pt = mountHostAfter(document.getElementById('title') || document.querySelector('h1'));
+                if (pt) return pt;
+            } else if (adapter.siteName === 'IPT') {
+                const pt = mountHostAfter(document.getElementById('media') || document.querySelector('div.info'), !!document.getElementById('media'));
+                if (pt) return pt;
+            } else if (adapter.siteName === 'ZHUQUE') {
+                const card = document.querySelector('div.ant-card-body')?.parentElement || null;
+                const pt = mountHostAfter(card);
+                if (pt) return pt;
+            } else if (adapter.siteName === 'BlueBird') {
+                const tr = document.querySelectorAll('#highlighted tr')[1] as HTMLTableRowElement | undefined;
+                if (tr) return { kind: 'after-tr', afterTr: tr, colSpan: getColSpanForRow(tr) };
+            } else if (adapter.siteName === 'HDSpace') {
+                const tables = Array.from(document.querySelectorAll('#mcol table')) as HTMLTableElement[];
+                const t = tables.find((el) => /Info Hash/i.test(el.textContent || ''));
+                const tr = t?.querySelectorAll('tr')[2] as HTMLTableRowElement | undefined;
+                if (tr) return { kind: 'after-tr', afterTr: tr, colSpan: getColSpanForRow(tr) };
+            } else if (adapter.siteName === 'digitalcore') {
+                const pt = mountHostAfter(document.querySelector('.imdbinfotext')?.closest('div') || document.querySelector('h1'));
+                if (pt) return pt;
+            }
+        }
+
+        // HONE (Hawke-Uno): inject under `.button-block` / `#meta-info` if Unit3D menu is absent.
+        if (adapter.siteName === 'HONE') {
+            const existing = document.getElementById('autofeed-hone-host') as HTMLElement | null;
+            if (existing) {
+                const tb = existing.querySelector('tbody') as HTMLTableSectionElement | null;
+                if (tb) return { kind: 'table-body', tableBody: tb, leftClass: '' };
+            }
+            const anchor = (document.querySelector('.button-block, #meta-info') as HTMLElement | null);
+            if (anchor?.parentElement) {
+                const host = document.createElement('div');
+                host.id = 'autofeed-hone-host';
+                host.dataset.autofeedEmbed = scopeKey;
+                host.style.margin = '12px 0';
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+                host.appendChild(table);
+                anchor.insertAdjacentElement('afterend', host);
+                return { kind: 'table-body', tableBody: tbody, leftClass: '' };
+            }
+        }
+
         // Unit3D / Unit3DClassic: legacy uses a standalone table block under torrent buttons.
         // We create a host table and inject as 2-row table.
         const unit3dMenu = document.querySelector('menu.torrent__buttons, .torrent__buttons, menu.form__group--short-horizontal') as HTMLElement | null;

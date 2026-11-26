@@ -36,3 +36,4 @@ legacy_extract/out/
 archive/
 legacy_extract/
 agent.md
+.code-review-graph/

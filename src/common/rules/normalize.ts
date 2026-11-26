@@ -26,8 +26,7 @@ const MEDIAINFO_TITLE_REWRITE_TARGETS = new Set([
     'Dragon',
     'QingWa',
     'NanYang',
-    'iTS',
-    'xthor'
+    'iTS'
 ]);
 
 function getBlurayNameFromDescr(descr: string, name: string, currentName?: string): string {
@@ -117,9 +116,9 @@ function getPrimaryAudioCodecSel(blob: string): string {
     if (/True.?HD[\s\S]{0,60}Atmos|Atmos|E-?AC-?3[\s\S]{0,20}JOC/i.test(section)) return 'Atmos';
     if (/E-?AC-?3|DDP/i.test(section)) return 'AC3';
     if (/True.?HD/i.test(section)) return 'TrueHD';
-    if (/DTS[- .]?X/i.test(section)) return 'DTS-HDMA:X 7.1';
-    if (/DTS[- .]?HD[\s\S]{0,30}(MA|Master)/i.test(section)) return 'DTS-HDMA';
-    if (/DTS[- .]?HD[\s\S]{0,30}(HR|HRA)/i.test(section)) return 'DTS-HDHR';
+    if (/DTS[\s\S]{0,40}XLL\s*X\b|DTS[- .:]?X\b/i.test(section)) return 'DTS-HDMA:X 7.1';
+    if (/DTS[- .]?HD[\s\S]{0,30}(MA|Master)|\bDTS\s+XLL\b|Format\s+profile\s*:\s*MA\b/i.test(section)) return 'DTS-HDMA';
+    if (/DTS[- .]?HD[\s\S]{0,30}(HR|HRA)|\bDTS\s+XBR\b|Format\s+profile\s*:\s*HRA\b/i.test(section)) return 'DTS-HDHR';
     if (/DTS[- .]?HD/i.test(section)) return 'DTS-HD';
     if (/LPCM|PCM/i.test(section)) return 'LPCM';
     if (/FLAC/i.test(section)) return 'Flac';
@@ -156,14 +155,14 @@ function applyMediaInfoDrivenTitleRewrite(out: TorrentMeta, forwardSite?: string
     name = name.replace(/DDPA?/gi, 'DD+').replace(/\bAC-?3\b/gi, 'DD').replace(/DTS(\d+(?:\.\d+)?)/gi, 'DTS $1');
     name = name.replace(/[\\/]+/g, ' ').replace(/\.(mkv|mp4|m2ts|avi|ts)$/i, '').trim();
 
-    // Generic rebuild path: if title is raw/incomplete but media blocks are present,
-    // reconstruct a canonical release title from media info (reused by PTP/Tik/other sources).
+    // Generic rebuild path: if title is incomplete (missing resolution/medium/audio) and media blocks are present,
+    // reconstruct a canonical release title from media info without clobbering already-complete release names (e.g. ATV WEB-DL DD5.1).
     try {
         const missingMediaCore =
             !name.match(/(2160p|1080p|1080i|720p|4K)/i) ||
             !name.match(/(Blu-?ray|UHD|WEB[- .]?DL|Remux|HDTV|DVD|Encode)/i) ||
-            !name.match(/(TrueHD|DTS|AAC|DDP|DD\+|FLAC|LPCM)/i);
-        if (originalLooksRaw || missingMediaCore) {
+            !name.match(/(TrueHD|DTS|AAC|DDP|DD\+|DD\s*[12567]\.[01]|AC-?3|FLAC|LPCM|OPUS)/i);
+        if (missingMediaCore) {
             const rebuilt = rebuildReleaseTitleFromMedia(
                 { title: name, description: out.description || '', fullMediaInfo: out.fullMediaInfo || '' },
                 { defaultGroup: '' }
@@ -392,13 +391,26 @@ export function normalizeMeta(meta: TorrentMeta, forwardSite?: string): TorrentM
         out.codecSel = getCodecSel(out.title || '');
         if (!out.codecSel) out.codecSel = getCodecSel(descr);
     }
+    const titleAudioCodec = getAudioCodecSel(out.title || '');
     if (!out.audioCodecSel) {
-        out.audioCodecSel = getAudioCodecSel(out.title || '');
+        out.audioCodecSel = titleAudioCodec;
         if (!out.audioCodecSel) out.audioCodecSel = getAudioCodecSel(descr);
     }
     try {
         const primaryAudio = getPrimaryAudioCodecSel(`${out.fullMediaInfo || ''}\n${descr}`);
-        if (primaryAudio) out.audioCodecSel = primaryAudio;
+        if (primaryAudio) {
+            const isDowngrade =
+                (titleAudioCodec === 'DTS-HDMA:X 7.1' && /^(DTS-HDMA|DTS-HDHR|DTS-HD|DTS|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'DTS-X' && /^(DTS-HDMA|DTS-HDHR|DTS-HD|DTS|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'DTS-HDMA' && /^(DTS-HD|DTS|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'DTS-HDHR' && /^(DTS-HD|DTS|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'DTS-HD' && /^(DTS|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'Atmos' && /^(TrueHD|AC3)$/.test(primaryAudio)) ||
+                (titleAudioCodec === 'TrueHD' && primaryAudio === 'AC3');
+            if (!isDowngrade) {
+                out.audioCodecSel = primaryAudio;
+            }
+        }
     } catch {}
     if (!out.standardSel) {
         out.standardSel = getStandardSel(out.title || '');

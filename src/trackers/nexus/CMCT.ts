@@ -7,8 +7,93 @@ import { getMediainfoPictureFromDescr } from '../../common/rules/media';
 import { getSourceSelFromDescr } from '../../common/rules/helpers';
 import { repeat } from '../../common/dom/repeat';
 import { getMetaLabels } from '../../common/rules/labels';
+import { readFieldValue } from '../../common/dom/form';
+import { stripLeadingPtgenBlock } from '../../services/PtgenService';
 
 const retry = (fn: () => void, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
+
+export const buildCmctExtraDescr = (
+    rawDescription: string,
+    options?: {
+        mediaInfo?: string;
+        screenshotUrls?: string[];
+        coverUrl?: string;
+        hasExternalLink?: boolean;
+    }
+): string => {
+    let extra = String(rawDescription || '').trim();
+    if (!extra) return '';
+
+    const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const mi = String(options?.mediaInfo || '').trim();
+    if (mi) {
+        extra = extra.replace(new RegExp(`\\[(?:quote|mediainfo|bdinfo|hide=mediainfo|hide=bdinfo)[^\\]]*\\]\\s*${esc(mi)}\\s*\\[\\/(?:quote|mediainfo|bdinfo|hide)\\]\\s*`, 'ig'), '\n');
+    }
+    // Strip any MediaInfo/BDInfo block already handled by `#Media_BDInfo`.
+    extra = extra.replace(
+        /\[(quote|code|mediainfo|bdinfo|hide|spoiler)(?:=[^\]]*)?\][\s\S]*?(?:General|Unique ID|Complete name|DISC INFO:|\.MPLS|Disc Label|Video Codec)[\s\S]*?\[\/\1\]/gi,
+        '\n'
+    );
+
+    // Strip screenshot URLs already placed into `#url_vimages` and poster URLs already placed into `#url_poster` / Douban.
+    const removeUrls = new Set<string>(
+        [...(options?.screenshotUrls || []), options?.coverUrl || '']
+            .map((u) => String(u || '').trim())
+            .filter(Boolean)
+    );
+    extra = extra.replace(/(?:\[url=[^\]]+\])?\[img\](https?:\/\/[^\s\]]+)\[\/img\](?:\[\/url\])?/gi, (full, url: string) => {
+        const cleanUrl = String(url || '').trim();
+        if (removeUrls.has(cleanUrl)) return '';
+        if (options?.hasExternalLink && /doubanio\.com\/view\/photo\//i.test(cleanUrl)) return '';
+        return full;
+    });
+
+    // When CMCT has a Douban/IMDb URL in `#url`, CMCT renders the Douban info block itself;
+    // strip the leading PTGen info block so `附加信息` only carries genuine extra notes / comparisons.
+    if (options?.hasExternalLink) {
+        extra = stripLeadingPtgenBlock(extra);
+    }
+
+    extra = extra
+        .replace(/\[quote\]\s*\[\/quote\]/gi, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+    return extra;
+};
+
+export const setCmctDescrValue = (value: string) => {
+    const descrBox = document.querySelector('#descr, textarea[name="descr"]') as HTMLTextAreaElement | null;
+    if (!descrBox) return;
+    descrBox.value = value;
+    descrBox.dispatchEvent(new Event('input', { bubbles: true }));
+    descrBox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    try {
+        const pageWin = (typeof (globalThis as any).unsafeWindow !== 'undefined'
+            ? (globalThis as any).unsafeWindow
+            : window) as any;
+        const inst =
+            pageWin?.sceditor?.instance?.(descrBox) ||
+            (pageWin?.jQuery && pageWin.jQuery(descrBox)?.sceditor?.('instance')) ||
+            ((window as any).sceditor?.instance?.(descrBox));
+        if (inst && typeof inst.val === 'function') {
+            inst.val(value);
+            if (typeof inst.updateOriginal === 'function') inst.updateOriginal();
+        }
+    } catch {}
+
+    try {
+        const scTextarea = descrBox
+            .closest('td, .bbcode-editor')
+            ?.querySelector('.sceditor-container textarea') as HTMLTextAreaElement | null;
+        if (scTextarea && scTextarea !== descrBox) {
+            scTextarea.value = value;
+            scTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            scTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    } catch {}
+};
 
 const setById = (id: string, on: boolean) => {
     if (!on) return;
@@ -122,14 +207,25 @@ export class CMCTEngine extends NexusPHPEngine {
         return meta;
     }
 
+    isFillComplete(): boolean {
+        const name = readFieldValue(['input[name="name"]', '#name']);
+        const mi = readFieldValue(['#Media_BDInfo', 'textarea[name="Media_BDInfo"]']);
+        const shots = readFieldValue(['#url_vimages', 'textarea[name="url_vimages"]']);
+        const descr = readFieldValue(['#descr', 'textarea[name="descr"]']);
+        return !!name && (mi.length > 30 || shots.length > 10 || descr.length > 30);
+    }
+
     protected async beforeFill(meta: TorrentMeta): Promise<TorrentMeta> {
         meta.title = buildCmctTitle(meta.title || '');
+        if (meta.subtitle) meta.subtitle = meta.subtitle.replace(/【/g, '[').replace(/】/g, ']');
+        if (meta.smallDescr) meta.smallDescr = meta.smallDescr.replace(/【/g, '[').replace(/】/g, ']');
         return meta;
     }
 
     protected async afterFill(meta: TorrentMeta): Promise<void> {
+        let preferredLink = '';
         try {
-            const preferredLink =
+            preferredLink =
                 (meta.doubanUrl || '').trim() ||
                 (meta.doubanId ? `https://movie.douban.com/subject/${meta.doubanId}/` : '') ||
                 (meta.imdbUrl || '').trim() ||
@@ -145,52 +241,55 @@ export class CMCTEngine extends NexusPHPEngine {
         } catch {}
 
         try {
-            const tas = Array.from(document.querySelectorAll('textarea')) as HTMLTextAreaElement[];
-            if (tas.length >= 3) {
-                const info = getMediainfoPictureFromDescr(meta.description || '', { mediumSel: meta.mediumSel });
-                const intro = (meta.description || '').split('[quote]')[0].replace(/\[img\][\s\S]*?\[\/img\]\s*/gi, '').trim();
-                if (intro) {
-                    tas[0].value = intro;
-                    tas[0].dispatchEvent(new Event('input', { bubbles: true }));
-                    tas[0].dispatchEvent(new Event('change', { bubbles: true }));
-                }
+            const info = getMediainfoPictureFromDescr(meta.description || '', { mediumSel: meta.mediumSel });
+            const pickMi = () => {
+                if (meta.fullMediaInfo) return meta.fullMediaInfo;
+                return (info.mediainfo || '').trim();
+            };
+            let mi = pickMi();
+            mi = mi.replace(/ReportBy[\s\S]*$/i, '').replace(/Report created by[\s\S]*$/i, '').trim();
 
-                const pickMi = () => {
-                    if (meta.fullMediaInfo) return meta.fullMediaInfo;
-                    return (info.mediainfo || '').trim();
-                };
-                let mi = pickMi();
-                mi = mi.replace(/ReportBy[\s\S]*$/i, '').replace(/Report created by[\s\S]*$/i, '').trim();
-                if (mi) {
-                    tas[1].value = mi;
-                    tas[1].dispatchEvent(new Event('input', { bubbles: true }));
-                    tas[1].dispatchEvent(new Event('change', { bubbles: true }));
-                }
-
-                let extra = meta.description || '';
-                if (mi) {
-                    const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    extra = extra.replace(new RegExp(`\\[quote\\]\\s*${esc(mi)}\\s*\\[/quote\\]\\s*`, 'ig'), '').trim();
-                }
-                tas[2].value = extra || meta.description || '';
-                tas[2].dispatchEvent(new Event('input', { bubbles: true }));
-                tas[2].dispatchEvent(new Event('change', { bubbles: true }));
-
-                const cover = (info.coverImg || '').replace(/\[img\]|\[\/img\]/gi, '').trim();
-                const imgUrls = Array.from(new Set(
-                    (info.picInfo || '')
-                        .match(/\[img\]([^\[]+?)\[\/img\]/gi)
-                        ?.map((s) => s.replace(/\[img\]|\[\/img\]/gi, '').trim())
-                        .filter(Boolean)
-                        .filter((u) => !cover || u !== cover) || []
-                ));
-                const urlBox = document.querySelector('#url_vimages') as HTMLTextAreaElement | HTMLInputElement | null;
-                if (urlBox && imgUrls.length) {
-                    urlBox.value = imgUrls.join('\n');
-                    urlBox.dispatchEvent(new Event('input', { bubbles: true }));
-                    urlBox.dispatchEvent(new Event('change', { bubbles: true }));
-                }
+            const miBox = document.querySelector('#Media_BDInfo, textarea[name="Media_BDInfo"]') as HTMLTextAreaElement | null;
+            if (miBox && mi) {
+                miBox.value = mi;
+                miBox.dispatchEvent(new Event('input', { bubbles: true }));
+                miBox.dispatchEvent(new Event('change', { bubbles: true }));
             }
+
+            const cover = (info.coverImg || '').replace(/\[img\]|\[\/img\]/gi, '').trim();
+            const posterBox = document.querySelector('#url_poster, input[name="url_poster"]') as HTMLInputElement | null;
+            // CMCT explicitly instructs: leave poster blank to use Douban/IMDb poster; avoid hotlink-blocked doubanio URLs when `#url` is set.
+            const skipDoubanHotlink = !!preferredLink && /doubanio\.com/i.test(cover);
+            if (posterBox && cover && !skipDoubanHotlink && !posterBox.value.trim()) {
+                posterBox.value = cover;
+                posterBox.dispatchEvent(new Event('input', { bubbles: true }));
+                posterBox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            const imgUrls = Array.from(new Set(
+                (info.picInfo || '')
+                    .match(/\[img\]([^\[]+?)\[\/img\]/gi)
+                    ?.map((s) => s.replace(/\[img\]|\[\/img\]/gi, '').trim())
+                    .filter(Boolean)
+                    .filter((u) => !cover || u !== cover) || []
+            ));
+            const urlBox = document.querySelector('#url_vimages, textarea[name="url_vimages"]') as HTMLTextAreaElement | HTMLInputElement | null;
+            if (urlBox && imgUrls.length) {
+                urlBox.value = imgUrls.join('\n');
+                urlBox.dispatchEvent(new Event('input', { bubbles: true }));
+                urlBox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // Keep CMCT `附加信息` (`#descr` + SCEditor) clean: strip MediaInfo, `#url_vimages` screenshots,
+            // poster, and auto-rendered Douban PTGen block, leaving only genuine extra notes / comparisons.
+            const extra = buildCmctExtraDescr(meta.description || '', {
+                mediaInfo: miBox ? mi : '',
+                screenshotUrls: urlBox ? imgUrls : [],
+                coverUrl: cover,
+                hasExternalLink: !!preferredLink
+            });
+            setCmctDescrValue(extra);
+            repeat(() => setCmctDescrValue(extra), 4, 300);
         } catch { }
 
         retry(() => {
@@ -274,6 +373,7 @@ export class CMCTEngine extends NexusPHPEngine {
             switch (meta.audioCodecSel) {
                 case 'DTS-HD':
                 case 'DTS-HDMA:X 7.1':
+                case 'DTS-X':
                 case 'DTS-HDMA':
                 case 'DTS-HDHR':
                     audio = 1;
@@ -302,6 +402,12 @@ export class CMCTEngine extends NexusPHPEngine {
                     break;
                 case 'WAV':
                     audio = 9;
+                    break;
+                case 'MP3':
+                    audio = 10;
+                    break;
+                case 'OPUS':
+                    audio = 12;
                     break;
             }
             setSelectValue('select[name="audiocodec_sel"]', audio);
@@ -341,6 +447,7 @@ export class CMCTEngine extends NexusPHPEngine {
         try {
             const labels = getMetaLabels(meta);
             retry(() => {
+                setById('mandarin', !!labels.gy);
                 setById('subtitlezh', !!labels.zz);
                 if (!labels.diy && /mpls/i.test(`${meta.description || ''}${meta.fullMediaInfo || ''}`)) {
                     setById('untouched', true);

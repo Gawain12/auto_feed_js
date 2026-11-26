@@ -92,18 +92,35 @@ export class TJUPTEngine extends NexusPHPEngine {
             音乐: '406',
             MV: '406',
             体育: '407',
-            软件: '408'
+            软件: '408',
+            游戏: '409'
         };
-        selectValue('select[name="browsecat"], select#browsecat', typeMap[meta.type || ''] || '410');
+        const title = meta.targetTitle || meta.title || '';
+        const catVal = /(?:pad$|ipad)/i.test(title) ? '412' : (typeMap[meta.type || ''] || '410');
+        selectValue('select[name="browsecat"], select#browsecat', catVal);
         try { (window as any).getcategory?.('class2', 'browsecat'); } catch {}
 
+        // Check `中文字幕(华语影视不勾选)` for non-Chinese titles with Chinese subtitles.
+        try {
+            const isChineseOrigin = /大陆|香港|台湾|港台/.test(meta.sourceSel || '');
+            const hasCnSub = Boolean(meta.labelInfo?.zz || /中字|简体|繁体/.test(`${meta.smallDescr || meta.subtitle || ''} ${meta.description || ''}`));
+            if (hasCnSub && !isChineseOrigin) {
+                const cb = document.querySelector('input[name="chinese"][type="checkbox"]') as HTMLInputElement | null;
+                if (cb && !cb.checked) {
+                    cb.checked = true;
+                    dispatchFormEvents(cb);
+                }
+            }
+        } catch {}
+
         const fillDependent = () => {
-            setValue('#ename', (meta.targetTitle || meta.title || '').replace(/\s+/g, '.'));
+            setValue('#ename', title.replace(/\s+/g, '.'));
             const source = `${meta.description || ''}\n${meta.synopsis || ''}`.replace(/\[\/?.+?\]/g, '');
             const cname =
-                source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.trim() ||
-                source.match(/(?:译\s*名|譯\s*名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.split('/')?.[0]?.trim() ||
-                '';
+                meta.sourceSel === '大陆'
+                    ? (source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.split('/')?.[0]?.trim() || '')
+                    : (source.match(/(?:译\s*名|譯\s*名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.split('/')?.[0]?.trim() ||
+                        source.match(/(?:片\s*名|中文名)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.split('/')?.[0]?.trim() || '');
             setValue('#cname', cname);
             const district =
                 source.match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|產.{0,5}?地)\s*[:：]?\s*([^\r\n]+)/)?.[1]?.trim() ||
@@ -112,9 +129,51 @@ export class TJUPTEngine extends NexusPHPEngine {
             setValue('#district', district.replace(/\s+/g, '').replace(/中国大陆|中国/g, '大陆'));
             const language = source.match(/语.{0,5}?言\s*[:：]?\s*([^\r\n]+)/)?.[1]?.trim() || '';
             setValue('#language', language);
+
+            if (meta.type === '剧集') {
+                const src = meta.sourceSel || '';
+                let specId = '';
+                if (src === '大陆') specId = 'specificcat1';
+                else if (['台湾', '香港', '港台'].includes(src)) specId = 'specificcat2';
+                else if (src === '日本') specId = 'specificcat4';
+                else if (src === '韩国') specId = 'specificcat5';
+                else if (src === '欧美') specId = /^英国/.test(district) ? 'specificcat6' : 'specificcat3';
+                if (specId) {
+                    const cb = document.getElementById(specId) as HTMLInputElement | null;
+                    if (cb) { cb.checked = true; dispatchFormEvents(cb); }
+                    try { (window as any).getcheckboxvalue?.('specificcat', 7); } catch {}
+                }
+                const specInput = document.getElementById('specificcat') as HTMLInputElement | null;
+                if (specInput && !specInput.value && src) {
+                    setValue('#specificcat', `${src}剧`);
+                }
+            }
+
+            if (meta.type === '综艺' || meta.type === '纪录') {
+                if (meta.labelInfo?.zz || /中字|简体|繁体/.test(`${meta.smallDescr || ''}${meta.description || ''}`)) {
+                    const subs = document.getElementsByName('subsinfo')[0] as HTMLSelectElement | undefined;
+                    if (subs && subs.options[2]) {
+                        subs.selectedIndex = 2;
+                        dispatchFormEvents(subs);
+                    }
+                }
+            }
+
+            if (meta.type === '纪录') {
+                let fmtId = '';
+                if (meta.standardSel === '1080p' || meta.standardSel === '1080i') fmtId = 'format1';
+                else if (meta.standardSel === '720p') fmtId = 'format2';
+                else if (/BDRIP/i.test(title)) fmtId = 'format3';
+                else if (/DVDRIP/i.test(title)) fmtId = 'format4';
+                else if (/TVRIP/i.test(title)) fmtId = 'format5';
+                if (fmtId) {
+                    const cb = document.getElementById(fmtId) as HTMLInputElement | null;
+                    if (cb) { cb.checked = true; dispatchFormEvents(cb); }
+                }
+            }
         };
 
         fillDependent();
-        [300, 900, 1800].forEach((ms) => window.setTimeout(fillDependent, ms));
+        [300, 900, 1800, 3000].forEach((ms) => window.setTimeout(fillDependent, ms));
     }
 }

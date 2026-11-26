@@ -5,6 +5,7 @@ import { extractDoubanId } from '../common/rules/links';
 export interface DoubanInfo {
     id: string;
     title: string;
+    originalTitle?: string;
     year?: number | string;
     aka?: string;
     average?: number | string;
@@ -12,11 +13,15 @@ export interface DoubanInfo {
     genre?: string;
     region?: string;
     director?: string;
+    writer?: string;
     language?: string;
     releaseDate?: string;
     runtime?: string;
+    episodes?: string;
     cast?: string;
     summary?: string;
+    awards?: string[];
+    imdbId?: string;
     image?: string;
 }
 
@@ -33,9 +38,33 @@ type DoubanFetchOptions = {
 
 export class DoubanService {
     private static posterDataUrlCache = new Map<string, Promise<string>>();
+    private static infoByImdbCache = new Map<string, DoubanInfo>();
+    private static infoByIdCache = new Map<string, DoubanInfo>();
+
+    static getCachedByImdb(imdbId: string): DoubanInfo | null {
+        const key = String(imdbId || '').trim().toLowerCase();
+        return key ? (this.infoByImdbCache.get(key) || null) : null;
+    }
+
+    static getCachedById(id: string): DoubanInfo | null {
+        const key = String(id || '').trim();
+        return key ? (this.infoByIdCache.get(key) || null) : null;
+    }
+
+    private static cacheInfo(info: DoubanInfo | null, imdbKey?: string): DoubanInfo | null {
+        if (!info) return null;
+        if (info.id) this.infoByIdCache.set(String(info.id).trim(), info);
+        const effectiveImdb = String(imdbKey || info.imdbId || '').trim().toLowerCase();
+        if (effectiveImdb) this.infoByImdbCache.set(effectiveImdb, info);
+        return info;
+    }
 
     static async getByImdb(imdbId: string, options?: DoubanFetchOptions): Promise<DoubanInfo | null> {
-        const query = encodeURIComponent(String(imdbId || '').trim());
+        const rawImdb = String(imdbId || '').trim();
+        const cached = this.getCachedByImdb(rawImdb);
+        if (cached) return cached;
+
+        const query = encodeURIComponent(rawImdb);
         if (!query) return null;
 
         // Douban occasionally returns an empty search shell from the mobile
@@ -57,13 +86,18 @@ export class DoubanService {
         }
 
         if (!id || id === '35580200') return null;
-        return this.getById(id, options);
+        const info = await this.getById(id, options);
+        return this.cacheInfo(info, rawImdb);
     }
 
     static async getById(id: string, options?: DoubanFetchOptions): Promise<DoubanInfo | null> {
-        const url = `https://movie.douban.com/subject/${id}/`;
+        const cleanId = String(id || '').trim();
+        if (!cleanId) return null;
+        const cached = this.getCachedById(cleanId);
+        if (cached) return cached;
+        const url = `https://movie.douban.com/subject/${cleanId}/`;
         const doc = await HtmlFetchService.getDocument(url, this.buildFetchOptions(options));
-        return this.parseDoubanDoc(doc, id);
+        return this.cacheInfo(this.parseDoubanDoc(doc, cleanId));
     }
 
     private static findDoubanId(doc: Document): string {
@@ -91,53 +125,75 @@ export class DoubanService {
         return await this.posterDataUrlCache.get(normalized)!;
     }
 
-    private static parseDoubanDoc(doc: Document, id: string): DoubanInfo {
+    static parseDoubanDoc(doc: Document, id: string): DoubanInfo {
         const title = (doc.querySelector('title')?.textContent || '').replace('(豆瓣)', '').trim();
+        const itemReviewed = (doc.querySelector('#content h1 > span[property="v:itemreviewed"]')?.textContent || '').trim();
+        const originalTitle = itemReviewed && itemReviewed !== title
+            ? itemReviewed.replace(title, '').trim() || itemReviewed
+            : title;
 
         let image = '';
         const img = doc.querySelector('#mainpic img') as HTMLImageElement | null;
-        if (img?.src) {
-            const match = img.src.match(/(p\d+).+$/);
+        const imgSrc = img?.getAttribute('src') || img?.src || '';
+        if (imgSrc) {
+            const match = imgSrc.match(/(p\d+).+$/);
             if (match?.[1]) {
                 image = `https://img2.doubanio.com/view/photo/l_ratio_poster/public/${match[1]}.jpg`;
             } else {
-                image = img.src;
+                image = imgSrc;
             }
         }
 
         const yearText = doc.querySelector('#content > h1 > span.year')?.textContent || '';
         const year = yearText ? parseInt(yearText.replace(/[()]/g, ''), 10) : '';
 
-        const average = doc.querySelector('#interest_sectl [property="v:average"]')?.textContent || '';
-        const votes = doc.querySelector('#interest_sectl [property="v:votes"]')?.textContent || '';
+        const average = doc.querySelector('#interest_sectl [property="v:average"]')?.textContent?.trim() || '';
+        const votes = doc.querySelector('#interest_sectl [property="v:votes"]')?.textContent?.trim() || '';
 
         const genre = Array.from(doc.querySelectorAll('#info span[property="v:genre"]'))
             .map((e) => e.textContent?.trim())
             .filter(Boolean)
-            .join('/');
+            .join(' / ');
 
         const releaseDate = Array.from(doc.querySelectorAll('#info span[property="v:initialReleaseDate"]'))
             .map((e) => e.textContent?.trim())
             .filter(Boolean)
             .sort((a, b) => new Date(a || '').getTime() - new Date(b || '').getTime())
-            .join('/');
+            .join(' / ');
 
-        const runtime = doc.querySelector('#info span[property="v:runtime"]')?.textContent?.trim() || '';
+        const runtime =
+            doc.querySelector('#info span[property="v:runtime"]')?.textContent?.trim() ||
+            this.getInfoByLabel(doc, '单集片长') ||
+            this.getInfoByLabel(doc, '片长');
 
         const aka = this.getInfoByLabel(doc, '又名');
         const region = this.getInfoByLabel(doc, '制片国家/地区');
         const director = this.getInfoByLabel(doc, '导演');
+        const writer = this.getInfoByLabel(doc, '编剧');
         const language = this.getInfoByLabel(doc, '语言');
+        const episodes = this.getInfoByLabel(doc, '集数');
         const cast = this.getInfoByLabel(doc, '主演');
+        const infoHtml = doc.querySelector('#info')?.innerHTML || '';
+        const imdbId = infoHtml.match(/\b(tt\d{5,})\b/i)?.[1] || '';
 
         const summaryEl =
-            (doc.querySelector('#link-report-intra [property="v:summary"]') as HTMLElement | null) ||
-            (doc.querySelector('#link-report-intra span.all.hidden') as HTMLElement | null);
+            (doc.querySelector('#link-report-intra span.all.hidden') as HTMLElement | null) ||
+            (doc.querySelector('#link-report-intra [property="v:summary"]') as HTMLElement | null);
         const summary = this.getSummary(summaryEl);
+
+        const awards = Array.from(doc.querySelectorAll('ul.award'))
+            .map((ul) =>
+                Array.from(ul.querySelectorAll('li'))
+                    .map((li) => (li.textContent || '').replace(/\s+/g, ' ').trim())
+                    .filter(Boolean)
+                    .join(' ')
+            )
+            .filter(Boolean);
 
         return {
             id,
             title,
+            originalTitle,
             year,
             aka,
             average,
@@ -145,11 +201,15 @@ export class DoubanService {
             genre,
             region,
             director,
+            writer,
             language,
             releaseDate,
             runtime,
+            episodes,
             cast,
             summary,
+            awards: awards.length ? awards : undefined,
+            imdbId: imdbId || undefined,
             image
         };
     }
@@ -174,7 +234,19 @@ export class DoubanService {
         let node = span.nextSibling;
         while (node) {
             if (node.nodeName === 'BR') break;
-            const text = node.textContent || '';
+            if (node instanceof Element) {
+                if (node.matches('a.more-attrs, .more-attrs, a.more-actor, .more-actor')) {
+                    node = node.nextSibling;
+                    continue;
+                }
+                const clone = node.cloneNode(true) as Element;
+                clone.querySelectorAll('a.more-attrs, .more-attrs, a.more-actor, .more-actor').forEach((n) => n.remove());
+                const text = (clone.textContent || '').replace(/更多\.{0,3}\s*$/g, '');
+                if (text.trim()) chunks.push(text.trim());
+                node = node.nextSibling;
+                continue;
+            }
+            const text = (node.textContent || '').replace(/更多\.{0,3}\s*$/g, '');
             if (text.trim()) chunks.push(text.trim());
             node = node.nextSibling;
         }
@@ -182,6 +254,7 @@ export class DoubanService {
         return chunks
             .join(' ')
             .replace(/^[：:\s]+/, '')
+            .replace(/更多\.{0,3}\s*$/g, '')
             .replace(/\s*\/\s*/g, '/')
             .replace(/\s{2,}/g, ' ')
             .trim();

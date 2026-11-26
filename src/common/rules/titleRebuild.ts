@@ -62,7 +62,9 @@ function pickFirst(blob: string, pairs: Array<[RegExp, string]>): string {
     return '';
 }
 
-const CHANNEL_RE = /(7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i;
+// Require clean boundaries around channel layouts so MediaInfo numbers like "496.1 MiB" or "26.1 fps" never match "6.1".
+const CHANNEL_TOKEN_SRC = '(?<![\\d.])(7\\.1|6\\.1|5\\.1|5\\.0|4\\.0|2\\.1|2\\.0|1\\.0)(?![\\d.]|\\s*(?:MiB|GiB|KiB|MB|GB|KB|kb\\/s|Mbps|fps|%|Hz|kHz|ms)\\b)';
+const CHANNEL_RE = new RegExp(CHANNEL_TOKEN_SRC, 'i');
 
 function extractChannelToken(text: string): string {
     return text.match(CHANNEL_RE)?.[1] || '';
@@ -116,16 +118,16 @@ export function rebuildReleaseTitleFromMedia(meta: Pick<TorrentMeta, 'title' | '
     ]);
 
     const audioRules: Array<{ re: RegExp; audio: string }> = [
-        { re: /TrueHD[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'TrueHD' },
-        { re: /DTS[- .]?X[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DTS-HD MA' },
-        { re: /DTS[- .]?HD[\s\S]{0,40}?(?:MA|Master(?:\s*Audio)?)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DTS-HD MA' },
-        { re: /DTS[- .]?HD[\s\S]{0,40}?(?:HR|HRA|High(?:\s*Resolution)?)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DTS-HD HR' },
-        { re: /LPCM[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'LPCM' },
-        { re: /(?:\bDDP\b|E-?AC-?3|Dolby Digital Plus)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DD+' },
-        { re: /(?:\bAC-?3\b|Dolby Digital)[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DD' },
-        { re: /\bDTS\b[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'DTS' },
-        { re: /AAC[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'AAC' },
-        { re: /FLAC[\s\S]{0,120}?(?:7\.1|6\.1|5\.1|5\.0|4\.0|2\.1|2\.0|1\.0)/i, audio: 'FLAC' }
+        { re: new RegExp(`TrueHD[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'TrueHD' },
+        { re: new RegExp(`DTS[- .]?X[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DTS-HD MA' },
+        { re: new RegExp(`DTS[- .]?HD[\\s\\S]{0,40}?(?:MA|Master(?:\\s*Audio)?)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DTS-HD MA' },
+        { re: new RegExp(`DTS[- .]?HD[\\s\\S]{0,40}?(?:HR|HRA|High(?:\\s*Resolution)?)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DTS-HD HR' },
+        { re: new RegExp(`LPCM[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'LPCM' },
+        { re: new RegExp(`(?:\\bDDP\\b|E-?AC-?3|Dolby Digital Plus)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DD+' },
+        { re: new RegExp(`(?:\\bAC-?3\\b|\\bDD\\s*5\\.1|Dolby Digital)[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DD' },
+        { re: new RegExp(`\\bDTS\\b[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'DTS' },
+        { re: new RegExp(`AAC[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'AAC' },
+        { re: new RegExp(`FLAC[\\s\\S]{0,120}?${CHANNEL_TOKEN_SRC}`, 'i'), audio: 'FLAC' }
     ];
     let audio = '';
     let channels = '';

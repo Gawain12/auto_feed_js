@@ -249,6 +249,40 @@ export const appleStyles = `
 .af-btn-danger:hover {
     background: rgba(255,59,48,0.2);
 }
+.af-btn-success {
+    background: var(--af-success);
+    color: #fff;
+}
+.af-btn-success:hover {
+    background: #2db84e;
+}
+.af-save-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.af-save-badge.saving {
+    background: rgba(0,113,227,0.12);
+    color: var(--af-accent);
+}
+.af-save-badge.dirty {
+    background: rgba(255,149,0,0.16);
+    color: #b25e00;
+}
+.af-save-badge.saved {
+    background: rgba(52,199,89,0.16);
+    color: #1f8f3d;
+}
+.af-save-badge.error {
+    background: rgba(255,59,48,0.14);
+    color: var(--af-danger);
+}
 
 /* iOS Toggle Switch */
 .af-toggle {

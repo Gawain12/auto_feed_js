@@ -29,11 +29,14 @@ const isConcreteDomain = (host: string): boolean =>
     !host.endsWith('.') &&
     !host.includes('*');
 
+const stripWww = (host: string): string => host.replace(/^www\./i, '');
+
 const siteMatches = Array.from(new Set(
     [...NexusSites, ...GazelleSites, ...Unit3DSites, ...SpecialSites]
         .flatMap((site) => [site.baseUrl, site.mirrorUrl, ...(site.keywords || [])])
         .map(toHost)
         .filter(isConcreteDomain)
+        .map(stripWww)
         .flatMap((host) => [`*://${host}/*`, `*://*.${host}/*`])
 ));
 
@@ -64,6 +67,9 @@ try {
 } catch { }
 
 export default defineConfig({
+    define: {
+        __AUTOFEED_VERSION__: JSON.stringify(localUserscriptVersion || pkg.version)
+    },
     plugins: [
         preact(),
         // Dev-only: keep a stable local install URL for Tampermonkey.

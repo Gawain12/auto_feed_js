@@ -16,6 +16,16 @@ export class ImdbAspectRatioService {
         return `${this.CACHE_PREFIX}${extractImdbId(imdbId)}`;
     }
 
+    private static readonly NAMED_ASPECT_RATIOS: Array<[RegExp, string]> = [
+        [/\bacademy\b/i, '1.37:1'],
+        [/\b(?:silent\s*film|movietone|full\s*frame)\b/i, '1.33:1'],
+        [/\beuropean\s*widescreen\b/i, '1.66:1'],
+        [/\bflat\s*widescreen\b/i, '1.85:1'],
+        [/\b(?:cinemascope|panavision|anamorphic\s*widescreen)\b/i, '2.35:1'],
+        [/\bultra\s*panavision\b/i, '2.76:1'],
+        [/\bimax\b/i, '1.43:1']
+    ];
+
     static normalizeAspectRatio(value: unknown): string {
         if (typeof value !== 'string' && typeof value !== 'number') return '';
         const raw = String(value).replace(/\s+/g, ' ').trim();
@@ -24,6 +34,10 @@ export class ImdbAspectRatioService {
             const width = Number(ratio[1]);
             const height = Number(ratio[2]);
             return width > 0 && height > 0 ? width + ':' + height : '';
+        }
+        // Accept canonical named film ratios (e.g. Wikidata "Academy ratio" -> 1.37:1).
+        for (const [re, canonical] of this.NAMED_ASPECT_RATIOS) {
+            if (re.test(raw)) return canonical;
         }
         // Accept a bare ratio, not arbitrary text, object strings or dates.
         if (!/^\d+(?:\.\d+)?$/.test(raw)) return '';
@@ -113,9 +127,45 @@ export class ImdbAspectRatioService {
         return '';
     }
 
+    static async fetchAspectRatioFromWikidata(imdbIdOrUrl: string): Promise<string> {
+        const id = extractImdbId(imdbIdOrUrl);
+        if (!id) return '';
+        const sparql = `SELECT ?arLabel WHERE { ?item wdt:P345 "${id}" . ?item wdt:P2061 ?ar . SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 5`;
+        const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(sparql)}`;
+        try {
+            const resp = await GMAdapter.xmlHttpRequest({
+                method: 'GET',
+                url,
+                headers: {
+                    accept: 'application/sparql-results+json'
+                },
+                timeout: 8000
+            });
+            if (resp?.status !== 200 || !resp.responseText) return '';
+            const json = JSON.parse(resp.responseText);
+            const bindings = Array.isArray(json?.results?.bindings) ? json.results.bindings : [];
+            const labels: string[] = bindings
+                .map((b: any) => String(b?.arLabel?.value || '').trim())
+                .filter(Boolean);
+            // Prefer explicit numeric x:y ratios over named labels when multiple values exist.
+            const explicit = labels.find((l) => /\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?/.test(l));
+            const picked = explicit || labels[0] || '';
+            const normalized = this.normalizeAspectRatio(picked);
+            if (normalized) {
+                await this.saveCachedAspectRatio(id, normalized, 'https://www.wikidata.org/');
+            }
+            return normalized;
+        } catch {
+            return '';
+        }
+    }
+
     static async fetchAspectRatio(imdbIdOrUrl: string): Promise<string> {
         const id = extractImdbId(imdbIdOrUrl);
         if (!id) return '';
+        const cached = await this.getCachedAspectRatio(id);
+        if (cached) return cached;
+
         const urls = [
             `https://www.imdb.com/title/${id}/technical/?ref_=tt_spec_sm`,
             `https://www.imdb.com/title/${id}/`
@@ -125,12 +175,15 @@ export class ImdbAspectRatioService {
                 const resp = await GMAdapter.xmlHttpRequest({
                     method: 'GET',
                     url,
+                    withCredentials: true,
                     headers: {
                         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                         'accept-language': 'en-US,en;q=0.9'
                     },
-                    timeout: 10000
+                    timeout: 8000
                 });
+                // IMDb returns HTTP 202 (AWS WAF JS challenge) to unauthenticated XHR; break immediately to fallback.
+                if (resp?.status === 202 || resp?.status === 403) break;
                 if (resp?.status !== 200) continue;
                 const html = resp.responseText || '';
                 if (!html) continue;
@@ -142,6 +195,11 @@ export class ImdbAspectRatioService {
                 }
             } catch {}
         }
+
+        // Fallback: Wikidata SPARQL (no WAF, covers theatrical film aspect ratios via P345 -> P2061).
+        const fromWikidata = await this.fetchAspectRatioFromWikidata(id);
+        if (fromWikidata) return fromWikidata;
+
         return '';
     }
 

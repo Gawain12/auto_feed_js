@@ -67,5 +67,6 @@
 - 若改动站点逻辑，同步更新 `docs/wiki/FEATURE_PARITY.md` 状态说明。
 
 ## 近期进度
-- 2026-05-18：SC / HDT / TJUPT 完成第二轮稳定性修复。重点包括上传页等待选择器补齐、SC group-only 源页注入、HDT details/torrents 源页兼容、TJUPT 通用 name 与专用 ename/cname 填充分离，以及 Unit3D/Gazelle 统一使用 `targetTitle` 防止标题被通用逻辑覆盖。
-- 2026-05-19：修复旧设置未自动启用 SC / TJUPT / HDT 的迁移问题；PTP / SC 发布跳转按 legacy 先检索并附加 `groupid`；SC 目标页改为直接调用 `/imdb.php?code=` 填充 group 字段；HDT / TJUPT 源页增加稳定挂载点。
+- 2026-05-18：SC / HDT / TJUPT 完成第二轮稳定性修复。
+- 2026-05-19：修复旧设置迁移、PTP/SC 查重 `groupid`、SC `/imdb.php?code=` 填充、HDT/TJUPT 挂载点。
+- 2026-11-26（v5.2.0 大对齐）：`legacy.lock.json` 升级至上游 `4035eac`（`v2.1.1.6`）；引入声明式 `nexus_profiles.ts` 与实验性折叠分组，完成全部旧版活跃站对齐（155 站配置、新增 126 站、`❌` 清零，移除已关站的 `MTV`/`xthor`/`SugoiMusic`）；实测重写四大音乐站（`RED`/`OPS`/`DIC`/`OpenCD`，含单/多碟 CD `.log` 透传）并接入 `jpop`/`lztr`、`BTN`、`AvistaZ`/`CinemaZ`/`PrivateHD`、`CG`、`FileList`、`bib`；修复 HDT 40 位 hex infohash 源页识别、外站转内站 PTGen 与 CMCT 表单、4K UHD 杜比视界误判、Tik 英文助手与画幅比读取、设置页点击保存等问题。

@@ -13,6 +13,11 @@ export enum SiteType {
     HDB = 'HDB',
     KG = 'KG',
     HDT = 'HDT',
+    BTN = 'BTN',
+    HDRoute = 'HDRoute',
+    FileList = 'FileList',
+    TorrentLeech = 'TorrentLeech',
+    CG = 'CG',
     Avistaz = 'Avistaz',
     General = 'General'
 }
@@ -32,12 +37,106 @@ export interface SiteSelectors {
     torrentInput?: string;
 }
 
+export type NexusFieldValue = string | { index: number };
+
+export interface NexusTitleOverride {
+    pattern: string;
+    flags?: string;
+    whenType?: string;
+    whenMedium?: string;
+    whenCodec?: string;
+    whenAudio?: string;
+    whenStandard?: string;
+    whenDiy?: boolean;
+    inField?: 'title' | 'descr' | 'smallDescr' | 'all';
+    value: NexusFieldValue;
+}
+
+export interface NexusSelectMapping {
+    selector: string;
+    map: Record<string, NexusFieldValue>;
+    defaultValue?: NexusFieldValue;
+    titleOverrides?: NexusTitleOverride[];
+}
+
+export interface NexusFillProfile {
+    type?: NexusSelectMapping;
+    specialcat?: NexusSelectMapping;
+    specialcatMode5?: boolean;
+    specialcatExtras?: Array<{
+        selector: string;
+        value: NexusFieldValue;
+        whenPattern?: string;
+    }>;
+    medium?: NexusSelectMapping;
+    codec?: NexusSelectMapping;
+    codecAudioFallback?: Record<string, NexusFieldValue>;
+    audio?: NexusSelectMapping;
+    standard?: NexusSelectMapping;
+    source?: NexusSelectMapping;
+    sourceByMedium?: NexusSelectMapping;
+    sourceByType?: NexusSelectMapping;
+    processingByMedium?: NexusSelectMapping;
+    processingBySource?: NexusSelectMapping;
+    processingByHdr?: {
+        selector: string;
+        db?: NexusFieldValue;
+        hdr10?: NexusFieldValue;
+        hdr10plus?: NexusFieldValue;
+        defaultValue?: NexusFieldValue;
+    };
+    processingByYear?: {
+        selector: string;
+        mode: 'buckets' | 'optionText';
+        defaultValue?: NexusFieldValue;
+    };
+    team?: {
+        selector: string;
+        defaultValue: NexusFieldValue;
+        matchOption?: boolean;
+        matchMode?: 'standard' | 'okpt' | 'muxuege';
+    };
+    customTags?: Array<{
+        selector: string;
+        when: '4k_sdr' | 'hdr10' | 'dv' | 'effects_sub' | 'jp_lang' | 'kr_lang' | 'agsv_ark';
+    }>;
+}
+
+export type SiteContentDomain =
+    | 'movie'
+    | 'tv'
+    | 'miniseries'
+    | 'music'
+    | 'anime'
+    | 'doc'
+    | 'book'
+    | 'game'
+    | 'misc';
+
 export interface SiteConfig {
     name: string;
     type: SiteType;
     keywords: string[]; // Domain fragments matched against the page hostname
     description?: string; // Human readable description
     baseUrl?: string; // Canonical base URL for cross-site links
+
+    /** Whether this site uses the Chinese NexusPHP layout / metadata workflow. */
+    isChinese?: boolean;
+
+    /** Whether this site is newly ported without full live verification (collapsed in Settings UI). */
+    experimental?: boolean;
+
+    /** Content domains accepted by this tracker (omitted => general video tracker). */
+    contentDomains?: SiteContentDomain[];
+
+    /** Source/target capabilities; omit to default both to true. */
+    capabilities?: {
+        source?: boolean;
+        target?: boolean;
+    };
+
+    /** Optional declarative NexusPHP dropdown mappings extracted from legacy. */
+    nexusProfile?: NexusFillProfile;
 
     // URL matching patterns
     match?: {

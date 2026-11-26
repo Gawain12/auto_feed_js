@@ -7,6 +7,7 @@ import { getMediainfoPictureFromDescr } from '../common/rules/media';
 import { dealImg350, getSizeFromDescr } from '../common/rules/helpers';
 import { extractImdbId, matchLink } from '../common/rules/links';
 import { dealWithTitle } from '../common/rules/title';
+import { SettingsService } from '../services/SettingsService';
 
 export class BHDEngine extends Unit3DEngine {
     constructor(config: SiteConfig, url: string) {
@@ -157,93 +158,93 @@ export class BHDEngine extends Unit3DEngine {
             console.error('[Auto-Feed][BHD] Torrent inject failed:', err);
         }
 
-        // Category
+        const setSelVal = (el: HTMLSelectElement | null | undefined, val: string) => {
+            if (!el || !val) return;
+            if (!Array.from(el.options).some((o) => o.value === val)) return;
+            el.value = val;
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+
+        // Category (live beyond-hd.me/upload: 1=Movies, 2=TV; feature documentaries stay Movies)
         const categoryId = document.getElementById('category_id') as HTMLSelectElement | null;
         if (categoryId) {
-            const typeDict: Record<string, number> = { 电影: 1, 剧集: 2, 纪录: 2, 综艺: 2 };
-            if (typeDict.hasOwnProperty(meta.type || '')) {
-                const index = typeDict[meta.type || ''];
-                categoryId.options[index].selected = true;
+            const t = meta.title || '';
+            const isSeries = meta.type === '剧集' || meta.type === '综艺' || (meta.type === '纪录' && /[^T]S\d+|E\d+/i.test(t));
+            setSelVal(categoryId, isSeries ? '2' : '1');
+            if (isSeries && /(?:complete|S\d{1,2}(?!E))/i.test(t) && !/E\d{1,3}/i.test(t)) {
+                const packCb = document.querySelector('input[name="pack"]') as HTMLInputElement | null;
+                if (packCb && !packCb.checked) {
+                    packCb.checked = true;
+                    packCb.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
         }
 
-        // Source
+        // Source (live values: Blu-ray, HD-DVD, WEB, HDTV, DVD)
         const autosource = document.getElementById('autosource') as HTMLSelectElement | null;
         if (autosource) {
-            switch (meta.mediumSel) {
-                case 'Remux':
-                case 'UHD':
-                case 'Blu-ray':
-                case 'Encode':
-                    autosource.options[1].selected = true;
-                    break;
-                case 'DVD':
-                    autosource.options[5].selected = true;
-                    break;
-                case 'HDTV':
-                    autosource.options[4].selected = true;
-                    break;
-                case 'WEB-DL':
-                    autosource.options[3].selected = true;
-                    break;
-                default:
-                    autosource.options[0].selected = true;
-            }
+            const srcMap: Record<string, string> = {
+                Remux: 'Blu-ray', UHD: 'Blu-ray', 'Blu-ray': 'Blu-ray', Encode: 'Blu-ray',
+                DVD: 'DVD', HDTV: 'HDTV', 'WEB-DL': 'WEB'
+            };
+            setSelVal(autosource, srcMap[meta.mediumSel || ''] || '');
         }
 
-        // Type
+        // Type (live values: UHD 100, UHD 66, UHD 50, UHD Remux, BD 50, BD 25, BD Remux, 2160p, 1080p, 1080i, 720p, 576p, 540p, DVD 9, DVD 5, DVD Remux, 480p, Other)
         const autotype = document.getElementById('autotype') as HTMLSelectElement | null;
         if (autotype) {
             let size = 0;
             if (meta.mediumSel === 'Blu-ray' || meta.mediumSel === 'UHD') {
                 size = getSizeFromDescr(meta.description || '');
             }
-            switch (meta.standardSel) {
-                case '4K':
-                    if (meta.mediumSel === 'UHD') {
-                        if (0 <= size && size < 50) autotype.options[3].selected = true;
-                        else if (size < 66) autotype.options[2].selected = true;
-                        else autotype.options[1].selected = true;
-                    } else if (meta.mediumSel === 'Remux') {
-                        autotype.options[4].selected = true;
-                    } else {
-                        autotype.options[8].selected = true;
-                    }
-                    break;
-                case '1080p':
-                    if (meta.mediumSel !== 'Blu-ray' && meta.mediumSel !== 'Remux') {
-                        autotype.options[9].selected = true;
+            const t = meta.title || '';
+            let typeVal = '';
+            if (meta.mediumSel === 'DVD') {
+                if (/remux/i.test(t)) typeVal = 'DVD Remux';
+                else if (/dvd5/i.test(t)) typeVal = 'DVD 5';
+                else if (/dvd9/i.test(t)) typeVal = 'DVD 9';
+                else typeVal = /576/i.test(t) ? '576p' : '480p';
+            } else {
+                switch (meta.standardSel) {
+                    case '4K':
+                        if (meta.mediumSel === 'UHD') {
+                            typeVal = (0 <= size && size < 50) ? 'UHD 50' : size < 66 ? 'UHD 66' : 'UHD 100';
+                        } else if (meta.mediumSel === 'Remux') {
+                            typeVal = 'UHD Remux';
+                        } else {
+                            typeVal = '2160p';
+                        }
                         break;
-                    }
-                case '1080i':
-                    if (meta.mediumSel === 'Blu-ray') {
-                        if (0 <= size && size < 25) autotype.options[6].selected = true;
-                        else autotype.options[5].selected = true;
-                    } else if (meta.mediumSel === 'Remux') {
-                        autotype.options[7].selected = true;
-                    } else {
-                        autotype.options[10].selected = true;
-                    }
-                    break;
-                case '720p':
-                    autotype.options[11].selected = true;
-                    break;
-                default:
-                    autotype.options[0].selected = true;
+                    case '1080p':
+                        if (meta.mediumSel === 'Blu-ray') typeVal = (0 <= size && size < 25) ? 'BD 25' : 'BD 50';
+                        else if (meta.mediumSel === 'Remux') typeVal = 'BD Remux';
+                        else typeVal = '1080p';
+                        break;
+                    case '1080i':
+                        if (meta.mediumSel === 'Blu-ray') typeVal = (0 <= size && size < 25) ? 'BD 25' : 'BD 50';
+                        else if (meta.mediumSel === 'Remux') typeVal = 'BD Remux';
+                        else typeVal = '1080i';
+                        break;
+                    case '720p':
+                        typeVal = '720p';
+                        break;
+                    case 'SD':
+                        typeVal = /576/i.test(t) ? '576p' : /540/i.test(t) ? '540p' : '480p';
+                        break;
+                }
             }
+            setSelVal(autotype, typeVal);
         }
 
         // Region
         const region = document.getElementsByName('region')[0] as HTMLSelectElement | undefined;
         if (region) {
-            const options = region.options;
-            for (let i = 0; i < options.length; i++) {
-                if (options[i].value) {
-                    const reg = new RegExp(' ' + options[i].value + ' ', 'i');
-                    if ((meta.title || '').match(reg)) {
-                        options[i].selected = true;
-                        break;
-                    }
+            for (const opt of Array.from(region.options)) {
+                if (!opt.value || opt.value === 'N/A') continue;
+                const reg = new RegExp(`(?:^|[.\\s\\[(])${opt.value}(?:$|[.\\s\\])])`, 'i');
+                if ((meta.title || '').match(reg)) {
+                    setSelVal(region, opt.value);
+                    break;
                 }
             }
         }
@@ -251,14 +252,15 @@ export class BHDEngine extends Unit3DEngine {
         // Edition
         const edition = document.getElementsByName('edition')[0] as HTMLSelectElement | undefined;
         if (edition) {
-            if ((meta.title || '').match(/Collector/)) edition.options[1].selected = true;
-            else if ((meta.title || '').match(/Director/)) edition.options[2].selected = true;
-            else if ((meta.title || '').match(/Extended/)) edition.options[3].selected = true;
-            else if ((meta.title || '').match(/Limited/)) edition.options[4].selected = true;
-            else if ((meta.title || '').match(/Special/)) edition.options[5].selected = true;
-            else if ((meta.title || '').match(/Theatrical/)) edition.options[6].selected = true;
-            else if ((meta.title || '').match(/Uncut/)) edition.options[7].selected = true;
-            else if ((meta.title || '').match(/Unrated/)) edition.options[8].selected = true;
+            const t = meta.title || '';
+            if (/Collector/i.test(t)) setSelVal(edition, 'Collector');
+            else if (/Director/i.test(t)) setSelVal(edition, 'Director');
+            else if (/Extended/i.test(t)) setSelVal(edition, 'Extended');
+            else if (/Limited/i.test(t)) setSelVal(edition, 'Limited');
+            else if (/Special/i.test(t)) setSelVal(edition, 'Special');
+            else if (/Theatrical/i.test(t)) setSelVal(edition, 'Theatrical');
+            else if (/Uncut/i.test(t)) setSelVal(edition, 'Uncut');
+            else if (/Unrated/i.test(t)) setSelVal(edition, 'Unrated');
         }
 
         const labels = meta.labelInfo || getLabel(`${meta.smallDescr || meta.subtitle || ''}${meta.title}#separator#${meta.description}`);
@@ -307,10 +309,26 @@ export class BHDEngine extends Unit3DEngine {
             $('#mediainfo').css({ height: '600px' });
         }
 
-        // imdb id
-        if (meta.imdbId) {
+        // imdb id (legacy L20731: BHD `#imdbauto` takes full `tt1234567`, not digits only)
+        const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '');
+        if (imdbId) {
             const uploadImdb = document.getElementById('imdbauto') as HTMLInputElement | null;
-            if (uploadImdb) uploadImdb.value = meta.imdbId.match(/tt(\d+)/i)?.[1] || '';
+            if (uploadImdb) {
+                uploadImdb.value = imdbId;
+                uploadImdb.dispatchEvent(new Event('input', { bubbles: true }));
+                uploadImdb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
         }
+
+        try {
+            const settings = await SettingsService.load();
+            if (settings.defaultAnonymous) {
+                const anon = document.getElementsByName('anonymous')[0] as HTMLInputElement | undefined;
+                if (anon) {
+                    anon.checked = true;
+                    anon.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        } catch {}
     }
 }

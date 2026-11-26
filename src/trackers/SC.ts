@@ -150,6 +150,13 @@ export class SCEngine extends GazelleEngine {
         await populateScFromImdb(imdbId, meta);
 
         setAllFormValues('#media, select[name="media"]', normalizeMediaValue(meta));
+        if (meta.mediumSel === 'Remux' || /remux/i.test(meta.title || '')) {
+            const remuxCb = document.querySelector('#remux, input[name="remux"]') as HTMLInputElement | null;
+            if (remuxCb && !remuxCb.checked) {
+                remuxCb.checked = true;
+                remuxCb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
         const info = getMediainfoPictureFromDescr(`${meta.fullMediaInfo || ''}\n${meta.description || ''}`, { mediumSel: meta.mediumSel });
         const screenshotTags = (info.picInfo || '')
             .match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/gi)

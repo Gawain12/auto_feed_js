@@ -143,7 +143,7 @@ export class RemoteDownloadService {
     private static async canBindCurrentTorrent(engine: any, currentUrl: string): Promise<boolean> {
         const siteName = String(engine?.siteName || '');
         // Only strict-check sites whose detail pages are identified by `torrentid`.
-        if (!['PTP', 'GPW', 'RED', 'OPS', 'DIC'].includes(siteName)) return true;
+        if (!['PTP', 'GPW', 'RED', 'OPS', 'DIC', 'BTN', 'jpop', 'lztr'].includes(siteName)) return true;
         const currentTid = extractPageTorrentId(currentUrl);
         if (!currentTid) {
             // PTP group page can be `torrents.php?id=...` without explicit `torrentid`.

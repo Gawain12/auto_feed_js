@@ -29,6 +29,7 @@ export const App = () => {
         showQuickSearchOnImdb: true,
         defaultAnonymous: false,
         autoDownloadAfterUpload: true,
+        filterForwardTargetsByType: true,
         remoteSidebarOpacity: 0.92,
         settingsPanelOpacity: 0.95,
         popupOpacity: 0.96,
@@ -52,6 +53,7 @@ export const App = () => {
         uiLanguage: 'zh'
     });
     const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     const [remoteModalOpen, setRemoteModalOpen] = useState(false);
     const [remoteSaving, setRemoteSaving] = useState(false);
@@ -74,8 +76,13 @@ export const App = () => {
 
     const [quickPreset, setQuickPreset] = useState('');
     const [quickPresetInput, setQuickPresetInput] = useState('');
+    const [siteSearch, setSiteSearch] = useState('');
+    const [showEnabledOnly, setShowEnabledOnly] = useState(false);
+    const [showExperimentalSites, setShowExperimentalSites] = useState(false);
     const settingsRef = useRef<AppSettings>(settings);
     const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+    const saveTimerRef = useRef<number | null>(null);
+    const [saveNotice, setSaveNotice] = useState<string>('');
 
     const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
     const getPanelSize = () => {
@@ -85,33 +92,46 @@ export const App = () => {
         return { w: Math.max(660, w), h: Math.max(540, h) };
     };
 
-    useEffect(() => {
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.altKey && e.code === 'KeyS') {
-                setIsOpen(prev => !prev);
-            }
-        };
-        window.addEventListener('keydown', handleKey);
-
-        const openSettings = () => {
-            setIsOpen(true);
-            setActiveTab('dashboard');
-        };
-        window.addEventListener('autofeed:open-settings', openSettings as any);
-
+    const refreshSettingsFromStorage = () => {
         SettingsService.load().then((loaded) => {
             setSettings(loaded);
             settingsRef.current = loaded;
+            setHasUnsavedChanges(false);
+            setSaveState('idle');
+            setSaveNotice('');
             if (loaded.quickSearchList && loaded.quickSearchList.length) {
                 setQuickPreset(loaded.quickSearchList[0]);
             } else if (DEFAULT_QUICK_SEARCH_TEMPLATES.length) {
                 setQuickPreset(DEFAULT_QUICK_SEARCH_TEMPLATES[0]);
             }
         });
+    };
+
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.altKey && e.code === 'KeyS') {
+                setIsOpen((prev) => {
+                    const nextOpen = !prev;
+                    if (nextOpen) refreshSettingsFromStorage();
+                    return nextOpen;
+                });
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+
+        const openSettings = () => {
+            refreshSettingsFromStorage();
+            setIsOpen(true);
+            setActiveTab('dashboard');
+        };
+        window.addEventListener('autofeed:open-settings', openSettings as any);
+
+        refreshSettingsFromStorage();
 
         return () => {
             window.removeEventListener('keydown', handleKey);
             window.removeEventListener('autofeed:open-settings', openSettings as any);
+            if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
         };
     }, []);
 
@@ -172,27 +192,51 @@ export const App = () => {
         settingsRef.current = settings;
     }, [settings]);
 
+    const flashSaveState = (state: 'saved' | 'error', notice?: string) => {
+        setSaveState(state);
+        setSaveNotice(notice || '');
+        if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = window.setTimeout(() => {
+            setSaveState('idle');
+            setSaveNotice('');
+        }, state === 'error' ? 2800 : 1800);
+    };
+
     const handleSaveSettings = async () => {
         setSaveState('saving');
+        setSaveNotice('');
         try {
-            const ok = await persistSettings(settingsRef.current);
+            const ok = await persistSettings(settingsRef.current, { silentBadge: true });
             if (!ok) throw new Error('save failed');
-            setSaveState('saved');
-            window.setTimeout(() => setSaveState('idle'), 1500);
+            setHasUnsavedChanges(false);
+            flashSaveState(
+                'saved',
+                settingsRef.current.uiLanguage === 'en' ? 'Saved' : '已保存'
+            );
         } catch {
-            setSaveState('error');
-            window.setTimeout(() => setSaveState('idle'), 1800);
+            flashSaveState(
+                'error',
+                settingsRef.current.uiLanguage === 'en' ? 'Save failed' : '保存失败'
+            );
         }
     };
 
-    const persistSettings = async (next: AppSettings): Promise<boolean> => {
-        setSettings(next);
-        settingsRef.current = next;
+    const persistSettings = async (
+        next: AppSettings,
+        opts?: { silentBadge?: boolean }
+    ): Promise<boolean> => {
+        const normalized = SettingsService.migrate(next);
+        setSettings(normalized);
+        settingsRef.current = normalized;
+        if (!opts?.silentBadge) {
+            setSaveState('saving');
+        }
         let ok = true;
         const run = async () => {
             try {
-                await SettingsService.save(next);
-            } catch {
+                await SettingsService.save(normalized);
+            } catch (err) {
+                console.error('[Auto-Feed] Failed to persist settings:', err);
                 ok = false;
             }
         };
@@ -201,11 +245,40 @@ export const App = () => {
             .then(run);
         saveQueueRef.current = queued;
         await queued;
+        if (ok) {
+            setHasUnsavedChanges(false);
+        }
+        if (!opts?.silentBadge) {
+            if (ok) {
+                flashSaveState(
+                    'saved',
+                    normalized.uiLanguage === 'en' ? 'Saved' : '已保存'
+                );
+            } else {
+                flashSaveState(
+                    'error',
+                    normalized.uiLanguage === 'en' ? 'Save failed' : '保存失败'
+                );
+            }
+        }
         return ok;
     };
 
     const setAndPersist = (next: AppSettings) => {
         void persistSettings(next);
+    };
+
+    // Update draft state only — persist & notify tracker pages only when user explicitly clicks "Save".
+    const patchSettings = (patch: Partial<AppSettings> | ((cur: AppSettings) => AppSettings)) => {
+        const cur = settingsRef.current;
+        const next = typeof patch === 'function' ? patch(cur) : { ...cur, ...patch };
+        setSettings(next);
+        settingsRef.current = next;
+        setHasUnsavedChanges(true);
+        if (saveState === 'saved' || saveState === 'error') {
+            setSaveState('idle');
+            setSaveNotice('');
+        }
     };
 
     const normalizeRemoteUrl = (url: string): string => {
@@ -252,11 +325,12 @@ export const App = () => {
     };
 
     const toggleLanguage = () => {
-        const next = settings.uiLanguage === 'zh' ? 'en' : 'zh';
-        setAndPersist({ ...settings, uiLanguage: next as any });
+        patchSettings((cur) => ({ ...cur, uiLanguage: (cur.uiLanguage === 'zh' ? 'en' : 'zh') as any }));
     };
 
     const allSites = SiteCatalogService.getSupportedSites();
+    const targetSites = allSites.filter((s: any) => s.capabilities?.target !== false);
+    const sourceOnlySites = allSites.filter((s: any) => s.capabilities?.target === false);
     const t = i18n[settings.uiLanguage as SupportedLang] || i18n.en;
 
     const sortSites = (sites: any[]) => sites.slice().sort((a, b) => String(a.name).localeCompare(String(b.name)));
@@ -289,24 +363,29 @@ export const App = () => {
     ]));
 
     const toggleSite = (name: string) => {
-        const set = new Set(settings.enabledSites || []);
-        if (set.has(name)) set.delete(name); else set.add(name);
-        const enabledSites = Array.from(set);
-        // Keep favorites as a subset of enabled sites to reduce clutter.
-        const favoriteSites = (settings.favoriteSites || []).filter((x) => enabledSites.includes(x));
-        setAndPersist({ ...settings, enabledSites, favoriteSites });
+        patchSettings((cur) => {
+            const set = new Set(cur.enabledSites || []);
+            if (set.has(name)) set.delete(name); else set.add(name);
+            const enabledSites = Array.from(set);
+            const favoriteSites = (cur.favoriteSites || []).filter((x) => enabledSites.includes(x));
+            return { ...cur, enabledSites, favoriteSites };
+        });
     };
 
     const toggleFavoriteSite = (name: string) => {
-        // Favorites should only come from enabled sites.
-        if (!(settings.enabledSites || []).includes(name)) return;
-        const set = new Set(settings.favoriteSites || []);
-        if (set.has(name)) set.delete(name); else set.add(name);
-        setAndPersist({ ...settings, favoriteSites: Array.from(set) });
+        patchSettings((cur) => {
+            if (!(cur.enabledSites || []).includes(name)) return cur;
+            const set = new Set(cur.favoriteSites || []);
+            if (set.has(name)) set.delete(name); else set.add(name);
+            return { ...cur, favoriteSites: Array.from(set) };
+        });
     };
 
-    const selectAllSites = () => setAndPersist({ ...settings, enabledSites: SiteCatalogService.getSupportedSiteNames() });
-    const clearAllSites = () => setAndPersist({ ...settings, enabledSites: [], favoriteSites: [] });
+    const selectAllSites = () => {
+        const coreNames = targetSites.filter((s: any) => !s.experimental).map((s: any) => s.name);
+        patchSettings((cur) => ({ ...cur, enabledSites: Array.from(new Set([...(cur.enabledSites || []), ...coreNames])) }));
+    };
+    const clearAllSites = () => patchSettings({ enabledSites: [], favoriteSites: [] });
 
     // Components
     const CheckboxRow = ({ label, checked, onChange, desc }: { label: string, checked: boolean, onChange: () => void, desc?: string }) => (
@@ -380,9 +459,24 @@ export const App = () => {
                         中/en
                     </button>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button type="button" className="af-btn af-btn-primary" onClick={handleSaveSettings}>
-                        {saveState === 'saving' ? t.saving : saveState === 'saved' ? t.saved : saveState === 'error' ? t.saveFailed : t.save}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {saveState !== 'idle' ? (
+                        <span className={`af-save-badge ${saveState}`}>
+                            {saveState === 'saving'
+                                ? t.saving
+                                : saveState === 'saved'
+                                    ? `✓ ${saveNotice || t.saved}`
+                                    : `✕ ${saveNotice || t.saveFailed}`}
+                        </span>
+                    ) : hasUnsavedChanges ? (
+                        <span className="af-save-badge dirty">{t.unsaved}</span>
+                    ) : null}
+                    <button
+                        type="button"
+                        className={`af-btn ${saveState === 'saved' ? 'af-btn-success' : 'af-btn-primary'}`}
+                        onClick={handleSaveSettings}
+                    >
+                        {saveState === 'saving' ? t.saving : saveState === 'saved' ? `✓ ${t.saved}` : saveState === 'error' ? t.saveFailed : t.save}
                     </button>
                     <button
                         type="button"
@@ -433,7 +527,9 @@ export const App = () => {
                                 </div>
                                 <div className="af-row">
                                     <span className="af-label">{t.version}</span>
-                                    <span style={{ color: 'var(--af-text-secondary)' }}>Refactor v1.0</span>
+                                    <span style={{ color: 'var(--af-text-secondary)' }}>
+                                        {`v${(typeof GM_info !== 'undefined' && GM_info?.script?.version) || (typeof __AUTOFEED_VERSION__ !== 'undefined' ? __AUTOFEED_VERSION__ : '5.x')}`}
+                                    </span>
                                 </div>
                             </div>
                             <div className="af-card">
@@ -451,7 +547,7 @@ export const App = () => {
                                         max="1"
                                         step="0.01"
                                         value={String(settings.settingsPanelOpacity ?? 0.95)}
-                                        onInput={(e) => setAndPersist({ ...settings, settingsPanelOpacity: Number(e.currentTarget.value) })}
+                                        onInput={(e) => patchSettings({ settingsPanelOpacity: Number(e.currentTarget.value) })}
                                     />
                                 </div>
                                 <div className="af-row">
@@ -467,7 +563,7 @@ export const App = () => {
                                         max="1"
                                         step="0.01"
                                         value={String(settings.popupOpacity ?? 0.96)}
-                                        onInput={(e) => setAndPersist({ ...settings, popupOpacity: Number(e.currentTarget.value) })}
+                                        onInput={(e) => patchSettings({ popupOpacity: Number(e.currentTarget.value) })}
                                     />
                                 </div>
                                 <div className="af-row">
@@ -483,7 +579,7 @@ export const App = () => {
                                         max="0.8"
                                         step="0.01"
                                         value={String(settings.maskOpacity ?? 0.25)}
-                                        onInput={(e) => setAndPersist({ ...settings, maskOpacity: Number(e.currentTarget.value) })}
+                                        onInput={(e) => patchSettings({ maskOpacity: Number(e.currentTarget.value) })}
                                     />
                                 </div>
                                 <div className="af-row">
@@ -499,7 +595,7 @@ export const App = () => {
                                         max="1"
                                         step="0.01"
                                         value={String(settings.toastOpacity ?? 0.95)}
-                                        onInput={(e) => setAndPersist({ ...settings, toastOpacity: Number(e.currentTarget.value) })}
+                                        onInput={(e) => patchSettings({ toastOpacity: Number(e.currentTarget.value) })}
                                     />
                                 </div>
                             </div>
@@ -520,15 +616,21 @@ export const App = () => {
                             <div className="af-card">
                                 <div className="af-card-header">{t.pageFeatures}</div>
                                 <div className="af-two-col">
-                                    <CheckboxRow label={t.ptpShowDouban} checked={!!settings.ptpShowDouban} onChange={() => setSettings({ ...settings, ptpShowDouban: !settings.ptpShowDouban })} />
-                                    <CheckboxRow label={t.ptpShowGroupName} checked={!!settings.ptpShowGroupName} onChange={() => setSettings({ ...settings, ptpShowGroupName: !settings.ptpShowGroupName })} />
-                                    <CheckboxRow label={t.hdbShowDouban} checked={!!settings.hdbShowDouban} onChange={() => setSettings({ ...settings, hdbShowDouban: !settings.hdbShowDouban })} />
-                                    <CheckboxRow label={t.hdbCollapseDouban} checked={!!settings.hdbHideDouban} onChange={() => setSettings({ ...settings, hdbHideDouban: !settings.hdbHideDouban })} />
-                                    <CheckboxRow label={t.doubanQuickSearch} checked={!!settings.showQuickSearchOnDouban} onChange={() => setSettings({ ...settings, showQuickSearchOnDouban: !settings.showQuickSearchOnDouban })} />
-                                    <CheckboxRow label={t.imdbQuickSearch} checked={!!settings.showQuickSearchOnImdb} onChange={() => setSettings({ ...settings, showQuickSearchOnImdb: !settings.showQuickSearchOnImdb })} />
-                                    <CheckboxRow label={t.defaultAnonymous} checked={!!settings.defaultAnonymous} onChange={() => setSettings({ ...settings, defaultAnonymous: !settings.defaultAnonymous })} />
-                                    <CheckboxRow label={t.autoDownloadAfterUpload} checked={!!settings.autoDownloadAfterUpload} onChange={() => setSettings({ ...settings, autoDownloadAfterUpload: !settings.autoDownloadAfterUpload })} />
+                                    <CheckboxRow label={t.ptpShowDouban} checked={!!settings.ptpShowDouban} onChange={() => patchSettings((cur) => ({ ...cur, ptpShowDouban: !cur.ptpShowDouban }))} />
+                                    <CheckboxRow label={t.ptpShowGroupName} checked={!!settings.ptpShowGroupName} onChange={() => patchSettings((cur) => ({ ...cur, ptpShowGroupName: !cur.ptpShowGroupName }))} />
+                                    <CheckboxRow label={t.hdbShowDouban} checked={!!settings.hdbShowDouban} onChange={() => patchSettings((cur) => ({ ...cur, hdbShowDouban: !cur.hdbShowDouban }))} />
+                                    <CheckboxRow label={t.hdbCollapseDouban} checked={!!settings.hdbHideDouban} onChange={() => patchSettings((cur) => ({ ...cur, hdbHideDouban: !cur.hdbHideDouban }))} />
+                                    <CheckboxRow label={t.doubanQuickSearch} checked={!!settings.showQuickSearchOnDouban} onChange={() => patchSettings((cur) => ({ ...cur, showQuickSearchOnDouban: !cur.showQuickSearchOnDouban }))} />
+                                    <CheckboxRow label={t.imdbQuickSearch} checked={!!settings.showQuickSearchOnImdb} onChange={() => patchSettings((cur) => ({ ...cur, showQuickSearchOnImdb: !cur.showQuickSearchOnImdb }))} />
+                                    <CheckboxRow label={t.defaultAnonymous} checked={!!settings.defaultAnonymous} onChange={() => patchSettings((cur) => ({ ...cur, defaultAnonymous: !cur.defaultAnonymous }))} />
+                                    <CheckboxRow label={t.autoDownloadAfterUpload} checked={!!settings.autoDownloadAfterUpload} onChange={() => patchSettings((cur) => ({ ...cur, autoDownloadAfterUpload: !cur.autoDownloadAfterUpload }))} />
                                 </div>
+                                <CheckboxRow
+                                    label={t.filterForwardTargetsByType}
+                                    desc={t.filterForwardTargetsByTypeDesc}
+                                    checked={settings.filterForwardTargetsByType !== false}
+                                    onChange={() => patchSettings((cur) => ({ ...cur, filterForwardTargetsByType: !(cur.filterForwardTargetsByType !== false) }))}
+                                />
                                 <div className="af-row">
                                     <span className="af-label">{t.listPageQuickSearch}</span>
                                     <div className="af-segmented">
@@ -536,13 +638,13 @@ export const App = () => {
                                             <div
                                                 key={key}
                                                 className={`af-segment-opt ${settings.showSearchOnList?.[key] ? 'active' : ''}`}
-                                                onClick={() => setSettings({
-                                                    ...settings,
+                                                onClick={() => patchSettings((cur) => ({
+                                                    ...cur,
                                                     showSearchOnList: {
-                                                        ...settings.showSearchOnList,
-                                                        [key]: !settings.showSearchOnList?.[key]
+                                                        ...cur.showSearchOnList,
+                                                        [key]: !cur.showSearchOnList?.[key]
                                                     }
-                                                })}
+                                                }))}
                                             >
                                                 {key}
                                             </div>
@@ -556,7 +658,7 @@ export const App = () => {
                                             <div
                                                 key={v}
                                                 className={`af-segment-opt ${settings.ptpNameLocation === v ? 'active' : ''}`}
-                                                onClick={() => setSettings({ ...settings, ptpNameLocation: v })}
+                                                onClick={() => patchSettings({ ptpNameLocation: v })}
                                             >
                                                 {v === 0 ? t.before : t.after}
                                             </div>
@@ -573,16 +675,16 @@ export const App = () => {
                                     <span className="af-label">{t.imdbToDoubanMethod}</span>
                                     <div className="af-segmented">
                                         {[t.api, t.scrape].map((l, i) => (
-                                            <div className={`af-segment-opt ${settings.imdbToDoubanMethod === i ? 'active' : ''}`} onClick={() => setSettings({ ...settings, imdbToDoubanMethod: i })}>{l}</div>
+                                            <div className={`af-segment-opt ${settings.imdbToDoubanMethod === i ? 'active' : ''}`} onClick={() => patchSettings({ imdbToDoubanMethod: i })}>{l}</div>
                                         ))}
                                     </div>
                                 </div>
                                 <div className="af-row">
                                     <span className="af-label">{t.ptgenSource}</span>
                                     <div className="af-segmented">
-                                        <div className={`af-segment-opt ${settings.ptgenApi === 0 ? 'active' : ''}`} onClick={() => setSettings({ ...settings, ptgenApi: 0 })}>IYUU</div>
-                                        <div className={`af-segment-opt ${settings.ptgenApi === 1 ? 'active' : ''}`} onClick={() => setSettings({ ...settings, ptgenApi: 1 })}>PTGen</div>
-                                        <div className={`af-segment-opt ${settings.ptgenApi === 3 ? 'active' : ''}`} onClick={() => setSettings({ ...settings, ptgenApi: 3 })}>Douban</div>
+                                        <div className={`af-segment-opt ${settings.ptgenApi === 0 ? 'active' : ''}`} onClick={() => patchSettings({ ptgenApi: 0 })}>IYUU</div>
+                                        <div className={`af-segment-opt ${settings.ptgenApi === 1 ? 'active' : ''}`} onClick={() => patchSettings({ ptgenApi: 1 })}>PTGen</div>
+                                        <div className={`af-segment-opt ${settings.ptgenApi === 3 ? 'active' : ''}`} onClick={() => patchSettings({ ptgenApi: 3 })}>Douban</div>
                                     </div>
                                 </div>
                                 <div className="af-row">
@@ -591,7 +693,7 @@ export const App = () => {
                                         className="af-input"
                                         style={{ width: '340px', maxWidth: '100%' }}
                                         value={settings.chdBaseUrl}
-                                        onChange={(e) => setAndPersist({ ...settings, chdBaseUrl: e.currentTarget.value.endsWith('/') ? e.currentTarget.value : e.currentTarget.value + '/' })}
+                                        onChange={(e) => patchSettings({ chdBaseUrl: e.currentTarget.value.endsWith('/') ? e.currentTarget.value : e.currentTarget.value + '/' })}
                                     >
                                         <option value="https://chdbits.co/">chdbits.co</option>
                                         <option value="https://ptchdbits.co/">ptchdbits.co</option>
@@ -605,7 +707,7 @@ export const App = () => {
                                         className="af-input"
                                         style={{ width: '340px', maxWidth: '100%' }}
                                         value={settings.tlBaseUrl}
-                                        onChange={(e) => setAndPersist({ ...settings, tlBaseUrl: e.currentTarget.value.endsWith('/') ? e.currentTarget.value : e.currentTarget.value + '/' })}
+                                        onChange={(e) => patchSettings({ tlBaseUrl: e.currentTarget.value.endsWith('/') ? e.currentTarget.value : e.currentTarget.value + '/' })}
                                     >
                                         <option value="https://www.torrentleech.org/">torrentleech.org</option>
                                         <option value="https://www.torrentleech.cc/">torrentleech.cc</option>
@@ -623,16 +725,18 @@ export const App = () => {
                                         </select>
                                         <button className="af-btn" onClick={() => {
                                             if (!quickPreset) return;
-                                            const set = new Set(settings.quickSearchList || []);
-                                            set.add(quickPreset);
-                                            setAndPersist({ ...settings, quickSearchList: Array.from(set) });
+                                            patchSettings((cur) => {
+                                                const set = new Set(cur.quickSearchList || []);
+                                                set.add(quickPreset);
+                                                return { ...cur, quickSearchList: Array.from(set) };
+                                            });
                                         }}>{t.add}</button>
                                     </div>
                                     <textarea
                                         className="af-input"
                                         style={{ width: '100%', height: '150px', fontFamily: 'monospace' }}
                                         value={(settings.quickSearchList || []).join('\n')}
-                                        onInput={e => setAndPersist({ ...settings, quickSearchList: e.currentTarget.value.split('\n').filter(Boolean) })}
+                                        onInput={e => patchSettings({ quickSearchList: e.currentTarget.value.split('\n').filter(Boolean) })}
                                     />
                                 </div>
                             </div>
@@ -640,87 +744,133 @@ export const App = () => {
                             {/* 4. API Keys (Least frequent) */}
                             <div className="af-card">
                                 <div className="af-card-header">{t.servicesApiKeys}</div>
-                                <InputRow label="PtpImg API Key" value={settings.ptpImgApiKey} onInput={v => setAndPersist({ ...settings, ptpImgApiKey: v })} />
-                                <InputRow label="Freeimage API Key" value={settings.freeimageApiKey} onInput={v => setAndPersist({ ...settings, freeimageApiKey: v })} />
-                                <InputRow label="ImgBB API Key" value={settings.imgbbApiKey} onInput={v => setAndPersist({ ...settings, imgbbApiKey: v })} />
+                                <InputRow label="PtpImg API Key" value={settings.ptpImgApiKey} onInput={v => patchSettings({ ptpImgApiKey: v })} />
+                                <InputRow label="Freeimage API Key" value={settings.freeimageApiKey} onInput={v => patchSettings({ freeimageApiKey: v })} />
+                                <InputRow label="ImgBB API Key" value={settings.imgbbApiKey} onInput={v => patchSettings({ imgbbApiKey: v })} />
                             </div>
                         </div>
                     )}
 
                     {/* Sites */}
-                    {activeTab === 'sites' && (
+                    {activeTab === 'sites' && (() => {
+                        const q = siteSearch.trim().toLowerCase();
+                        const enabledSet = new Set(settings.enabledSites || []);
+                        const matchFilter = (site: any) => {
+                            if (showEnabledOnly && !enabledSet.has(site.name)) return false;
+                            if (!q) return true;
+                            const hay = `${site.name} ${site.description || ''} ${(site.keywords || []).join(' ')}`.toLowerCase();
+                            return hay.includes(q);
+                        };
+                        const coreSites = sortSites(targetSites.filter((s: any) => !s.experimental || enabledSet.has(s.name))).filter(matchFilter);
+                        const experimentalSites = sortSites(targetSites.filter((s: any) => !!s.experimental && !enabledSet.has(s.name))).filter(matchFilter);
+                        const expExpanded = showExperimentalSites || !!q;
+
+                        const renderTile = (site: any, keyPrefix = '', isFav = false) => {
+                            const checked = isFav ? (settings.favoriteSites || []).includes(site.name) : enabledSet.has(site.name);
+                            return (
+                                <div
+                                    key={keyPrefix + site.name}
+                                    className="af-site-tile"
+                                    onClick={() => (isFav ? toggleFavoriteSite(site.name) : toggleSite(site.name))}
+                                    style={{ background: checked ? 'rgba(0,113,227,0.1)' : undefined }}
+                                    title={`${site.name}${site.description ? ` (${site.description})` : ''}${site.experimental ? (settings.uiLanguage === 'zh' ? ' [实验性/未完全测试]' : ' [Experimental / Untested]') : ''}`}
+                                >
+                                    <input className="af-site-check" type="checkbox" checked={checked} readOnly />
+                                    <div className="af-site-icon">
+                                        <span>{getSiteAbbr(site.name).slice(0, 1)}</span>
+                                        {getSiteFavicon(site) ? (
+                                            <img
+                                                src={getSiteFavicon(site)}
+                                                onError={(e) => {
+                                                    const img = e.currentTarget as HTMLImageElement;
+                                                    img.style.display = 'none';
+                                                }}
+                                            />
+                                        ) : null}
+                                    </div>
+                                    <div className="af-site-label">{getSiteAbbr(site.name)}</div>
+                                </div>
+                            );
+                        };
+
+                        return (
                         <div>
-                            <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
                                 <button className="af-btn af-btn-primary" onClick={selectAllSites}>{t.selectAll}</button>
                                 <button className="af-btn" onClick={clearAllSites}>{t.clearAll}</button>
+                                <input
+                                    className="af-input"
+                                    style={{ flex: '1 1 180px', maxWidth: '260px', padding: '5px 10px' }}
+                                    placeholder={settings.uiLanguage === 'zh' ? '搜索站点名 / 域名（自动展开实验性站点）...' : 'Filter sites (auto-expands experimental)...'}
+                                    value={siteSearch}
+                                    onInput={(e) => setSiteSearch((e.currentTarget as HTMLInputElement).value)}
+                                />
+                                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer', userSelect: 'none' }}>
+                                    <input type="checkbox" checked={showEnabledOnly} onChange={() => setShowEnabledOnly(!showEnabledOnly)} />
+                                    {settings.uiLanguage === 'zh' ? `仅看已启用 (${enabledSet.size}/${targetSites.length})` : `Enabled only (${enabledSet.size}/${targetSites.length})`}
+                                </label>
                             </div>
 
                             <div className="af-card">
                                 <div className="af-card-header">{t.enabledSites}</div>
                                 <div style={{ padding: '0 10px 10px' }}>
                                     <div className="af-grid">
-                                        {sortSites(allSites).map((site: any) => (
-                                            <div
-                                                key={site.name}
-                                                className="af-site-tile"
-                                                onClick={() => toggleSite(site.name)}
-                                                style={{ background: (settings.enabledSites || []).includes(site.name) ? 'rgba(0,113,227,0.1)' : undefined }}
-                                                title={site.name}
-                                            >
-                                                <input className="af-site-check" type="checkbox" checked={(settings.enabledSites || []).includes(site.name)} readOnly />
-                                                <div className="af-site-icon">
-                                                    <span>{getSiteAbbr(site.name).slice(0, 1)}</span>
-                                                    {getSiteFavicon(site) ? (
-                                                        <img
-                                                            src={getSiteFavicon(site)}
-                                                            onError={(e) => {
-                                                                const img = e.currentTarget as HTMLImageElement;
-                                                                img.style.display = 'none';
-                                                            }}
-                                                        />
-                                                    ) : null}
-                                                </div>
-                                                <div className="af-site-label">{getSiteAbbr(site.name)}</div>
-                                            </div>
-                                        ))}
+                                        {coreSites.map((site: any) => renderTile(site))}
                                     </div>
+                                    {sourceOnlySites.length > 0 && (
+                                        <div style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>
+                                            {settings.uiLanguage === 'zh'
+                                                ? `仅源站自动生效（无需勾选转发目标）：${sourceOnlySites.map((s: any) => s.name).join(' / ')}`
+                                                : `Source-only (always active on detail pages): ${sourceOnlySites.map((s: any) => s.name).join(' / ')}`}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
+
+                            {experimentalSites.length > 0 && (
+                                <div className="af-card">
+                                    <div
+                                        className="af-card-header"
+                                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none' }}
+                                        onClick={() => setShowExperimentalSites(!expExpanded)}
+                                    >
+                                        <span>
+                                            {expExpanded ? '▾ ' : '▸ '}
+                                            {settings.uiLanguage === 'zh'
+                                                ? `实验性适配站点（未完全测试，欢迎反馈） (${experimentalSites.length})`
+                                                : `Experimental / Untested Sites — Feedback Welcome (${experimentalSites.length})`}
+                                        </span>
+                                        <span style={{ fontSize: '11px', fontWeight: 'normal', color: '#6b7280' }}>
+                                            {expExpanded ? (settings.uiLanguage === 'zh' ? '收起' : 'Collapse') : (settings.uiLanguage === 'zh' ? '展开' : 'Expand')}
+                                        </span>
+                                    </div>
+                                    {expExpanded && (
+                                        <div style={{ padding: '0 10px 10px' }}>
+                                            <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '8px', lineHeight: '1.5' }}>
+                                                {settings.uiLanguage === 'zh'
+                                                    ? '以下站点已按旧版规则完成适配，但暂未逐一实测；勾选后将移入上方已启用列表。如遇字段或下拉项偏差，欢迎在 GitHub / GreasyFork 反馈。'
+                                                    : 'Adapted from legacy rules without full live verification. Checked sites appear in the enabled list above; please report any mapping mismatches.'}
+                                            </div>
+                                            <div className="af-grid">
+                                                {experimentalSites.map((site: any) => renderTile(site, 'exp-'))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="af-card">
                                 <div className="af-card-header">{t.favoriteSites}</div>
                                 <div style={{ padding: '0 10px 10px' }}>
                                     <div className="af-grid">
-                                        {sortSites(allSites.filter((s: any) => (settings.enabledSites || []).includes(s.name))).map((site: any) => (
-                                            <div
-                                                key={'fav-' + site.name}
-                                                className="af-site-tile"
-                                                onClick={() => toggleFavoriteSite(site.name)}
-                                                style={{ background: (settings.favoriteSites || []).includes(site.name) ? 'rgba(0,113,227,0.1)' : undefined }}
-                                                title={site.name}
-                                            >
-                                                <input className="af-site-check" type="checkbox" checked={(settings.favoriteSites || []).includes(site.name)} readOnly />
-                                                <div className="af-site-icon">
-                                                    <span>{getSiteAbbr(site.name).slice(0, 1)}</span>
-                                                    {getSiteFavicon(site) ? (
-                                                        <img
-                                                            src={getSiteFavicon(site)}
-                                                            onError={(e) => {
-                                                                const img = e.currentTarget as HTMLImageElement;
-                                                                img.style.display = 'none';
-                                                            }}
-                                                        />
-                                                    ) : null}
-                                                </div>
-                                                <div className="af-site-label">{getSiteAbbr(site.name)}</div>
-                                            </div>
-                                        ))}
+                                        {sortSites(targetSites.filter((s: any) => enabledSet.has(s.name))).map((site: any) => renderTile(site, 'fav-', true))}
                                     </div>
                                 </div>
                             </div>
 
                         </div>
-                    )}
+                        );
+                    })()}
 
                     {/* Remote */}
                     {activeTab === 'remote' && (
@@ -728,9 +878,9 @@ export const App = () => {
                             <div className="af-card" style={{ padding: '14px 16px', color: '#4b5563', fontSize: '12px', lineHeight: '1.6' }}>{t.remoteHelp}</div>
                             <div className="af-card">
                                 <div className="af-card-header">{t.globalSettings}</div>
-                                <CheckboxRow label={t.enableSidebar} checked={!!settings.enableRemoteSidebar} onChange={() => setAndPersist({ ...settings, enableRemoteSidebar: !settings.enableRemoteSidebar })} />
-                                <CheckboxRow label={t.skipCheckingDefault} checked={!!settings.remoteSkipCheckingDefault} onChange={() => setAndPersist({ ...settings, remoteSkipCheckingDefault: !settings.remoteSkipCheckingDefault })} />
-                                <CheckboxRow label={t.askConfirmBeforePush} checked={!!settings.remoteAskSkipConfirm} onChange={() => setAndPersist({ ...settings, remoteAskSkipConfirm: !settings.remoteAskSkipConfirm })} />
+                                <CheckboxRow label={t.enableSidebar} checked={!!settings.enableRemoteSidebar} onChange={() => patchSettings((cur) => ({ ...cur, enableRemoteSidebar: !cur.enableRemoteSidebar }))} />
+                                <CheckboxRow label={t.skipCheckingDefault} checked={!!settings.remoteSkipCheckingDefault} onChange={() => patchSettings((cur) => ({ ...cur, remoteSkipCheckingDefault: !cur.remoteSkipCheckingDefault }))} />
+                                <CheckboxRow label={t.askConfirmBeforePush} checked={!!settings.remoteAskSkipConfirm} onChange={() => patchSettings((cur) => ({ ...cur, remoteAskSkipConfirm: !cur.remoteAskSkipConfirm }))} />
                                 <div className="af-row">
                                     <div className="af-label">
                                         <div>{t.remoteSidebarOpacity}</div>
@@ -747,7 +897,7 @@ export const App = () => {
                                         onInput={(e) => {
                                             const value = Number(e.currentTarget.value);
                                             applyRemoteSidebarOpacity(value);
-                                            setAndPersist({ ...settings, remoteSidebarOpacity: value });
+                                            patchSettings({ remoteSidebarOpacity: value });
                                         }}
                                     />
                                 </div>

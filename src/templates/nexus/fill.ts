@@ -2,18 +2,21 @@ import $ from 'jquery';
 import { TorrentMeta } from '../../types/TorrentMeta';
 import { SiteConfig } from '../../types/SiteConfig';
 import { getAudioCodecSel, getCodecSel, getMediumSel, getStandardSel } from '../../common/rules/text';
+import { getMediainfoPictureFromDescr } from '../../common/rules/media';
 import { extractDoubanId, extractImdbId } from '../../common/rules/links';
 import { dispatchFormEvents } from '../../common/dom/form';
 import { repeat } from '../../common/dom/repeat';
 import { getMetaLabels } from '../../common/rules/labels';
+import { resolveNexusProfileValues } from '../../common/rules/nexusProfile';
+import { NexusFieldValue } from '../../types/SiteConfig';
 
 export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<void> {
     const formSelectors = {
         name: 'input[name="name"]',
-        smallDescr: 'input[name="small_descr"]',
-        descr: 'textarea[name="descr"]',
-        imdb: 'input[name="imdb_id"], input[name="url"][type="text"]',
-        douban: 'input[name="douban"], input[name="douban_id"], input[name="douban_url"], input[name="dburl"]',
+        smallDescr: 'input[name="small_descr"], input[name="small_desc"], input[name="subhead"]',
+        descr: 'textarea[name="descr"], textarea[name="body"]',
+        imdb: 'input[name="imdb_id"], input[name="imdbid"], input[name="imdb"], input[name="imdb_url"], input[name="imdburl"], input[name="pt_gen[imdb][link]"], input[name="url"][type="text"], input[name="url"][type="url"]',
+        douban: 'input[name="douban"], input[name="douban_id"], input[name="doubanid"], input[name="douban_url"], input[name="dburl"], input[name="url_douban"], input[name="durl"], input[name="pt_gen[douban][link]"]',
         torrent: 'input[type="file"]#file, input[name="file"], input[name="torrent"]'
     };
 
@@ -56,7 +59,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         $(imdbSel).each((_, el) => {
             const input = el as HTMLInputElement;
             const name = (input.getAttribute('name') || '').toLowerCase();
-            if (name === 'imdb_id') input.value = imdbId || imdbUrl;
+            if (name === 'imdb_id' || name === 'imdbid') input.value = imdbId || imdbUrl;
             else if (name === 'url') input.value = imdbUrl || imdbId;
             else input.value = imdbUrl || imdbId;
             dispatchFormEvents(input);
@@ -67,13 +70,70 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         const doubanId = meta.doubanId || extractDoubanId(meta.doubanUrl || '') || '';
         const doubanUrl = meta.doubanUrl || (doubanId ? `https://movie.douban.com/subject/${doubanId}/` : '');
         const doubanSel = overrides.doubanInput || formSelectors.douban;
+        // Per legacy L15389-15404: only TTG / HDDolby / BTSchool(`doubanid`) take numeric ID;
+        // other sites (PThome `douban_id`, HDArea `dburl`, etc.) expect the full Douban URL.
+        const preferNumericDoubanId = ['TTG', 'HDDolby', 'BTSchool'].includes(config.name);
         $(doubanSel).each((_, el) => {
             const input = el as HTMLInputElement;
             const name = (input.getAttribute('name') || '').toLowerCase();
-            if (name.includes('douban') && name.includes('id')) input.value = doubanId || doubanUrl;
-            else input.value = doubanUrl || doubanId;
+            if (name === 'doubanid' || (preferNumericDoubanId && name.includes('douban') && name.includes('id'))) {
+                input.value = doubanId || doubanUrl;
+            } else {
+                input.value = doubanUrl || doubanId;
+            }
             dispatchFormEvents(input);
         });
+
+        // Modern NexusPHP 1.8+/1.9+ PT-Gen link field (`input[name="pt_gen"]`).
+        const ptGenVal = doubanUrl || meta.imdbUrl || (meta.imdbId ? `https://www.imdb.com/title/${meta.imdbId}/` : '');
+        if (ptGenVal) {
+            $('input[name="pt_gen"]').each((_, el) => {
+                const input = el as HTMLInputElement;
+                if (!input.value) {
+                    input.value = ptGenVal;
+                    dispatchFormEvents(input);
+                }
+            });
+        }
+    } catch { }
+
+    // Modern NexusPHP 1.8+/1.9+ dedicated MediaInfo / BDInfo textarea (`technical_info`, `media_info`, `tr_nfo`),
+    // TMDB URL (`tmdb_url`, `tmdb`), screenshots textarea (`screenshots`), and standalone poster URL (`tr_cover_url`, `cover`).
+    try {
+        const infos = getMediainfoPictureFromDescr(descrVal, { mediumSel: meta.mediumSel });
+        const techEl = document.querySelector(
+            'textarea[name="technical_info"], textarea[name="media_info"], textarea[name="tr_nfo"]'
+        ) as HTMLTextAreaElement | null;
+        if (techEl && !techEl.value.trim()) {
+            const mi = (meta.fullMediaInfo || infos.mediainfo || '').replace(/\[\/?(quote|code|size|font|color)[^\]]*\]/gi, '').trim();
+            if (mi) {
+                techEl.value = mi;
+                dispatchFormEvents(techEl);
+            }
+        }
+        const coverEl = document.querySelector('input[name="tr_cover_url"], input[name="cover"]') as HTMLInputElement | null;
+        if (coverEl && !coverEl.value.trim()) {
+            const posterUrl = descrVal.match(/\[img\](\S*?)\[\/img\]/i)?.[1] || meta.images?.[0] || '';
+            if (posterUrl) {
+                coverEl.value = posterUrl;
+                dispatchFormEvents(coverEl);
+            }
+        }
+        const tmdbEl = document.querySelector('input[name="tmdb_url"], input[name="tmdb"]') as HTMLInputElement | null;
+        if (tmdbEl && !tmdbEl.value.trim() && (meta.tmdbUrl || meta.tmdbId)) {
+            tmdbEl.value = meta.tmdbUrl || `https://www.themoviedb.org/${meta.type === '剧集' ? 'tv' : 'movie'}/${meta.tmdbId}`;
+            dispatchFormEvents(tmdbEl);
+        }
+        const screensEl = document.querySelector('textarea[name="screenshots"]') as HTMLTextAreaElement | null;
+        if (screensEl && !screensEl.value.trim() && infos.picInfo) {
+            const urls = Array.from(infos.picInfo.matchAll(/\[img\](.*?)\[\/img\]/gi))
+                .map((m) => m[1].trim())
+                .filter(Boolean);
+            if (urls.length) {
+                screensEl.value = Array.from(new Set(urls)).join('\n');
+                dispatchFormEvents(screensEl);
+            }
+        }
     } catch { }
 
     const injectTorrentFile = async () => {
@@ -169,6 +229,191 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         }
     };
 
+    // ---- declarative NexusPHP profile (opt-in; existing dedicated trackers omit nexusProfile) ----
+    const profileHandledFields = new Set<string>();
+    const matchTeamOption = (select: HTMLSelectElement, titleStr: string, mode: 'standard' | 'okpt' | 'muxuege' = 'standard') => {
+        if (!titleStr) return;
+        const opts = Array.from(select.options);
+        if (mode === 'okpt') {
+            const okptTeams: Array<[string, RegExp]> = [
+                ['M-team', /-(.*mteam|mpad|tnp|BMDru|MWEB)/i],
+                ['CMCT', /-(CMCT|cmctv)/i],
+                ['HDSky', /-(hds|.*@HDSky)/i],
+                ['CHDBits', /-(CHD|.*@CHDBits)|@CHDWEB/i],
+                ['OurBits', /(-Ao|-.*OurBits|-FLTTH|-IloveTV|OurTV|-IloveHD|OurPad|-MGs)$/i],
+                ['TTG', /-(WiKi|DoA|.*TTG|NGB|ARiN)/i],
+                ['HDChina', /-(HDC)/i],
+                ['PterClub', /-(Pter|.*Pter)/i],
+                ['HDHome', /(-hdh|.*@HDHome)/i],
+                ['PThome', /(-pthome|-pth|.*@pth)/i],
+                ['Audiences', /(-Audies|.*@Audies|-ADE|-ADWeb|.*@ADWeb)/i],
+                ['PTLGS', /(-PTLGS|.*@PTLGS)/i],
+                ['HDDolby', /-DBTV|-QHstudIo|Dream$|.*@dream/i],
+                ['FRDS', /-FRDS|@FRDS/i],
+                ['Ying', /Ying(WEB|DIY|TV|MV|MUSIC)?$/i],
+                ['Red Leaves', /(RLWEB|RLeaves|RLTV|-R²)$/i],
+                ['UBits', /@UBits|-UBits|-UBWEB/i],
+                ['AGSV', /AGSV(PT|E|WEB|REMUX|Rip|TV|DIY|MUS)?$/i]
+            ];
+            if (/PandaMoon|HDSpace|HDClub|LCHD/i.test(titleStr)) return;
+            for (const [label, re] of okptTeams) {
+                if (!re.test(titleStr)) continue;
+                const hit = opts.find((o) => new RegExp(label, 'i').test((o.textContent || '').trim()));
+                if (hit) {
+                    select.value = hit.value;
+                    hit.selected = true;
+                    dispatchFormEvents(select);
+                    return;
+                }
+            }
+            return;
+        }
+        const tail = mode === 'muxuege'
+            ? (titleStr.split(/Blu-ray/i).pop() || titleStr)
+            : (titleStr.split(/(?:19|20)\d{2}/).pop() || titleStr);
+        const tailLower = tail.toLowerCase();
+        for (const opt of opts) {
+            const label = (opt.textContent || '').trim();
+            if (!label || label.length < 2 || /^(请选择|其他|其它|other|none|---)$/i.test(label)) continue;
+            if (label === 'DIY' || label === 'REMUX') continue;
+            if (!tailLower.includes(label.toLowerCase())) continue;
+            if (/PSY|LCHD/.test(tail) && label === 'CHD') continue;
+            if (/PandaMoon/.test(tail) && label === 'Panda') continue;
+            if (/HDSpace/i.test(tail) && /HDS/i.test(label)) continue;
+            if (/HDClub/i.test(tail) && /HDC/i.test(label)) continue;
+            if (/REPACK/i.test(tail) && /PACK/i.test(label)) continue;
+            select.value = opt.value;
+            opt.selected = true;
+            dispatchFormEvents(select);
+            return;
+        }
+    };
+
+    if (config.nexusProfile) {
+        const profile = config.nexusProfile;
+        const assignments = resolveNexusProfileValues(meta, profile);
+        const resolveSelectByName = (selectorName: string): HTMLSelectElement | null => {
+            if (selectorName === 'type') {
+                return (
+                    (document.getElementById('browsecat') as HTMLSelectElement | null) ||
+                    (document.querySelector('select[name="type"]') as HTMLSelectElement | null)
+                );
+            }
+            if (selectorName === 'specialcat') {
+                return (
+                    (document.getElementById('specialcat') as HTMLSelectElement | null) ||
+                    (document.querySelector('select[name="specialcat"]') as HTMLSelectElement | null)
+                );
+            }
+            const exact = document.querySelector(`select[name="${selectorName}"]`) as HTMLSelectElement | null;
+            if (exact) return exact;
+            const prefix = document.querySelector(`select[name^="${selectorName}"]`) as HTMLSelectElement | null;
+            if (prefix) return prefix;
+            return findSelect(selectorName.replace(/\[\d+\]$/, ''));
+        };
+        const applyFieldValue = (select: HTMLSelectElement, val: NexusFieldValue): boolean => {
+            if (typeof val === 'string') {
+                const opt = Array.from(select.options).find((o) => o.value === val);
+                if (!opt) return false;
+                select.value = opt.value;
+            } else {
+                const opt = select.options[val.index];
+                if (!opt) return false;
+                select.selectedIndex = val.index;
+                opt.selected = true;
+            }
+            dispatchFormEvents(select);
+            return true;
+        };
+        const hasSpecialcat = assignments.some((a) => a.field === 'specialcat');
+        const applyProfilePass = () => {
+            if (hasSpecialcat && profile.specialcatMode5) {
+                $('tr.mode_4').hide();
+                $('tr.mode_5').show();
+            }
+            for (const item of assignments) {
+                const sel = resolveSelectByName(item.selector);
+                if (!sel) continue;
+                if (item.field === 'specialcat') {
+                    sel.disabled = false;
+                    const browsecat = document.getElementById('browsecat') as HTMLSelectElement | null;
+                    if (browsecat) browsecat.disabled = true;
+                } else if (item.field === 'type') {
+                    const specialcat = document.getElementById('specialcat') as HTMLSelectElement | null;
+                    if (specialcat) specialcat.disabled = true;
+                    try { (window as any).disableother?.('browsecat', 'specialcat'); } catch {}
+                }
+                if (applyFieldValue(sel, item.value)) {
+                    profileHandledFields.add(item.field);
+                    if (item.field === 'team' && profile.team?.matchOption !== false) {
+                        matchTeamOption(sel, titleVal, profile.team?.matchMode || 'standard');
+                    }
+                }
+            }
+            // Option-text year matching for sites like 麒麟 (`processing_sel[4]`).
+            if (profile.processingByYear?.mode === 'optionText') {
+                const sel = resolveSelectByName(profile.processingByYear.selector);
+                if (sel) {
+                    if (profile.processingByYear.defaultValue !== undefined) {
+                        applyFieldValue(sel, profile.processingByYear.defaultValue);
+                    }
+                    const yr = titleVal.match(/(?:19|20)\d{2}/g)?.pop();
+                    if (yr) {
+                        const hit = Array.from(sel.options).find((o) => (o.textContent || '').includes(yr));
+                        if (hit) {
+                            sel.value = hit.value;
+                            hit.selected = true;
+                            dispatchFormEvents(sel);
+                        }
+                    }
+                    profileHandledFields.add('processingByYear');
+                }
+            }
+            // Region option-text fallback when `source` fell through to default/empty.
+            if (profile.source && !meta.sourceSel) {
+                const sel = resolveSelectByName(profile.source.selector);
+                const reg = descrVal.match(/(?:地.{0,5}?区|国.{0,5}?家|产.{0,5}?地|◎產.{0,5}?地)([^\r\n]+)/);
+                const region = reg?.[1]?.split('/')[0]?.split(':').pop()?.trim() || '';
+                if (sel && region) {
+                    const hit = Array.from(sel.options).find((o) => {
+                        const part = (o.textContent || '').split(/[/（(]/).pop()?.trim() || '';
+                        return part.length >= 2 && region.includes(part);
+                    });
+                    if (hit) {
+                        sel.value = hit.value;
+                        hit.selected = true;
+                        dispatchFormEvents(sel);
+                        profileHandledFields.add('source');
+                    }
+                }
+            }
+            // Site-specific custom tag checkboxes.
+            if (profile.customTags?.length) {
+                const labels = getMetaLabels(meta);
+                const teamSel = profile.team ? resolveSelectByName(profile.team.selector) : null;
+                for (const tag of profile.customTags) {
+                    let active = false;
+                    if (tag.when === '4k_sdr') active = meta.standardSel === '4K' && /SDR/i.test(descrVal);
+                    else if (tag.when === 'hdr10') active = Boolean(labels.hdr10 || /HDR10/i.test(descrVal));
+                    else if (tag.when === 'dv') active = Boolean(labels.db || /Dolby Vision|\bDV\b/i.test(`${titleVal}\n${descrVal}`));
+                    else if (tag.when === 'effects_sub') active = /特效字幕/.test(smallDescrVal);
+                    else if (tag.when === 'jp_lang') active = /◎语.*?言.*?日语/.test(descrVal);
+                    else if (tag.when === 'kr_lang') active = /◎语.*?言.*?韩语/.test(descrVal);
+                    else if (tag.when === 'agsv_ark') active = [29, 30, 31].includes(Number(teamSel?.value || 0));
+                    if (!active) continue;
+                    const cb = document.querySelector(tag.selector) as HTMLInputElement | null;
+                    if (cb && !cb.checked) {
+                        cb.checked = true;
+                        dispatchFormEvents(cb);
+                    }
+                }
+            }
+        };
+        applyProfilePass();
+        // Re-apply shortly after `#browsecat` change in case the site dynamically updates dependent selects.
+        window.setTimeout(applyProfilePass, 350);
+    }
+
     const typeMap: Record<string, (string | RegExp)[]> = {
         电影: [/Movie/i, /电影/],
         剧集: [/TV/i, /Series/i, /剧集/],
@@ -184,7 +429,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         学习: [/Study/i, /学习/]
     };
 
-    if (meta.type && typeMap[meta.type]) {
+    if (!profileHandledFields.has('type') && !profileHandledFields.has('specialcat') && meta.type && typeMap[meta.type]) {
         pickOption('type', typeMap[meta.type]);
         pickOption('category', typeMap[meta.type]);
         pickOption('cat', typeMap[meta.type]);
@@ -201,7 +446,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         DVD: [/DVD/i, /DVDRip/i],
         CD: [/CD/i]
     };
-    if (meta.mediumSel && mediumMap[meta.mediumSel]) {
+    if (!profileHandledFields.has('medium') && !profileHandledFields.has('sourceByMedium') && !profileHandledFields.has('sourceByType') && meta.mediumSel && mediumMap[meta.mediumSel]) {
         pickOption('medium_sel', mediumMap[meta.mediumSel]);
         pickOption('medium', mediumMap[meta.mediumSel]);
         // Some Nexus variants use `source_sel` for medium/source, others use it for region.
@@ -220,7 +465,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         '720p': [/720p/i],
         SD: [/SD/i, /480/i, /576/i]
     };
-    if (meta.standardSel && standardMap[meta.standardSel]) {
+    if (!profileHandledFields.has('standard') && meta.standardSel && standardMap[meta.standardSel]) {
         pickOption('standard_sel', standardMap[meta.standardSel]);
         pickOption('standard', standardMap[meta.standardSel]);
     }
@@ -234,7 +479,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         'MPEG-2': [/MPEG-?2/i],
         XVID: [/XVID/i]
     };
-    if (meta.codecSel && codecMap[meta.codecSel]) {
+    if (!profileHandledFields.has('codec') && meta.codecSel && codecMap[meta.codecSel]) {
         pickOption('codec_sel', codecMap[meta.codecSel]);
         pickOption('codec', codecMap[meta.codecSel]);
     }
@@ -254,7 +499,7 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
         WAV: [/WAV/i],
         MP3: [/MP3/i]
     };
-    if (meta.audioCodecSel && audioMap[meta.audioCodecSel]) {
+    if (!profileHandledFields.has('audio') && meta.audioCodecSel && audioMap[meta.audioCodecSel]) {
         pickOption('audiocodec_sel', audioMap[meta.audioCodecSel]);
         pickOption('audio', audioMap[meta.audioCodecSel]);
     }
@@ -281,7 +526,13 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
 
     // Source region / release group: additional dropdowns on some Nexus sites.
     try {
-        if (meta.sourceSel) {
+        if (
+            !profileHandledFields.has('source') &&
+            !profileHandledFields.has('sourceByMedium') &&
+            !profileHandledFields.has('sourceByType') &&
+            !profileHandledFields.has('processingBySource') &&
+            meta.sourceSel
+        ) {
             const regionKw = (() => {
                 const src = String(meta.sourceSel || '');
                 if (/大陆|内地|中国大陆|中国(?!香港|台湾|澳门)|华语/i.test(src)) return [/大陆|内地|中国(?!香港|台湾|澳门)|CN|华语/i];
@@ -294,8 +545,10 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
                 if (/欧美|歐美|美国|英國|英国|欧洲|歐洲|US|USA|UK|Europe/i.test(src)) return [/欧美|歐美|美国|英国|欧洲|US|USA|UK|Europe/i];
                 return [src, new RegExp(src, 'i')];
             })();
-            pickOption('team_sel', regionKw);
-            pickOption('team', regionKw);
+            if (!profileHandledFields.has('team')) {
+                pickOption('team_sel', regionKw);
+                pickOption('team', regionKw);
+            }
             pickOption('region', regionKw);
             pickOption('area', regionKw);
             const sourceSel = findSelect('source_sel');
@@ -312,10 +565,12 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
 
         const retry = (fn: () => void, times = 8, delayMs = 220) => repeat(fn, times, delayMs);
 
-        // Value/text based tag checkboxes (HDHome/PThome/HDDolby/Audiences + many NP variants).
+        // Value/text based tag checkboxes (HDHome/PThome/HDDolby/Audiences/BTSchool + NP 1.8+ variants).
         retry(() => {
             const inputs = Array.from(
-                document.querySelectorAll('input[type="checkbox"][name="tags[]"], input[type="checkbox"][name="tags[4][]"]')
+                document.querySelectorAll(
+                    'input[type="checkbox"][name="tags[]"], input[type="checkbox"][name="tags[4][]"], input[type="checkbox"][name="span[]"]'
+                )
             ) as HTMLInputElement[];
             if (!inputs.length) return;
 
@@ -327,31 +582,53 @@ export async function fillNexus(meta: TorrentMeta, config: SiteConfig): Promise<
                     if (byFor) t = byFor.textContent || '';
                 }
                 if (!t) t = (el.closest('label') as HTMLLabelElement | null)?.textContent || '';
-                if (!t) t = el.parentElement?.textContent || '';
+                // When multiple checkboxes share a single <td> without <label>, read ONLY the text
+                // between this input and the next input/<br> so we never match neighboring tags (e.g. 禁转/首发).
+                if (!t) {
+                    const chunks: string[] = [];
+                    let cur: ChildNode | null = el.nextSibling;
+                    while (cur) {
+                        if (cur.nodeName === 'INPUT' || cur.nodeName === 'BR') break;
+                        if (cur instanceof Element && cur.querySelector('input')) break;
+                        const part = (cur.textContent || '').trim();
+                        if (part) chunks.push(part);
+                        if (chunks.length >= 2) break;
+                        cur = cur.nextSibling;
+                    }
+                    t = chunks.join(' ');
+                }
                 return t.replace(/\s+/g, ' ').trim();
             };
 
-            const setTag = (on: boolean, valueAliases: string[], labelPattern: RegExp) => {
+            const setTag = (on: boolean, semanticValues: string[], numericFallbackValues: string[], labelPattern: RegExp) => {
                 if (!on) return;
-                const aliasSet = new Set(valueAliases.map((v) => String(v).toLowerCase()));
+                const semanticSet = new Set(semanticValues.map((v) => v.toLowerCase()));
+                const numericSet = new Set(numericFallbackValues);
                 for (const el of inputs) {
-                    const val = (el.value || '').toLowerCase();
+                    const val = (el.value || '').trim().toLowerCase();
                     const txt = getInputText(el);
-                    if (!aliasSet.has(val) && !labelPattern.test(txt)) continue;
-                    el.checked = true;
-                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    const matchedBySemantic = semanticSet.has(val);
+                    const matchedByLabel = !!txt && labelPattern.test(txt);
+                    // Only fall back to numeric value aliases when the checkbox has no readable label text,
+                    // preventing cross-site numeric ID collisions (e.g. value="11" meaning 限转 on another site).
+                    const matchedByNumericFallback = !txt && numericSet.has(val);
+                    if (!matchedBySemantic && !matchedByLabel && !matchedByNumericFallback) continue;
+                    if (!el.checked) {
+                        el.checked = true;
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
             };
 
-            setTag(!!labels.gy, ['gy', '5'], /(国.?语|mandarin|国语配音|中文配音)/i);
-            setTag(!!labels.yy, ['yy', '11'], /(粤语|cantonese)/i);
-            setTag(!!labels.zz, ['zz', '6'], /(中字|字幕|中文字幕|chinese.?sub)/i);
-            setTag(!!labels.diy, ['diy', '4', '13'], /(DIY|自制|原盘DIY)/i);
-            setTag(!!labels.hdr10, ['hdr10', '7', '9'], /HDR10/i);
-            setTag(!!labels.hdr10plus, ['hdrm', '10', '17', '20'], /(HDR10\+|HDR\+)/i);
-            setTag(!!labels.db, ['db', '8', '9', '11', '12', '15'], /(杜比视界|Dolby.?Vision|DoVi|DV)/i);
-            setTag(!!labels.complete, ['wj', '13', '17', '20'], /(完结|全集|pack|complete)/i);
+            setTag(!!labels.gy, ['gy'], ['5'], /(国.?语|mandarin|国语配音|中文配音)/i);
+            setTag(!!labels.yy, ['yy'], ['11'], /(粤语|cantonese)/i);
+            setTag(!!labels.zz, ['zz'], ['6'], /(中字|中文字幕|chinese.?sub)/i);
+            setTag(!!labels.diy, ['diy'], ['4'], /(DIY|原盘DIY)/i);
+            setTag(!!labels.hdr10, ['hdr10'], ['7'], /(?:\bHDR10\b(?!\+)|^HDR$)/i);
+            setTag(!!labels.hdr10plus, ['hdrm'], ['10'], /(HDR10\+|HDR\+)/i);
+            setTag(!!labels.db, ['db'], ['8'], /(杜比视界|Dolby.?Vision|DoVi|\bDV\b)/i);
+            setTag(!!labels.complete, ['wj'], ['13'], /(完结|全集|pack|complete)/i);
         });
     } catch { }
 }

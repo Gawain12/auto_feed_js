@@ -22,38 +22,123 @@ export interface PtgenApplyFlags {
 const IYUU_API = 'https://api.iyuu.cn/App.Movie.Ptgen';
 const TJU_API = 'https://ptgen.tju.pt/infogen';
 
-const buildDoubanFormat = (info: DoubanInfo, imdbId?: string): string => {
+export const buildDoubanFormat = (info: DoubanInfo, imdbId?: string): string => {
     const lines: string[] = [];
     if (info.image) lines.push(`[img]${info.image}[/img]`, '');
     const title = info.title || '';
-    if (info.aka) lines.push(`◎译　　名　${title} / ${info.aka}`);
-    else if (title) lines.push(`◎译　　名　${title}`);
-    if (title) lines.push(`◎片　　名　${title}`);
+    const originalTitle = info.originalTitle || title;
+    const effectiveImdbId = imdbId || info.imdbId || '';
+    const splitItems = (raw?: string) =>
+        String(raw || '')
+            .split(/\s*\/\s*/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+    const translatedNames = Array.from(new Set([title, ...splitItems(info.aka)].filter(Boolean)));
+    if (translatedNames.length) lines.push(`◎译　　名　${translatedNames.join(' / ')}`);
+    if (originalTitle) lines.push(`◎片　　名　${originalTitle}`);
     if (info.year) lines.push(`◎年　　代　${info.year}`);
     if (info.region) lines.push(`◎产　　地　${info.region}`);
     if (info.genre) lines.push(`◎类　　别　${info.genre}`);
     if (info.language) lines.push(`◎语　　言　${info.language}`);
     if (info.releaseDate) lines.push(`◎上映日期　${info.releaseDate}`);
-    if (imdbId) lines.push(`◎IMDb链接  https://www.imdb.com/title/${imdbId}/`);
+    if (effectiveImdbId) lines.push(`◎IMDb链接  https://www.imdb.com/title/${effectiveImdbId}/`);
     if (info.average) {
         const votes = info.votes ? ` from ${info.votes} users` : '';
         lines.push(`◎豆瓣评分　${info.average}/10${votes}`);
     }
     if (info.id) lines.push(`◎豆瓣链接　https://movie.douban.com/subject/${info.id}/`);
+    if (info.episodes) lines.push(`◎集　　数　${info.episodes}`);
     if (info.runtime) lines.push(`◎片　　长　${info.runtime}`);
-    if (info.director) lines.push(`◎导　　演　${info.director}`);
-    if (info.cast) lines.push(`◎主　　演　${info.cast}`);
+    const formatCredits = (label: string, raw?: string, maxCount = 15) => {
+        const items = splitItems(raw).slice(0, maxCount);
+        if (!items.length) return;
+        lines.push(`${label}${items[0]}`);
+        for (let i = 1; i < items.length; i++) {
+            lines.push(`　　　　　　${items[i]}`);
+        }
+    };
+    formatCredits('◎导　　演　', info.director, 6);
+    formatCredits('◎编　　剧　', info.writer, 8);
+    formatCredits('◎主　　演　', info.cast, 15);
     lines.push('');
     lines.push('◎简　　介');
     if (info.summary) {
-        lines.push(info.summary.replace(/^|\n/g, '\n　　').trim());
+        lines.push(info.summary.replace(/^|\n/g, '\n　　').replace(/^\n+/, '').trimEnd());
     } else {
         lines.push('　　暂无相关剧情介绍');
+    }
+    if (info.awards && info.awards.length) {
+        lines.push('');
+        lines.push('◎获奖情况');
+        lines.push('');
+        for (const award of info.awards) {
+            lines.push(`　　${award}`);
+        }
     }
     return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 };
 
+export interface PtgenFetchResult {
+    format: string;
+    doubanId?: string;
+    synopsis?: string;
+    poster?: string;
+}
+
+export const hasPtgenBlock = (descr: string): boolean => {
+    const s = String(descr || '');
+    const hits = (s.match(/◎\s*(?:译|譯|片|年|产|產|类|類|语|語|简|簡|导|導|主)\s*(?:名|代|地|别|別|言|介|演)/g) || []).length;
+    return hits >= 3;
+};
+
+export const stripLeadingPtgenBlock = (descr: string): string => {
+    const raw = String(descr || '').trim();
+    if (!raw || !hasPtgenBlock(raw)) return raw;
+    const lines = raw.split(/\r?\n/);
+    const firstMarkerIdx = lines.findIndex((l) => /^◎/.test(l.trim()));
+    if (firstMarkerIdx < 0) return raw;
+
+    // Also include a lone poster `[img]...[/img]` immediately preceding the `◎` block.
+    let startIdx = firstMarkerIdx;
+    while (startIdx > 0 && !lines[startIdx - 1].trim()) startIdx -= 1;
+    if (startIdx > 0 && /^\[img\][^\[\]]+\[\/img\]$/i.test(lines[startIdx - 1].trim())) {
+        startIdx -= 1;
+    }
+
+    let passedSynopsis = false;
+    let endIdx = firstMarkerIdx + 1;
+    for (let i = firstMarkerIdx + 1; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+        if (/^\[(?:quote|code|mediainfo|bdinfo|hide|spoiler|b)\b/i.test(trimmed)) {
+            break;
+        }
+        if (/^\[img\][^\[\]]+\[\/img\]$/i.test(trimmed) && passedSynopsis) {
+            break;
+        }
+        if (/^◎\s*(?:简|簡)\s*介/.test(trimmed) || /^◎\s*(?:获|獲)\s*(?:奖|獎)/.test(trimmed)) {
+            passedSynopsis = true;
+        }
+        endIdx = i + 1;
+    }
+
+    const combined = [...lines.slice(0, startIdx), ...lines.slice(endIdx)]
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    // Recursively strip stacked duplicate PTGen blocks if present.
+    return hasPtgenBlock(combined) && combined !== raw ? stripLeadingPtgenBlock(combined) : combined;
+};
+
+export const extractPosterFromPtgen = (format: string): string =>
+    String(format || '').match(/\[img\](https?:\/\/[^\s\]]+)\[\/img\]/i)?.[1]?.trim() || '';
+
 export class PtgenService {
+    static extractSubtitle(format: string, title = ''): string {
+        const legacySmall = getSmallDescrFromDescr(format, title);
+        return legacySmall || this.extractSubtitleFromFormat(format);
+    }
+
     private static extractSubtitleFromFormat(format: string): string {
         const lines = format.split('\n').map((line) => line.trim()).filter(Boolean);
         const getLineValue = (pattern: RegExp) => {
@@ -87,6 +172,9 @@ export class PtgenService {
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '');
         if (!imdbId) return null;
 
+        const cached = DoubanService.getCachedByImdb(imdbId);
+        if (cached?.id) return cached.id;
+
         if (method === 0) {
             const url = `https://movie.douban.com/j/subject_suggest?q=${imdbId}`;
             try {
@@ -111,7 +199,7 @@ export class PtgenService {
         }
     }
 
-    private static async fetchPtgenOnce(meta: TorrentMeta, options: PtgenOptions): Promise<{ format: string; doubanId?: string; synopsis?: string } | null> {
+    private static async fetchPtgenOnce(meta: TorrentMeta, options: PtgenOptions): Promise<PtgenFetchResult | null> {
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const doubanId = await this.resolveDoubanId(meta, options.imdbToDoubanMethod, options.doubanCookie);
 
@@ -123,7 +211,8 @@ export class PtgenService {
             return {
                 format: buildDoubanFormat(info, imdbId || undefined),
                 doubanId: info.id,
-                synopsis: info.summary || ''
+                synopsis: info.summary || '',
+                poster: info.image || ''
             };
         }
 
@@ -163,13 +252,17 @@ export class PtgenService {
             // Heuristic: if it doesn't look like a ptgen/douban block, treat it as a failed response.
             if (!format.match(/◎简\s*介|◎译\s*名|douban\.com\/subject\/\d+|imdb\.com\/title\/tt\d+/i)) return null;
             format = format.replace('hongleyou.cn', 'doubanio.com').replace(/\[\/img\]\[\/center\]/g, '[/img]');
-            return { format };
+            return {
+                format,
+                doubanId: extractDoubanId(format) || doubanId || undefined,
+                poster: extractPosterFromPtgen(format) || undefined
+            };
         } catch {
             return null;
         }
     }
 
-    static async fetchPtgen(meta: TorrentMeta, options: PtgenOptions): Promise<{ format: string; doubanId?: string; synopsis?: string } | null> {
+    static async fetchPtgen(meta: TorrentMeta, options: PtgenOptions): Promise<PtgenFetchResult | null> {
         // Provider fallback:
         // - 3 (douban scrape) can fail due to captcha/rate-limits.
         // - 0/1 can fail due to outages.
@@ -186,11 +279,8 @@ export class PtgenService {
         return null;
     }
 
-    static async applyPtgen(meta: TorrentMeta, options: PtgenOptions, flags?: PtgenApplyFlags): Promise<TorrentMeta> {
-        const result = await this.fetchPtgen(meta, options);
-        if (!result || !result.format) return meta;
+    static applyPtgenResult(meta: TorrentMeta, result: PtgenFetchResult, flags?: PtgenApplyFlags): TorrentMeta {
         const updated: TorrentMeta = { ...meta };
-
         const overwrite = !!flags?.overwrite;
         const mergeDescription = flags?.mergeDescription ?? true;
         const updateSubtitle = flags?.updateSubtitle ?? true;
@@ -198,26 +288,24 @@ export class PtgenService {
         const updateIds = flags?.updateIds ?? true;
         const updateSynopsis = flags?.updateSynopsis ?? true;
 
-        // Keep the raw ptgen/douban block available via `description` merge by default.
         if (mergeDescription) {
-            updated.description = `${result.format}\n\n${updated.description || ''}`.trim();
+            const currentDescr = String(updated.description || '').trim();
+            if (!hasPtgenBlock(currentDescr)) {
+                updated.description = `${result.format}\n\n${currentDescr}`.trim();
+            } else if (overwrite) {
+                const rest = stripLeadingPtgenBlock(currentDescr);
+                updated.description = `${result.format}\n\n${rest}`.trim();
+            }
         }
 
         if (updateSubtitle) {
-            // Legacy parity:
-            // Prefer deriving small_descr from the fetched ptgen/douban block,
-            // so it includes translated titles + type/genre line when available.
-            const legacySmall = getSmallDescrFromDescr(result.format, updated.title || meta.title || '');
-            const fallback = this.extractSubtitleFromFormat(result.format);
-            const subtitle = legacySmall || fallback;
+            const subtitle = this.extractSubtitle(result.format, updated.title || meta.title || '');
             if (subtitle) {
                 if (overwrite || !updated.subtitle) updated.subtitle = subtitle;
                 if (overwrite || !updated.smallDescr) updated.smallDescr = subtitle;
             }
         }
 
-        // Region/area (used by PTer team_sel and some Nexus variants). Extract directly from ptgen block
-        // so targets can fill "地区/产地" even if they don't want to rely on description parsing.
         if (updateRegion) {
             try {
                 const region = getSourceSelFromDescr(result.format);
@@ -231,14 +319,10 @@ export class PtgenService {
                 if (overwrite || !updated.imdbId) updated.imdbId = imdbMatch;
                 if (overwrite || !updated.imdbUrl) updated.imdbUrl = `https://www.imdb.com/title/${imdbMatch}/`;
             }
-            const doubanMatch = extractDoubanId(result.format);
+            const doubanMatch = extractDoubanId(result.format) || result.doubanId || '';
             if (doubanMatch) {
                 if (overwrite || !updated.doubanId) updated.doubanId = doubanMatch;
                 if (overwrite || !updated.doubanUrl) updated.doubanUrl = `https://movie.douban.com/subject/${doubanMatch}/`;
-            }
-            if (result.doubanId) {
-                if (overwrite || !updated.doubanId) updated.doubanId = result.doubanId;
-                if (overwrite || !updated.doubanUrl) updated.doubanUrl = `https://movie.douban.com/subject/${result.doubanId}/`;
             }
         }
 
@@ -249,5 +333,11 @@ export class PtgenService {
         }
 
         return updated;
+    }
+
+    static async applyPtgen(meta: TorrentMeta, options: PtgenOptions, flags?: PtgenApplyFlags): Promise<TorrentMeta> {
+        const result = await this.fetchPtgen(meta, options);
+        if (!result || !result.format) return meta;
+        return this.applyPtgenResult(meta, result, flags);
     }
 }

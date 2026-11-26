@@ -13,24 +13,21 @@ This is the refactored version evolved from the original **Auto-Feed** project. 
 - 原项目 `dev`：新版主线，相对稳定；经过验证的修复和适配再向这里提交 PR。
 - `refactor-dev`：更快的开发与验证分支，先在这里完成适配、测试和问题修复。
 
-## 当前进度（2026-09-13）
-- 新版主线以原项目 `dev` 为准，`refactor-dev` 主要用于更快验证近期改动；近期提交主要集中在兼容性和稳定性修复，而不是增加新的大功能。
-- 非音乐站点主链路（解析 -> 缓存 -> 预填）已基本稳定，Tik 的标题、编码和目标站填充逻辑也已按实际流程持续修正。
-- HDB / PTP 的媒体信息、海报和源信息位置已补齐多种页面场景；SC / HDT / TJUPT 已补充源站与目标站链路，但仍需要更多站点实测。
-- Monika（MDU）转发链路已按上游源码规则对齐修复（上传路径、搜索参数、关键表单映射）。
-- 图片托管与远程推送持续完善，已覆盖 Hostik / hdbimg 等桥接场景，以及 qBittorrent / Transmission / Deluge 推送。
-- 音乐站点（RED / OPS / DIC / OpenCD）已接入，但仍在持续补齐双向转发字段和边缘规则；部分小站和历史功能仍处于迁移或待回归阶段。
-- 快速搜索已按上游 legacy 脚本对齐（含 `nzbs.in`、字幕站等独立搜索站点）。
-- 详细状态见：[`docs/wiki/FEATURE_PARITY.md`](docs/wiki/FEATURE_PARITY.md)
+## 当前进度（v5.2.0｜2026-11-26）
+- **站点覆盖与分层（155 站，本版 +126 站）**：已对齐原版 `v2.1.1.6` 全部活跃站点。核心影视站（`PTP` / `HDB` / `BTN` / `GPW` / `BLU` / `BHD` / `Tik` / `KG` / `SC` / `CG` / `AvistaZ` / `HDT` / `MTeam` / `PTer` / `HDSky` / `CHDBits` / `CMCT` / `HDChina` / `HDHome` / `OurBits` / `Audiences` / `TTG` / `TJUPT` / `FRDS` / `PThome` / `BTSchool` / `HDArea` / `HDTime` / `HDDolby` / `TCCF` / `HDfans` / `TLFbits` 等）与四大音乐站（`RED` / `OPS` / `DIC` / `OpenCD`）均已完成现网实测；其余 110 个未逐一实测的小站默认折叠在设置页「实验性适配站点」中，按需搜索启用。
+- **四大音乐站 & CD `.log`**：支持 `RED` / `OPS` / `DIC` / `OpenCD` 双向转发以及单碟/多碟 CD 抓轨 `.log` 自动透传，同时支持 `jpop` / `lztr` 音乐仅源站。
+- **站点类型智能隔离**：转发栏默认按内容类型隔离音乐、电影、剧集、书籍与游戏站（保留 `PTP ↔ BTN` 迷你剧互通），旁侧可一键展开其他站点。
+- **信息补全与图床**：支持外站转内站 PTGen 补全、豆瓣详情页一键复制 BBCode、Tik 英文助手与 Wikidata/IMDb 电影画幅比读取，以及 PTPIMG / Pixhost / Freeimage / ImgBB / Hostik / hdbimg 图床与 qBittorrent / Transmission / Deluge 远程推送。
+- 详细站点与功能状态见：[`docs/wiki/Site-Support.md`](docs/wiki/Site-Support.md) 与 [`docs/wiki/FEATURE_PARITY.md`](docs/wiki/FEATURE_PARITY.md)。
 
 ## 核心功能
-- 源站详情页一键转发到目标站上传页
-- 自动预填标题、简介、媒体信息、图片等字段
-- IMDb -> 豆瓣 / PTGen 信息补全
+- 源站详情页一键转发到目标站上传页（支持按站点类型智能过滤）
+- 自动预填标题、简介、媒体信息、图片、种子文件及音乐站 CD `.log`
+- IMDb / 豆瓣 / PTGen 信息补全与豆瓣详情页一键复制
 - 页面增强（PTP/HDB 等）与快速搜索入口
 - 图片转存与图床桥接（PTPIMG / Pixhost / Freeimage / ImgBB / Hostik / hdbimg）
 - 远程推送（qBittorrent / Transmission / Deluge）
-- 种子清洗（Source/Announce/date/comment 等处理）
+- 种子清洗（Source / Announce / date / comment 等处理）
 
 ## 界面截图
 

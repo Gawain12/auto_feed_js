@@ -48,16 +48,31 @@ export class GPWEngine extends GazelleEngine {
                     ($(detail).find('a[data-action="toggle-mediainfo"]').first().parent().text().split('详情 | ')[1] || '').trim() ||
                     ($(detail).find('table.filelist_table tr:eq(1) td:eq(0)').text() || '').trim();
                 if (detailName) {
-                    const clean = detailName.replace(/\[|\]|\(|\)|mkv$|mp4$/gi, '').trim();
+                    const clean = detailName.replace(/\[|\]|\(|\)/g, '').replace(/\.?(?:mkv|mp4)$/gi, '').trim();
                     if (clean) title = clean;
                 }
 
-                const miText =
-                    (detail.querySelector('.MediaInfoText') as HTMLElement | null)?.textContent?.trim() ||
-                    (detail.querySelector('blockquote') as HTMLElement | null)?.textContent?.trim() ||
-                    (detail.nextElementSibling?.querySelector('.MediaInfoText') as HTMLElement | null)?.textContent?.trim() ||
-                    (detail.nextElementSibling?.querySelector('blockquote') as HTMLElement | null)?.textContent?.trim() ||
-                    '';
+                // GPW renders `.MediaInfoText` inside a hidden `<pre>` using `<br>` tags;
+                // both `.textContent` and hidden `.innerText` drop `<br>` newlines unless converted first.
+                const extractPreText = (el: HTMLElement | null | undefined): string => {
+                    if (!el) return '';
+                    const html = el.innerHTML || '';
+                    if (/<br\s*\/?>|<\/(?:div|p|li|tr)>/i.test(html)) {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = html
+                            .replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/(?:div|p|li|tr)>/gi, '\n');
+                        return (tmp.textContent || '').replace(/\u00a0/g, ' ').replace(/\r/g, '').trim();
+                    }
+                    return (el.innerText || el.textContent || '').replace(/\u00a0/g, ' ').replace(/\r/g, '').trim();
+                };
+
+                const miEl =
+                    (detail.querySelector('.MediaInfoText') as HTMLElement | null) ||
+                    (detail.querySelector('blockquote') as HTMLElement | null) ||
+                    (detail.nextElementSibling?.querySelector('.MediaInfoText') as HTMLElement | null) ||
+                    (detail.nextElementSibling?.querySelector('blockquote') as HTMLElement | null);
+                const miText = extractPreText(miEl);
                 if (miText) {
                     fullMediaInfo = miText.trim();
                     description += `[quote]\n${fullMediaInfo}\n[/quote]\n\n`;
@@ -182,14 +197,17 @@ export class GPWEngine extends GazelleEngine {
             if (/480|sd/.test(resolutionText)) return '480p';
             return '';
         })();
+        let codecOther = '';
         const codecValue = (() => {
             if (/x265/.test(codecText)) return 'x265';
             if (/h265|hevc/.test(codecText)) return 'H.265';
             if (/x264/.test(codecText)) return 'x264';
             if (/h264|avc/.test(codecText)) return 'H.264';
-            if (/vc-?1/.test(codecText)) return 'VC-1';
             if (/xvid/.test(codecText)) return 'XviD';
-            if (/mpeg-?2/.test(codecText)) return 'MPEG-2';
+            if (/divx/.test(codecText)) return 'DivX';
+            if (/vc-?1/.test(codecText)) { codecOther = 'VC-1'; return 'Other'; }
+            if (/mpeg-?2/.test(codecText)) { codecOther = 'MPEG-2'; return 'Other'; }
+            if (/av1/.test(codecText)) { codecOther = 'AV1'; return 'Other'; }
             return '';
         })();
         const containerValue = (() => {
@@ -283,7 +301,8 @@ export class GPWEngine extends GazelleEngine {
                 checkById('no_imdb_link', true);
             }
 
-            setValue('input[name="title"], input[name="name"], #title, #name', meta.title || '', { force: true, native: true });
+            // Do not overwrite movie title autofilled by IMDb (`force: false`).
+            setValue('input[name="title"], input[name="name"], #title, #name', meta.title || '', { force: false, native: true });
             setValue('input[name="year"], #year', year, { force: false, native: true });
             setValue('input[name="image"], #image', (meta.images && meta.images[0]) || '', { force: false, native: true });
             setValue('#release_desc, textarea[name="release_desc"], textarea[name="description"], textarea[name="body"]', releaseDesc || meta.description || '', { force: false });
@@ -320,7 +339,34 @@ export class GPWEngine extends GazelleEngine {
             setValue('select[name="processing_other"], #processing_other', processingOther, { force: false });
             setValue('#resolution, select[name="resolution"]', resolutionValue, { force: false });
             setValue('#codec, select[name="codec"]', codecValue, { force: false });
+            if (codecValue === 'Other' && codecOther) {
+                setValue('input[name="codec_other"]', codecOther, { force: false, native: true });
+            }
             setValue('#container, select[name="container"]', containerValue, { force: false });
+
+            // Edition / HDR / Audio / Dub / Subtitles checkboxes (legacy L2854-2936)
+            const tTitle = meta.title || '';
+            const tSmall = meta.smallDescr || meta.subtitle || '';
+            const tDescr = meta.description || '';
+            let hasEdition = false;
+            const checkEdition = (id: string, on: boolean) => {
+                if (!on) return;
+                checkById(id, true);
+                hasEdition = true;
+            };
+            checkEdition('dolby_vision', /Dolby.?Vision|杜比视界|\bDoVi\b|\bDV\b/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+            checkEdition('hdr10', /\bHDR10\b(?!\+)/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+            checkEdition('hdr10plus', /HDR10\+/i.test(`${tTitle} ${tSmall} ${tDescr}`));
+            checkEdition('dolby_atmos', /Atmos/i.test(`${tTitle} ${tSmall}`));
+            checkEdition('10_bit', /10.?bit/i.test(tTitle));
+            checkEdition('dts_x', /DTS.?X(?![26])/i.test(tTitle));
+            if (hasEdition) {
+                checkById('movie_edition_information', true);
+                const container = document.getElementById('movie_edition_information_container');
+                if (container) container.style.display = 'block';
+            }
+            if (/国配|国语配音/.test(tSmall)) checkById('chinese_dubbed', true);
+            if (/特效字幕/.test(`${tSmall} ${tDescr}`)) checkById('special_effects_subtitles', true);
         });
     }
 }

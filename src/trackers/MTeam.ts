@@ -261,7 +261,7 @@ export class MTeamEngine extends BaseEngine {
                 audioCodec = 'AC3(DD)';
                 if (meta.title.match(/DDP|DD\+/)) {
                     audioCodec = 'E-AC3(DDP)';
-                    if (meta.title.match(/Atoms/)) {
+                    if (meta.title.match(/Atmos|Atoms/i)) {
                         audioCodec = 'E-AC3 Atoms(DDP Atoms)';
                     }
                 }

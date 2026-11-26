@@ -25,12 +25,16 @@ test('rejects missing, malformed and object-valued ratios', () => {
     }
     assert.equal(Ratio.normalizeAspectRatio('1.37 : 1'), '1.37:1');
     assert.equal(Ratio.normalizeAspectRatio('1.85'), '1.85:1');
+    assert.equal(Ratio.normalizeAspectRatio('Academy ratio'), '1.37:1');
+    assert.equal(Ratio.normalizeAspectRatio('CinemaScope'), '2.35:1');
+    assert.equal(Ratio.normalizeAspectRatio('European widescreen'), '1.66:1');
     assert.equal(Ratio.extractFromText('Aspect ratio1.37 : 1'), '1.37:1');
 });
 
 test('refreshes only the film ratio and preserves manually rehosted images and edits', () => {
     const original = '[center][img]https://hostik.cinematik.net/upload/my-cover.jpg[/img][/center]\nFilm Aspect Ratio..: 16:9\nDVD Format.........: Anamorphic\nMy uploader notes';
     assert.equal(updateTikFilmAspectRatio(original, '1.37 : 1'), original.replace('Film Aspect Ratio..: 16:9', 'Film Aspect Ratio..: 1.37:1'));
+    assert.equal(updateTikFilmAspectRatio('Film Aspect Ratio..: \nSource.............: BD50', '2.35:1'), 'Film Aspect Ratio..: 2.35:1\nSource.............: BD50');
     assert.equal(updateTikFilmAspectRatio(original, 'unavailable'), original);
     assert.equal(updateTikFilmAspectRatio('Custom description without a ratio line', '1.37:1'), 'Custom description without a ratio line');
 });

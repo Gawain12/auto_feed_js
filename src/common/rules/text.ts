@@ -114,18 +114,18 @@ export function getStandardSel(text: string): string {
     let result = text;
     if (result.match(/(4320p|8k)/i)) {
         result = '8K';
-    } else if (result.match(/(1080p|2K)/i)) {
-        result = '1080p';
-    } else if (result.match(/(720p)/i)) {
-        result = '720p';
-    } else if (result.match(/(1080i)/i)) {
-        result = '1080i';
-    } else if (result.match(/(576[pi]|480[pi])/i)) {
-        result = 'SD';
-    } else if (result.match(/(1440p)/i)) {
-        result = '144Op';
     } else if (result.match(/(2160p|4k)/i)) {
         result = '4K';
+    } else if (result.match(/(1440p)/i)) {
+        result = '144Op';
+    } else if (result.match(/(1080p|2K)/i)) {
+        result = '1080p';
+    } else if (result.match(/(1080i)/i)) {
+        result = '1080i';
+    } else if (result.match(/(720p)/i)) {
+        result = '720p';
+    } else if (result.match(/(576[pi]|480[pi])/i)) {
+        result = 'SD';
     } else {
         result = '';
     }

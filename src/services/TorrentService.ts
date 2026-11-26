@@ -257,7 +257,32 @@ export class TorrentService {
         const info = infoPrivate[0].replace('privatei0e', 'privatei1e');
 
         newTorrent += info;
-        const source = `6:source${forwardSite.length}:${forwardSite.toUpperCase()}`;
+        const asciiSourceAliases: Record<string, string> = {
+            麒麟: 'HDKYL',
+            海棠: 'HTPT',
+            杏林: 'XINGTAN',
+            影: 'STARSPACE',
+            雨: 'RAINGFH',
+            红叶: 'REDLEAVES',
+            象岛: 'VICOMO',
+            唐门: 'TMPT',
+            天枢: 'DUBHE',
+            财神: 'CSPT',
+            星陨阁: 'XINGYUNGE',
+            樱花: 'YINGPT',
+            我好闲: 'WHAX',
+            下水道: 'SEWERPT',
+            柠檬不甜: 'LEMONHD',
+            藏宝阁: 'CANGBAO',
+            未来幻境: 'JIVON',
+            自然: 'ZRPT',
+            慕雪阁: 'MUXUEGE',
+            好学: 'HXPT',
+            躺平: 'TANGPT'
+        };
+        const rawSource = (asciiSourceAliases[forwardSite] || forwardSite).replace(/[^\x20-\x7e]/g, '').trim() || 'PT';
+        const sourceTag = rawSource.toUpperCase();
+        const source = `6:source${sourceTag.length}:${sourceTag}`;
         newTorrent += source;
         // Close: info dict + root dict
         newTorrent += 'ee';
@@ -351,7 +376,7 @@ export class TorrentService {
             }
         }
 
-        if (['GPW', 'RED', 'OPS', 'DIC', 'SC'].includes(forwardSite)) {
+        if (['GPW', 'RED', 'OPS', 'DIC', 'SC', 'BTN'].includes(forwardSite)) {
             const input =
                 (document.querySelector('input[name="file_input"]') as HTMLInputElement | null) ||
                 (document.querySelector('input[name="file"]') as HTMLInputElement | null) ||

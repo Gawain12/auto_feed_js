@@ -47,7 +47,9 @@ const CHINESE_NEXUS_SITES = new Set([
 ]);
 
 export function isChineseNexusSite(siteName: string): boolean {
-    return CHINESE_NEXUS_SITES.has(siteName);
+    if (CHINESE_NEXUS_SITES.has(siteName)) return true;
+    const site = SiteCatalogService.getAllSites().find((s) => s.name === siteName);
+    return !!site?.isChinese;
 }
 
 export class SiteCatalogService {

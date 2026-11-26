@@ -77,8 +77,33 @@ export async function parseNexus(config: SiteConfig, currentUrl: string): Promis
         getElement(selectors.description) ||
         getElement(selectors.descriptionFallback);
 
-    let description = descrEl ? htmlToBBCode(descrEl) : '';
-    let fullMediaInfo = extractStructuredMediaInfo(descrEl);
+    // Strip site-wide NexusPHP ad / HR / disclaimer containers injected inside `#kdescr` (e.g. BTSchool `#ad_torrentdetail`).
+    let cleanDescrEl: Element | null = descrEl;
+    if (descrEl) {
+        try {
+            const clone = descrEl.cloneNode(true) as Element;
+            clone.querySelectorAll('#ad_torrentdetail, .ad_torrentdetail').forEach((n) => n.remove());
+            cleanDescrEl = clone;
+        } catch {
+            cleanDescrEl = descrEl;
+        }
+    }
+
+    let description = cleanDescrEl ? htmlToBBCode(cleanDescrEl) : '';
+    let fullMediaInfo = extractStructuredMediaInfo(cleanDescrEl);
+    if (!fullMediaInfo) {
+        const externalMi =
+            (document.querySelector('.nexus-media-info-raw pre') as HTMLElement | null)?.textContent?.trim() ||
+            (document.querySelector('.nexus-media-info-raw') as HTMLElement | null)?.textContent?.trim() ||
+            (document.querySelector('#kmediainfo') as HTMLElement | null)?.textContent?.trim() ||
+            '';
+        if (externalMi && externalMi !== '暂无媒体信息' && externalMi.length > 40) {
+            fullMediaInfo = externalMi;
+            if (!description.includes(externalMi.slice(0, 40))) {
+                description = `${description}\n\n[quote]\n${externalMi}\n[/quote]`.trim();
+            }
+        }
+    }
 
     const meta: TorrentMeta = {
         title,

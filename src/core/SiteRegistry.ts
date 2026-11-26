@@ -29,6 +29,9 @@ import { AudiencesEngine } from '../trackers/nexus/Audiences';
 import { HDHomeEngine } from '../trackers/nexus/HDHome';
 import { OurBitsEngine } from '../trackers/nexus/OurBits';
 import { FRDSEngine } from '../trackers/nexus/FRDS';
+import { HDChinaEngine } from '../trackers/nexus/HDChina';
+import { HaiDanEngine, NPUPTEngine } from '../trackers/nexus/SpecialChineseNexus';
+import { ANTEngine, HDFEngine, HDOnlyEngine, NBLEngine, TVVEngine } from '../trackers/ExperimentalGazelleTrackers';
 import { NexusSites } from '../config/sites_nexus';
 import { GazelleSites } from '../config/sites_gazelle';
 import { Unit3DSites } from '../config/sites_unit3d';
@@ -36,6 +39,31 @@ import { SpecialSites } from '../config/sites_special';
 import { SCEngine } from '../trackers/SC';
 import { TJUPTEngine } from '../trackers/TJUPT';
 import { HDTEngine } from '../trackers/HDT';
+import { BTNEngine } from '../trackers/BTN';
+import { HDRouteEngine } from '../trackers/HDRoute';
+import { FileListEngine } from '../trackers/FileList';
+import { TorrentLeechEngine } from '../trackers/TorrentLeech';
+import { DarkLandEngine } from '../trackers/DarkLand';
+import { AvistazEngine } from '../trackers/AvistaZ';
+import { CGEngine } from '../trackers/CG';
+import { MusicGazelleSourceEngine } from '../trackers/MusicGazelleSource';
+import {
+    BibEngine,
+    BitHDTVEngine,
+    BlueBirdEngine,
+    BwTorrentsEngine,
+    DigitalCoreEngine,
+    HDSpaceEngine,
+    IPTEngine,
+    ITSEngine
+} from '../trackers/LegacyForeignTrackers';
+import {
+    BYREngine,
+    HDCityEngine,
+    RouSiEngine,
+    YemaPTEngine,
+    ZhuqueEngine
+} from '../trackers/ChineseSpaTrackers';
 
 // Registries for configs
 const siteConfigs: SiteConfig[] = [
@@ -57,38 +85,76 @@ const engineMap: Record<string, new (config: SiteConfig, url: string) => BaseEng
     [SiteType.PTP]: PTPEngine,
     [SiteType.HDB]: HDBEngine,
     [SiteType.KG]: KGEngine,
-    [SiteType.HDT]: HDTEngine
+    [SiteType.HDT]: HDTEngine,
+    [SiteType.BTN]: BTNEngine,
+    [SiteType.HDRoute]: HDRouteEngine,
+    [SiteType.FileList]: FileListEngine,
+    [SiteType.TorrentLeech]: TorrentLeechEngine,
+    [SiteType.Avistaz]: AvistazEngine,
+    [SiteType.CG]: CGEngine
 };
 
 // Site-specific engines override framework-level engines.
 // Keep one-file-per-site mapping here so site behaviors do not leak into framework templates.
 const siteEngineMap: Record<string, new (config: SiteConfig, url: string) => BaseEngine> = {
     ACM: ACMEngine,
+    ANT: ANTEngine,
     Audiences: AudiencesEngine,
+    AvistaZ: AvistazEngine,
+    bib: BibEngine,
+    'bit-hdtv': BitHDTVEngine,
+    BlueBird: BlueBirdEngine,
+    BTN: BTNEngine,
+    bwtorrents: BwTorrentsEngine,
+    BYR: BYREngine,
+    CG: CGEngine,
     CHDBits: CHDBitsEngine,
+    CinemaZ: AvistazEngine,
     BLU: BLUEngine,
     CMCT: CMCTEngine,
+    DarkLand: DarkLandEngine,
+    digitalcore: DigitalCoreEngine,
+    FileList: FileListEngine,
     FRDS: FRDSEngine,
+    HaiDan: HaiDanEngine,
     HDB: HDBEngine,
+    HDChina: HDChinaEngine,
+    HDCity: HDCityEngine,
+    HDF: HDFEngine,
     HDHome: HDHomeEngine,
+    'HD-Only': HDOnlyEngine,
+    HDRoute: HDRouteEngine,
     HDSky: HDSkyEngine,
+    HDSpace: HDSpaceEngine,
+    IPT: IPTEngine,
+    iTS: ITSEngine,
     KG: KGEngine,
     MTeam: MTeamEngine,
     Monika: MonikaEngine,
+    NBL: NBLEngine,
+    NPUPT: NPUPTEngine,
     OpenCD: OpenCDEngine,
     OnlyEncodes: OnlyEncodesEngine,
     OurBits: OurBitsEngine,
+    PrivateHD: AvistazEngine,
     PTP: PTPEngine,
     PTer: PTerEngine,
+    RouSi: RouSiEngine,
     TTG: TTGEngine,
+    TVV: TVVEngine,
     GPW: GPWEngine,
     RED: REDEngine,
     OPS: OPSEngine,
     DIC: DICEngine,
+    jpop: MusicGazelleSourceEngine,
+    lztr: MusicGazelleSourceEngine,
     Tik: TikEngine,
+    TorrentLeech: TorrentLeechEngine,
     SC: SCEngine,
     TJUPT: TJUPTEngine,
-    HDT: HDTEngine
+    HDT: HDTEngine,
+    YemaPT: YemaPTEngine,
+    ZHUQUE: ZhuqueEngine
 };
 
 export class SiteRegistry {

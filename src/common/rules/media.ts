@@ -12,6 +12,10 @@ export const skipImg: string[] = [
     '[img]https://img.pterclub.net/images/2021/07/14/78c58ee6b3e092d0c5a7fa02f3a1905e.png[/img]',
     '[img]https://pterclub.net/pic/CS.png[/img]',
     '[img]https://pterclub.net/pic/GDJT.png[/img]',
+    '[img]https://pterclub.net/pic/PTerWEB.png[/img]',
+    '[img]https://pterclub.net/pic/PTerMV.png[/img]',
+    '[img]https://pterclub.net/pic/PTer.png[/img]',
+    '[img]https://img.btschool.net/images/2023/07/10/mediainfo.png[/img]',
     '[img]http://img.pterclub.net/images/CS.png[/img]',
     '[img]https://img.pterclub.net/images/GDJT.png[/img]',
     '[img]https://kp.m-team.cc/logo.png[/img]',
@@ -69,9 +73,15 @@ export function getMediainfoPictureFromDescr(
     }
     try {
         if (imgUrls) {
+            const skipList = options?.skipImgList || skipImg;
+            const isBannerImg = (tag: string) =>
+                skipList.includes(tag) ||
+                /\/pic\/(?:PTer\w*|CS|GDJT|Ourbits_\w+|hds_logo)\.png/i.test(tag);
             for (let i = 0; i < imgUrls.length; i++) {
                 if (descr.indexOf(imgUrls[i]) < 10 || descr.indexOf(imgUrls[i]) < indexOfInfo) {
-                    info.coverImg = imgUrls[i];
+                    if (!info.coverImg && !isBannerImg(imgUrls[i])) {
+                        info.coverImg = imgUrls[i];
+                    }
                 } else {
                     descr = descr.replace(imgUrls[i], '');
                     imgInfo += imgUrls[i].match(/(\[url=.*?\])?\[img\].*?\[\/img\](\[\/url\])?/)?.[0] || '';
@@ -118,7 +128,11 @@ export function getMediainfoPictureFromDescr(
         if (imgMatches) {
             const skipList = options?.skipImgList || skipImg;
             imgs = imgMatches
-                .filter((item) => skipList.indexOf(item) < 0 && !item.match(/m.media-amazon.com\/images/))
+                .filter((item) =>
+                    skipList.indexOf(item) < 0 &&
+                    !/m\.media-amazon\.com\/images/i.test(item) &&
+                    !/img\.btschool\.net\/images\/[^[\]]+\/(?:mediainfo|info|screens|screenshots)\.png/i.test(item)
+                )
                 .join(' ');
         } else {
             imgs = '';

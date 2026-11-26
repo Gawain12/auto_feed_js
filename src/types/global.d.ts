@@ -7,6 +7,8 @@ declare function GM_deleteValue(key: string): void;
 declare function GM_registerMenuCommand(caption: string, commandFunc: () => void, accessKey?: string): void;
 declare function GM_xmlhttpRequest(details: any): any;
 declare const GM: any;
+declare const GM_info: { script?: { version?: string } } | undefined;
+declare const __AUTOFEED_VERSION__: string | undefined;
 
 // jQuery plugin extensions
 interface JQuery {

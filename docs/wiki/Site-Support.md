@@ -1,35 +1,27 @@
 # Site Support
 
-本页描述“代码中已接入”和“当前人工测试结论”。
+本页概览“代码中已接入”与“真机实测结论”，全量站点清单及上游对照见 [FEATURE_PARITY.md](./FEATURE_PARITY.md)。
 
-## 已人工验证（非音乐为主）
-- Nexus/类 Nexus：TTG、HDB、CHDBits、PTer、HDSky、CMCT、HDHome、OurBits、Audiences、MTeam
-- Gazelle（影视）：PTP、GPW
-- Unit3D/Classic：BHD、BLU、Tik、KG、Monika
+## 已人工验证（既有主力站）
+- **Nexus / 类 Nexus**：TTG、HDB、CHDBits、PTer、HDSky、CMCT、HDHome、OurBits、Audiences、MTeam
+- **Gazelle（影视）**：PTP、GPW
+- **Unit3D / Classic**：BHD、BLU、Tik、KG、Monika
+- **专项回归**：SC、TJUPT
 
-补充：Monika（MDU）已按上游源码规则对齐修复上传路径与关键表单映射。
-补充：SC、TJUPT、HDT 已补齐为可识别源站/目标站，并按 legacy 规则加入专属 tracker；HDT 归入 special 站点清单，避免误放进 Nexus/Gazelle/Unit3D 分类。2026-05-18 回归修复了三站上传页表单等待、SC group-only 源页注入、HDT details/torrents 源页兼容、TJUPT 专用字段与通用标题抢写等问题。
+## 本轮新增/修复并已完成真机实测（v5.2.0）
+- **音乐站全面修复（双向 + CD `.log` 透传）**：`RED`、`OPS`、`DIC`、`OpenCD`（含单碟/多碟 CD 抓轨 `.log` 自动提取与上传表单注入）
+- **外站双向实测**：`BTN`、`AvistaZ` / `CinemaZ` / `PrivateHD`、`CG`、`HDT`
+- **仅源站实测**：`FileList`、`bib`（电子书）、`jpop`、`lztr`
+- **中文 NexusPHP 现网核对与修复**：`HDChina`、`PThome`、`BTSchool`、`HDArea`、`HDTime`、`HDDolby`、`TCCF`、`HDfans`、`TLFbits`、`FRDS`、`Audiences`、`CMCT`、`PTer`、`HDSky`、`HDHome`、`OurBits`、`CHDBits`、`TTG`
 
-## 音乐站点（持续补齐）
-- RED
-- OPS
-- DIC
-- OpenCD
-
-说明：以上 4 个站点已接入单独 tracker，但仍在补齐双向转发字段和细节规则。
-
-## 配置已存在但未系统回归
-- FRDS
-- ACM
-- HDF
-- PrivateHD
-
-## 本地构建验证
-- 图床按钮已从 Gifyu 切换为 ImgBB，旧 `gifyuApiKey` 会迁移到 `imgbbApiKey`。
-- Cinematik 的 IMDb aspect ratio 兜底已按当前 IMDb technical 页 DOM 验证，可读取 `Aspect ratio1.85 : 1` 形态。
+## 已实现（待真机测试 / 实验性折叠分组）
+设置页默认折叠实验性站点并支持关键词搜索按需开启（已覆盖原版 `v2.1.1.6` 全部活跃站，移除已永久关站的 `MTV` / `xthor` / `SugoiMusic`）：
+- **中文 NexusPHP / 教育网**：全量声明式 `NexusFillProfile` 站点 + `NPUPT` / `HaiDan` / `BYR` / `HDCity` 专用引擎（含 `影`、`慕雪阁`、`NJTUPT`、`HUDBT`、`NanYang`、`PuTao`、`HITPT`、`RS`、`LemonHD`、`GGPT`、`UBits`、`HDVideo`、`HDU`、`PigGo`、`QingWa`、`PTLGS`、`ZMPT`、`ICC`、`AGSV`、`SoulVoice`、`PTT`、`PTsbao`、`WT-Sakura`、`CrabPt`、`DiscFan`、`FreeFarm`、`Panda`、`CarPt`、`1PTBA`、`52PT`、`PTCafe`、`PTFans`、`CyanBug`、`Dragon`、`OKPT`、`KuFei`、`iloli`、`Oshen`、`JoyHD`、`UltraHD`、`YDY`、`麒麟`、`海棠`、`杏林`、`雨`、`PTzone` 及 `HHClub`、`U2` 仅源站等）
+- **中文新框架 SPA**：`ZHUQUE`、`YemaPT`、`RouSi`
+- **外站与 Unit3D / Gazelle 家族**：`HDRoute`、`HDSpace`、`TorrentLeech`、`IPT`、`bit-hdtv`、`BlueBird`、`bwtorrents`、`digitalcore`、`iTS`、`OnlyEncodes`、`DarkLand`、`ReelFliX`、`FNP`、`HDOli`、`HONE`、`DesiTorrents`、`Aither`、`ACM`、`HDF`、`ANT`、`TVV`、`NBL`、`HD-Only`
 
 ## 代码位置
-- 站点配置：`src/config/`
+- 站点配置：`src/config/`（含声明式映射 `src/config/nexus_profiles.ts`）
 - 站点逻辑：`src/trackers/`（一站一文件）
 - 框架模板：`src/templates/`
 - 通用规则：`src/common/rules/`

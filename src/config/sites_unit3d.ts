@@ -18,6 +18,7 @@ export const Unit3DSites: SiteConfig[] = [
         type: SiteType.Unit3DClassic,
         keywords: ['cinematik.net', 'cinematik.me', 'cinematik.cc'],
         baseUrl: 'https://cinematik.net/',
+        contentDomains: ['movie', 'doc'],
         description: 'Cinematik (Tik)'
     },
     {
@@ -59,17 +60,73 @@ export const Unit3DSites: SiteConfig[] = [
         }
     },
     {
-        name: 'HDF',
-        type: SiteType.Unit3D,
-        keywords: ['hdf.world'],
-        baseUrl: 'https://hdf.world/',
-        description: 'HD-Forever',
-    },
-    {
         name: 'PrivateHD',
-        type: SiteType.Unit3D,
+        type: SiteType.Avistaz,
         keywords: ['privatehd.to'],
         baseUrl: 'https://privatehd.to/',
+        uploadPath: 'upload/movie',
+        search: {
+            imdb: 'movies?search=&imdb={imdb}',
+            name: 'torrents?in=1&search={name}'
+        },
         description: 'PrivateHD'
+    },
+    {
+        name: 'OnlyEncodes',
+        type: SiteType.Unit3DClassic,
+        keywords: ['onlyencodes.cc'],
+        baseUrl: 'https://onlyencodes.cc/',
+        experimental: true,
+        description: 'OnlyEncodes+'
+    },
+    {
+        name: 'DarkLand',
+        type: SiteType.Unit3DClassic,
+        keywords: ['darkland.top'],
+        baseUrl: 'https://darkland.top/',
+        experimental: true,
+        description: 'DarkLand'
+    },
+    {
+        name: 'ReelFliX',
+        type: SiteType.Unit3DClassic,
+        keywords: ['reelflix.xyz', 'reelflix.cc'],
+        baseUrl: 'https://reelflix.xyz/',
+        mirrorUrl: 'https://reelflix.cc/',
+        experimental: true,
+        description: 'ReelFliX'
+    },
+    {
+        name: 'FNP',
+        type: SiteType.Unit3DClassic,
+        keywords: ['fearnopeer.com'],
+        baseUrl: 'https://fearnopeer.com/',
+        experimental: true,
+        description: 'FearNoPeer (FNP)'
+    },
+    {
+        name: 'HDOli',
+        type: SiteType.Unit3DClassic,
+        keywords: ['hd-olimpo.club'],
+        baseUrl: 'https://hd-olimpo.club/',
+        experimental: true,
+        description: 'HD-Olimpo'
+    },
+    {
+        name: 'HONE',
+        type: SiteType.Unit3DClassic,
+        keywords: ['hawke.uno'],
+        baseUrl: 'https://hawke.uno/',
+        experimental: true,
+        capabilities: { source: true, target: false },
+        description: 'Hawke-Uno (Source Only)'
+    },
+    {
+        name: 'DesiTorrents',
+        type: SiteType.Unit3DClassic,
+        keywords: ['desitorrents.tv', 'torrent.desi'],
+        baseUrl: 'https://desitorrents.tv/',
+        experimental: true,
+        description: 'DesiTorrents'
     }
 ];

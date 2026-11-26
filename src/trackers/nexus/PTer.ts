@@ -35,7 +35,8 @@ export class PTerEngine extends NexusPHPEngine {
                 软件: 410,
                 学习: 411,
                 书籍: 408,
-                MV: 413
+                MV: 413,
+                短剧: 419
             };
             const typeSel = document.querySelector('select[name="type"]') as HTMLSelectElement | null;
             if (typeSel && meta.type && typeDict[meta.type]) {

@@ -147,8 +147,8 @@ export class HDBEngine extends BaseEngine {
     async parse(): Promise<TorrentMeta> {
         this.log('Parsing HDB page...');
 
-        let title = $('h1#top, h1').first().text().trim();
-        title = title.replace(/\[.*?\]/g, '').trim();
+        const h1Title = $('h1#top, h1').first().text().trim().replace(/\[.*?\]/g, '').trim();
+        let title = h1Title;
 
         const details = document.getElementById('details');
         let descrEl: HTMLElement | undefined;
@@ -332,46 +332,45 @@ export class HDBEngine extends BaseEngine {
         if (details) {
             const cells = Array.from(details.querySelectorAll('td, th'));
             for (const cell of cells) {
-                const text = (cell.textContent || '').trim();
-                if (!text) continue;
-                // Include Medium (legacy uses `tds[i].textContent.medium_sel()` on the details table).
-                if (text.match(/Category|类别|Type|规格|Medium|媒介|介质|Codec|Format|Resolution|Source|Audio/i)) {
+                const text = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+                if (!text || text.length > 40) continue;
+                // Only match exact metadata row labels (avoid matching "Type" column headers in "Other copies of this film").
+                if (/^(?:Category|类别|Specs|规格|Medium|媒介|介质|Video\s*Codec|Codec|Format|Resolution|Source|Audio)$/i.test(text)) {
                     const next = cell.nextElementSibling as HTMLElement | null;
                     if (next && next.textContent) {
-                        infoParts.push(`${text} ${next.textContent}`);
+                        infoParts.push(`${text} ${next.textContent.replace(/\s+/g, ' ').trim()}`);
                     } else {
                         infoParts.push(text);
                     }
                 }
             }
         }
-        const infoText = infoParts.length ? infoParts.join(' ') : (details?.textContent || '');
+        const infoText = infoParts.join(' ');
+        const primarySpecText = `${h1Title} ${meta.title || ''} ${infoText}`.trim();
 
         if (!meta.type) {
-            meta.type = getType(infoText) || (meta.title ? getType(meta.title) : '');
+            meta.type = getType(infoText) || getType(primarySpecText);
         }
         if (!meta.mediumSel) {
             const mediumText = findDetailsValue([/^medium$/i, /^source$/i, /媒介|介质|来源/i]);
             if (mediumText) {
-                meta.mediumSel = getMediumSel(mediumText, meta.title);
+                meta.mediumSel = getMediumSel(mediumText, h1Title || meta.title);
             } else {
-                // Only use title for medium detection – avoid concatenated detail text
-                // which can false-positive on unrelated "WEB" labels (e.g. "Category: WEB").
-                // normalizeMeta() will retry from description/mediainfo as a second pass.
-                meta.mediumSel = getMediumSel(meta.title || '', meta.title);
+                // Prefer H1 + release title for medium detection (H1 preserves "UHD Blu-ray" even when .torrent omits it).
+                meta.mediumSel = getMediumSel(h1Title || meta.title || '', h1Title || meta.title);
             }
         }
         if (!meta.codecSel) {
-            const codecText = findDetailsValue([/^(video )?codec$/i, /^codec$/i, /编码|格式|压制|Video/i]);
-            meta.codecSel = getCodecSel(codecText || infoText);
+            const codecText = findDetailsValue([/^(video )?codec$/i, /^codec$/i, /^category$/i]);
+            meta.codecSel = getCodecSel(h1Title) || getCodecSel(codecText) || getCodecSel(primarySpecText);
         }
         if (!meta.audioCodecSel) {
             const audioText = findDetailsValue([/^audio/i, /音频/i]);
-            meta.audioCodecSel = getAudioCodecSel(audioText || infoText);
+            meta.audioCodecSel = getAudioCodecSel(h1Title) || getAudioCodecSel(audioText) || getAudioCodecSel(primarySpecText);
         }
         if (!meta.standardSel) {
-            const resText = findDetailsValue([/resolution/i, /分辨率/i]);
-            meta.standardSel = getStandardSel(resText || infoText);
+            const resText = findDetailsValue([/^resolution$/i, /分辨率/i]);
+            meta.standardSel = getStandardSel(h1Title) || getStandardSel(resText) || getStandardSel(primarySpecText);
         }
 
         if (meta.title) {
@@ -519,6 +518,9 @@ export class HDBEngine extends BaseEngine {
                 break;
             case 'XVID':
                 setSelect('#type_codec', '4');
+                break;
+            case 'VP9':
+                setSelect('#type_codec', '6');
                 break;
             default:
                 setSelect('#type_codec', '0');

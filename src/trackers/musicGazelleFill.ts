@@ -1,17 +1,12 @@
 import { TorrentMeta } from '../types/TorrentMeta';
 import { TorrentService } from '../services/TorrentService';
 import { repeat } from '../common/dom/repeat';
+import { MusicMetaPayload, normalizeMusicReleaseType, parseEditionLine, parseFormatLine } from './musicGazelleParse';
+import { injectGazelleRipLogs } from './musicRipLogs';
 
-type MusicDomInfo = {
-    musicName?: string;
-    musicAuthor?: string;
-    musicType?: string[] | string;
-};
-
-function parseOriginalDom(meta: TorrentMeta): MusicDomInfo {
+function parseOriginalDom(meta: TorrentMeta): Partial<MusicMetaPayload> {
     try {
-        const obj = JSON.parse(meta.originalDom || '{}') as MusicDomInfo;
-        return obj || {};
+        return (JSON.parse(meta.originalDom || '{}') || {}) as Partial<MusicMetaPayload>;
     } catch {
         return {};
     }
@@ -21,71 +16,68 @@ function norm(s: string): string {
     return (s || '').replace(/\*/g, '').replace(/–/g, '-').replace(/\s+/g, ' ').trim();
 }
 
-function pickReleaseTypeKeyword(meta: TorrentMeta): string {
-    const text = `${meta.title || ''} ${meta.smallDescr || ''} ${meta.subtitle || ''} ${meta.editionInfo || ''}`.toLowerCase();
-    if (/\bsingle\b/.test(text)) return 'single';
-    if (/\bep\b/.test(text)) return 'ep';
-    if (/compilation/.test(text)) return 'compilation';
-    if (/soundtrack|ost|原声/.test(text)) return 'soundtrack';
-    if (/live/.test(text)) return 'live';
-    if (/remix/.test(text)) return 'remix';
-    if (/bootleg/.test(text)) return 'bootleg';
-    if (/demo/.test(text)) return 'demo';
-    if (/mixtape/.test(text)) return 'mixtape';
-    if (/dj mix/.test(text)) return 'dj mix';
-    if (/interview/.test(text)) return 'interview';
-    return 'album';
+/**
+ * Numeric Gazelle release type IDs shared across RED, OPS, and DIC (even when DIC displays Chinese labels).
+ */
+export function resolveGazelleReleaseTypeValue(
+    releaseTypeHint: string,
+    site: 'RED' | 'OPS' | 'DIC'
+): string {
+    const canonical = normalizeMusicReleaseType(releaseTypeHint) || 'Album';
+    const map: Record<string, string> = {
+        Album: '1',
+        Soundtrack: '3',
+        EP: '5',
+        Anthology: '6',
+        Compilation: '7',
+        Single: '9',
+        'Live album': '11',
+        Remix: '13',
+        Bootleg: '14',
+        Interview: '15',
+        Mixtape: '16',
+        Demo: site === 'OPS' ? '10' : '17',
+        'Concert Recording': '18',
+        'DJ Mix': '19'
+    };
+    return map[canonical] || '1';
 }
 
-function deriveFormatBitrateMedia(meta: TorrentMeta): { format: string; bitrate: string; media: string } {
-    const blob = `${meta.smallDescr || ''} ${meta.subtitle || ''} ${meta.editionInfo || ''} ${meta.tracklist || ''} ${meta.description || ''}`.toLowerCase();
-
-    let format = '';
-    if (/\bflac\b/.test(blob)) format = 'FLAC';
-    else if (/\bmp3\b/.test(blob)) format = 'MP3';
-    else if (/\baac\b/.test(blob)) format = 'AAC';
-    else if (/\bopus\b/.test(blob)) format = 'Opus';
-    else if (/\bvorbis\b/.test(blob)) format = 'Vorbis';
-    else if (/\bac3\b/.test(blob)) format = 'AC3';
-    else if (/\bdts\b/.test(blob)) format = 'DTS';
-    else if (/\bwav\b/.test(blob)) format = 'WAV';
-
-    let bitrate = '';
-    if (/24bit\s*lossless/.test(blob)) bitrate = '24bit Lossless';
-    else if (/lossless/.test(blob)) bitrate = 'Lossless';
-    else if (/\b320\b/.test(blob)) bitrate = '320';
-    else if (/\b256\b/.test(blob)) bitrate = '256';
-    else if (/\b192\b/.test(blob)) bitrate = '192';
-    else if (/\b160\b/.test(blob)) bitrate = '160';
-    else if (/\b128\b/.test(blob)) bitrate = '128';
-    else if (/\b96\b/.test(blob)) bitrate = '96';
-    else if (/\b64\b/.test(blob)) bitrate = '64';
-    else if (/\bvbr\b/.test(blob)) bitrate = 'V0 (VBR)';
-
-    let media = '';
-    if (/\bcd\b|hdcd|lpcd|sacd|srcd|hqcd|xrcd|shm-cd/.test(blob)) media = 'CD';
-    else if (/\bweb\b|web[- ]?rip|web[- ]?dl/.test(blob)) media = 'WEB';
-    else if (/dvd/.test(blob)) media = 'DVD';
-    else if (/vinyl/.test(blob)) media = 'Vinyl';
-    else if (/blu[- ]?ray|bd\b/.test(blob)) media = 'Blu-Ray';
-
-    return { format, bitrate, media };
+export function resolveGazelleMediaValue(mediaHint: string, site: 'RED' | 'OPS' | 'DIC'): string {
+    const m = (mediaHint || '').toLowerCase();
+    if (!m) return '';
+    if (/\bweb\b|web[- ]?(?:dl|rip)/.test(m)) return 'WEB';
+    if (/\bsacd\b/.test(m)) return 'SACD';
+    if (/blu[- ]?ray|\bbd\b/.test(m)) {
+        if (site === 'OPS') return 'BD';
+        if (site === 'DIC') return 'Blu-ray';
+        return 'Blu-Ray';
+    }
+    if (/\bvinyl\b/.test(m)) return 'Vinyl';
+    if (/\bdvd\b/.test(m)) return 'DVD';
+    if (/\bsoundboard\b/.test(m)) return 'Soundboard';
+    if (/\bdat\b/.test(m)) return 'DAT';
+    if (/\bcassette\b/.test(m)) return 'Cassette';
+    if (/\blaserdisc\b/.test(m)) return 'LaserDisc';
+    if (/\bcd\b|hdcd|lpcd|hqcd|xrcd|shm-cd/.test(m)) return 'CD';
+    return '';
 }
 
-function pickOptionByText(select: HTMLSelectElement | null, preferredValue: string, hint: string) {
+function pickSelectOption(select: HTMLSelectElement | null, preferredValue: string, fallbackText = '') {
     if (!select) return;
     const cur = (select.value || '').trim();
     if (cur && cur !== '---') return;
 
+    const opts = Array.from(select.options);
     if (preferredValue) {
-        const byValue = Array.from(select.options).find((o) => (o.value || '').toLowerCase() === preferredValue.toLowerCase());
+        const byValue = opts.find((o) => (o.value || '').toLowerCase() === preferredValue.toLowerCase());
         if (byValue) {
             select.value = byValue.value;
             select.dispatchEvent(new Event('change', { bubbles: true }));
             select.dispatchEvent(new Event('input', { bubbles: true }));
             return;
         }
-        const byText = Array.from(select.options).find((o) => (o.textContent || '').toLowerCase() === preferredValue.toLowerCase());
+        const byText = opts.find((o) => (o.textContent || '').trim().toLowerCase() === preferredValue.toLowerCase());
         if (byText) {
             select.value = byText.value;
             select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -94,16 +86,16 @@ function pickOptionByText(select: HTMLSelectElement | null, preferredValue: stri
         }
     }
 
-    const h = (hint || '').toLowerCase();
+    const h = (fallbackText || '').toLowerCase();
     if (!h) return;
-    for (const o of Array.from(select.options)) {
-        const t = (o.textContent || '').toLowerCase();
+    for (const o of opts) {
+        const t = (o.textContent || '').trim().toLowerCase();
         if (!t || t === '---') continue;
         if (h.includes(t)) {
             select.value = o.value;
             select.dispatchEvent(new Event('change', { bubbles: true }));
             select.dispatchEvent(new Event('input', { bubbles: true }));
-            break;
+            return;
         }
     }
 }
@@ -131,13 +123,41 @@ function setInput(selector: string, value: string, opts?: { force?: boolean; nat
     el.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
-function buildDescription(meta: TorrentMeta): { albumDesc: string; releaseDesc: string } {
-    const raw = meta.description || '';
-    const albumDesc = raw
-        .replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, '')
-        .replace(/\[quote=Tracklist\]/ig, '[quote]')
-        .trim();
-    return { albumDesc, releaseDesc: raw.trim() };
+function fillArtists(artists: string[]) {
+    const cleaned = artists.map((a) => norm(a)).filter(Boolean);
+    if (!cleaned.length) return;
+
+    const getArtistInputs = () =>
+        Array.from(document.querySelectorAll('input[name="artists[]"], #artist, #artist_0')) as HTMLInputElement[];
+
+    // Click Gazelle's "+" button to add extra artist fields when needed (up to 6 artists).
+    const wantCount = Math.min(cleaned.length, 6);
+    const addBtn = document.querySelector('#artistfields a[onclick*="AddArtistField"], a[onclick*="AddArtistField"]') as HTMLElement | null;
+    if (addBtn && wantCount > 1) {
+        let currentCount = getArtistInputs().length;
+        while (currentCount < wantCount) {
+            addBtn.click();
+            const nextCount = getArtistInputs().length;
+            if (nextCount <= currentCount) break;
+            currentCount = nextCount;
+        }
+    }
+
+    const inputs = getArtistInputs();
+    if (inputs.length >= wantCount) {
+        for (let i = 0; i < wantCount; i++) {
+            const el = inputs[i];
+            if (!el.value.trim()) {
+                el.value = cleaned[i];
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+    } else if (inputs[0] && !inputs[0].value.trim()) {
+        inputs[0].value = cleaned.join(' & ');
+        inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+        inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
+    }
 }
 
 async function fillTorrentFile(meta: TorrentMeta, forwardSite: string) {
@@ -147,21 +167,15 @@ async function fillTorrentFile(meta: TorrentMeta, forwardSite: string) {
         const result = await TorrentService.buildForwardTorrentFile(meta, forwardSite, announce);
         if (!result) return;
 
-        // Prefer site-specific injector first.
-        if (TorrentService.injectTorrentForSite(forwardSite, result.file, result.filename)) return;
-
+        // Target `input[name="file_input"]` explicitly first (on RED/DIC, `logfiles[]` also has id="file"!).
         const fileInput =
-            (document.querySelector('input[name="file_input"]') as HTMLInputElement | null) ||
-            (document.querySelector('input[name="file"]') as HTMLInputElement | null) ||
-            (document.querySelector('input[type="file"]') as HTMLInputElement | null);
-        if (fileInput) TorrentService.injectFileIntoInput(fileInput, result.file);
-
-        // Some Gazelle pages need a follow-up change event on #file.
-        const trigger = document.getElementById('file') as HTMLInputElement | null;
-        if (trigger) {
-            trigger.dispatchEvent(new Event('change', { bubbles: true }));
-            trigger.dispatchEvent(new Event('input', { bubbles: true }));
+            (document.querySelector('input[type="file"][name="file_input"]') as HTMLInputElement | null) ||
+            (document.querySelector('input[type="file"][name="file"]') as HTMLInputElement | null);
+        if (fileInput) {
+            TorrentService.injectFileIntoInput(fileInput, result.file);
+            return;
         }
+        TorrentService.injectTorrentForSite(forwardSite, result.file, result.filename);
     } catch (e) {
         console.error('[Auto-Feed] Music gazelle torrent injection failed:', e);
     }
@@ -170,67 +184,117 @@ async function fillTorrentFile(meta: TorrentMeta, forwardSite: string) {
 export async function fillMusicGazelleUpload(meta: TorrentMeta, forwardSite: 'RED' | 'OPS' | 'DIC') {
     const domInfo = parseOriginalDom(meta);
     const title = norm(meta.title || '');
-    const musicName = norm(String(domInfo.musicName || ''));
-    const musicAuthor = norm(String(domInfo.musicAuthor || ''));
+
+    const artists: string[] = Array.isArray(domInfo.artists) && domInfo.artists.length
+        ? domInfo.artists
+        : (() => {
+            const rawAuthor = norm(String(domInfo.musicAuthor || ''));
+            if (rawAuthor) return rawAuthor.split(/\s*(?:&|,|\/)\s*/).filter(Boolean);
+            const parts = title.split(' - ').map((x) => x.trim()).filter(Boolean);
+            return parts.length > 1 ? [parts[0]] : [];
+        })();
+
+    const albumTitle = (() => {
+        const fromDom = norm(String(domInfo.musicName || ''));
+        if (fromDom) return fromDom;
+        const stripped = title.replace(/\s*\[[^\]]+\]\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        const parts = stripped.split(' - ').map((x) => x.trim()).filter(Boolean);
+        return parts.length > 1 ? parts.slice(1).join(' - ') : stripped;
+    })();
+
+    const parsedEd = parseEditionLine(meta.editionInfo || '');
+    const parsedFmt = parseFormatLine(`${meta.smallDescr || ''} ${meta.subtitle || ''} ${meta.musicMedia || ''}`);
+
     const year =
-        (meta.editionInfo || '').match(/(19|20)\d{2}/)?.[0] ||
-        (meta.smallDescr || meta.subtitle || '').match(/(19|20)\d{2}/)?.[0] ||
-        title.match(/(19|20)\d{2}/)?.[0] ||
+        String(domInfo.year || '') ||
+        title.match(/\[((?:19|20)\d{2})/)?.[1] ||
+        parsedEd.editionYear ||
+        (meta.smallDescr || meta.subtitle || '').match(/(?:19|20)\d{2}/)?.[0] ||
         '';
-    const { format, bitrate, media } = deriveFormatBitrateMedia(meta);
-    const { albumDesc, releaseDesc } = buildDescription(meta);
+
+    const editionYear = String(domInfo.editionYear || parsedEd.editionYear || '');
+    const recordLabel = norm(String(domInfo.recordLabel || parsedEd.recordLabel || ''));
+    const catalogueNumber = norm(String(domInfo.catalogueNumber || parsedEd.catalogueNumber || ''));
+    const editionTitle = norm(String(domInfo.editionTitle || parsedEd.editionTitle || ''));
+
+    const format = String(domInfo.format || parsedFmt.format || '');
+    const bitrate = String(domInfo.bitrate || parsedFmt.bitrate || '');
+    const media = resolveGazelleMediaValue(
+        String(domInfo.media || meta.musicMedia || parsedFmt.media || parsedEd.media || `${meta.smallDescr || ''} ${meta.editionInfo || ''}`),
+        forwardSite
+    );
+    const sampleRate = String(domInfo.sampleRate || parsedFmt.sampleRate || '');
+    const releaseTypeValue = resolveGazelleReleaseTypeValue(
+        `${domInfo.releaseType || ''} ${meta.title || ''} ${meta.smallDescr || ''}`,
+        forwardSite
+    );
 
     const tagsFromDom = Array.isArray(domInfo.musicType)
         ? domInfo.musicType
-        : (typeof domInfo.musicType === 'string' ? domInfo.musicType.split(',') : []);
+        : typeof domInfo.musicType === 'string'
+            ? (domInfo.musicType as string).split(',')
+            : [];
     const tagsText = tagsFromDom.map((x) => norm(String(x))).filter(Boolean).join(', ');
 
-    const fallbackName = (() => {
-        const t = title.replace(/\[(.*?)\]/g, '').trim();
-        if (musicName) return musicName;
-        const p = t.split('-').map((x) => x.trim()).filter(Boolean);
-        return p.length > 1 ? p.slice(1).join(' - ') : t;
-    })();
-    const fallbackArtist = (() => {
-        if (musicAuthor) return musicAuthor;
-        const p = title.split('-').map((x) => x.trim()).filter(Boolean);
-        return p.length > 1 ? p[0] : '';
-    })();
+    const albumDesc = (
+        String(domInfo.albumDesc || '') ||
+        (meta.description || '').replace(/^\s*\[img\][\s\S]*?\[\/img\]\s*/i, '').replace(/\[quote=Tracklist\]/gi, '[quote]').trim()
+    ).trim();
+    const releaseDesc = String(domInfo.releaseDesc || '').trim();
 
-    const retry = (fn: () => void, times = 16, delayMs = 280) => repeat(fn, times, delayMs);
+    const retry = (fn: () => void, times = 12, delayMs = 260) => repeat(fn, times, delayMs);
 
     retry(() => {
-        // Artist/title/year core
-        setInput('#artist, input[name="artist"], input[name="artists[]"], #artist_0', fallbackArtist, { native: true });
-        setInput('#title, input[name="title"]', fallbackName, { native: true, force: true });
+        fillArtists(artists);
+        setInput('#title, input[name="title"]', albumTitle, { native: true, force: true });
         setInput('#year, input[name="year"]', year, { native: true });
 
-        // Optional artist roles on RED/OPS forms.
-        const importance = document.querySelector('td#artistfields #importance, select[name="importance[]"], #importance') as HTMLSelectElement | null;
-        if (importance && (!importance.value || importance.value === '---')) {
-            importance.selectedIndex = 0;
-            importance.dispatchEvent(new Event('change', { bubbles: true }));
-            importance.dispatchEvent(new Event('input', { bubbles: true }));
+        // Release type (numeric ID works across English RED/OPS & Chinese DIC!)
+        pickSelectOption(
+            document.querySelector('#releasetype, select[name="releasetype"]') as HTMLSelectElement | null,
+            releaseTypeValue
+        );
+
+        // Edition / Remaster fields
+        const hasRemasterInfo = !!(editionYear || recordLabel || catalogueNumber || editionTitle);
+        if (hasRemasterInfo) {
+            const remasterBox = document.getElementById('remaster') as HTMLInputElement | null;
+            if (remasterBox && !remasterBox.checked) {
+                remasterBox.click();
+            }
+            setInput('#remaster_year, input[name="remaster_year"]', editionYear || year, { native: true });
+            setInput('#remaster_title, input[name="remaster_title"]', editionTitle, { native: true });
+            setInput('#remaster_record_label, input[name="remaster_record_label"]', recordLabel, { native: true });
+            setInput('#remaster_catalogue_number, input[name="remaster_catalogue_number"]', catalogueNumber, { native: true });
+        }
+        // DIC also exposes original-release record_label / catalogue_number fields
+        setInput('#record_label, input[name="record_label"]', recordLabel, { native: true });
+        setInput('#catalogue_number, input[name="catalogue_number"]', catalogueNumber, { native: true });
+
+        // Format / Bitrate / Media / Sample rate (DIC)
+        pickSelectOption(document.querySelector('#format, select[name="format"]') as HTMLSelectElement | null, format);
+        pickSelectOption(document.querySelector('#bitrate, select[name="bitrate"]') as HTMLSelectElement | null, bitrate);
+        pickSelectOption(document.querySelector('#media, select[name="media"]') as HTMLSelectElement | null, media);
+        if (sampleRate) {
+            pickSelectOption(document.querySelector('#sample_rate, select[name="sample_rate"]') as HTMLSelectElement | null, sampleRate);
         }
 
-        // Releasetype + format/bitrate/media
-        const rt = document.querySelector('#releasetype, select[name="releasetype"]') as HTMLSelectElement | null;
-        pickOptionByText(rt, '', pickReleaseTypeKeyword(meta));
-        pickOptionByText(document.querySelector('#format, select[name="format"]') as HTMLSelectElement | null, format, `${format} ${meta.smallDescr || ''}`);
-        pickOptionByText(document.querySelector('#bitrate, select[name="bitrate"]') as HTMLSelectElement | null, bitrate, `${bitrate} ${meta.smallDescr || ''}`);
-        pickOptionByText(document.querySelector('#media, select[name="media"]') as HTMLSelectElement | null, media, `${media} ${meta.editionInfo || ''}`);
-
-        // Tags / image / descriptions
+        // Tags, cover image, album & release descriptions (cleanly separated!)
         setInput('#tags, input[name="tags"]', tagsText, { native: true });
         setInput('#image, input[name="image"]', (meta.images && meta.images[0]) || '', { native: true });
         setInput('#album_desc, textarea[name="album_desc"]', albumDesc);
-        setInput('#release_desc, textarea[name="release_desc"]', releaseDesc);
+        if (releaseDesc) {
+            setInput('#release_desc, textarea[name="release_desc"]', releaseDesc);
+        }
 
-        // Tracklist helper: if release desc is empty, put tracklist as fallback.
-        if (!releaseDesc && meta.tracklist) {
-            setInput('#release_desc, textarea[name="release_desc"]', `[quote=Tracklist]\n${meta.tracklist}\n[/quote]`);
+        // Attach CD rip `.log` files once Media=CD / Format=FLAC reveals `#upload_logs`.
+        if (meta.ripLogs?.length) {
+            injectGazelleRipLogs(meta.ripLogs);
         }
     });
 
     await fillTorrentFile(meta, forwardSite);
+    if (meta.ripLogs?.length) {
+        injectGazelleRipLogs(meta.ripLogs);
+    }
 }

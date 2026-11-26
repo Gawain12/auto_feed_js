@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dealWithTitle } from '../src/common/rules/title';
-import { getMediumSel } from '../src/common/rules/text';
+import { getMediumSel, getStandardSel } from '../src/common/rules/text';
 import { getSmallDescrFromDescr } from '../src/common/rules/helpers';
 
 test('dealWithTitle restores audio channel dots after dot-to-space conversion', () => {
@@ -16,6 +16,14 @@ test('dealWithTitle restores audio channel dots after dot-to-space conversion', 
 test('getMediumSel treats UHD encodes as Encode, UHD discs as UHD', () => {
     assert.equal(getMediumSel('Planet.Earth.II.2016.2160p.UHD.BluRay.x265.10bit.HDR-SWTYBLZ', 'Planet.Earth.II.2016.2160p.UHD.BluRay.x265.10bit.HDR-SWTYBLZ'), 'Encode');
     assert.equal(getMediumSel('Movie 2160p UHD HEVC DTS-HD MA', 'Movie 2160p UHD HEVC DTS-HD MA'), 'UHD');
+});
+
+test('getStandardSel prioritizes 2160p/4K over 1080p Dolby Vision enhancement layer in UHD BDInfo', () => {
+    const dvBdinfo = [
+        'Video: MPEG-H HEVC Video / 81522 kbps / 2160p / 23.976 fps / 16:9 / Main 10 @ Level 5.1 @ High / 10 bits / HDR10 / BT.2020',
+        '* Video: MPEG-H HEVC Video / 96 kbps / 1080p / 23.976 fps / 16:9 / Main 10 @ Level 5.1 @ High / 10 bits / Dolby Vision / BT.2020'
+    ].join('\n');
+    assert.equal(getStandardSel(dvBdinfo), '4K');
 });
 
 test('getSmallDescrFromDescr prefers a Chinese name and works without 译名', () => {

@@ -879,9 +879,9 @@ export class ImageHostService {
         if (!url.match(/https?:\/\/(www\.)?(imgbox\.com|imagebam\.co|pixhost\.to|img\.hdbits\.org|hdbimg\.com|hostik\.cinematik\.net)/i)) {
             return;
         }
-        const text = getUiText((await SettingsService.load()).uiLanguage);
         const host = window.location.host.toLowerCase();
         const isHostik = host.includes('hostik.cinematik.net');
+        const text = getUiText(isHostik ? 'en' : (await SettingsService.load()).uiLanguage);
 
         let hostikPending: { urls: string[]; gallery?: string; createdAt?: number } | null = null;
         if (isHostik) {
@@ -1196,7 +1196,7 @@ export class ImageHostService {
     }
 
     private static async renderHostikResultModal(imageBlock: string) {
-        const text = getUiText((await SettingsService.load()).uiLanguage);
+        const text = getUiText('en');
         const existing = document.getElementById(this.HOSTIK_RESULT_MODAL_ID);
         if (existing) existing.remove();
 
@@ -1272,7 +1272,7 @@ export class ImageHostService {
     }
 
     private static async installHostikComposer(pending: { urls: string[]; gallery?: string; createdAt?: number } | null) {
-        const text = getUiText((await SettingsService.load()).uiLanguage);
+        const text = getUiText('en');
         const expected = pending?.urls?.length || 0;
         const readUploadProgress = () => {
             const text = document.body?.innerText || '';

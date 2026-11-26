@@ -205,11 +205,15 @@ export class Unit3DEngine extends BaseEngine {
             'input#upload-form-title'
         ].filter(Boolean);
         const shouldLockTitleAfterFileInject = this.siteName !== 'Tik';
+        let reapplyAfterFileInject: (() => void) | null = null;
         const lockTitleAfterFileInject = () => {
-            if (!title || !shouldLockTitleAfterFileInject) return;
             [0, 120, 380, 900, 1800, 3000].forEach((ms) => {
                 window.setTimeout(() => {
-                    setAnyText(titleInputs, title);
+                    if (title && shouldLockTitleAfterFileInject) {
+                        setAnyText(titleInputs, title);
+                    }
+                    // Unit3D `uploadExtension.hook()` on `#torrent` change can reset TMDB/IMDb inputs (observed on BLU).
+                    try { reapplyAfterFileInject?.(); } catch {}
                 }, ms);
             });
         };
@@ -235,6 +239,9 @@ export class Unit3DEngine extends BaseEngine {
         const imdbId = meta.imdbId || extractImdbId(meta.imdbUrl || '') || '';
         const imdbNo = imdbId.match(/tt(\d+)/i)?.[1] || '';
 
+        const isDocSeriesEarly = meta.type === '纪录' && /[^T]S\d+|E\d+/i.test(title);
+        const isSeriesEarly = meta.type === '剧集' || meta.type === '综艺' || isDocSeriesEarly;
+
         const applyIds = () => {
             try {
                 if (imdbId) {
@@ -254,20 +261,29 @@ export class Unit3DEngine extends BaseEngine {
                     '';
                 const tmdbUrl =
                     meta.tmdbUrl ||
-                    (tmdbId ? `https://www.themoviedb.org/movie/${tmdbId}` : '');
+                    (tmdbId ? `https://www.themoviedb.org/${isSeriesEarly ? 'tv' : 'movie'}/${tmdbId}` : '');
                 if (tmdbId) {
-                    // Numeric-id fields
-                    setAnyText(
-                        [
+                    // Route BLU/Tik separate movie vs TV TMDB inputs cleanly.
+                    const tmdbSelectors = isSeriesEarly
+                        ? [
+                            'input#auto_tmdb_tv',
+                            'input[name="tmdb_tv_id"]',
                             'input[name="tmdb_id"]',
                             'input#tmdb_id',
                             'input#autotmdb',
-                            'input#auto_tmdb_movie',
                             'input[name="tmdb"]',
                             'input#tmdb'
-                        ],
-                        tmdbId
-                    );
+                        ]
+                        : [
+                            'input#auto_tmdb_movie',
+                            'input[name="tmdb_movie_id"]',
+                            'input[name="tmdb_id"]',
+                            'input#tmdb_id',
+                            'input#autotmdb',
+                            'input[name="tmdb"]',
+                            'input#tmdb'
+                        ];
+                    setAnyText(tmdbSelectors, tmdbId);
                 }
                 if (tmdbUrl) {
                     // URL fields (some Unit3D forks use tmdb_url).
@@ -275,6 +291,8 @@ export class Unit3DEngine extends BaseEngine {
                 }
             } catch {}
         };
+
+        reapplyAfterFileInject = applyIds;
 
         // First pass
         applyIds();
@@ -286,9 +304,15 @@ export class Unit3DEngine extends BaseEngine {
                 const apiKey = getEffectiveTmdbApiKey(settings);
                 const api = `https://api.themoviedb.org/3/find/${imdbId}?api_key=${apiKey}&external_source=imdb_id&include_adult=false&language=zh-CN`;
                 await new Promise<void>((resolve) => {
+                    const timer = window.setTimeout(() => resolve(), 6000);
+                    const done = () => {
+                        window.clearTimeout(timer);
+                        resolve();
+                    };
                     GMAdapter.xmlHttpRequest({
                         method: 'GET',
                         url: api,
+                        timeout: 6000,
                         onload: (resp: any) => {
                             try {
                                 const data = JSON.parse(resp.responseText || '{}');
@@ -299,13 +323,14 @@ export class Unit3DEngine extends BaseEngine {
                                 if (picked) {
                                     meta.tmdbId = String(picked);
                                     // Keep a best-effort url too (some forks accept tmdb_url).
-                                    if (!meta.tmdbUrl) meta.tmdbUrl = `https://www.themoviedb.org/movie/${meta.tmdbId}`;
+                                    if (!meta.tmdbUrl) meta.tmdbUrl = `https://www.themoviedb.org/${isSeriesEarly ? 'tv' : 'movie'}/${meta.tmdbId}`;
                                 }
                             } catch {}
-                            resolve();
+                            done();
                         },
-                        onerror: () => resolve()
-                    }).catch(() => resolve());
+                        onerror: () => done(),
+                        ontimeout: () => done()
+                    }).catch(() => done());
                 });
             } catch {}
         }
@@ -349,7 +374,7 @@ export class Unit3DEngine extends BaseEngine {
         try {
             const autocat = document.querySelector('#autocat') as HTMLSelectElement | null;
             const autores = document.querySelector('#autores') as HTMLSelectElement | null;
-            const autoreg = document.querySelector('#autoreg') as HTMLSelectElement | null;
+            const autoreg = document.querySelector('#autoreg, select#region_id, select[name="region_id"]') as HTMLSelectElement | null;
             const autotype = document.querySelector('#autotype') as HTMLSelectElement | HTMLInputElement | null;
             const typeId = document.querySelector('select[name="type_id"], #type_id') as HTMLSelectElement | null;
 
@@ -374,9 +399,10 @@ export class Unit3DEngine extends BaseEngine {
                 return true;
             };
 
-            const isSeriesLike = meta.type === '剧集' || meta.type === '综艺' || meta.type === '纪录';
+            const isDocSeries = meta.type === '纪录' && /[^T]S\d+|E\d+/i.test(title);
+            const isSeriesLike = meta.type === '剧集' || meta.type === '综艺' || isDocSeries;
             if (autocat) {
-                // Legacy: treat doc as TV-like for Unit3DClassic.
+                // Legacy L23101-23110: documentaries without Sxx/Exx stay Movie ('1').
                 const v = isSeriesLike ? '2' : '1';
                 if (autocat.value !== v) {
                     autocat.value = v;
@@ -423,6 +449,9 @@ export class Unit3DEngine extends BaseEngine {
                 else if (medium === 'HDTV') setSelectIndex(typeId, 6);
                 if (/webrip/i.test(titleBlob)) setSelectIndex(typeId, 5);
             }
+            if (handledBySite) {
+                (document.body as any).__autofeedU3dTypeHandled = true;
+            }
 
             // --- resolution_id / autores ---
             if (autores && meta.standardSel) {
@@ -452,14 +481,16 @@ export class Unit3DEngine extends BaseEngine {
                 }
             }
 
-            // --- region / autoreg ---
+            // --- region / autoreg / region_id ---
             if (autoreg) {
-                const ver = ['AUS', 'CAN', 'CEE', 'CZE', 'ESP', 'EUR', 'FRA', 'GBR', 'GER', 'HKG', 'ITA', 'JPN', 'KOR', 'NOR', 'NLD', 'RUS', 'TWN', 'USA'];
+                const ver = ['AUS', 'BRA', 'CAN', 'CEE', 'CHN', 'CZE', 'ESP', 'EUR', 'FRA', 'GBR', 'GER', 'HKG', 'ITA', 'JPN', 'KOR', 'MEX', 'NOR', 'NLD', 'RUS', 'THA', 'TWN', 'UKR', 'USA'];
                 for (const code of ver) {
-                    const reg = new RegExp('(\\.| )' + code + '(\\.| )', 'i');
+                    const reg = new RegExp('(?:^|[.\\s\\[(])' + code + '(?:$|[.\\s\\])])', 'i');
                     if (!reg.test(titleBlob)) continue;
                     const opts = Array.from(autoreg.options);
-                    const found = opts.find((o) => (o.textContent || '').trim() === code);
+                    // Live BLU/Tik options format as `AUS (Australia)`, while Monika uses `AUS`.
+                    const optRe = new RegExp(`^${code}(?:\\s|\\(|$)`, 'i');
+                    const found = opts.find((o) => optRe.test((o.textContent || '').trim()));
                     if (found) {
                         autoreg.value = found.value;
                         fire(autoreg);
@@ -470,8 +501,10 @@ export class Unit3DEngine extends BaseEngine {
         } catch {}
 
         // --- Source/type select (Unit3D usually calls this type_id) ---
-        // Prefer keyword match rather than hard-coded indices (site option order differs).
-        try {
+        // Skip generic override when a site-specific subclass (ACM, OnlyEncodes, Tik) already mapped type/autotype.
+        const siteAlreadyHandledType = Boolean((document.body as any).__autofeedU3dTypeHandled);
+        delete (document.body as any).__autofeedU3dTypeHandled;
+        if (!siteAlreadyHandledType) try {
             const medium = meta.mediumSel || '';
             const titleBlob = `${meta.title || ''} ${meta.smallDescr || ''} ${meta.subtitle || ''} ${meta.description || ''} ${meta.fullMediaInfo || ''}`;
             const typeSelectors = ['select[name="type_id"]', '#type_id', '#autotype'];
@@ -612,6 +645,18 @@ export class Unit3DEngine extends BaseEngine {
                 const e = title.match(/\bE(\d{1,3})\b/i)?.[1] || '';
                 if (s) setAnyText(['input#season_number', 'input[name="season_number"]'], String(parseInt(s, 10)));
                 if (e) setAnyText(['input#episode_number', 'input[name="episode_number"]'], String(parseInt(e, 10)));
+            }
+        } catch {}
+
+        // Anonymous upload checkbox (respect user setting)
+        try {
+            const settings = await SettingsService.load();
+            if (settings.defaultAnonymous) {
+                const anon = document.querySelector('#anon, input[name="anonymous"]') as HTMLInputElement | null;
+                if (anon && !anon.checked) {
+                    anon.checked = true;
+                    fire(anon);
+                }
             }
         } catch {}
 
